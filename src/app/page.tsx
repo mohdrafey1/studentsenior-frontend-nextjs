@@ -5,6 +5,8 @@ import { api, API_KEY } from "@/config/apiUrls";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { File, GraduationCap, User } from "lucide-react";
+import FAQPage from "@/components/HomePage/FAQ";
+import OurFeatures from "@/components/HomePage/OurFeatures";
 
 type College = {
     name: string;
@@ -102,7 +104,7 @@ export default async function HomePage() {
         <>
             <main role="main">
                 {/* Hero Section */}
-                <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen flex items-center">
+                <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex items-center">
                     <div className="mx-auto md:p-10 px-4 py-12">
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             <div className="space-y-8">
@@ -121,8 +123,8 @@ export default async function HomePage() {
                                     />
 
                                     {/* Decorative elements */}
-                                    <div className="absolute -top-4 -right-4 w-20 h-20 bg-blue-100 rounded-full opacity-60 animate-pulse"></div>
-                                    <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-indigo-100 rounded-full opacity-40 animate-bounce"></div>
+                                    <div className="absolute -top-4 -right-4 w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full opacity-60 animate-pulse"></div>
+                                    <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full opacity-40 animate-bounce"></div>
                                 </div>
                             </div>
                         </div>
@@ -133,50 +135,50 @@ export default async function HomePage() {
                 <QuickLinks colleges={colleges} />
 
                 {/* Features Section for SEO */}
-                <section className="py-16 bg-gray-50">
+                <section className="py-16 bg-gray-50 dark:bg-gray-800">
                     <div className="container mx-auto px-4">
                         <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                                 Why Choose Student Senior?
                             </h2>
-                            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                                 Your one-stop platform for academic success and
                                 peer connection
                             </p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-8">
-                            <div className="text-center p-6">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <GraduationCap />
+                            <div className="text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20">
+                                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <GraduationCap className="text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-3">
+                                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                                     Expert Mentorship
                                 </h3>
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-gray-300">
                                     Connect with experienced seniors and get
                                     personalized academic guidance
                                 </p>
                             </div>
-                            <div className="text-center p-6">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <File />
+                            <div className="text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20">
+                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <File className="text-green-600 dark:text-green-400" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-3">
+                                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                                     Comprehensive Resources
                                 </h3>
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-gray-300">
                                     Access past year questions, study notes, and
                                     curated academic materials
                                 </p>
                             </div>
-                            <div className="text-center p-6">
-                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <User />
+                            <div className="text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20">
+                                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <User className="text-purple-600 dark:text-purple-400" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-3">
+                                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                                     Active Community
                                 </h3>
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-gray-300">
                                     Join thousands of students sharing knowledge
                                     and supporting each other
                                 </p>
@@ -184,6 +186,9 @@ export default async function HomePage() {
                         </div>
                     </div>
                 </section>
+                <OurFeatures />
+
+                <FAQPage />
             </main>
         </>
     );

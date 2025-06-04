@@ -53,7 +53,7 @@ const Header: React.FC = () => {
     ];
 
     return (
-        <header className="sticky top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/20 dark:border-gray-700/20 z-50 transition-colors duration-300">
+        <header className="sticky top-0 left-0 w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900  z-50 transition-colors duration-300">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -63,11 +63,11 @@ const Header: React.FC = () => {
                     >
                         <div className="relative">
                             <Image
-                                src="/assets/logo.png"
+                                src="/assets/cropped_circle_image.png"
                                 alt="logo"
                                 width={40}
                                 height={40}
-                                className="transition-transform duration-200 group-hover:scale-110"
+                                className="transition-transform duration-200 group-hover:scale-110 rounded-full"
                                 priority
                             />
                         </div>
@@ -89,7 +89,7 @@ const Header: React.FC = () => {
                             <Link
                                 key={item.path}
                                 href={item.path}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                                className={`px-4 py-2 rounded-lg text font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${
                                     pathname === item.path
                                         ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                                         : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
@@ -165,7 +165,7 @@ const Header: React.FC = () => {
 
             {/* Mobile Navigation */}
             <div
-                className={`lg:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 z-40 ${
+                className={`lg:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700  transition-all duration-300 z-40 ${
                     isMenuOpen
                         ? "opacity-100 visible translate-y-0"
                         : "opacity-0 invisible -translate-y-4"

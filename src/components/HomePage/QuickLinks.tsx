@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
@@ -56,6 +56,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                 setVisible(false);
             } catch (error) {
                 toast.error("Navigation failed. Please try again.");
+                console.log(error);
             } finally {
                 setIsNavigating(false);
             }
@@ -71,7 +72,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "pyq",
             ariaLabel: "Access Past Year Questions and previous exam papers",
             description: "Previous year question papers",
-            color: "from-yellow-400 to-orange-500",
+            color: "from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600",
         },
         {
             icon: <BookOpen className="text-white w-6 h-6 md:w-8 md:h-8" />,
@@ -79,7 +80,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "notes",
             ariaLabel: "Access comprehensive study notes and materials",
             description: "Curated study materials",
-            color: "from-green-400 to-emerald-500",
+            color: "from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600",
         },
         {
             icon: <Search className="text-white w-6 h-6 md:w-8 md:h-8" />,
@@ -87,7 +88,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "resources",
             ariaLabel: "Browse extensive academic resources and tools",
             description: "Academic resources & tools",
-            color: "from-blue-400 to-cyan-500",
+            color: "from-blue-400 to-cyan-500 dark:from-blue-500 dark:to-cyan-600",
         },
         {
             icon: (
@@ -97,7 +98,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "seniors",
             ariaLabel: "Connect with senior students and mentors",
             description: "Connect with experienced seniors",
-            color: "from-purple-400 to-pink-500",
+            color: "from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600",
         },
         {
             icon: <ShoppingBag className="text-white w-6 h-6 md:w-8 md:h-8" />,
@@ -105,7 +106,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "store",
             ariaLabel: "Visit student marketplace for books and materials",
             description: "Student marketplace",
-            color: "from-indigo-400 to-blue-500",
+            color: "from-indigo-400 to-blue-500 dark:from-indigo-500 dark:to-blue-600",
         },
         {
             icon: <Users className="text-white w-6 h-6 md:w-8 md:h-8" />,
@@ -113,24 +114,24 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             path: "community",
             ariaLabel: "Join active student community discussions",
             description: "Join student discussions",
-            color: "from-teal-400 to-green-500",
+            color: "from-teal-400 to-green-500 dark:from-teal-500 dark:to-green-600",
         },
     ];
 
     return (
         <section
-            className="py-16 bg-white"
+            className="py-16 bg-white dark:bg-gray-900"
             aria-labelledby="quick-access-heading"
         >
             <div className="container mx-auto px-4">
                 <header className="text-center mb-12">
                     <h2
                         id="quick-access-heading"
-                        className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+                        className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
                     >
                         Quick Access Hub
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                         Everything you need for academic success, just one click
                         away
                     </p>
@@ -152,7 +153,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                             }}
                         >
                             <div
-                                className={`relative bg-gradient-to-br ${item.color} rounded-2xl p-6 h-32 flex flex-col items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300`}
+                                className={`relative bg-gradient-to-br ${item.color} rounded-2xl p-6 h-32 flex flex-col items-center justify-center shadow-lg group-hover:shadow-2xl dark:shadow-gray-900/50 dark:group-hover:shadow-2xl transition-all duration-300`}
                             >
                                 {/* Icon */}
                                 <div className="mb-2 transform group-hover:scale-110 transition-transform duration-300">
@@ -165,7 +166,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                                 </h3>
 
                                 {/* Hover description */}
-                                <div className="absolute inset-0 bg-black bg-opacity-80 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
+                                <div className="absolute inset-0 bg-black bg-opacity-80 dark:bg-black dark:bg-opacity-90 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
                                     <p className="text-white text-xs text-center leading-tight">
                                         {item.description}
                                     </p>
@@ -184,17 +185,17 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                     className="mt-16 max-w-4xl mx-auto"
                     aria-label="Mobile app promotion"
                 >
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 md:p-8 shadow-lg">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 border border-blue-200 dark:border-gray-600 rounded-2xl p-6 md:p-8 shadow-lg dark:shadow-gray-900/20">
                         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                             <div className="flex items-center space-x-4 text-center md:text-left">
                                 <div className="text-4xl animate-bounce">
                                     📱
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-1">
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                                         Get the Mobile App
                                     </h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         Faster access, offline reading, and push
                                         notifications
                                     </p>
@@ -204,7 +205,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                             <a
                                 href="https://studentsenior.com/install"
                                 aria-label="Install Student Senior mobile application"
-                                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
+                                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
@@ -219,23 +220,23 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             {/* Enhanced Modal */}
             {visible && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                    className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 p-4"
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="modal-title"
                 >
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <h3
                                     id="modal-title"
-                                    className="text-xl font-bold text-gray-900"
+                                    className="text-xl font-bold text-gray-900 dark:text-white"
                                 >
                                     Select Your College
                                 </h3>
                                 <button
                                     onClick={handleCloseModal}
-                                    className="text-gray-400 hover:text-gray-600 text-xl"
+                                    className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 text-xl"
                                     aria-label="Close college selection dialog"
                                 >
                                     <X />
@@ -243,7 +244,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                             </div>
 
                             <select
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-6"
+                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-6 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 onChange={(e) =>
                                     setSelectedCollege(e.target.value)
                                 }
@@ -265,7 +266,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                             <div className="flex space-x-3">
                                 <button
                                     onClick={handleCloseModal}
-                                    className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                    className="flex-1 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                                     disabled={isNavigating}
                                 >
                                     Cancel
@@ -273,7 +274,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                                 <button
                                     onClick={handleNavigate}
                                     disabled={!selectedCollege || isNavigating}
-                                    className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center space-x-2"
+                                    className="flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center space-x-2"
                                 >
                                     {isNavigating ? (
                                         <>
