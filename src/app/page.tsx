@@ -114,7 +114,7 @@ export default async function HomePage() {
                             <div className="hidden lg:block">
                                 <div className="relative">
                                     <Image
-                                        src="https://www.studentsenior.com/assets/illustration1.png"
+                                        src="/assets/images/illustration1.png"
                                         alt="Students collaborating and studying together"
                                         className="w-full h-auto max-w-lg mx-auto rounded-4xl"
                                         loading="eager"

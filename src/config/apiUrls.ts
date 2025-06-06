@@ -1,6 +1,5 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-export const API_KEY_URL = process.env.NEXT_PUBLIC_API_KEY_URL;
 
 export const api = {
     auth: {
@@ -9,6 +8,8 @@ export const api = {
         google: `${API_BASE_URL}/api/auth/google`,
         signout: `${API_BASE_URL}/api/auth/signout`,
     },
+
+    user: `${API_BASE_URL}/api/user/update`,
 
     college: {
         getColleges: `${API_BASE_URL}/api/colleges`,

@@ -71,7 +71,7 @@ const Header: React.FC = () => {
                                 priority
                             />
                         </div>
-                        <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                        <span className="text-base sm:text-3xl font-bold text-gray-900 dark:text-white">
                             <span className="text-blue-600 dark:text-blue-400 text-3xl sm:text-4xl">
                                 S
                             </span>
@@ -197,7 +197,7 @@ const Header: React.FC = () => {
                                 <Image
                                     src={
                                         currentUser.profilePicture ||
-                                        "/default-avatar.png"
+                                        "/assets/logo.jpg"
                                     }
                                     alt="Profile"
                                     width={32}

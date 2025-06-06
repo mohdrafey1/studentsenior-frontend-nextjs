@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -38,7 +38,6 @@ const SignIn: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({});
     const [errors, setErrors] = useState<FormErrors>({});
     const [passwordShown, setPasswordShown] = useState<boolean>(false);
-    const [rememberMe, setRememberMe] = useState<boolean>(false);
 
     const { loading } = useSelector((state: RootState) => state.user);
     const router = useRouter();
@@ -47,15 +46,6 @@ const SignIn: React.FC = () => {
 
     // Get redirect path from URL params
     const from = searchParams.get("from") || "/";
-
-    useEffect(() => {
-        // Load saved email if "Remember Me" was previously checked
-        const savedEmail = localStorage.getItem("rememberedEmail");
-        if (savedEmail) {
-            setFormData((prev) => ({ ...prev, email: savedEmail }));
-            setRememberMe(true);
-        }
-    }, []);
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
@@ -117,13 +107,6 @@ const SignIn: React.FC = () => {
             dispatch(signInSuccess(data));
             toast.success("Welcome back! Sign in successful");
 
-            // Handle "Remember Me" functionality
-            if (rememberMe && formData.email) {
-                localStorage.setItem("rememberedEmail", formData.email);
-            } else {
-                localStorage.removeItem("rememberedEmail");
-            }
-
             // Redirect to the original page or dashboard
             setTimeout(() => {
                 router.push(from);
@@ -143,21 +126,21 @@ const SignIn: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
             <div className="flex flex-col lg:flex-row min-h-screen">
                 {/* Left Side - Form */}
-                <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="max-w-md w-full space-y-8">
+                <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-10">
+                    <div className="max-w-md w-full space-y-6">
                         {/* Header */}
                         <div className="text-center">
-                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
                                 <Image
-                                    src="/assets/image192.png"
+                                    src="/assets/logo.jpg"
                                     alt="Student Senior Logo"
-                                    width={48}
-                                    height={48}
+                                    width={60}
+                                    height={60}
                                     className="rounded-full"
                                     priority
                                 />
                             </div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                                 Welcome Back
                             </h2>
                             <p className="text-gray-600 dark:text-gray-400">
@@ -247,33 +230,6 @@ const SignIn: React.FC = () => {
                                             {errors.password}
                                         </p>
                                     )}
-                                </div>
-
-                                {/* Remember Me & Forgot Password */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <input
-                                            id="remember-me"
-                                            type="checkbox"
-                                            checked={rememberMe}
-                                            onChange={(e) =>
-                                                setRememberMe(e.target.checked)
-                                            }
-                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700"
-                                        />
-                                        <label
-                                            htmlFor="remember-me"
-                                            className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                                        >
-                                            Remember me
-                                        </label>
-                                    </div>
-                                    <Link
-                                        href="/forgot-password"
-                                        className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
-                                    >
-                                        Forgot password?
-                                    </Link>
                                 </div>
 
                                 {/* Submit Button */}
@@ -372,10 +328,10 @@ const SignIn: React.FC = () => {
                             {/* Illustration Container */}
                             <div className="relative w-96 h-96 mx-auto">
                                 <Image
-                                    src="/assets/login.png"
+                                    src="/assets/images/illustration1.png"
                                     alt="Students learning together"
                                     fill
-                                    className="object-contain drop-shadow-2xl"
+                                    className="object-contain drop-shadow-2xl rounded-4xl"
                                     priority
                                 />
                             </div>
