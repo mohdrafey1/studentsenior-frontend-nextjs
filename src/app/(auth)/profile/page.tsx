@@ -12,7 +12,7 @@ import {
     uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "@/utils/firebase";
-import { api, API_KEY } from "@/config/apiUrls";
+import { api } from "@/config/apiUrls";
 import {
     updateUserStart,
     updateUserSuccess,
@@ -365,14 +365,13 @@ export default function Profile() {
         e.preventDefault();
         try {
             dispatch(updateUserStart());
-            const res = await fetch(`${api.user}/${currentUser._id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-api-key": API_KEY ?? "",
-                },
+            const res = await fetch(`${api.user.update(currentUser._id)}`, {
+                method: "PUT",
                 credentials: "include",
                 body: JSON.stringify(formData),
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
             const data = await res.json();
 

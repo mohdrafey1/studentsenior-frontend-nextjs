@@ -104,7 +104,7 @@ const SignIn: React.FC = () => {
                 return;
             }
 
-            dispatch(signInSuccess(data));
+            dispatch(signInSuccess(data.data));
             toast.success("Welcome back! Sign in successful");
 
             // Redirect to the original page or dashboard

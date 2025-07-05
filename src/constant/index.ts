@@ -1,9 +1,4 @@
-interface FAQ {
-    question: string;
-    answer: string;
-    category?: string;
-}
-
+import { FAQ } from "@/utils/interface";
 export const faqs: FAQ[] = [
     {
         question: "What is Student Senior?",

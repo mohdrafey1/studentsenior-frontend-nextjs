@@ -1,24 +1,22 @@
 import Hero from "@/components/HomePage/Hero";
 import CollegeSelectHandler from "@/components/HomePage/CollegeSelectHandler";
 import QuickLinks from "@/components/HomePage/QuickLinks";
-import { api, API_KEY } from "@/config/apiUrls";
+import { api } from "@/config/apiUrls";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { File, GraduationCap, User } from "lucide-react";
 import FAQPage from "@/components/HomePage/FAQ";
 import OurFeatures from "@/components/HomePage/OurFeatures";
+import { IApiResponse } from "@/utils/interface";
 
 type College = {
     name: string;
     slug: string;
 };
 
-async function getColleges(): Promise<College[]> {
+async function getColleges(): Promise<IApiResponse<College[]>> {
     try {
         const res = await fetch(api.college.getColleges, {
-            headers: {
-                "x-api-key": String(API_KEY),
-            },
             next: { revalidate: 3600 }, // Cache for 1 hour
         });
 
@@ -31,7 +29,11 @@ async function getColleges(): Promise<College[]> {
         return await res.json();
     } catch (e) {
         console.error("Fetch error:", e);
-        return [];
+        return {
+            status: false,
+            message: "Failed to fetch colleges",
+            data: [],
+        };
     }
 }
 
@@ -98,7 +100,8 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-    const colleges = await getColleges();
+    const AllColleges = await getColleges();
+    const colleges = AllColleges.data || [];
 
     return (
         <>
