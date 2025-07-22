@@ -1,3 +1,9 @@
+export interface CollegePageProps {
+    params: Promise<{
+        slug: string;
+    }>;
+}
+
 export interface IApiResponse<T> {
     status: boolean;
     message: string;
@@ -55,10 +61,4 @@ export interface Product {
     condition: "new" | "used" | "like-new";
     createdAt: string;
     updatedAt: string;
-}
-
-export interface CollegePageProps {
-    params: {
-        slug: string;
-    };
 }

@@ -8,12 +8,7 @@ import CollegeHero from "@/components/College/CollegeHero";
 import FeaturedSeniors from "@/components/College/FeaturedSeniors";
 import FeaturedProducts from "@/components/College/FeaturedProducts";
 import CollegeAbout from "@/components/College/CollegeAbout";
-
-interface CollegePageProps {
-    params: Promise<{
-        slug: string;
-    }>;
-}
+import { CollegePageProps } from "@/utils/interface";
 
 // Fetch college data
 async function getCollege(slug: string): Promise<College | null> {
