@@ -1,4 +1,8 @@
 import { FAQ } from "@/utils/interface";
+
+export const GROUPS_PAGE_SIZE = 9;
+export const SEARCH_DEBOUNCE = 400;
+
 export const faqs: FAQ[] = [
     {
         question: "What is Student Senior?",

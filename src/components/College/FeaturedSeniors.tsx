@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { Star, User, GraduationCap } from "lucide-react";
-import { Senior } from "@/utils/interface";
+import { User, GraduationCap } from "lucide-react";
+import { ISenior } from "@/utils/interface";
 import Image from "next/image";
 
 interface FeaturedSeniorsProps {
-    seniors: Senior[];
+    seniors: ISenior[];
 }
 
 export default function FeaturedSeniors({ seniors }: FeaturedSeniorsProps) {
@@ -72,27 +72,6 @@ export default function FeaturedSeniors({ seniors }: FeaturedSeniorsProps) {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-
-                            {senior.bio && (
-                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
-                                    {senior.bio}
-                                </p>
-                            )}
-
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-1">
-                                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                                        {senior.rating || 0} (
-                                        {senior.totalReviews || 0} reviews)
-                                    </span>
-                                </div>
-                                {senior.isVerified && (
-                                    <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs px-2 py-1 rounded-full">
-                                        Verified
-                                    </div>
-                                )}
                             </div>
                         </div>
                     ))}

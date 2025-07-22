@@ -2,11 +2,11 @@
 
 import React from "react";
 import { Tag, Clock } from "lucide-react";
-import { Product } from "@/utils/interface";
+import { IProduct } from "@/utils/interface";
 import Image from "next/image";
 
 interface FeaturedProductsProps {
-    products: Product[];
+    products: IProduct[];
 }
 
 export default function FeaturedProducts({ products }: FeaturedProductsProps) {
@@ -67,22 +67,20 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
                             key={product._id}
                             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900/20 border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-gray-900/30 transition-shadow duration-200"
                         >
-                            {product.images && product.images.length > 0 && (
-                                <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
-                                    <Image
-                                        src={product.images[0]}
-                                        alt={product.title}
-                                        className="w-full h-full object-cover"
-                                        width={500}
-                                        height={500}
-                                    />
-                                </div>
-                            )}
+                            <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
+                                <Image
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                    width={500}
+                                    height={500}
+                                />
+                            </div>
 
                             <div className="p-6">
                                 <div className="flex items-start justify-between mb-2">
                                     <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
-                                        {product.title}
+                                        {product.name}
                                     </h3>
                                     <div
                                         className={`text-xs px-2 py-1 rounded-full ${getConditionColor(

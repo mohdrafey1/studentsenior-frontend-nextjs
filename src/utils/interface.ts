@@ -33,32 +33,52 @@ export interface College {
     updatedAt: string;
 }
 
-export interface Senior {
+export interface IPagination {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
+export interface IWhatsAppGroup {
+    _id: string;
+    title: string;
+    link: string;
+    info: string;
+    domain: string;
+    college: string;
+    owner?: string;
+    submissionStatus?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface IProduct {
     _id: string;
     name: string;
-    email: string;
-    college: string;
-    year: number;
-    branch: string;
-    image?: string;
-    bio?: string;
-    rating?: number;
-    totalReviews?: number;
-    isVerified?: boolean;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
+    condition: string;
     createdAt: string;
     updatedAt: string;
 }
 
-export interface Product {
+export interface ISenior {
     _id: string;
-    title: string;
+    name: string;
     description: string;
-    price: number;
-    category: string;
+    image: string;
     college: string;
-    seller: string;
-    images?: string[];
-    condition: "new" | "used" | "like-new";
+    category: string;
+    condition: string;
+    price: number;
+    contact: string;
+    location: string;
     createdAt: string;
     updatedAt: string;
+    branch: string;
+    year: number;
 }
