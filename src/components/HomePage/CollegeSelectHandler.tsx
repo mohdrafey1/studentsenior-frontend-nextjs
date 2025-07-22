@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { University } from "lucide-react";
+import Link from "next/link";
 
 type College = {
     name: string;
@@ -28,7 +29,7 @@ export default function CollegeSelectHandler({
         if (value) {
             setIsLoading(true);
             try {
-                await router.push(`/college/${value}`);
+                await router.push(`/${value}`);
             } catch (error) {
                 toast.error("Failed to navigate. Please try again.");
                 console.log(error);
@@ -102,12 +103,12 @@ export default function CollegeSelectHandler({
 
             <p className="text-sm text-gray-500 mt-3 text-center">
                 Cant find your college?{" "}
-                <a
+                <Link
                     href="/add-college"
                     className="text-blue-600 hover:underline"
                 >
                     Click here
-                </a>{" "}
+                </Link>{" "}
                 to add it.
             </p>
         </div>

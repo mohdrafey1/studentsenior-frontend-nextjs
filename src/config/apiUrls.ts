@@ -32,4 +32,12 @@ export const api = {
         getFeaturedProducts: (collegeId: string) =>
             `${API_BASE_URL}/api/products/featured/${collegeId}`,
     },
+
+    groups: {
+        getGroupsByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/groups/college/${slug}`,
+        createGroup: `${API_BASE_URL}/groups`,
+        editGroup: (id: string) => `${API_BASE_URL}/groups/${id}`,
+        deleteGroup: (id: string) => `${API_BASE_URL}/groups/${id}`,
+    },
 };

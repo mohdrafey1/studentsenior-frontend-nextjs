@@ -1,14 +1,13 @@
 import React from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { api, API_KEY } from "@/config/apiUrls";
-import { College, Senior, Product } from "@/utils/interface";
+import { api } from "@/config/apiUrls";
+import { College } from "@/utils/interface";
 import { capitalizeWords } from "@/utils/formatting";
 import CollegeHero from "@/components/College/CollegeHero";
-import FeaturedSeniors from "@/components/College/FeaturedSeniors";
-import FeaturedProducts from "@/components/College/FeaturedProducts";
-import CollegeAbout from "@/components/College/CollegeAbout";
 import { CollegePageProps } from "@/utils/interface";
+import Collegelinks from "@/components/Common/CollegeLinks";
+import Collegelink2 from "@/components/Common/CollegeLink2";
 
 // Fetch college data
 async function getCollege(slug: string): Promise<College | null> {
@@ -40,49 +39,49 @@ async function getCollege(slug: string): Promise<College | null> {
     }
 }
 
-// Fetch seniors data
-async function getSeniors(slug: string): Promise<Senior[]> {
-    try {
-        const res = await fetch(api.seniors.getFeaturedSeniors(slug), {
-            headers: {
-                "x-api-key": String(API_KEY),
-            },
-            next: { revalidate: 1800 }, // Cache for 30 minutes
-        });
+// // Fetch seniors data
+// async function getSeniors(slug: string): Promise<Senior[]> {
+//     try {
+//         const res = await fetch(api.seniors.getFeaturedSeniors(slug), {
+//             headers: {
+//                 "x-api-key": String(API_KEY),
+//             },
+//             next: { revalidate: 1800 }, // Cache for 30 minutes
+//         });
 
-        if (!res.ok) {
-            console.warn("Failed to fetch seniors:", res.status);
-            return [];
-        }
+//         if (!res.ok) {
+//             console.warn("Failed to fetch seniors:", res.status);
+//             return [];
+//         }
 
-        return await res.json();
-    } catch (error) {
-        console.error("Error fetching seniors:", error);
-        return [];
-    }
-}
+//         return await res.json();
+//     } catch (error) {
+//         console.error("Error fetching seniors:", error);
+//         return [];
+//     }
+// }
 
-// Fetch products data
-async function getProducts(slug: string): Promise<Product[]> {
-    try {
-        const res = await fetch(api.products.getFeaturedProducts(slug), {
-            headers: {
-                "x-api-key": String(API_KEY),
-            },
-            next: { revalidate: 1800 }, // Cache for 30 minutes
-        });
+// // Fetch products data
+// async function getProducts(slug: string): Promise<Product[]> {
+//     try {
+//         const res = await fetch(api.products.getFeaturedProducts(slug), {
+//             headers: {
+//                 "x-api-key": String(API_KEY),
+//             },
+//             next: { revalidate: 1800 }, // Cache for 30 minutes
+//         });
 
-        if (!res.ok) {
-            console.warn("Failed to fetch products:", res.status);
-            return [];
-        }
+//         if (!res.ok) {
+//             console.warn("Failed to fetch products:", res.status);
+//             return [];
+//         }
 
-        return await res.json();
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        return [];
-    }
-}
+//         return await res.json();
+//     } catch (error) {
+//         console.error("Error fetching products:", error);
+//         return [];
+//     }
+// }
 
 // Generate metadata for SEO
 export async function generateMetadata({
@@ -177,41 +176,41 @@ export default async function CollegePage({ params }: CollegePageProps) {
     console.log("College found:", college.name);
 
     // Fetch related data
-    const [seniors, products] = await Promise.all([
-        getSeniors(slug),
-        getProducts(slug),
-    ]);
+    // const [seniors, products] = await Promise.all([
+    //     getSeniors(slug),
+    //     getProducts(slug),
+    // ]);
 
-    console.log(
-        "Fetched data - Seniors:",
-        seniors.length,
-        "Products:",
-        products.length
-    );
+    // console.log(
+    //     "Fetched data - Seniors:",
+    //     seniors.length,
+    //     "Products:",
+    //     products.length
+    // );
 
     return (
         <main role="main" className="min-h-screen">
             {/* Hero Section */}
-            <CollegeHero
-                college={college}
-                seniorsCount={seniors.length}
-                productsCount={products.length}
-            />
+            <CollegeHero tagline={slug}>
+                <Collegelinks />
+            </CollegeHero>
 
             {/* Featured Seniors Section */}
-            <FeaturedSeniors seniors={seniors} />
+            {/* <FeaturedSeniors seniors={seniors} /> */}
 
             {/* Divider */}
             <hr className="border-gray-200 dark:border-gray-700" />
 
             {/* Featured Products Section */}
-            <FeaturedProducts products={products} />
+            {/* <FeaturedProducts products={products} /> */}
 
             {/* Divider */}
             <hr className="border-gray-200 dark:border-gray-700" />
 
             {/* About Section */}
-            <CollegeAbout college={college} />
+            {/* <CollegeAbout college={college} /> */}
+
+            <Collegelink2 />
         </main>
     );
 }

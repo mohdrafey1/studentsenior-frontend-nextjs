@@ -50,9 +50,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
         if (selectedCollege) {
             setIsNavigating(true);
             try {
-                await router.push(
-                    `/college/${selectedCollege}/${navigatePath}`
-                );
+                await router.push(`/${selectedCollege}/${navigatePath}`);
                 setVisible(false);
             } catch (error) {
                 toast.error("Navigation failed. Please try again.");

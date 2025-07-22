@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Tag, Clock } from "lucide-react";
+import { Tag, Clock } from "lucide-react";
 import { Product } from "@/utils/interface";
+import Image from "next/image";
 
 interface FeaturedProductsProps {
     products: Product[];
@@ -68,10 +69,12 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
                         >
                             {product.images && product.images.length > 0 && (
                                 <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
-                                    <img
+                                    <Image
                                         src={product.images[0]}
                                         alt={product.title}
                                         className="w-full h-full object-cover"
+                                        width={500}
+                                        height={500}
                                     />
                                 </div>
                             )}

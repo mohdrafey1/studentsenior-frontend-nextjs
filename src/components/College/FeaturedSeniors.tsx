@@ -3,6 +3,7 @@
 import React from "react";
 import { Star, User, GraduationCap } from "lucide-react";
 import { Senior } from "@/utils/interface";
+import Image from "next/image";
 
 interface FeaturedSeniorsProps {
     seniors: Senior[];
@@ -49,10 +50,12 @@ export default function FeaturedSeniors({ seniors }: FeaturedSeniorsProps) {
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                                     {senior.image ? (
-                                        <img
+                                        <Image
                                             src={senior.image}
                                             alt={senior.name}
                                             className="w-12 h-12 rounded-full object-cover"
+                                            width={500}
+                                            height={500}
                                         />
                                     ) : (
                                         <User className="w-8 h-8 text-blue-600 dark:text-blue-400" />
