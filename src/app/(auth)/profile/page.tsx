@@ -394,7 +394,7 @@ export default function Profile() {
         try {
             setLoading1(true);
             const response = await fetch(`${api.auth.signout}`, {
-                method: "GET",
+                method: "POST",
                 credentials: "include",
             });
 

@@ -45,7 +45,11 @@ const SignIn: React.FC = () => {
     const dispatch = useDispatch();
 
     // Get redirect path from URL params
-    const from = searchParams.get("from") || "/";
+    let from = searchParams.get("from") || "/";
+
+    if (from === "/sign-in" || from === "/sign-up") {
+        from = "/";
+    }
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
