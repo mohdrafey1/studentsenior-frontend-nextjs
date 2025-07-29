@@ -8,6 +8,10 @@ import { IPagination, IWhatsAppGroup } from "@/utils/interface";
 import { GROUPS_PAGE_SIZE, SEARCH_DEBOUNCE } from "@/constant";
 import DeleteConfirmationModal from "@/components/Common/DeleteConfirmationModal";
 import PaginationComponent from "@/components/Common/Pagination";
+import { GroupCard } from "./GroupCard";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { PlusIcon, SearchIcon } from "lucide-react";
 
 const WhatsAppGroupClient = ({
     initialGroups,
@@ -38,6 +42,10 @@ const WhatsAppGroupClient = ({
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
+    const currentUser = useSelector(
+        (state: RootState) => state.user.currentUser
+    );
+    const ownerId = currentUser?._id;
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -166,87 +174,28 @@ const WhatsAppGroupClient = ({
         if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
     };
 
-    // Inline GroupCard component
-    const GroupCard = ({ group }: { group: IWhatsAppGroup }) => (
-        <article
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 flex flex-col h-full border border-gray-100 dark:border-gray-700"
-            aria-label={group.title}
-        >
-            <div className="mb-2">
-                <span className="inline-block px-3 py-1 text-xs font-semibold text-sky-700 bg-sky-100 dark:bg-sky-900 dark:text-sky-300 rounded-full mb-3">
-                    {group.domain}
-                </span>
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2">
-                    {group.title}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm line-clamp-3">
-                    {group.info}
-                </p>
-            </div>
-            <div className="mt-auto flex gap-2">
-                <a
-                    href={group.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center px-4 py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg shadow transition-all dark:bg-sky-600 dark:hover:bg-sky-700"
-                    aria-label={`Join WhatsApp group: ${group.title}`}
-                >
-                    <i className="fa-brands fa-whatsapp text-lg mr-2"></i>
-                    Join Group
-                </a>
-                <button
-                    onClick={() => openModal(group)}
-                    className="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
-                    aria-label={`Edit group: ${group.title}`}
-                >
-                    Edit
-                </button>
-                <button
-                    onClick={() => handleDeleteRequest(group._id)}
-                    className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg dark:bg-red-600 dark:hover:bg-red-700"
-                    aria-label={`Delete group: ${group.title}`}
-                >
-                    Delete
-                </button>
-            </div>
-        </article>
-    );
-
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <header className="text-center mb-8">
-                <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
-                    WhatsApp Groups - {capitalizeWords(collegeName)}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
-                    Connect with peers, share resources, and stay updated with
-                    the latest information through these WhatsApp groups.
-                </p>
-            </header>
+        <>
             <section className="mb-8" aria-label="Search and Add Group">
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-                    <div className="relative w-full sm:w-2/3">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">
-                            <i className="fas fa-search"></i>
-                        </span>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div className="flex gap-3 w-full sm:w-2/3 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
+                        <SearchIcon />
                         <input
                             type="text"
                             placeholder="Search by title or description..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="pl-10 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
+                            className="w-full bg-transparent outline-none"
                             aria-label="Search groups"
                         />
                     </div>
-                    <div className="flex gap-3 w-full sm:w-auto">
-                        <button
-                            onClick={() => openModal()}
-                            className="flex-1 sm:flex-none p-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
-                            aria-label="Add Group"
-                        >
-                            <i className="fas fa-plus mr-2"></i> Add Group
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => openModal()}
+                        className="flex gap-3 w-full sm:w-1/3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
+                    >
+                        <PlusIcon />
+                        <span> Add Group</span>
+                    </button>
                 </div>
             </section>
             <section aria-label="Groups List">
@@ -262,7 +211,13 @@ const WhatsAppGroupClient = ({
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {groups.map((group) => (
-                                <GroupCard key={group._id} group={group} />
+                                <GroupCard
+                                    key={group._id}
+                                    group={group}
+                                    openModal={openModal}
+                                    handleDeleteRequest={handleDeleteRequest}
+                                    ownerId={ownerId || ""}
+                                />
                             ))}
                         </div>
                         {/* Pagination Controls */}
@@ -308,7 +263,7 @@ const WhatsAppGroupClient = ({
                 loading={deleteLoading}
                 message="Are you sure you want to delete this group? This action cannot be undone."
             />
-        </main>
+        </>
     );
 };
 

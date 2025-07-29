@@ -8,7 +8,6 @@ import {
     IPagination,
     IWhatsAppGroup,
 } from "@/utils/interface";
-import { GROUPS_PAGE_SIZE } from "@/constant";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -26,28 +25,55 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
     const { slug } = await params;
     const collegeName = slug;
 
-    const searchParams = new URLSearchParams({
-        page: "1",
-        limit: String(GROUPS_PAGE_SIZE),
-    });
-    const url = `${api.groups.getGroupsByCollegeSlug(
-        collegeName
-    )}?${searchParams.toString()}`;
-    const res = await fetch(url, { cache: "no-store" });
-    const data = await res.json();
-    const groups: IWhatsAppGroup[] = data.data.groups || [];
-    const pagination: IPagination = data.data.pagination || null;
+    let groups: IWhatsAppGroup[] = [];
+    let pagination: IPagination | null = null;
+
+    try {
+        const url = `${api.groups.getGroupsByCollegeSlug(collegeName)}`;
+        const res = await fetch(url, { cache: "no-store" });
+
+        if (!res.ok) {
+            throw new Error(`Fetch failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        groups = data?.data?.groups || [];
+        pagination = data?.data?.pagination || null;
+    } catch (error) {
+        console.error("Failed to fetch groups:", error);
+    }
+
     return (
         <>
-            <div className="min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900">
+            <div className="min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-15">
                 <Collegelinks />
-                <WhatsAppGroupClient
-                    initialGroups={groups}
-                    initialPagination={pagination}
-                    collegeName={collegeName}
-                />
-                <Collegelink2 />
+                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+                    <header className="text-center mb-8">
+                        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
+                            WhatsApp Groups - {capitalizeWords(collegeName)}
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+                            &quot;Connect with peers, share resources, and stay
+                            updated with the latest information through these
+                            WhatsApp groups.&quot;
+                        </p>
+                    </header>
+                    <WhatsAppGroupClient
+                        initialGroups={groups}
+                        initialPagination={
+                            pagination || {
+                                currentPage: 1,
+                                totalPages: 1,
+                                totalItems: 0,
+                                hasNextPage: false,
+                                hasPrevPage: false,
+                            }
+                        }
+                        collegeName={collegeName}
+                    />
+                </main>
             </div>
+            <Collegelink2 />
         </>
     );
 }

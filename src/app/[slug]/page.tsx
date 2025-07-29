@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { api } from "@/config/apiUrls";
 import { College } from "@/utils/interface";
 import { capitalizeWords } from "@/utils/formatting";
-import CollegeHero from "@/components/College/CollegeHero";
 import { CollegePageProps } from "@/utils/interface";
 import Collegelinks from "@/components/Common/CollegeLinks";
 import Collegelink2 from "@/components/Common/CollegeLink2";
@@ -190,10 +189,15 @@ export default async function CollegePage({ params }: CollegePageProps) {
 
     return (
         <main role="main" className="min-h-screen">
-            {/* Hero Section */}
-            <CollegeHero tagline={slug}>
-                <Collegelinks />
-            </CollegeHero>
+            <Collegelinks />
+            <section className="bg-gradient-to-t from-sky-200 to bg-white text-center p-8 rounded-b-3xl">
+                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium mt-5 mb-20">
+                    Welcome to{" "}
+                    <span style={{ color: "#2196f3" }}>
+                        {capitalizeWords(slug)}
+                    </span>
+                </h2>
+            </section>
 
             {/* Featured Seniors Section */}
             {/* <FeaturedSeniors seniors={seniors} /> */}
