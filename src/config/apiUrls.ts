@@ -40,4 +40,8 @@ export const api = {
         editGroup: (id: string) => `${API_BASE_URL}/groups/${id}`,
         deleteGroup: (id: string) => `${API_BASE_URL}/groups/${id}`,
     },
+
+    contactus: {
+        createContactus: `${API_BASE_URL}/contactus`,
+    },
 };
