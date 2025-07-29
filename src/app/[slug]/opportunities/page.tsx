@@ -1,8 +1,11 @@
+import React from "react";
+import { api } from "@/config/apiUrls";
 import { capitalizeWords } from "@/utils/formatting";
 import Collegelinks from "@/components/Common/CollegeLinks";
 import Collegelink2 from "@/components/Common/CollegeLink2";
+import OpportunityClient from "./OpportunityClient";
+import { CollegePageProps, IPagination, IOpportunity } from "@/utils/interface";
 import type { Metadata } from "next";
-import { CollegePageProps } from "@/utils/interface";
 
 export async function generateMetadata({
     params,
@@ -10,13 +13,34 @@ export async function generateMetadata({
     const { slug } = await params;
     return {
         title: `Opportunities - ${capitalizeWords(slug)}`,
-        description: "Find or post opportunities in the community.",
+        description:
+            "Find and share internship opportunities, job openings, and other career prospects.",
     };
 }
 
 export default async function OpportunitiesPage({ params }: CollegePageProps) {
     const { slug } = await params;
     const collegeName = slug;
+
+    let opportunities: IOpportunity[] = [];
+    let pagination: IPagination | null = null;
+
+    try {
+        const url = `${api.opportunities.getOpportunitiesByCollegeSlug(
+            collegeName
+        )}`;
+        const res = await fetch(url, { cache: "no-store" });
+
+        if (!res.ok) {
+            throw new Error(`Fetch failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        opportunities = data?.data?.opportunities || [];
+        pagination = data?.data?.pagination || null;
+    } catch (error) {
+        console.error("Failed to fetch opportunities:", error);
+    }
 
     return (
         <>
@@ -28,11 +52,24 @@ export default async function OpportunitiesPage({ params }: CollegePageProps) {
                             Opportunities - {capitalizeWords(collegeName)}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
-                            &quot;Find or post opportunities in your college
-                            campus.&quot;
+                            Discover and share internships, job openings, and
+                            career opportunities. Connect with potential
+                            employers and grow your professional network.
                         </p>
                     </header>
-                    {/* TODO: Add opportunities */}
+                    <OpportunityClient
+                        initialOpportunities={opportunities}
+                        initialPagination={
+                            pagination || {
+                                currentPage: 1,
+                                totalPages: 1,
+                                totalItems: 0,
+                                hasNextPage: false,
+                                hasPrevPage: false,
+                            }
+                        }
+                        collegeName={collegeName}
+                    />
                 </main>
             </div>
             <Collegelink2 />

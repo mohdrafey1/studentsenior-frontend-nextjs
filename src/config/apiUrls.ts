@@ -41,6 +41,17 @@ export const api = {
         deleteGroup: (id: string) => `${API_BASE_URL}/groups/${id}`,
     },
 
+    opportunities: {
+        getOpportunitiesByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/opportunities/college/${slug}`,
+        createOpportunity: `${API_BASE_URL}/opportunities`,
+        editOpportunity: (id: string) => `${API_BASE_URL}/opportunities/${id}`,
+        deleteOpportunity: (id: string) =>
+            `${API_BASE_URL}/opportunities/${id}`,
+        getOpportunityBySlug: (slug: string) =>
+            `${API_BASE_URL}/opportunities/${slug}`,
+    },
+
     contactus: {
         createContactus: `${API_BASE_URL}/contactus`,
     },

@@ -82,3 +82,21 @@ export interface ISenior {
     branch: string;
     year: number;
 }
+
+export interface IOpportunity {
+    _id: string;
+    name: string;
+    description: string;
+    email: string;
+    whatsapp?: string;
+    link?: string;
+    college: string;
+    owner?: {
+        _id: string;
+        username: string;
+    };
+    submissionStatus: string;
+    createdAt: string;
+    updatedAt: string;
+    slug: string;
+}

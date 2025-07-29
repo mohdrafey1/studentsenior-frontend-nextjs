@@ -15,7 +15,7 @@ export async function generateMetadata({
 }: CollegePageProps): Promise<Metadata> {
     const { slug } = await params;
     return {
-        title: `WhatsApp Groups - ${capitalizeWords(slug)}`,
+        title: `Groups - ${capitalizeWords(slug)}`,
         description:
             "Join WhatsApp groups to connect with like-minded people and stay updated with campus activities and resources.",
     };
@@ -50,7 +50,7 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
                 <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                     <header className="text-center mb-8">
                         <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
-                            WhatsApp Groups - {capitalizeWords(collegeName)}
+                            Groups - {capitalizeWords(collegeName)}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
                             &quot;Connect with peers, share resources, and stay
