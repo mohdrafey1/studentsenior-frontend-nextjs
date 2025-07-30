@@ -1,8 +1,14 @@
+import { api } from "@/config/apiUrls";
 import { capitalizeWords } from "@/utils/formatting";
 import Collegelinks from "@/components/Common/CollegeLinks";
 import Collegelink2 from "@/components/Common/CollegeLink2";
 import type { Metadata } from "next";
-import { CollegePageProps } from "@/utils/interface";
+import {
+    CollegePageProps,
+    IPagination,
+    ILostFoundItem,
+} from "@/utils/interface";
+import LostFoundClient from "./LostFoundClient";
 
 export async function generateMetadata({
     params,
@@ -18,6 +24,24 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
     const { slug } = await params;
     const collegeName = slug;
 
+    let items: ILostFoundItem[] = [];
+    let pagination: IPagination | null = null;
+
+    try {
+        const url = `${api.lostFound.getLostFoundByCollegeSlug(collegeName)}`;
+        const res = await fetch(url, { cache: "no-store" });
+
+        if (!res.ok) {
+            throw new Error(`Fetch failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        items = data?.data?.items || [];
+        pagination = data?.data?.pagination || null;
+    } catch (error) {
+        console.error("Error fetching lost and found items:", error);
+    }
+
     return (
         <>
             <div className="min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-15">
@@ -28,11 +52,23 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
                             Lost & Found - {capitalizeWords(collegeName)}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
-                            &quot;Find or post lost and found items in your
-                            college campus.&quot;
+                            Find or post lost and found items in your college
+                            campus.
                         </p>
                     </header>
-                    {/* TODO: Add lost and found */}
+                    <LostFoundClient
+                        initialItems={items}
+                        initialPagination={
+                            pagination || {
+                                currentPage: 1,
+                                totalPages: 1,
+                                totalItems: 0,
+                                hasNextPage: false,
+                                hasPrevPage: false,
+                            }
+                        }
+                        collegeName={collegeName}
+                    />
                 </main>
             </div>
             <Collegelink2 />

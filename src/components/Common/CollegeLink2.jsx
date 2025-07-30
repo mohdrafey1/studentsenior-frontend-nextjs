@@ -48,7 +48,7 @@ const Collegelink2 = () => {
             text: "Store",
         },
         {
-            href: `/${slug}/pyq`,
+            href: `/${slug}/pyqs`,
             icon: <StickyNote size={20} />,
             text: "PYQs",
         },

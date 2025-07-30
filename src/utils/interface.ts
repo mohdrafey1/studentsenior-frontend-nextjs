@@ -100,3 +100,20 @@ export interface IOpportunity {
     updatedAt: string;
     slug: string;
 }
+
+export interface ILostFoundItem {
+    _id: string;
+    title: string;
+    description: string;
+    type: "lost" | "found";
+    location: string;
+    date: string;
+    currentStatus: "open" | "closed";
+    imageUrl?: string;
+    whatsapp: string;
+    owner: {
+        _id: string;
+        username: string;
+    };
+    slug: string;
+}

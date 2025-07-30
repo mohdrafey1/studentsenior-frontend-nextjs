@@ -7,6 +7,7 @@ export const api = {
         signup: `${API_BASE_URL}/auth/signup`,
         google: `${API_BASE_URL}/auth/google`,
         signout: `${API_BASE_URL}/auth/signout`,
+        userDetail: `${API_BASE_URL}/auth/user`,
     },
 
     user: {
@@ -52,7 +53,19 @@ export const api = {
             `${API_BASE_URL}/opportunities/${slug}`,
     },
 
+    lostFound: {
+        getLostFoundByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/lost-found/college/${slug}`,
+        createLostFound: `${API_BASE_URL}/lost-found`,
+        editLostFound: (id: string) => `${API_BASE_URL}/lost-found/${id}`,
+        deleteLostFound: (id: string) => `${API_BASE_URL}/lost-found/${id}`,
+    },
+
     contactus: {
         createContactus: `${API_BASE_URL}/contactus`,
+    },
+
+    aws: {
+        presignedUrl: `${API_BASE_URL}/aws/presigned-url`,
     },
 };

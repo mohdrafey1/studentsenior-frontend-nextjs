@@ -87,6 +87,10 @@ const WhatsAppGroupClient = ({
 
     // Modal logic
     const openModal = (group?: IWhatsAppGroup) => {
+        if (!currentUser) {
+            toast.error("Please sign in to add groups");
+            return;
+        }
         setEditGroup(group || null);
         setForm(
             group
