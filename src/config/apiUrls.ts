@@ -59,6 +59,8 @@ export const api = {
         createLostFound: `${API_BASE_URL}/lost-found`,
         editLostFound: (id: string) => `${API_BASE_URL}/lost-found/${id}`,
         deleteLostFound: (id: string) => `${API_BASE_URL}/lost-found/${id}`,
+        getLostFoundBySlug: (slug: string) =>
+            `${API_BASE_URL}/lost-found/${slug}`,
     },
 
     contactus: {

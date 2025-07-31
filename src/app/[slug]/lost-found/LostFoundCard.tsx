@@ -1,5 +1,6 @@
 import { ILostFoundItem } from "@/utils/interface";
 import Image from "next/image";
+import Link from "next/link";
 
 export const LostFoundCard = ({
     item,
@@ -92,18 +93,12 @@ export const LostFoundCard = ({
 
             <div className="flex gap-3">
                 {/* Contact Button */}
-                <a
-                    href={`https://wa.me/${item.whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <Link
+                    href={`lost-found/${item.slug}`}
                     className="group/contact relative flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg hover:shadow-sky-500/25 transition-all duration-300 hover:scale-[1.02] overflow-hidden"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-sky-500 opacity-0 group-hover/contact:opacity-100 transition-opacity duration-300" />
-                    <span className="relative flex items-center">
-                        <i className="fa-brands fa-whatsapp text-lg mr-2 group-hover/contact:scale-110 transition-transform duration-300"></i>
-                        Contact
-                    </span>
-                </a>
+                    View Details
+                </Link>
 
                 {/* Owner Action Buttons */}
                 {ownerId === item.owner._id && (
