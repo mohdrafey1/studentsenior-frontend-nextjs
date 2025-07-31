@@ -1,12 +1,9 @@
-import React from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/config/apiUrls";
 import { College } from "@/utils/interface";
 import { capitalizeWords } from "@/utils/formatting";
 import { CollegePageProps } from "@/utils/interface";
-import Collegelinks from "@/components/Common/CollegeLinks";
-import Collegelink2 from "@/components/Common/CollegeLink2";
 
 // Fetch college data
 async function getCollege(slug: string): Promise<College | null> {
@@ -188,8 +185,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
     // );
 
     return (
-        <main role="main" className="min-h-screen">
-            <Collegelinks />
+        <>
             <section className="bg-gradient-to-t from-sky-200 to bg-white text-center p-8 rounded-b-3xl">
                 <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium mt-5 mb-20">
                     Welcome to{" "}
@@ -213,8 +209,6 @@ export default async function CollegePage({ params }: CollegePageProps) {
 
             {/* About Section */}
             {/* <CollegeAbout college={college} /> */}
-
-            <Collegelink2 />
-        </main>
+        </>
     );
 }

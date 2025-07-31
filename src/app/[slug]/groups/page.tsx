@@ -1,7 +1,5 @@
 import { api } from "@/config/apiUrls";
 import { capitalizeWords } from "@/utils/formatting";
-import Collegelinks from "@/components/Common/CollegeLinks";
-import Collegelink2 from "@/components/Common/CollegeLink2";
 import WhatsAppGroupClient from "./WhatsAppGroupClient";
 import {
     CollegePageProps,
@@ -44,10 +42,7 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
     }
 
     return (
-        <>
-            <div className="min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-15">
-                <Collegelinks />
-                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                     <header className="text-center mb-8">
                         <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
                             Groups - {capitalizeWords(collegeName)}
@@ -71,9 +66,6 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
                         }
                         collegeName={collegeName}
                     />
-                </main>
-            </div>
-            <Collegelink2 />
-        </>
+        </main>
     );
 }
