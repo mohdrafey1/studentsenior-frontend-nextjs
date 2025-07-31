@@ -63,6 +63,15 @@ export const api = {
             `${API_BASE_URL}/lost-found/${slug}`,
     },
 
+    store: {
+        getStoreByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/store/college/${slug}`,
+        createStore: `${API_BASE_URL}/store`,
+        editStore: (id: string) => `${API_BASE_URL}/store/${id}`,
+        deleteStore: (id: string) => `${API_BASE_URL}/store/${id}`,
+        getStoreBySlug: (slug: string) => `${API_BASE_URL}/store/${slug}`,
+    },
+
     contactus: {
         createContactus: `${API_BASE_URL}/contactus`,
     },

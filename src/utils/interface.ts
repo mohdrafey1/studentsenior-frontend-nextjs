@@ -117,3 +117,24 @@ export interface ILostFoundItem {
     };
     slug: string;
 }
+
+export interface IStoreItem {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    whatsapp?: string;
+    telegram?: string;
+    available: boolean;
+    owner: {
+        _id: string;
+        username: string;
+    };
+    college: string;
+    slug: string;
+    submissionStatus: string;
+    clickCount: number;
+    createdAt: string;
+    updatedAt: string;
+}

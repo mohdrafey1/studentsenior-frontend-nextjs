@@ -23,23 +23,23 @@ export const OpportunityCard = ({
     collegeName: string;
 }) => (
     <article
-        className="group relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 hover:border-blue-300/60 dark:hover:border-blue-600/60 shadow-sm hover:shadow-2xl transition-all duration-500 p-0 flex flex-col h-full overflow-hidden backdrop-blur-sm"
+        className="group relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 hover:border-sky-300/60 dark:hover:border-sky-600/60 shadow-sm hover:shadow-2xl transition-all duration-500 p-0 flex flex-col h-full overflow-hidden backdrop-blur-sm"
         aria-label={opportunity.name}
     >
         {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 opacity-0 group-hover:opacity-100 transition-all duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-cyan-500/5 to-blue-500/5 dark:from-sky-400/10 dark:via-cyan-400/10 dark:to-blue-400/10 opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
         {/* Floating Orb Effect */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110" />
 
         {/* Header Section */}
         <div className="relative p-6">
             <div className="flex items-start justify-between">
                 <Link
                     href={`/${collegeName}/opportunities/${opportunity.slug}`}
-                    className="block group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300 flex-1 mr-3"
+                    className="block group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-all duration-300 flex-1 mr-3"
                 >
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 dark:group-hover:from-blue-400 dark:group-hover:to-purple-400 transition-all duration-300">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-sky-600 group-hover:to-cyan-600 dark:group-hover:from-sky-400 dark:group-hover:to-cyan-400 transition-all duration-300">
                         {opportunity.name}
                     </h2>
                 </Link>
@@ -125,7 +125,7 @@ export const OpportunityCard = ({
             <div className="px-6 pb-6">
                 <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
                     <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white text-xs font-semibold">
                             {(opportunity.owner?.username ||
                                 "A")[0].toUpperCase()}
                         </div>
@@ -143,10 +143,10 @@ export const OpportunityCard = ({
 
                 <Link
                     href={`/${collegeName}/opportunities/${opportunity.slug}`}
-                    className="group/cta relative inline-flex items-center justify-center w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] overflow-hidden"
+                    className="group/cta relative inline-flex items-center justify-center w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/25 hover:scale-[1.02] overflow-hidden"
                 >
                     {/* Button Background Animation */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-sky-500 opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300" />
 
                     <span className="relative flex items-center">
                         View Details

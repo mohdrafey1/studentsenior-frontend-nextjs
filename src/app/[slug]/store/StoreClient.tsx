@@ -1,49 +1,47 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/config/apiUrls";
-import { capitalizeWords } from "@/utils/formatting";
 import toast from "react-hot-toast";
-import { IPagination, ILostFoundItem } from "@/utils/interface";
-import { LOST_FOUND_PAGE_SIZE, SEARCH_DEBOUNCE } from "@/constant";
+import { IPagination, IStoreItem } from "@/utils/interface";
+import { STORE_PAGE_SIZE, SEARCH_DEBOUNCE } from "@/constant";
 import DeleteConfirmationModal from "@/components/Common/DeleteConfirmationModal";
 import PaginationComponent from "@/components/Common/Pagination";
-import { LostFoundCard } from "./LostFoundCard";
+import { StoreCard } from "./StoreCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { PlusIcon, SearchIcon } from "lucide-react";
-import LostFoundFormModal, { LostFoundFormData } from "./LostFoundFormModal";
+import StoreFormModal, { StoreFormData } from "./StoreFormModal";
+import { capitalizeWords } from "@/utils/formatting";
 
-const LostFoundClient = ({
+const StoreClient = ({
     initialItems,
     initialPagination,
     collegeName,
 }: {
-    initialItems: ILostFoundItem[];
+    initialItems: IStoreItem[];
     initialPagination: IPagination;
     collegeName: string;
 }) => {
-    const [items, setItems] = useState<ILostFoundItem[]>(initialItems);
+    const [items, setItems] = useState<IStoreItem[]>(initialItems);
     const [pagination, setPagination] = useState<IPagination | null>(
         initialPagination
     );
     const [searchTerm, setSearchTerm] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [availableFilter, setAvailableFilter] = useState("");
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [editItem, setEditItem] = useState<ILostFoundItem | null>(null);
+    const [editItem, setEditItem] = useState<IStoreItem | null>(null);
     const [form, setForm] = useState({
-        title: "",
+        name: "",
         description: "",
-        type: "lost" as "lost" | "found",
-        location: "",
-        date: new Date().toISOString().split("T")[0],
+        price: 0,
+        image: "",
         whatsapp: "",
-        imageUrl: "",
-        currentStatus: "open" as "open" | "closed",
+        telegram: "",
     });
+
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -69,37 +67,35 @@ const LostFoundClient = ({
         try {
             const params = new URLSearchParams({
                 page: String(page),
-                limit: String(LOST_FOUND_PAGE_SIZE),
+                limit: String(STORE_PAGE_SIZE),
             });
             if (searchTerm.trim()) params.append("search", searchTerm.trim());
-            if (typeFilter) params.append("type", typeFilter);
-            if (statusFilter) params.append("currentStatus", statusFilter);
+            if (availableFilter) params.append("available", availableFilter);
 
-            const url = `${api.lostFound.getLostFoundByCollegeSlug(
+            const url = `${api.store.getStoreByCollegeSlug(
                 collegeName
             )}?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
 
             if (!res.ok)
-                throw new Error(data.message || "Failed to fetch items");
+                throw new Error(data.message || "Failed to fetch products");
 
-            setItems(data.data.items || []);
+            setItems(data.data.products || []);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to fetch items");
+            else toast.error("Failed to fetch products");
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, typeFilter, statusFilter]);
+    }, [collegeName, page, searchTerm, availableFilter]);
 
     useEffect(() => {
         fetchItems();
     }, [fetchItems]);
 
-    // Modal logic
-    const openModal = (item?: ILostFoundItem) => {
+    const openModal = (item?: IStoreItem) => {
         if (!currentUser) {
             toast.error("Please sign in to post items");
             return;
@@ -108,78 +104,78 @@ const LostFoundClient = ({
         setForm(
             item
                 ? {
-                      title: item.title,
+                      name: item.name,
                       description: item.description,
-                      type: item.type,
-                      location: item.location,
-                      date: new Date(item.date).toISOString().split("T")[0],
-                      whatsapp: item.whatsapp,
-                      imageUrl: item.imageUrl || "",
-                      currentStatus: item.currentStatus,
+                      price: item.price,
+                      image: item.image,
+                      whatsapp: item.whatsapp || "",
+                      telegram: item.telegram || "",
                   }
                 : {
-                      title: "",
+                      name: "",
                       description: "",
-                      type: "lost",
-                      location: "",
-                      date: new Date().toISOString().split("T")[0],
+                      price: 0,
+                      image: "",
                       whatsapp: "",
-                      imageUrl: "",
-                      currentStatus: "open",
+                      telegram: "",
                   }
         );
         setModalOpen(true);
     };
-
     const closeModal = () => {
         setModalOpen(false);
         setEditItem(null);
         setForm({
-            title: "",
+            name: "",
             description: "",
-            type: "lost",
-            location: "",
-            date: new Date().toISOString().split("T")[0],
+            price: 0,
+            image: "",
             whatsapp: "",
-            imageUrl: "",
-            currentStatus: "open",
+            telegram: "",
         });
     };
 
-    const handleSubmit = async (formData: LostFoundFormData) => {
+    const handleSubmit = async (formData: StoreFormData) => {
         setLoading(true);
         try {
             const method = editItem ? "PUT" : "POST";
+
             const url = editItem
-                ? api.lostFound.editLostFound(editItem._id)
-                : api.lostFound.createLostFound;
+                ? api.store.editStore(editItem._id)
+                : api.store.createStore;
+
             const body = {
                 ...formData,
                 ...(method === "POST" && { college: collegeName }),
             };
 
-            const res = await fetch(url, {
+            const response = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
                 credentials: "include",
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || "Failed to save item");
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to save product");
+            }
 
             toast.success(
-                data.message || (editItem ? "Item updated!" : "Item added!")
+                data.message ||
+                    (editItem ? "Product updated!" : "Product added!")
             );
             closeModal();
             fetchItems();
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to save item");
+            else toast.error("Failed to save product");
         } finally {
             setLoading(false);
         }
     };
+
     const handleDeleteRequest = (itemId: string) => {
         setDeleteTargetId(itemId);
         setDeleteModalOpen(true);
@@ -187,26 +183,30 @@ const LostFoundClient = ({
 
     const handleDeleteConfirm = async () => {
         if (!deleteTargetId) return;
+
         setDeleteLoading(true);
         try {
-            const res = await fetch(
-                api.lostFound.deleteLostFound(deleteTargetId),
+            const response = await fetch(
+                api.store.deleteStore(deleteTargetId),
                 {
                     method: "DELETE",
                     credentials: "include",
                 }
             );
-            const data = await res.json();
-            if (!res.ok)
-                throw new Error(data.message || "Failed to delete item");
 
-            toast.success("Item deleted!");
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to delete product");
+            }
+
+            toast.success("Product deleted successfully");
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
             fetchItems();
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to delete item");
+            else toast.error("Failed to delete product");
         } finally {
             setDeleteLoading(false);
         }
@@ -217,57 +217,48 @@ const LostFoundClient = ({
         setDeleteTargetId(null);
     };
 
-    // Pagination controls
     const goToPage = (p: number) => {
         if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
     };
 
     return (
         <>
+            {/* Header with Add Button */}
             <section className="mb-8" aria-label="Search and Add Item">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-2/3">
-                        <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
+                    <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
+                        <div className="flex gap-3 w-full sm:w-3/5 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
                             <SearchIcon className="w-5 h-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search items..."
+                                placeholder="Search products..."
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
                                 className="w-full bg-transparent outline-none"
-                                aria-label="Search items"
                             />
                         </div>
                         <select
-                            value={typeFilter}
-                            onChange={(e) => setTypeFilter(e.target.value)}
-                            className="w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
-                        >
-                            <option value="">All Types</option>
-                            <option value="lost">Lost</option>
-                            <option value="found">Found</option>
-                        </select>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
+                            value={availableFilter}
+                            onChange={(e) => setAvailableFilter(e.target.value)}
+                            className="w-full sm:w-1/5 p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
                         >
                             <option value="">All Status</option>
-                            <option value="open">Open</option>
-                            <option value="closed">Closed</option>
+                            <option value="true">Available</option>
+                            <option value="false">Sold</option>
                         </select>
+                        <button
+                            onClick={() => openModal()}
+                            className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
+                        >
+                            <PlusIcon className="w-4 h-4" />
+                            Add Product
+                        </button>
                     </div>
-                    <button
-                        onClick={() => openModal()}
-                        className="flex gap-3 w-full sm:w-1/3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
-                    >
-                        <PlusIcon className="w-5 h-5" />
-                        <span>Add Item</span>
-                    </button>
                 </div>
             </section>
 
-            <section aria-label="Lost & Found Items List">
+            <section aria-label="Store Items List">
+                {/* Loading State */}
                 {loading ? (
                     <div className="text-center py-10 text-gray-700 dark:text-gray-200">
                         Loading...
@@ -278,13 +269,14 @@ const LostFoundClient = ({
                             Showing {items.length} of{" "}
                             {pagination?.totalItems ?? 0} items
                         </p>
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {items.map((item) => (
-                                <LostFoundCard
+                                <StoreCard
                                     key={item._id}
                                     item={item}
-                                    openModal={openModal}
-                                    handleDeleteRequest={handleDeleteRequest}
+                                    onEdit={openModal}
+                                    onDelete={handleDeleteRequest}
                                     ownerId={ownerId || ""}
                                 />
                             ))}
@@ -316,25 +308,27 @@ const LostFoundClient = ({
                 )}
             </section>
 
-            <LostFoundFormModal
-                open={modalOpen}
+            {/* Form Modal */}
+            <StoreFormModal
+                isOpen={modalOpen}
                 onClose={closeModal}
                 onSubmit={handleSubmit}
-                loading={loading}
+                editItem={editItem}
                 form={form}
                 setForm={setForm}
-                editItem={editItem}
+                loading={loading}
             />
 
+            {/* Delete Confirmation Modal */}
             <DeleteConfirmationModal
                 open={deleteModalOpen}
-                onConfirm={handleDeleteConfirm}
                 onCancel={handleDeleteCancel}
+                onConfirm={handleDeleteConfirm}
                 loading={deleteLoading}
-                message="Are you sure you want to delete this item? This action cannot be undone."
+                message="Are you sure you want to delete this product? This action cannot be undone."
             />
         </>
     );
 };
 
-export default LostFoundClient;
+export default StoreClient;
