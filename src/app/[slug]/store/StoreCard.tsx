@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { IStoreItem } from "@/utils/interface";
-import { capitalizeWords } from "@/utils/formatting";
+import { capitalizeWords, formatDate } from "@/utils/formatting";
 import {
     Edit,
     Trash2,
@@ -188,7 +188,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                         </div>
                         <div className="flex items-center gap-2 text-xs">
                             <time className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                                {item.createdAt.split("T")[0]}
+                                {formatDate(item.createdAt)}
                             </time>
                         </div>
                     </div>

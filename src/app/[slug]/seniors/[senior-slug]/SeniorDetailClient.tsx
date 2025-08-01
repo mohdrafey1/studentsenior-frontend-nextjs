@@ -77,6 +77,17 @@ const SeniorDetailClient: React.FC<SeniorDetailClientProps> = ({
         }
     };
 
+    const getSocialMediaUrl = (platform: string, url: string) => {
+        switch (platform) {
+            case "whatsapp":
+                return `https://wa.me/${url}`;
+            case "telegram":
+                return `https://t.me/${url}`;
+            default:
+                return url;
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto">
             {/* Back Button */}
@@ -204,7 +215,10 @@ const SeniorDetailClient: React.FC<SeniorDetailClientProps> = ({
                                         (link, index) => (
                                             <a
                                                 key={index}
-                                                href={link.url}
+                                                href={getSocialMediaUrl(
+                                                    link.platform,
+                                                    link.url
+                                                )}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"

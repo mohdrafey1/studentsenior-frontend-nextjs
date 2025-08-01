@@ -160,7 +160,7 @@ const LostFoundFormModal: React.FC<LostFoundFormModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-sky-50 dark:bg-gray-900">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-lg relative">
                 <button
                     className="absolute text-4xl top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100"

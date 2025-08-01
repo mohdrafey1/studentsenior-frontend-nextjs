@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/config/apiUrls";
 import toast from "react-hot-toast";
 import { IPagination, ISenior, ICourse, IBranch } from "@/utils/interface";
-import { STORE_PAGE_SIZE, SEARCH_DEBOUNCE } from "@/constant";
+import { SEARCH_DEBOUNCE, SENIOR_PAGE_SIZE } from "@/constant";
 import DeleteConfirmationModal from "@/components/Common/DeleteConfirmationModal";
 import PaginationComponent from "@/components/Common/Pagination";
 import { SeniorCard } from "./SeniorCard";
@@ -168,7 +168,7 @@ const SeniorClient = ({
         try {
             const params = new URLSearchParams({
                 page: String(page),
-                limit: String(STORE_PAGE_SIZE),
+                limit: String(SENIOR_PAGE_SIZE),
             });
             if (searchTerm.trim()) params.append("search", searchTerm.trim());
             if (branchFilter) params.append("branch", branchFilter);
@@ -485,7 +485,7 @@ const SeniorClient = ({
                             {pagination?.totalItems ?? 0} seniors
                         </p>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                             {seniors.map((senior) => (
                                 <SeniorCard
                                     key={senior._id}

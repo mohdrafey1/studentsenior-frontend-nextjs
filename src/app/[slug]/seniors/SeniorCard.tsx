@@ -27,6 +27,17 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
     onDelete,
     ownerId,
 }) => {
+    const formatSocialMediaLink = (platform: string, url: string) => {
+        switch (platform) {
+            case "whatsapp":
+                return `https://wa.me/${url}`;
+            case "telegram":
+                return `https://t.me/${url}`;
+            default:
+                return url;
+        }
+    };
+
     return (
         <article
             className="group relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 hover:border-sky-300/60 dark:hover:border-sky-600/60 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden backdrop-blur-sm h-full flex flex-col"
@@ -39,34 +50,56 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110" />
 
             {/* Profile Picture Section */}
-            <div className="relative h-52 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
+            <div className="relative h-52 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-750 dark:to-gray-700 overflow-hidden flex items-center justify-center">
+                {/* Decorative Pattern Background */}
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-4 left-4 w-2 h-2 bg-sky-200 dark:bg-sky-700 rounded-full"></div>
+                    <div className="absolute top-8 right-6 w-1 h-1 bg-cyan-200 dark:bg-cyan-700 rounded-full"></div>
+                    <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-blue-200 dark:bg-blue-700 rounded-full"></div>
+                    <div className="absolute bottom-4 right-4 w-2 h-2 bg-sky-200 dark:bg-sky-700 rounded-full"></div>
+                </div>
+
                 {senior.profilePicture ? (
-                    <Image
-                        src={senior.profilePicture}
-                        alt={senior.name}
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        width={500}
-                        height={500}
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                        <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <User className="w-8 h-8 text-gray-400" />
-                            </div>
-                            <span className="text-sm font-medium">
-                                No Photo
-                            </span>
+                    <div className="relative z-10">
+                        {/* Image Container with Enhanced Styling */}
+                        <div className="relative w-48 h-48 rounded-full overflow-hidden ring-4 ring-white dark:ring-gray-800 shadow-xl group-hover:ring-sky-200 dark:group-hover:ring-sky-700 transition-all duration-500">
+                            <Image
+                                src={senior.profilePicture}
+                                alt={senior.name}
+                                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
+                                width={200}
+                                height={200}
+                            />
+                            {/* Image Overlay Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-sky-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
+
+                        {/* Decorative Ring */}
+                        <div className="absolute -inset-2 rounded-full border border-sky-200/50 dark:border-sky-700/50 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" />
+                    </div>
+                ) : (
+                    <div className="relative z-10 text-center">
+                        {/* Enhanced No Photo State */}
+                        <div className="relative w-32 h-32 mx-auto mb-3 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center ring-4 ring-white dark:ring-gray-800 shadow-xl group-hover:ring-sky-200 dark:group-hover:ring-sky-700 transition-all duration-500">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <User className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                            </div>
+
+                            {/* Decorative Ring */}
+                            <div className="absolute -inset-2 rounded-full border border-gray-200/50 dark:border-gray-600/50 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800/80 px-3 py-1 rounded-full backdrop-blur-sm">
+                            No Photo
+                        </span>
                     </div>
                 )}
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Submission Status Badge */}
                 {senior.submissionStatus !== "approved" && (
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 z-20">
                         <span
                             className={`px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-md shadow-lg transition-all duration-300 ${
                                 senior.submissionStatus === "pending"
@@ -81,7 +114,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
 
                 {/* Edit/Delete Controls for Owner */}
                 {ownerId === senior.owner._id && (
-                    <div className="absolute top-3 right-3 flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute top-3 right-3 flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300 z-20">
                         <button
                             onClick={() => onEdit(senior)}
                             className="p-2 rounded-full bg-amber-50/90 text-amber-600 hover:bg-amber-100/90 dark:bg-amber-900/40 dark:text-amber-400 dark:hover:bg-amber-900/60 transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md backdrop-blur-sm"
@@ -131,13 +164,6 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                     )}
                 </div>
 
-                {/* Description */}
-                {senior.description && (
-                    <p className="text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed mb-4 flex-grow">
-                        {senior.description}
-                    </p>
-                )}
-
                 {/* Social Media Links */}
                 {senior.socialMediaLinks &&
                     senior.socialMediaLinks.length > 0 && (
@@ -147,7 +173,10 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                                 .map((link, index) => (
                                     <a
                                         key={index}
-                                        href={link.url}
+                                        href={formatSocialMediaLink(
+                                            link.platform,
+                                            link.url
+                                        )}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center group/contact p-2 rounded-lg bg-gray-50/50 hover:bg-sky-50 dark:bg-gray-800/50 dark:hover:bg-sky-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"

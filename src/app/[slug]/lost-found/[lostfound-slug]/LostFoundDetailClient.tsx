@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { formatDate } from "@/utils/formatting";
 
 interface LostFoundDetailClientProps {
     lostFoundItem: ILostFoundItem;
@@ -128,13 +129,7 @@ const LostFoundDetailClient: React.FC<LostFoundDetailClientProps> = ({
                                                 Date
                                             </div>
                                             <div className="text-sm font-semibold text-purple-900 dark:text-purple-100">
-                                                {new Date(
-                                                    lostFoundItem.date
-                                                ).toLocaleDateString("en-US", {
-                                                    year: "numeric",
-                                                    month: "long",
-                                                    day: "numeric",
-                                                })}
+                                                {formatDate(lostFoundItem.date)}
                                             </div>
                                         </div>
                                     </div>

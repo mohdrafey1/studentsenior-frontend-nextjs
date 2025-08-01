@@ -1,3 +1,4 @@
+import { formatDate } from "@/utils/formatting";
 import { IOpportunity } from "@/utils/interface";
 import {
     Mail,
@@ -137,7 +138,7 @@ export const OpportunityCard = ({
                         </span>
                     </div>
                     <time className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                        {new Date(opportunity.createdAt).toLocaleDateString()}
+                        {formatDate(opportunity.createdAt)}
                     </time>
                 </div>
 

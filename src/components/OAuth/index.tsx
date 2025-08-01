@@ -6,7 +6,8 @@ import { app } from "@/utils/firebase";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "@/redux/slices/userSlice";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "react-hot-toast"; // switched to react-hot-toast, next-friendly
+import { toast } from "react-hot-toast";
+import { api, API_KEY } from "@/config/apiUrls";
 
 export default function OAuth() {
     const dispatch = useDispatch();
@@ -23,12 +24,11 @@ export default function OAuth() {
 
             const result = await signInWithPopup(auth, provider);
 
-            const res = await fetch("/api/auth/google", {
-                // You should proxy this or define API route
+            const res = await fetch(api.auth.google, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "", // from env vars
+                    "x-api-key": API_KEY || "",
                 },
                 credentials: "include",
                 body: JSON.stringify({

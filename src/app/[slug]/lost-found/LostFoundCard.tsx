@@ -1,3 +1,4 @@
+import { formatDate } from "@/utils/formatting";
 import { ILostFoundItem } from "@/utils/interface";
 import Image from "next/image";
 import Link from "next/link";
@@ -82,7 +83,7 @@ export const LostFoundCard = ({
             {/* Location & Date */}
             <div className="text-sm text-gray-500 dark:text-gray-400 space-y-2">
                 <p>📍 {item.location}</p>
-                <p>📅 {new Date(item.date).toLocaleDateString()}</p>
+                <p>📅 {formatDate(item.date)}</p>
             </div>
         </div>
 
