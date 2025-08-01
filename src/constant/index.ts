@@ -43,3 +43,24 @@ export const faqs: FAQ[] = [
         category: "Resources",
     },
 ];
+
+export const rawColleges = [
+    {
+        _id: "66cb9952a9c088fc11800714",
+        name: "Integral University",
+        description:
+            '"Integral University Lucknow: Fostering holistic education, research, and growth. Explore diverse programs in engineering, sciences, arts, humanities, and management. State-of-the-art infrastructure, esteemed faculty, and vibrant campus life nurture potential, bridging theory and practice."',
+        location: "Lucknow, Uttar Pradesh, India",
+        status: true,
+        slug: "integral-university",
+    },
+    {
+        _id: "66cba84ce0e3a7e528642837",
+        name: "MPEC Kanpur",
+        description:
+            '"Maharana Pratap Engineering College Kanpur: Fostering innovative minds through comprehensive education. Offering undergraduate and postgraduate programs in:\r\n\r\n- Computer Science\r\n- Mechanical\r\n- Electrical\r\n- Civil\r\n- Electronics\r\n\r\nState-of-the-art infrastructure, industry partnerships, and esteemed faculty ensure holistic development, shaping future engineers."',
+        location: "Kanpur, Uttar Pradesh, India",
+        status: true,
+        slug: "mpec-kanpur",
+    },
+];

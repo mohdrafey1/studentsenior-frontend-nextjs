@@ -8,6 +8,7 @@ import { File, GraduationCap, User } from "lucide-react";
 import FAQPage from "@/components/HomePage/FAQ";
 import OurFeatures from "@/components/HomePage/OurFeatures";
 import { IApiResponse } from "@/utils/interface";
+import { rawColleges } from "@/constant";
 
 type College = {
     name: string;
@@ -101,7 +102,13 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
     const AllColleges = await getColleges();
-    const colleges = AllColleges.data || [];
+    const colleges = AllColleges.data?.length ? AllColleges.data : rawColleges;
+
+    if (!AllColleges.data?.length) {
+        console.warn(
+            "⚠️ Using rawColleges fallback due to fetch failure or empty response"
+        );
+    }
 
     return (
         <>
