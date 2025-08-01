@@ -68,7 +68,8 @@ export default function FeaturedSeniors({ seniors }: FeaturedSeniorsProps) {
                                     <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                                         <GraduationCap className="w-4 h-4" />
                                         <span>
-                                            {senior.branch} • Year {senior.year}
+                                            {senior.branch.branchName} • Year{" "}
+                                            {senior.year}
                                         </span>
                                     </div>
                                 </div>

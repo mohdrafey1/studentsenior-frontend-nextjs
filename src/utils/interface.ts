@@ -66,21 +66,50 @@ export interface IProduct {
     updatedAt: string;
 }
 
+export interface ISocialMediaLink {
+    platform:
+        | "whatsapp"
+        | "telegram"
+        | "instagram"
+        | "linkedin"
+        | "facebook"
+        | "twitter"
+        | "youtube"
+        | "github"
+        | "other";
+    url: string;
+}
+
 export interface ISenior {
     _id: string;
     name: string;
-    description: string;
-    image: string;
-    college: string;
-    category: string;
-    condition: string;
-    price: number;
-    contact: string;
-    location: string;
+    domain?: string;
+    branch: {
+        _id: string;
+        branchName: string;
+    };
+    image?: string;
+    year: string;
+    profilePicture?: string;
+    socialMediaLinks?: ISocialMediaLink[];
+    college: {
+        _id: string;
+        name: string;
+    };
+    owner: {
+        _id: string;
+        username: string;
+        profilePicture?: string;
+    };
+    clickCount: number;
+    slug: string;
+    submissionStatus: "pending" | "approved" | "rejected";
+    rejectionReason?: string;
+    description?: string;
+    deleted?: boolean;
+    deletedAt?: string;
     createdAt: string;
     updatedAt: string;
-    branch: string;
-    year: number;
 }
 
 export interface IOpportunity {
@@ -135,6 +164,25 @@ export interface IStoreItem {
     slug: string;
     submissionStatus: string;
     clickCount: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ICourse {
+    _id: string;
+    courseName: string;
+    courseCode: string;
+    clickCounts: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IBranch {
+    _id: string;
+    branchName: string;
+    branchCode: string;
+    course: string;
+    clickCounts: number;
     createdAt: string;
     updatedAt: string;
 }

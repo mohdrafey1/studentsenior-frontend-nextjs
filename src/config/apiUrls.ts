@@ -21,10 +21,12 @@ export const api = {
     },
 
     seniors: {
-        getSeniors: (collegeId: string) =>
-            `${API_BASE_URL}/api/seniors/college/${collegeId}`,
-        getFeaturedSeniors: (collegeId: string) =>
-            `${API_BASE_URL}/api/seniors/featured/${collegeId}`,
+        getSeniorsByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/seniors/college/${slug}`,
+        createSenior: `${API_BASE_URL}/seniors`,
+        editSenior: (id: string) => `${API_BASE_URL}/seniors/${id}`,
+        deleteSenior: (id: string) => `${API_BASE_URL}/seniors/${id}`,
+        getSeniorBySlug: (slug: string) => `${API_BASE_URL}/seniors/${slug}`,
     },
 
     products: {
@@ -70,6 +72,14 @@ export const api = {
         editStore: (id: string) => `${API_BASE_URL}/store/${id}`,
         deleteStore: (id: string) => `${API_BASE_URL}/store/${id}`,
         getStoreBySlug: (slug: string) => `${API_BASE_URL}/store/${slug}`,
+    },
+
+    resources: {
+        getCourses: `${API_BASE_URL}/resource/courses`,
+        getBranches: (courseId: string) =>
+            `${API_BASE_URL}/resource/branches/${courseId}`,
+        getSubjects: (branchId: string) =>
+            `${API_BASE_URL}/resource/subjects/${branchId}`,
     },
 
     contactus: {
