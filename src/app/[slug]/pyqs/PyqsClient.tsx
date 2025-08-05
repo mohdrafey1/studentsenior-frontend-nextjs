@@ -17,6 +17,7 @@ import {
     FileText,
 } from "lucide-react";
 import PyqFormModal, { PyqFormData } from "./PyqFormModal";
+import EditPyqModal from "./EditPyqModal";
 import SearchableSelect from "@/components/Common/SearchableSelect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -63,7 +64,8 @@ const PyqsClient = ({
     );
     const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
     const [loading, setLoading] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [editPyq, setEditPyq] = useState<IPyq | null>(null);
     const [form, setForm] = useState({
         subject: "",
@@ -229,36 +231,21 @@ const PyqsClient = ({
         fetchPyqs();
     }, [fetchPyqs]);
 
-    const openModal = (pyq?: IPyq) => {
-        if (pyq) {
-            setEditPyq(pyq);
-            setForm({
-                subject: pyq.subject._id,
-                year: pyq.year,
-                examType: pyq.examType,
-                fileUrl: pyq.fileUrl,
-                solved: pyq.solved,
-                isPaid: pyq.isPaid,
-                price: pyq.price,
-            });
-        } else {
-            setEditPyq(null);
-            setForm({
-                subject: "",
-                year: "",
-                examType: "",
-                fileUrl: "",
-                solved: false,
-                isPaid: false,
-                price: 0,
-            });
-        }
-        setModalOpen(true);
+    const openAddModal = () => {
+        setForm({
+            subject: "",
+            year: "",
+            examType: "",
+            fileUrl: "",
+            solved: false,
+            isPaid: false,
+            price: 0,
+        });
+        setAddModalOpen(true);
     };
 
-    const closeModal = () => {
-        setModalOpen(false);
-        setEditPyq(null);
+    const closeAddModal = () => {
+        setAddModalOpen(false);
         setForm({
             subject: "",
             year: "",
@@ -270,15 +257,21 @@ const PyqsClient = ({
         });
     };
 
-    const handleSubmit = async (formData: PyqFormData) => {
+    const openEditModal = (pyq: IPyq) => {
+        setEditPyq(pyq);
+        setEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setEditModalOpen(false);
+        setEditPyq(null);
+    };
+
+    const handleAddSubmit = async (formData: PyqFormData) => {
         setLoading(true);
         try {
-            const url = editPyq
-                ? api.pyq.editPyq(editPyq._id)
-                : api.pyq.createPyq;
-
-            const response = await fetch(url, {
-                method: editPyq ? "PUT" : "POST",
+            const response = await fetch(api.pyq.createPyq, {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -292,19 +285,53 @@ const PyqsClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to save PYQ");
+                throw new Error(data.message || "Failed to create PYQ");
             }
-            toast.success(
-                data.message || editPyq
-                    ? "PYQ updated successfully!"
-                    : "PYQ created successfully!"
-            );
+            toast.success(data.message || "PYQ created successfully!");
+
+            // Refresh the PYQs list to show updated data
+            await fetchPyqs();
         } catch (error) {
-            console.error("Error saving PYQ:", error);
-            throw error; // Let the form handle the error display
+            console.error("Error creating PYQ:", error);
+            throw error;
         } finally {
             setLoading(false);
-            closeModal();
+            closeAddModal();
+        }
+    };
+
+    const handleEditSubmit = async (formData: {
+        isPaid: boolean;
+        price: number;
+    }) => {
+        if (!editPyq) return;
+
+        setLoading(true);
+        try {
+            const response = await fetch(api.pyq.editPyq(editPyq._id), {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to update PYQ");
+            }
+            toast.success(data.message || "PYQ updated successfully!");
+
+            // Refresh the PYQs list to show updated data
+            await fetchPyqs();
+        } catch (error) {
+            console.error("Error updating PYQ:", error);
+            throw error;
+        } finally {
+            setLoading(false);
+            closeEditModal();
         }
     };
 
@@ -422,7 +449,7 @@ const PyqsClient = ({
                 </div>
 
                 <button
-                    onClick={() => openModal()}
+                    onClick={openAddModal}
                     className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
                 >
                     <PlusIcon className="w-4 h-4" />
@@ -534,7 +561,7 @@ const PyqsClient = ({
                                 <PyqCard
                                     key={pyq._id}
                                     pyq={pyq}
-                                    onEdit={openModal}
+                                    onEdit={openEditModal}
                                     onDelete={handleDeleteRequest}
                                     ownerId={ownerId || ""}
                                 />
@@ -555,7 +582,7 @@ const PyqsClient = ({
                                         : "Be the first to add a PYQ for this college!"}
                                 </p>
                                 <button
-                                    onClick={() => openModal()}
+                                    onClick={openAddModal}
                                     className="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
                                 >
                                     <PlusIcon className="w-4 h-4" />
@@ -578,18 +605,26 @@ const PyqsClient = ({
 
             {/* Modals */}
             <PyqFormModal
-                isOpen={modalOpen}
-                onClose={closeModal}
-                onSubmit={handleSubmit}
+                isOpen={addModalOpen}
+                onClose={closeAddModal}
+                onSubmit={handleAddSubmit}
                 form={form}
                 setForm={setForm}
-                editPyq={editPyq}
                 courses={courses}
                 branches={branches}
                 loadingCourses={loadingCourses}
                 loadingBranches={loadingBranches}
                 fetchBranches={fetchBranches}
             />
+
+            {editPyq && (
+                <EditPyqModal
+                    isOpen={editModalOpen}
+                    onClose={closeEditModal}
+                    onSubmit={handleEditSubmit}
+                    pyq={editPyq}
+                />
+            )}
 
             <DeleteConfirmationModal
                 open={deleteModalOpen}

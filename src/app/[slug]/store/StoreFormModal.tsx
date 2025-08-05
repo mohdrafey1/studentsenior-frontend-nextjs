@@ -86,8 +86,6 @@ const StoreFormModal: React.FC<StoreFormModalProps> = ({
 
             const { uploadUrl, key } = await presignedRes.json();
 
-            console.log(fileName, fileType);
-
             // Upload to S3
             const uploadRes = await fetch(uploadUrl, {
                 method: "PUT",

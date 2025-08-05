@@ -39,30 +39,6 @@ export const PyqCard: React.FC<PyqCardProps> = ({
             {/* Floating Orb Effect */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110" />
 
-            {/* Header Section */}
-
-            <div className="relative ">
-                {/* Owner Actions */}
-                {isOwner && (
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button
-                            onClick={() => onEdit(pyq)}
-                            className="p-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-sky-100 dark:hover:bg-sky-900 transition-colors duration-200"
-                            aria-label="Edit PYQ"
-                        >
-                            <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        </button>
-                        <button
-                            onClick={() => onDelete(pyq._id)}
-                            className="p-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-200"
-                            aria-label="Delete PYQ"
-                        >
-                            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                        </button>
-                    </div>
-                )}
-            </div>
-
             {/* Content Section */}
             <div className="flex-1 p-6 space-y-4">
                 {/* Title and Subject */}
@@ -121,7 +97,30 @@ export const PyqCard: React.FC<PyqCardProps> = ({
                         <Download className="w-4 h-4" />
                         View PYQ
                     </Link>
+
+                    {isOwner && (
+                        <>
+                            {pyq.solved && (
+                                <button
+                                    onClick={() => onEdit(pyq)}
+                                    aria-label="Edit PYQ"
+                                    className="p-3 rounded-lg bg-yellow-200 text-white dark:bg-yellow-900"
+                                >
+                                    <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                </button>
+                            )}
+                            <button
+                                onClick={() => onDelete(pyq._id)}
+                                aria-label="Delete PYQ"
+                                className="p-3 rounded-lg bg-red-200 text-white dark:bg-red-900"
+                            >
+                                <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                            </button>
+                        </>
+                    )}
                 </div>
+
+                {/* Owner Actions */}
             </div>
         </article>
     );
