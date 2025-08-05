@@ -38,19 +38,19 @@ const Collegelink2 = () => {
             text: "College",
         },
         {
-            href: `/${slug}/resources`,
-            icon: <Zap size={20} />,
-            text: "Resources",
+            href: `/${slug}/pyqs`,
+            icon: <StickyNote size={20} />,
+            text: "PYQs",
+        },
+        {
+            href: `/${slug}/notes`,
+            icon: <StickyNote size={20} />,
+            text: "Notes",
         },
         {
             href: `/${slug}/store`,
             icon: <Store size={20} />,
             text: "Store",
-        },
-        {
-            href: `/${slug}/pyqs`,
-            icon: <StickyNote size={20} />,
-            text: "PYQs",
         },
     ];
 
@@ -81,9 +81,9 @@ const Collegelink2 = () => {
             text: "Community",
         },
         {
-            href: `/${slug}/notes`,
-            icon: <StickyNote size={20} />,
-            text: "Notes",
+            href: `/${slug}/resources`,
+            icon: <Zap size={20} />,
+            text: "Resources",
         },
     ];
 

@@ -181,8 +181,56 @@ export interface IBranch {
     _id: string;
     branchName: string;
     branchCode: string;
-    course: string;
+    course: ICourse;
     clickCounts: number;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ISubject {
+    _id: string;
+    subjectName: string;
+    subjectCode: string;
+    semester: number;
+    branch: IBranch;
+    clickCounts: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IPyq {
+    _id: string;
+    subject: ISubject;
+    slug: string;
+    fileUrl: string;
+    year: string;
+    examType: string;
+    owner: {
+        _id: string;
+        username: string;
+        profilePicture?: string;
+    };
+    college: {
+        _id: string;
+        name: string;
+    };
+    status: boolean;
+    deleted: boolean;
+    deletedAt?: string;
+    rewardPoints: number;
+    clickCounts: number;
+    solved: boolean;
+    isPaid: boolean;
+    price: number;
+    purchasedBy: string[];
+    submissionStatus: "pending" | "approved" | "rejected";
+    rejectionReason?: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IPyqResponse {
+    pyqs: IPyq[];
+    pagination: IPagination;
 }

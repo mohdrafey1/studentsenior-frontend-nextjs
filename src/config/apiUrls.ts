@@ -20,6 +20,15 @@ export const api = {
         addCollege: `${API_BASE_URL}/colleges`,
     },
 
+    pyq: {
+        getPyqByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/pyqs/college/${slug}`,
+        createPyq: `${API_BASE_URL}/pyq`,
+        editPyq: (id: string) => `${API_BASE_URL}/pyq/${id}`,
+        deletePyq: (id: string) => `${API_BASE_URL}/pyq/${id}`,
+        getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyq/${slug}`,
+    },
+
     seniors: {
         getSeniorsByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/seniors/college/${slug}`,

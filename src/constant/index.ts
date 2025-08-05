@@ -2,10 +2,11 @@ import { FAQ } from "@/utils/interface";
 
 export const GROUPS_PAGE_SIZE = 9;
 export const OPPORTUNITIES_PAGE_SIZE = 9;
-export const SEARCH_DEBOUNCE = 400;
+export const SEARCH_DEBOUNCE = 1000;
 export const LOST_FOUND_PAGE_SIZE = 9;
 export const STORE_PAGE_SIZE = 9;
 export const SENIOR_PAGE_SIZE = 12;
+export const PYQ_PAGE_SIZE = 12;
 
 export const faqs: FAQ[] = [
     {

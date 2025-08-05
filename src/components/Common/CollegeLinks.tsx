@@ -23,11 +23,7 @@ const Collegelinks = () => {
             icon: <Landmark size={20} />,
             text: "College",
         },
-        {
-            href: `/${slug}/resources`,
-            icon: <StickyNote size={20} />,
-            text: "Resources",
-        },
+
         {
             href: `/${slug}/pyqs`,
             icon: <Zap size={20} />,
@@ -39,14 +35,20 @@ const Collegelinks = () => {
             text: "Notes",
         },
         {
+            href: `/${slug}/store`,
+            icon: <Store size={20} />,
+            text: "Store",
+        },
+        {
             href: `/${slug}/seniors`,
             icon: <User size={20} />,
             text: "Seniors",
         },
+
         {
-            href: `/${slug}/store`,
-            icon: <Store size={20} />,
-            text: "Store",
+            href: `/${slug}/resources`,
+            icon: <StickyNote size={20} />,
+            text: "Resources",
         },
         {
             href: `/${slug}/community`,
