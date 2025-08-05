@@ -23,10 +23,10 @@ export const api = {
     pyq: {
         getPyqByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/pyqs/college/${slug}`,
-        createPyq: `${API_BASE_URL}/pyq`,
-        editPyq: (id: string) => `${API_BASE_URL}/pyq/${id}`,
-        deletePyq: (id: string) => `${API_BASE_URL}/pyq/${id}`,
-        getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyq/${slug}`,
+        createPyq: `${API_BASE_URL}/pyqs`,
+        editPyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
+        deletePyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
+        getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyqs/${slug}`,
     },
 
     seniors: {

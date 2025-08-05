@@ -105,7 +105,7 @@ export const PyqCard: React.FC<PyqCardProps> = ({
                     )}
                     {pyq.isPaid && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                            ₹{pyq.price}
+                            ₹{pyq.price / 5}
                         </span>
                     )}
                 </div>

@@ -4,6 +4,7 @@ import { IPyq, ICourse, IBranch } from "@/utils/interface";
 import { api } from "@/config/apiUrls";
 import { UploadIcon, DollarSign, CheckCircle, X } from "lucide-react";
 import SearchableSelect from "@/components/Common/SearchableSelect";
+import toast from "react-hot-toast";
 
 export interface PyqFormData {
     subject: string;
@@ -44,8 +45,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState("");
+    const [selectedBranch, setSelectedBranch] = useState("");
+    const [file, setFile] = useState<File | null>(null);
     const [subjects, setSubjects] = useState<
-        Array<{ _id: string; subjectName: string; semester: number }>
+        Array<{
+            _id: string;
+            subjectName: string;
+            subjectCode: string;
+            semester: number;
+        }>
     >([]);
     const [loadingSubjects, setLoadingSubjects] = useState(false);
 
@@ -80,82 +88,183 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         }
     };
 
-    const handleCourseChange = (courseCode: string) => {
-        setSelectedCourse(courseCode);
-        setForm((prev) => ({ ...prev, subject: "" }));
-        if (courseCode) {
-            fetchBranches(courseCode);
+    const handleCourseChange = (courseId: string) => {
+        setSelectedCourse(courseId);
+        const course = courses.find((c) => c._id === courseId);
+        if (course) {
+            fetchBranches(course.courseCode);
         }
     };
 
-    const handleBranchChange = (branchCode: string) => {
-        if (branchCode) {
-            fetchSubjects(branchCode);
-        } else {
-            setSubjects([]);
+    const handleBranchChange = (branchId: string) => {
+        setSelectedBranch(branchId);
+        const branch = branches.find((b) => b._id === branchId);
+        if (branch) {
+            fetchSubjects(branch.branchCode);
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile) {
+            if (selectedFile.type !== "application/pdf") {
+                toast.error("Only PDF files are allowed.");
+                return;
+            }
+            if (selectedFile.size > 10 * 1024 * 1024) {
+                toast.error("File size exceeds 10MB.");
+                return;
+            }
+            setFile(selectedFile);
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate required fields
+        if (!selectedCourse) {
+            toast.error("Please select a course");
+            return;
+        }
+
+        if (!selectedBranch) {
+            toast.error("Please select a branch");
+            return;
+        }
+
+        if (!form.subject) {
+            toast.error("Please select a subject");
+            return;
+        }
+
+        if (!form.year) {
+            toast.error("Please select a year");
+            return;
+        }
+
+        if (!form.examType) {
+            toast.error("Please select an exam type");
+            return;
+        }
+
+        if (!file && !editPyq) {
+            toast.error("Please select a PDF file");
+            return;
+        }
+
+        if (form.isPaid && (!form.price || form.price < 25)) {
+            toast.error(
+                "Please set a valid price (minimum 25 points) for paid content"
+            );
+            return;
+        }
+
         setLoading(true);
+        const loadingToast = toast.loading("Processing your request...");
 
         try {
-            await onSubmit(form);
+            let fileUrl = form.fileUrl;
+
+            // Upload file if new file is selected
+            if (file) {
+                const fileName = `${
+                    subjects.find((s) => s._id === form.subject)?.subjectCode ||
+                    form.subject
+                }-${Date.now()}.pdf`;
+                const fileType = file.type;
+
+                // Step 1: Get pre-signed URL
+                const response = await fetch(`${api.aws.presignedUrl}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        fileName: `ss-pyq/${fileName}`,
+                        fileType,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(
+                        data.message || "Failed to get presigned URL"
+                    );
+                }
+
+                const { uploadUrl, key } = await response.json();
+
+                // Step 2: Upload file directly to S3
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": fileType,
+                    },
+                    body: file,
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error("Failed to upload file");
+                }
+
+                fileUrl = `https://dixu7g0y1r80v.cloudfront.net/${key}`;
+                setForm((prev) => ({ ...prev, fileUrl }));
+            }
+
+            if (!fileUrl) {
+                throw new Error("File URL is required");
+            }
+
+            // Submit the form data
+            await onSubmit({
+                ...form,
+                fileUrl,
+            });
+
+            onClose();
         } catch (error) {
             console.error("Error submitting form:", error);
+            toast.error(
+                error instanceof Error ? error.message : "Failed to save PYQ"
+            );
         } finally {
+            toast.dismiss(loadingToast);
             setLoading(false);
         }
     };
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    console.log(form);
 
-        try {
-            setLoading(true);
-            const formData = new FormData();
-            formData.append("file", file);
+    // Format data for searchable selects
+    const courseOptions = courses.map((course) => ({
+        value: course._id,
+        label: `${course.courseName} (${course.courseCode})`,
+    }));
 
-            const response = await fetch(api.aws.presignedUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    fileName: file.name,
-                    fileType: file.type,
-                }),
-            });
+    const branchOptions = branches.map((branch) => ({
+        value: branch._id,
+        label: `${branch.branchName} (${branch.branchCode})`,
+    }));
 
-            const data = await response.json();
+    const subjectOptions = subjects.map((subject) => ({
+        value: subject._id,
+        label: `${subject.subjectName} (${subject.subjectCode})`,
+    }));
 
-            if (!response.ok) {
-                throw new Error(data.message || "Failed to get upload URL");
-            }
+    const examTypeOptions = [
+        { value: "midsem1", label: "Midsem 1" },
+        { value: "midsem2", label: "Midsem 2" },
+        { value: "improvement", label: "Improvement" },
+        { value: "endsem", label: "Endsem" },
+    ];
 
-            // Upload to S3
-            const uploadResponse = await fetch(data.data.uploadUrl, {
-                method: "PUT",
-                body: file,
-                headers: {
-                    "Content-Type": file.type,
-                },
-            });
-
-            if (!uploadResponse.ok) {
-                throw new Error("Failed to upload file");
-            }
-
-            setForm((prev) => ({ ...prev, fileUrl: data.data.fileUrl }));
-        } catch (error) {
-            console.error("Error uploading file:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const yearOptions = [
+        { value: "2024-25", label: "2024-25" },
+        { value: "2023-24", label: "2023-24" },
+        { value: "2022-23", label: "2022-23" },
+    ];
 
     if (!isOpen) return null;
 
@@ -185,10 +294,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             label="Course *"
                             value={selectedCourse}
                             onChange={handleCourseChange}
-                            options={courses.map((course) => ({
-                                value: course.courseCode,
-                                label: course.courseName,
-                            }))}
+                            options={courseOptions}
                             placeholder="Select Course"
                             loading={loadingCourses}
                         />
@@ -198,20 +304,9 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     <div>
                         <SearchableSelect
                             label="Branch *"
-                            value={
-                                form.subject
-                                    ? branches.find(
-                                          (b) =>
-                                              b.branchCode ===
-                                              form.subject.split("-")[0]
-                                      )?.branchCode || ""
-                                    : ""
-                            }
+                            value={selectedBranch}
                             onChange={handleBranchChange}
-                            options={branches.map((branch) => ({
-                                value: branch.branchCode,
-                                label: branch.branchName,
-                            }))}
+                            options={branchOptions}
                             placeholder="Select Branch"
                             loading={loadingBranches}
                             disabled={!selectedCourse}
@@ -229,10 +324,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                     subject: subjectId,
                                 }))
                             }
-                            options={subjects.map((subject) => ({
-                                value: subject._id,
-                                label: `${subject.subjectName} (${subject.semester} Semester)`,
-                            }))}
+                            options={subjectOptions}
                             placeholder="Select Subject"
                             loading={loadingSubjects}
                         />
@@ -256,9 +348,14 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 required
                             >
                                 <option value="">Select Year</option>
-                                <option value="2022-23">2022-2023</option>
-                                <option value="2023-24">2023-2024</option>
-                                <option value="2024-25">2024-2025</option>
+                                {yearOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div>
@@ -278,10 +375,14 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 required
                             >
                                 <option value="">Select Exam Type</option>
-                                <option value="midsem1">Midsem 1</option>
-                                <option value="midsem2">Midsem 2</option>
-                                <option value="endsem">Endsem</option>
-                                <option value="improvement">Improvement</option>
+                                {examTypeOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -289,16 +390,18 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     {/* File Upload */}
                     <div>
                         <label className="block font-semibold text-sky-500 dark:text-sky-400 mb-1">
-                            PYQ File *
+                            Upload PDF (Max 10MB) *
                         </label>
 
                         <div className="flex items-center gap-4">
                             <label className="flex-1 flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-sky-500 dark:hover:border-sky-400 transition-colors duration-200 cursor-pointer">
                                 <input
+                                    id="file-upload"
                                     type="file"
-                                    accept=".pdf,.doc,.docx"
-                                    onChange={handleFileUpload}
-                                    className="hidden"
+                                    className="w-full border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-500 file:text-white hover:file:bg-sky-600"
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
+                                    required
                                 />
                                 <div className="text-center">
                                     <UploadIcon className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
@@ -366,7 +469,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     {form.isPaid && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Price (₹)
+                                Price (in Points - 5 points = 1 INR)
                             </label>
                             <div className="relative">
                                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -381,7 +484,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                     }
                                     className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                     placeholder="0"
-                                    min="0"
+                                    min="25"
                                 />
                             </div>
                         </div>
@@ -402,8 +505,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 loading ||
                                 !form.subject ||
                                 !form.year ||
-                                !form.examType ||
-                                !form.fileUrl
+                                !form.examType
                             }
                             className="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                         >

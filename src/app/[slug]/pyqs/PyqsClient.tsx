@@ -58,6 +58,9 @@ const PyqsClient = ({
     const [semesterFilter, setSemesterFilter] = useState(
         searchParams.get("semester") || ""
     );
+    const [isSolvedFilter, setIsSolvedFilter] = useState(
+        searchParams.get("isSolved") || ""
+    );
     const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -150,6 +153,7 @@ const PyqsClient = ({
         if (yearFilter) params.set("year", yearFilter);
         if (examTypeFilter) params.set("examType", examTypeFilter);
         if (semesterFilter) params.set("semester", semesterFilter);
+        if (isSolvedFilter) params.set("isSolved", isSolvedFilter);
         if (page > 1) params.set("page", page.toString());
 
         const newUrl = params.toString()
@@ -163,6 +167,7 @@ const PyqsClient = ({
         yearFilter,
         examTypeFilter,
         semesterFilter,
+        isSolvedFilter,
         page,
         pathname,
         router,
@@ -189,7 +194,7 @@ const PyqsClient = ({
             if (yearFilter) params.set("year", yearFilter);
             if (examTypeFilter) params.set("examType", examTypeFilter);
             if (semesterFilter) params.set("semester", semesterFilter);
-
+            if (isSolvedFilter) params.set("isSolved", isSolvedFilter);
             const url = `${api.pyq.getPyqByCollegeSlug(
                 collegeName
             )}?${params.toString()}`;
@@ -216,6 +221,7 @@ const PyqsClient = ({
         yearFilter,
         examTypeFilter,
         semesterFilter,
+        isSolvedFilter,
         page,
     ]);
 
@@ -288,21 +294,17 @@ const PyqsClient = ({
             if (!response.ok) {
                 throw new Error(data.message || "Failed to save PYQ");
             }
-
             toast.success(
-                editPyq
+                data.message || editPyq
                     ? "PYQ updated successfully!"
                     : "PYQ created successfully!"
             );
-            closeModal();
-            fetchPyqs();
         } catch (error) {
             console.error("Error saving PYQ:", error);
-            toast.error(
-                error instanceof Error ? error.message : "Failed to save PYQ"
-            );
+            throw error; // Let the form handle the error display
         } finally {
             setLoading(false);
+            closeModal();
         }
     };
 
@@ -356,6 +358,7 @@ const PyqsClient = ({
         setYearFilter("");
         setExamTypeFilter("");
         setSemesterFilter("");
+        setIsSolvedFilter("");
         setPage(1);
     };
 
@@ -365,7 +368,8 @@ const PyqsClient = ({
         branchFilter ||
         yearFilter ||
         examTypeFilter ||
-        semesterFilter;
+        semesterFilter ||
+        isSolvedFilter;
 
     return (
         <div className="space-y-6">
@@ -403,20 +407,20 @@ const PyqsClient = ({
                         </button>
                     )}
                 </div>
-                {!showFilters && (
-                    <div className="relative flex-grow">
-                        <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
-                            <SearchIcon className="w-5 h-5 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search PYQs..."
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                className="w-full bg-transparent outline-none"
-                            />
-                        </div>
+
+                <div className="relative flex-grow">
+                    <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
+                        <SearchIcon className="w-5 h-5 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search PYQs..."
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            className="w-full bg-transparent outline-none"
+                        />
                     </div>
-                )}
+                </div>
+
                 <button
                     onClick={() => openModal()}
                     className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
@@ -430,21 +434,15 @@ const PyqsClient = ({
             {showFilters && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                        {/* Search Input */}
-                        <div className="relative flex-grow">
-                            <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
-                                <SearchIcon className="w-5 h-5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search PYQs..."
-                                    value={searchInput}
-                                    onChange={(e) =>
-                                        setSearchInput(e.target.value)
-                                    }
-                                    className="w-full bg-transparent outline-none"
-                                />
-                            </div>
-                        </div>
+                        <select
+                            value={isSolvedFilter}
+                            onChange={(e) => setIsSolvedFilter(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                        >
+                            <option value="">All</option>
+                            <option value="true">Solved</option>
+                            <option value="false">Unsolved</option>
+                        </select>
 
                         {/* Course Filter */}
                         <SearchableSelect
