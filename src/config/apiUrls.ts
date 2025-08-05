@@ -97,5 +97,6 @@ export const api = {
 
     aws: {
         presignedUrl: `${API_BASE_URL}/aws/presigned-url`,
+        getSignedUrl: `${API_BASE_URL}/aws/signed-url`,
     },
 };
