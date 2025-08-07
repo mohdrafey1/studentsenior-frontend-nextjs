@@ -7,6 +7,7 @@ export const LOST_FOUND_PAGE_SIZE = 9;
 export const STORE_PAGE_SIZE = 9;
 export const SENIOR_PAGE_SIZE = 12;
 export const PYQ_PAGE_SIZE = 12;
+export const NOTES_PAGE_SIZE = 12;
 
 export const faqs: FAQ[] = [
     {

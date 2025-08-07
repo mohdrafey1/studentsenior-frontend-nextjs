@@ -1,23 +1,20 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { IPyq } from "@/utils/interface";
+import { INote } from "@/utils/interface";
 import {
     ArrowLeft,
     FileText,
     Calendar,
     BookOpen,
     Lock,
-    Eye,
     Loader2,
     ShoppingCart,
-    GraduationCap,
-    Award,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
+import Image from "next/image";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.mjs";
 
@@ -37,8 +34,8 @@ interface PDFDocumentProxy {
     numPages: number;
 }
 
-interface PyqDetailClientProps {
-    pyq: IPyq;
+interface NotesDetailClientProps {
+    note: INote;
 }
 
 // Lazy load a PDF page and render as image
@@ -105,7 +102,7 @@ const LazyPDFPage = ({
                     Page {pageNum}
                 </div>
 
-                <div className="p-6 flex justify-center items-center min-h-[400px]">
+                <div className="flex justify-center items-center min-h-[400px]">
                     {isLoading && !pageSrc ? (
                         <div className="flex flex-col items-center space-y-3">
                             <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
@@ -137,7 +134,7 @@ const LazyPDFPage = ({
     );
 };
 
-const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
+const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const router = useRouter();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -150,12 +147,12 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     useEffect(() => {
         const fetchSignedUrlForView = async () => {
-            if (!pyq?.fileUrl) return;
+            if (!note?.fileUrl) return;
 
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `${api.aws.getSignedUrl}?fileUrl=${pyq.fileUrl}`
+                    `${api.aws.getSignedUrl}?fileUrl=${note.fileUrl}`
                 );
                 const data = await response.json();
 
@@ -177,7 +174,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         };
 
         fetchSignedUrlForView();
-    }, [pyq?.fileUrl]);
+    }, [note?.fileUrl]);
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
     useEffect(() => {
@@ -226,7 +223,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     </p>
                     <button
                         onClick={handleGoBack}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-xl hover:bg-sky-700 transition-colors duration-200"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Go Back
@@ -240,22 +237,20 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center p-4">
                 <div className="text-center">
-                    <div className="w-20 h-20 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                    <div className="w-20 h-20 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        Loading PYQ
+                        Loading Document
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Please wait while we prepare your previous year question
-                        paper...
+                        Please wait while we prepare your notes...
                     </p>
                 </div>
             </div>
         );
     }
 
-    const isOwner = pyq.owner._id === ownerId;
-    const isPaidAndNotOwner =
-        pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId);
+    const isOwner = note.owner._id === ownerId;
+    const isPaidAndNotOwner = note.isPaid && !isOwner;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -268,19 +263,13 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
                         >
                             <ArrowLeft className="w-4 h-4" />
-                            Back to PYQs
+                            Back to Notes
                         </button>
 
                         <div className="flex items-center gap-3">
                             {pdfDoc && (
                                 <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                                     {pdfDoc.numPages} pages
-                                </span>
-                            )}
-                            {pyq.solved && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-sm font-medium">
-                                    <Award className="w-4 h-4" />
-                                    Solved
                                 </span>
                             )}
                         </div>
@@ -295,24 +284,24 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         {/* Main Info */}
                         <div className="flex-1">
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                                {pyq.subject.subjectName}
+                                {note.title}
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400 text-lg mb-6">
-                                {pyq.examType} - {pyq.year}
+                                {note.description}
                             </p>
 
                             {/* Details Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
-                                        <GraduationCap className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+                                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                                        <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Branch
+                                            Subject
                                         </p>
                                         <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.subject.branch.branchName}
+                                            {note.subject.subjectName}
                                         </p>
                                     </div>
                                 </div>
@@ -326,7 +315,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                             Semester
                                         </p>
                                         <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.subject.semester}
+                                            {note.subject.semester}
                                         </p>
                                     </div>
                                 </div>
@@ -337,73 +326,47 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Year
+                                            Created
                                         </p>
                                         <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.year}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
-                                        <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Exam Type
-                                        </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.examType}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                                        <Eye className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Views
-                                        </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.clickCounts}
+                                            {new Date(
+                                                note.createdAt
+                                            ).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Stats Card */}
+                        {/* Author Card */}
                         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 min-w-[280px]">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex-shrink-0">
-                                    {pyq.owner.profilePicture ? (
+                                    {note.owner.profilePicture ? (
                                         <Image
-                                            src={pyq.owner.profilePicture}
-                                            alt={pyq.owner.username}
+                                            src={note.owner.profilePicture}
+                                            alt={note.owner.username}
                                             width={48}
                                             height={48}
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-400 text-lg font-medium">
-                                            {pyq.owner.username[0].toUpperCase()}
+                                        <div className="w-full h-full flex items-center justify-center bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 text-lg font-medium">
+                                            {note.owner.username[0].toUpperCase()}
                                         </div>
                                     )}
                                 </div>
                                 <div>
                                     <p className="font-medium text-gray-900 dark:text-white">
-                                        {pyq.owner.username}
+                                        {note.owner.username}
                                     </p>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Uploaded by
+                                        Author
                                     </p>
                                 </div>
                             </div>
 
-                            {pyq.isPaid && (
+                            {note.isPaid && (
                                 <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
                                     <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                                     <div>
@@ -411,7 +374,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                             Premium Content
                                         </p>
                                         <p className="text-sm text-amber-600 dark:text-amber-400">
-                                            ₹{pyq.price / 5}
+                                            {note.price} points
                                         </p>
                                     </div>
                                 </div>
@@ -443,19 +406,19 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                         <Lock className="w-10 h-10 text-sky-600 dark:text-sky-400" />
                                     </div>
                                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                        Unlock Complete PYQ
+                                        Unlock Full Content
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
                                         You&apos;ve seen a preview of this
-                                        question paper. Purchase to access all{" "}
-                                        {pdfDoc.numPages} pages and get the
-                                        complete PYQ with solutions.
+                                        document. Purchase to access all{" "}
+                                        {pdfDoc.numPages} pages and download the
+                                        complete notes.
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                                         <button className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl">
                                             <ShoppingCart className="w-5 h-5" />
-                                            Purchase for {pyq.price} points or ₹
-                                            {pyq.price / 5}
+                                            Purchase for {note.price} points or{" "}
+                                            ₹{note.price / 5}
                                         </button>
                                     </div>
                                 </div>
@@ -477,7 +440,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     ) : (
                         <div className="flex justify-center items-center min-h-[400px] bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60">
                             <div className="text-center">
-                                <Loader2 className="w-12 h-12 text-sky-500 animate-spin mx-auto mb-4" />
+                                <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
                                 <p className="text-gray-600 dark:text-gray-400">
                                     Preparing document...
                                 </p>
@@ -490,4 +453,4 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     );
 };
 
-export default PyqDetailClient;
+export default NotesDetailClient;

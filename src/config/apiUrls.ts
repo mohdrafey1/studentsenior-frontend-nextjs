@@ -29,6 +29,15 @@ export const api = {
         getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyqs/${slug}`,
     },
 
+    notes: {
+        getNotesByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/notes/college/${slug}`,
+        createNote: `${API_BASE_URL}/notes`,
+        editNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
+        deleteNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
+        getNoteBySlug: (slug: string) => `${API_BASE_URL}/notes/${slug}`,
+    },
+
     seniors: {
         getSeniorsByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/seniors/college/${slug}`,

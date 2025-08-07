@@ -230,7 +230,33 @@ export interface IPyq {
     updatedAt: string;
 }
 
+export interface INote {
+    _id: string;
+    title: string;
+    description: string;
+    fileUrl: string;
+    subject: ISubject;
+    branch: IBranch;
+    isPaid: boolean;
+    price: number;
+    owner: {
+        _id: string;
+        username: string;
+        profilePicture?: string;
+    };
+    slug: string;
+    submissionStatus: "pending" | "approved" | "rejected";
+    rejectionReason?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IPyqResponse {
     pyqs: IPyq[];
+    pagination: IPagination;
+}
+
+export interface INoteResponse {
+    notes: INote[];
     pagination: IPagination;
 }
