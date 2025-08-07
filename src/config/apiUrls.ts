@@ -18,6 +18,8 @@ export const api = {
         getColleges: `${API_BASE_URL}/colleges`,
         getCollegeBySlug: (slug: string) => `${API_BASE_URL}/colleges/${slug}`,
         addCollege: `${API_BASE_URL}/colleges`,
+        getCollegeWithFeaturedSeniorsAndProducts: (slug: string) =>
+            `${API_BASE_URL}/colleges/featured/${slug}`,
     },
 
     pyq: {

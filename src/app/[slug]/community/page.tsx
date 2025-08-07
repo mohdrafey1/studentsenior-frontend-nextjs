@@ -28,7 +28,21 @@ export default async function CommunitiesPage({ params }: CollegePageProps) {
                     through the community.&quot;
                 </p>
             </header>
-            {/* TODO: Add communities */}
+            <div className="text-center text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+                <p>This feature is coming soon...</p>
+                <p>Join our whatsapp group as of now to get updates</p>
+                <br />
+                <a
+                    href="https://chat.whatsapp.com/JcpNIv3SRBYKAXEPE6pk9Y?mode=ac_t"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4"
+                >
+                    <button className="bg-sky-500 text-white px-4 py-2 rounded-md">
+                        Join Whatsapp Group
+                    </button>
+                </a>
+            </div>
         </main>
     );
 }
