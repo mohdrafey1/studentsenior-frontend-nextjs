@@ -4,17 +4,15 @@ import type { Metadata } from "next";
 import ProductDetailClient from "./ProductDetailClient";
 
 interface ProductDetailPageProps {
-    params: Promise<{ slug: string; "product-slug": string }>;
+    params: Promise<{ "product-slug": string }>;
 }
 
 export async function generateMetadata({
     params,
 }: ProductDetailPageProps): Promise<Metadata> {
-    const { slug, "product-slug": productSlug } = await params;
+    const { "product-slug": productSlug } = await params;
     return {
-        title: `${capitalizeWords(productSlug)} - Store - ${capitalizeWords(
-            slug
-        )}`,
+        title: `${capitalizeWords(productSlug)} - Store`,
         description: "Product details and contact information.",
     };
 }
@@ -22,8 +20,7 @@ export async function generateMetadata({
 export default async function ProductDetailPage({
     params,
 }: ProductDetailPageProps) {
-    const { slug, "product-slug": productSlug } = await params;
-    const collegeName = slug;
+    const { "product-slug": productSlug } = await params;
 
     let product = null;
 
@@ -58,8 +55,8 @@ export default async function ProductDetailPage({
     }
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <ProductDetailClient product={product} collegeName={collegeName} />
+        <main>
+            <ProductDetailClient product={product} />
         </main>
     );
 }

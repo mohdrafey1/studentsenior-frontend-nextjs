@@ -5,46 +5,31 @@ import {
     Phone,
     MessageCircle,
     Eye,
-    ArrowLeft,
     IndianRupee,
     CheckCircle,
     Clock,
     ShoppingBag,
 } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
+import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
 
 interface ProductDetailClientProps {
     product: IStoreItem;
-    collegeName: string;
 }
 
 const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
     product,
-    collegeName,
 }) => {
     console.log(product);
     return (
         <>
-            <div className="max-w-6xl mx-auto px-4">
+            <DetailPageNavbar path="store" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Floating Background Elements */}
                 <div className="fixed inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-sky-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-cyan-400/5 to-sky-400/5 rounded-full blur-3xl"></div>
-                </div>
-
-                {/* Back Button */}
-                <div className="mb-8 relative z-10">
-                    <Link
-                        href={`/${collegeName}/store`}
-                        className="group inline-flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-200/60 dark:border-gray-700/60 hover:border-sky-300/60 dark:hover:border-sky-600/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                    >
-                        <ArrowLeft className="w-5 h-5 text-sky-600 dark:text-sky-400 group-hover:-translate-x-1 transition-transform duration-300" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-300">
-                            Back to Store
-                        </span>
-                    </Link>
                 </div>
 
                 {/* Main Content Card */}

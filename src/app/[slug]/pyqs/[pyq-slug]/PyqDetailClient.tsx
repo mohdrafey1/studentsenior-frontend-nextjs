@@ -10,14 +10,13 @@ import {
     Eye,
     Loader2,
     ShoppingCart,
-    GraduationCap,
-    Award,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
+import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.mjs";
 
@@ -99,13 +98,13 @@ const LazyPDFPage = ({
 
     return (
         <div ref={imgRef} className="relative w-full mb-8 group">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <div className="bg-sky-50 dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
                 {/* Page Number Badge */}
                 <div className="absolute bottom-1 right-1 z-10 bg-sky-500 opacity-20 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                     Page {pageNum}
                 </div>
 
-                <div className="p-6 flex justify-center items-center min-h-[400px]">
+                <div className="flex justify-center items-center min-h-[400px]">
                     {isLoading && !pageSrc ? (
                         <div className="flex flex-col items-center space-y-3">
                             <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
@@ -213,7 +212,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center p-4">
+            <div className="min-h-screen bg-sky-50 dark:bg-gray-900 flex justify-center items-center p-4">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-8 text-center max-w-md w-full">
                     <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                         <FileText className="w-10 h-10 text-red-500" />
@@ -238,7 +237,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     if (isLoading && !pdfDoc) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center p-4">
+            <div className="min-h-screen bg-sky-50 dark:bg-gray-900 flex justify-center items-center p-4">
                 <div className="text-center">
                     <div className="w-20 h-20 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -258,36 +257,8 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            {/* Header Section */}
-            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-                <div className="max-w-6xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <button
-                            onClick={handleGoBack}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                            Back to PYQs
-                        </button>
-
-                        <div className="flex items-center gap-3">
-                            {pdfDoc && (
-                                <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                                    {pdfDoc.numPages} pages
-                                </span>
-                            )}
-                            {pyq.solved && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-sm font-medium">
-                                    <Award className="w-4 h-4" />
-                                    Solved
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
+            <DetailPageNavbar path="pyqs" />
             {/* Document Info Section */}
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-8 mb-8">
@@ -303,20 +274,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
                             {/* Details Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-sky-100 dark:bg-sky-900/30 rounded-lg flex items-center justify-center">
-                                        <GraduationCap className="w-5 h-5 text-sky-600 dark:text-sky-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Branch
-                                        </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.subject.branch.branchName}
-                                        </p>
-                                    </div>
-                                </div>
-
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                                         <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -346,20 +303,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                 </div>
 
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
-                                        <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Exam Type
-                                        </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
-                                            {pyq.examType}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                                         <Eye className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                                     </div>
@@ -373,49 +316,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Stats Card */}
-                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 min-w-[280px]">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex-shrink-0">
-                                    {pyq.owner.profilePicture ? (
-                                        <Image
-                                            src={pyq.owner.profilePicture}
-                                            alt={pyq.owner.username}
-                                            width={48}
-                                            height={48}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-400 text-lg font-medium">
-                                            {pyq.owner.username[0].toUpperCase()}
-                                        </div>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
-                                        {pyq.owner.username}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Uploaded by
-                                    </p>
-                                </div>
-                            </div>
-
-                            {pyq.isPaid && (
-                                <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
-                                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                                    <div>
-                                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                                            Premium Content
-                                        </p>
-                                        <p className="text-sm text-amber-600 dark:text-amber-400">
-                                            ₹{pyq.price / 5}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>

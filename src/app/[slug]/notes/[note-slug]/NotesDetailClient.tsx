@@ -9,12 +9,14 @@ import {
     Lock,
     Loader2,
     ShoppingCart,
+    User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
 import Image from "next/image";
+import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.mjs";
 
@@ -253,32 +255,11 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const isPaidAndNotOwner = note.isPaid && !isOwner;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            {/* Header Section */}
-            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-                <div className="max-w-6xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <button
-                            onClick={handleGoBack}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                            Back to Notes
-                        </button>
-
-                        <div className="flex items-center gap-3">
-                            {pdfDoc && (
-                                <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                                    {pdfDoc.numPages} pages
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
+            <DetailPageNavbar path="notes" />
 
             {/* Document Info Section */}
-            <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-8 mb-8">
                     <div className="flex flex-col lg:flex-row lg:items-start gap-6">
                         {/* Main Info */}
@@ -291,7 +272,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                             </p>
 
                             {/* Details Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
                                         <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -335,50 +316,20 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Author Card */}
-                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 min-w-[280px]">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex-shrink-0">
-                                    {note.owner.profilePicture ? (
-                                        <Image
-                                            src={note.owner.profilePicture}
-                                            alt={note.owner.username}
-                                            width={48}
-                                            height={48}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 text-lg font-medium">
-                                            {note.owner.username[0].toUpperCase()}
-                                        </div>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
-                                        {note.owner.username}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Author
-                                    </p>
-                                </div>
-                            </div>
-
-                            {note.isPaid && (
-                                <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
-                                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                                        <User className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                                    </div>
                                     <div>
-                                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                                            Premium Content
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            Uploaded By
                                         </p>
-                                        <p className="text-sm text-amber-600 dark:text-amber-400">
-                                            {note.price} points
+                                        <p className="font-medium text-gray-900 dark:text-white">
+                                            {note.owner.username}
                                         </p>
                                     </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>
