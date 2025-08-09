@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { ArrowLeft, Flag, Share2, X } from "lucide-react";
 
-const DetailPageNavbar = ({ path }: { path: string }) => {
+const DetailPageNavbar = ({ path }: { path?: string }) => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -130,7 +130,9 @@ const DetailPageNavbar = ({ path }: { path: string }) => {
                     className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 group"
                 >
                     <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200" />
-                    <span className="font-medium">Back to {path}</span>
+                    <span className="font-medium">
+                        Back {path && `to ${path}`}
+                    </span>
                 </button>
 
                 {/* Action Buttons */}

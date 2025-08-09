@@ -249,6 +249,7 @@ export interface INote {
     rejectionReason?: string;
     createdAt: string;
     updatedAt: string;
+    clickCounts: number;
 }
 
 export interface IPyqResponse {

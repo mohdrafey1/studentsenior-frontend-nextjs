@@ -100,6 +100,12 @@ export const api = {
             `${API_BASE_URL}/resource/branches/${courseId}`,
         getSubjects: (branchId: string) =>
             `${API_BASE_URL}/resource/subjects/${branchId}`,
+        getPyqsBySubject: (subjectCode: string, slug: string) =>
+            `${API_BASE_URL}/resource/pyqs/${subjectCode}/${slug}`,
+        getNotesBySubject: (subjectCode: string, slug: string) =>
+            `${API_BASE_URL}/resource/notes/${subjectCode}/${slug}`,
+        getVideosBySubject: (subjectCode: string, slug: string) =>
+            `${API_BASE_URL}/resource/videos/${subjectCode}/${slug}`,
     },
 
     contactus: {
