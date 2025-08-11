@@ -184,7 +184,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                         {/* Subtitle */}
                         <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay">
                             Connect with seniors, access resources, and grow
-                            your academic journey
+                            your academic journey at {capitalizeWords(slug)}
                         </p>
                     </div>
                 </div>

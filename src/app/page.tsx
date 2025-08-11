@@ -1,9 +1,7 @@
-import Hero from "@/components/HomePage/Hero";
 import CollegeSelectHandler from "@/components/HomePage/CollegeSelectHandler";
 import QuickLinks from "@/components/HomePage/QuickLinks";
 import { api } from "@/config/apiUrls";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { File, GraduationCap, User } from "lucide-react";
 import FAQPage from "@/components/HomePage/FAQ";
 import OurFeatures from "@/components/HomePage/OurFeatures";
@@ -113,30 +111,59 @@ export default async function HomePage() {
     return (
         <>
             <main role="main">
-                {/* Hero Section */}
-                <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex items-center">
-                    <div className="mx-auto md:p-10 px-4 py-12">
-                        <div className="grid lg:grid-cols-2 gap-12 items-center">
-                            <div className="space-y-8">
-                                <Hero />
-                                <CollegeSelectHandler colleges={colleges} />
-                            </div>
-                            <div className="hidden lg:block">
-                                <div className="relative">
-                                    <Image
-                                        src="/assets/images/illustration1.png"
-                                        alt="Students collaborating and studying together"
-                                        className="w-full h-auto max-w-lg mx-auto rounded-4xl"
-                                        loading="eager"
-                                        width={500}
-                                        height={400}
-                                    />
+                {/* Hero Section - Redesigned to match college page style */}
+                <section className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
+                    {/* Animated Background Elements */}
+                    <div className="absolute inset-0">
+                        {/* Floating Orbs */}
+                        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-2xl animate-bounce"></div>
+                        <div
+                            className="absolute bottom-20 left-1/4 w-40 h-40 bg-gradient-to-r from-cyan-400/20 to-sky-400/20 rounded-full blur-3xl animate-pulse"
+                            style={{ animationDelay: "1s" }}
+                        ></div>
 
-                                    {/* Decorative elements */}
-                                    <div className="absolute -top-4 -right-4 w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full opacity-60 animate-pulse"></div>
-                                    <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full opacity-40 animate-bounce"></div>
-                                </div>
-                            </div>
+                        {/* Geometric Shapes */}
+                        <div
+                            className="absolute top-1/4 right-1/3 w-16 h-16 border-2 border-sky-300/30 rotate-45 animate-spin"
+                            style={{ animationDuration: "20s" }}
+                        ></div>
+                        <div
+                            className="absolute bottom-1/3 left-1/3 w-12 h-12 border-2 border-cyan-300/30 rotate-12 animate-spin"
+                            style={{
+                                animationDuration: "15s",
+                                animationDirection: "reverse",
+                            }}
+                        ></div>
+
+                        {/* Gradient Mesh */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-100/10 to-transparent dark:via-sky-900/10"></div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16">
+                        {/* Welcome Text */}
+                        <div className="text-center max-w-4xl mx-auto">
+                            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+                                <span className="bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in">
+                                    Welcome to
+                                </span>
+                                <br />
+                                <span className="bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up">
+                                    Student Senior
+                                </span>
+                            </h1>
+
+                            {/* Subtitle */}
+                            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay">
+                                Connect with seniors, access resources, and grow
+                                your academic journey
+                            </p>
+                        </div>
+
+                        {/* College Selector */}
+                        <div className="w-full max-w-2xl">
+                            <CollegeSelectHandler colleges={colleges} />
                         </div>
                     </div>
                 </section>

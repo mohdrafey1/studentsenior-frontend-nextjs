@@ -67,7 +67,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
         {
             icon: <Zap className="text-white w-6 h-6 md:w-8 md:h-8" />,
             label: "PYQs",
-            path: "pyq",
+            path: "pyqs",
             ariaLabel: "Access Past Year Questions and previous exam papers",
             description: "Previous year question papers",
             color: "from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600",
@@ -108,8 +108,8 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
         },
         {
             icon: <Users className="text-white w-6 h-6 md:w-8 md:h-8" />,
-            label: "Community",
-            path: "community",
+            label: "Groups",
+            path: "groups",
             ariaLabel: "Join active student community discussions",
             description: "Join student discussions",
             color: "from-teal-400 to-green-500 dark:from-teal-500 dark:to-green-600",
@@ -218,7 +218,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             {/* Enhanced Modal */}
             {visible && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 p-4"
+                    className="fixed inset-0 bg-sky-50 bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 p-4"
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="modal-title"
