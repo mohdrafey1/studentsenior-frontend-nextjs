@@ -58,7 +58,7 @@ const OurFeatures: React.FC = () => {
             id: 1,
             title: "PYQs Available",
             icon: <BookOpen className="w-6 h-6" />,
-            count: 1000,
+            count: 1100,
             color: "from-blue-500 to-blue-600",
             suffix: "+",
         },
@@ -82,7 +82,7 @@ const OurFeatures: React.FC = () => {
             id: 4,
             title: "Active Users",
             icon: <TrendingUp className="w-6 h-6" />,
-            count: 3500,
+            count: 5000,
             color: "from-orange-500 to-red-500",
             suffix: "+",
         },
@@ -120,8 +120,7 @@ const OurFeatures: React.FC = () => {
                                     </div>
                                     <div className="space-y-3">
                                         <h3 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-                                            {item.suffix}
-                                            {item.count}
+                                            {item.count} {item.suffix}
                                         </h3>
                                         <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
                                             {item.title}

@@ -10,6 +10,8 @@ import {
     Loader2,
     ShoppingCart,
     User,
+    Download,
+    RefreshCw,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
@@ -141,6 +143,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [signedUrl, setSignedUrl] = useState<string | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
+    const downloadExpiryTimerRef = useRef<number | null>(null);
     const ownerId = "placeholder"; // Replace with actual user ID
 
     const handleGoBack = () => {
@@ -164,6 +170,14 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     );
                 }
 
+                setSignedUrl(data.data.signedUrl);
+                setIsDownloadUrlValid(true);
+                if (downloadExpiryTimerRef.current) {
+                    clearTimeout(downloadExpiryTimerRef.current);
+                }
+                downloadExpiryTimerRef.current = window.setTimeout(() => {
+                    setIsDownloadUrlValid(false);
+                }, 15000);
                 const loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
                 const pdf = await loadingTask.promise;
                 setPdfDoc(pdf);
@@ -253,6 +267,34 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     const isOwner = note.owner._id === ownerId;
     const isPaidAndNotOwner = note.isPaid && !isOwner;
+    const isDownloadDisabled = !isDownloadUrlValid || !signedUrl;
+    const downloadFileName = `${note.subject.subjectCode}-notes.pdf`;
+
+    const handleRefreshDownloadUrl = async () => {
+        if (!note?.fileUrl) return;
+        try {
+            setIsRefreshing(true);
+            const response = await fetch(
+                `${api.aws.getSignedUrl}?fileUrl=${note.fileUrl}`
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to refresh URL.");
+            }
+            setSignedUrl(data.data.signedUrl);
+            setIsDownloadUrlValid(true);
+            if (downloadExpiryTimerRef.current) {
+                clearTimeout(downloadExpiryTimerRef.current);
+            }
+            downloadExpiryTimerRef.current = window.setTimeout(() => {
+                setIsDownloadUrlValid(false);
+            }, 15000);
+        } catch (err) {
+            console.error("Error refreshing signed URL:", err);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
@@ -399,6 +441,66 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         </div>
                     )}
                 </div>
+
+                {/* Bottom controls: Download for Unpaid Notes */}
+                {!note.isPaid && (
+                    <div className="mt-8">
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <a
+                                href={
+                                    !isDownloadDisabled && signedUrl
+                                        ? signedUrl
+                                        : "#"
+                                }
+                                download={downloadFileName}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
+                                    !isDownloadDisabled && signedUrl
+                                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                        : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
+                                }`}
+                                aria-disabled={isDownloadDisabled}
+                                title={
+                                    !isDownloadDisabled && signedUrl
+                                        ? `Download ${downloadFileName}`
+                                        : "Link expired. Please refresh to get a new link."
+                                }
+                            >
+                                <Download className="w-5 h-5" />
+                                Download
+                            </a>
+
+                            <button
+                                onClick={handleRefreshDownloadUrl}
+                                disabled={isRefreshing}
+                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm border ${
+                                    isRefreshing
+                                        ? "bg-gray-100 text-gray-500 border-gray-200 cursor-wait"
+                                        : "bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                                }`}
+                                title="Refresh the download link"
+                            >
+                                <RefreshCw
+                                    className={`w-5 h-5 ${
+                                        isRefreshing ? "animate-spin" : ""
+                                    }`}
+                                />
+                                {isRefreshing
+                                    ? "Refreshing..."
+                                    : "Refresh link"}
+                            </button>
+                        </div>
+                        {isDownloadDisabled && (
+                            <p className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                                Click on{" "}
+                                <span className="font-medium">Refresh</span>{" "}
+                                then click on{" "}
+                                <span className="font-medium">Download</span>
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

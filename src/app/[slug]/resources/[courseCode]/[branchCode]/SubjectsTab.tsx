@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { BookOpen, FileText, PlayCircle, Users } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface ISubject {
     _id: string;
@@ -19,7 +20,24 @@ export default function SubjectsList({
     subjects: ISubject[];
     branchCode: string;
 }) {
-    const [activeTab, setActiveTab] = useState<number | "all">("all");
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const initialActiveTab = useMemo<number | "all">(() => {
+        const semesterParam = searchParams.get("semester");
+        if (!semesterParam) return "all";
+        const parsed = Number(semesterParam);
+        return Number.isFinite(parsed) ? (parsed as number) : "all";
+    }, [searchParams]);
+
+    const [activeTab, setActiveTab] = useState<number | "all">(
+        initialActiveTab
+    );
+
+    useEffect(() => {
+        setActiveTab(initialActiveTab);
+    }, [initialActiveTab]);
     const [searchQuery, setSearchQuery] = useState("");
 
     // Get unique semesters from subjects
@@ -88,7 +106,18 @@ export default function SubjectsList({
                             ? "bg-blue-500 text-white"
                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
-                    onClick={() => setActiveTab("all")}
+                    onClick={() => {
+                        setActiveTab("all");
+                        const params = new URLSearchParams(
+                            searchParams.toString()
+                        );
+                        params.delete("semester");
+                        const query = params.toString();
+                        router.replace(
+                            query ? `${pathname}?${query}` : pathname,
+                            { scroll: false }
+                        );
+                    }}
                 >
                     All Sem
                 </button>
@@ -100,7 +129,18 @@ export default function SubjectsList({
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                         }`}
-                        onClick={() => setActiveTab(semester)}
+                        onClick={() => {
+                            setActiveTab(semester);
+                            const params = new URLSearchParams(
+                                searchParams.toString()
+                            );
+                            params.set("semester", String(semester));
+                            const query = params.toString();
+                            router.replace(
+                                query ? `${pathname}?${query}` : pathname,
+                                { scroll: false }
+                            );
+                        }}
                     >
                         Sem {semester}
                     </button>

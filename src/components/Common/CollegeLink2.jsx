@@ -75,11 +75,11 @@ const Collegelink2 = () => {
             icon: <Compass size={20} />,
             text: "Lost Found",
         },
-        {
-            href: `/${slug}/community`,
-            icon: <Users size={20} />,
-            text: "Community",
-        },
+        // {
+        //     href: `/${slug}/community`,
+        //     icon: <Users size={20} />,
+        //     text: "Community",
+        // },
         {
             href: `/${slug}/resources`,
             icon: <Zap size={20} />,

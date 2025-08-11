@@ -1,4 +1,5 @@
 import CollegeSelectHandler from "@/components/HomePage/CollegeSelectHandler";
+import ResourceQuickStart from "@/components/HomePage/ResourceQuickStart";
 import QuickLinks from "@/components/HomePage/QuickLinks";
 import { api } from "@/config/apiUrls";
 import type { Metadata } from "next";
@@ -162,8 +163,9 @@ export default async function HomePage() {
                         </div>
 
                         {/* College Selector */}
-                        <div className="w-full max-w-2xl">
+                        <div className="w-full max-w-2xl space-y-4">
                             <CollegeSelectHandler colleges={colleges} />
+                            <ResourceQuickStart colleges={colleges} />
                         </div>
                     </div>
                 </section>

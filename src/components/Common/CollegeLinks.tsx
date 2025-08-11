@@ -7,7 +7,7 @@ import {
     Zap,
     User,
     Store,
-    Users,
+    // Users,
     MessageCircle,
     Search,
     Compass,
@@ -50,11 +50,11 @@ const Collegelinks = () => {
             icon: <StickyNote size={20} />,
             text: "Resources",
         },
-        {
-            href: `/${slug}/community`,
-            icon: <Users size={20} />,
-            text: "Community",
-        },
+        // {
+        //     href: `/${slug}/community`,
+        //     icon: <Users size={20} />,
+        //     text: "Community",
+        // },
         {
             href: `/${slug}/groups`,
             icon: <MessageCircle size={20} />,
@@ -76,7 +76,7 @@ const Collegelinks = () => {
         <div className="hidden lg:flex sticky top-16 z-20 w-full bg-white dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="max-w-7xl mx-auto px-4">
                 <nav className="py-2">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-10 xl:grid-cols-10 gap-1 sm:gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-9 xl:grid-cols-9 gap-1 sm:gap-2">
                         {links.map((link, index) => (
                             <Link
                                 key={index}
