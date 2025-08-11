@@ -49,7 +49,10 @@ export default async function SubjectNotesPage({
 
     return (
         <>
-            <DetailPageNavbar />
+            <DetailPageNavbar
+                path="subjects"
+                fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
+            />
             <main>
                 <SubjectNotesClient
                     initialNotes={notes}

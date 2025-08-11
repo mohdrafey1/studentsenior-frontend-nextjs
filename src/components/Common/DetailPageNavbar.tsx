@@ -1,11 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "@/config/apiUrls";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { ArrowLeft, Flag, Share2, X } from "lucide-react";
 
-const DetailPageNavbar = ({ path }: { path?: string }) => {
+const DetailPageNavbar = ({
+    path,
+    fullPath,
+}: {
+    path?: string;
+    fullPath?: string;
+}) => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -14,6 +20,7 @@ const DetailPageNavbar = ({ path }: { path?: string }) => {
         subject: "",
         description: "",
     });
+    const [canGoBack, setCanGoBack] = useState(false);
 
     // Initialize subject with current URL when component mounts
     React.useEffect(() => {
@@ -25,8 +32,19 @@ const DetailPageNavbar = ({ path }: { path?: string }) => {
         }
     }, []);
 
+    useEffect(() => {
+        // On client, detect if there's history
+        setCanGoBack(window.history.length > 1);
+    }, []);
+
     const handleBackNavigation = () => {
-        router.back();
+        if (fullPath) {
+            router.push(fullPath); // Always use defined path if given
+        } else if (canGoBack) {
+            router.back(); // Only back if there's history
+        } else {
+            router.push("/"); // SSR-safe fallback
+        }
     };
 
     const handleShare = async () => {

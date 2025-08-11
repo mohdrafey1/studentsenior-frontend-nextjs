@@ -50,7 +50,10 @@ export default async function SubjectPyqsPage({
 
     return (
         <>
-            <DetailPageNavbar />
+            <DetailPageNavbar
+                path="subjects"
+                fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
+            />
             <main>
                 <SubjectPyqsClient
                     initialPyqs={pyqs}

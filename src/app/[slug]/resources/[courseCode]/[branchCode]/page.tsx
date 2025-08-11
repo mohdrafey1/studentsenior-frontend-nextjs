@@ -1,7 +1,8 @@
 import { capitalizeWords } from "@/utils/formatting";
 import type { Metadata } from "next";
 import { api } from "@/config/apiUrls";
-import SubjectsList from "../SubjectsTab";
+import SubjectsList from "./SubjectsTab";
+import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
 
 interface ISubject {
     _id: string;
@@ -14,6 +15,7 @@ interface ICollegePageProps {
     params: Promise<{
         slug: string;
         branchCode: string;
+        courseCode: string;
     }>;
 }
 
@@ -29,7 +31,7 @@ export async function generateMetadata({
 }
 
 export default async function BranchesPage({ params }: ICollegePageProps) {
-    const { slug, branchCode } = await params;
+    const { slug, branchCode, courseCode } = await params;
     const collegeName = slug;
 
     let subjects: ISubject[] = [];
@@ -46,19 +48,26 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
     }
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <header className="text-center mb-4">
-                <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
-                    Subjects - {capitalizeWords(collegeName)}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
-                    &quot;Explore the subjects of the course to get the best
-                    resources.&quot;
-                </p>
-            </header>
+        <>
+            <DetailPageNavbar
+                path="branches"
+                fullPath={`/${slug}/resources/${courseCode}`}
+            />
 
-            {/* Pass data to client component */}
-            <SubjectsList subjects={subjects} branchCode={branchCode} />
-        </main>
+            <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+                <header className="text-center mb-4">
+                    <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
+                        Subjects - {capitalizeWords(collegeName)}
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+                        &quot;Explore the subjects of the course to get the best
+                        resources.&quot;
+                    </p>
+                </header>
+
+                {/* Pass data to client component */}
+                <SubjectsList subjects={subjects} branchCode={branchCode} />
+            </main>
+        </>
     );
 }
