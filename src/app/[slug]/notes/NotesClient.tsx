@@ -212,6 +212,10 @@ const NotesClient = ({
     }, [fetchNotes]);
 
     const openAddModal = () => {
+        if (!currentUser) {
+            toast.error("Please sign in to post notes");
+            return;
+        }
         setForm({
             title: "",
             description: "",

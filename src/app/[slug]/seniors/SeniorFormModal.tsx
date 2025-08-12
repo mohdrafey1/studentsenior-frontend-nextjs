@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ISenior, ICourse, IBranch } from "@/utils/interface";
 import { api } from "@/config/apiUrls";
 import toast from "react-hot-toast";
@@ -43,6 +43,7 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
     const [loadingCourses, setLoadingCourses] = useState(false);
     const [loadingBranches, setLoadingBranches] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState("");
+    const appliedPrefRef = useRef(false);
 
     // Fetch courses on component mount
     useEffect(() => {
@@ -59,6 +60,56 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
             setBranches([]);
         }
     }, [selectedCourse]);
+
+    // Apply saved preference: set course from localStorage when modal opens
+    useEffect(() => {
+        if (!isOpen) {
+            appliedPrefRef.current = false;
+            return;
+        }
+        try {
+            const saved = localStorage.getItem("ss:resourcePref");
+            if (!saved) return;
+            const pref = JSON.parse(saved) as {
+                courseCode?: string;
+                branchCode?: string;
+            };
+            if (pref.courseCode && !selectedCourse) {
+                setSelectedCourse(pref.courseCode);
+            }
+        } catch {
+            // ignore
+        }
+    }, [isOpen, selectedCourse]);
+
+    // After branches load, set branch based on saved preference (apply once per open)
+    useEffect(() => {
+        if (
+            !isOpen ||
+            appliedPrefRef.current ||
+            !selectedCourse ||
+            branches.length === 0
+        )
+            return;
+        try {
+            const saved = localStorage.getItem("ss:resourcePref");
+            if (!saved) return;
+            const pref = JSON.parse(saved) as { branchCode?: string };
+            if (!pref.branchCode) return;
+            const match = branches.find(
+                (b) => (b as IBranch).branchCode === pref.branchCode
+            );
+            if (match) {
+                setForm({
+                    ...form,
+                    branch: match._id,
+                });
+                appliedPrefRef.current = true;
+            }
+        } catch {
+            // ignore
+        }
+    }, [branches, isOpen, selectedCourse, form, setForm]);
 
     const fetchCourses = async () => {
         setLoadingCourses(true);

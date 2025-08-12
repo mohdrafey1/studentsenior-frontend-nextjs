@@ -13,7 +13,7 @@ import {
     Download,
     RefreshCw,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
@@ -139,6 +139,7 @@ const LazyPDFPage = ({
 };
 
 const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
+    const { slug } = useParams();
     const router = useRouter();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -300,7 +301,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     return (
         <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
-            <DetailPageNavbar path="pyqs" />
+            <DetailPageNavbar path="pyqs" fullPath={`/${slug}/pyqs`} />
             {/* Document Info Section */}
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-8 mb-8">

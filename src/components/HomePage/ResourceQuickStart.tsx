@@ -179,20 +179,6 @@ export default function ResourceQuickStart({ colleges }: Props) {
             return;
         }
 
-        const pref = {
-            collegeSlug,
-            courseCode,
-            branchCode,
-            semester: semester || undefined,
-        };
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(pref));
-            toast.success("Preference saved successfully!");
-            setIsEditing(false);
-        } catch {
-            toast.error("Failed to save preference");
-        }
-
         const query = semester ? `?semester=${semester}` : "";
         router.push(
             `/${collegeSlug}/resources/${courseCode}/${branchCode}${query}`
@@ -455,7 +441,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
                             <button
                                 type="submit"
                                 disabled={!canSubmit}
@@ -474,7 +460,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
                                 Cancel
                             </button>
 
-                            <button
+                            {/* <button
                                 type="button"
                                 onClick={handleGo}
                                 disabled={!canSubmit}
@@ -483,7 +469,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
                                 <Play className="w-4 h-4" />
                                 Go Now
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            </button> */}
                         </div>
                     </form>
                 )}

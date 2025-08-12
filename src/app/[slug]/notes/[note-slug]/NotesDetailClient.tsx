@@ -13,7 +13,7 @@ import {
     Download,
     RefreshCw,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
@@ -140,6 +140,7 @@ const LazyPDFPage = ({
 
 const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const router = useRouter();
+    const { slug } = useParams();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -298,7 +299,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     return (
         <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
-            <DetailPageNavbar path="notes" />
+            <DetailPageNavbar
+                path="notes"
+                fullPath={`/${slug}/notes/${note.slug}`}
+            />
 
             {/* Document Info Section */}
             <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

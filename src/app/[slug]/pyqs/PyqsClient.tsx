@@ -232,6 +232,10 @@ const PyqsClient = ({
     }, [fetchPyqs]);
 
     const openAddModal = () => {
+        if (!currentUser) {
+            toast.error("Please sign in to post pyqs");
+            return;
+        }
         setForm({
             subject: "",
             year: "",

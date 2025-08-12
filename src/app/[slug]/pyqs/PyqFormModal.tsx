@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ICourse, IBranch } from "@/utils/interface";
 import { api } from "@/config/apiUrls";
 import { UploadIcon, DollarSign, CheckCircle, X } from "lucide-react";
@@ -54,14 +54,55 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         }>
     >([]);
     const [loadingSubjects, setLoadingSubjects] = useState(false);
+    const appliedPrefRef = useRef(false);
 
     // Reset form when modal opens/closes
     useEffect(() => {
         if (isOpen) {
             setSelectedCourse("");
             setSubjects([]);
+            appliedPrefRef.current = false;
         }
     }, [isOpen]);
+
+    // Apply saved preference: set course by courseCode when modal opens
+    useEffect(() => {
+        if (!isOpen || courses.length === 0 || selectedCourse) return;
+        try {
+            const saved = localStorage.getItem("ss:resourcePref");
+            if (!saved) return;
+            const pref = JSON.parse(saved) as { courseCode?: string };
+            if (!pref.courseCode) return;
+            const match = courses.find((c) => c.courseCode === pref.courseCode);
+            if (match) {
+                setSelectedCourse(match._id);
+                fetchBranches(match.courseCode);
+            }
+        } catch {
+            // ignore
+        }
+    }, [isOpen, courses, selectedCourse, fetchBranches]);
+
+    // After branches load, apply saved branch by branchCode (once per open)
+    useEffect(() => {
+        if (!isOpen || appliedPrefRef.current || branches.length === 0) return;
+        try {
+            const saved = localStorage.getItem("ss:resourcePref");
+            if (!saved) return;
+            const pref = JSON.parse(saved) as { branchCode?: string };
+            if (!pref.branchCode) return;
+            const match = branches.find(
+                (b) => b.branchCode === pref.branchCode
+            );
+            if (match) {
+                setSelectedBranch(match._id);
+                fetchSubjects(match.branchCode);
+                appliedPrefRef.current = true;
+            }
+        } catch {
+            // ignore
+        }
+    }, [isOpen, branches]);
 
     const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
