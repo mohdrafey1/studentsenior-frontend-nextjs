@@ -116,4 +116,13 @@ export const api = {
         presignedUrl: `${API_BASE_URL}/aws/presigned-url`,
         getSignedUrl: `${API_BASE_URL}/aws/signed-url`,
     },
+
+    savedData: {
+        saveNote: `${API_BASE_URL}/saved-data/save-note`,
+        unsaveNote: `${API_BASE_URL}/saved-data/unsave-note`,
+        savePyq: `${API_BASE_URL}/saved-data/save-pyq`,
+        unsavePyq: `${API_BASE_URL}/saved-data/unsave-pyq`,
+        savedCollection: `${API_BASE_URL}/saved-data/saved-collection`,
+        leaderboard: `${API_BASE_URL}/saved-data/leaderboard`,
+    },
 };

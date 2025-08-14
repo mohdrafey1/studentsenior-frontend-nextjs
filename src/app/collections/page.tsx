@@ -1,7 +1,9 @@
-import React from "react";
+import CollectionClient from "./CollectionClient";
 
-function page() {
-    return <div>page</div>;
+export default async function CollectionsPage() {
+    return (
+        <div className="bg-white dark:bg-gray-900">
+            <CollectionClient />
+        </div>
+    );
 }
-
-export default page;

@@ -57,7 +57,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
                 fullPath={`/${slug}/resources`}
             />
 
-            <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <main className="max-w-7xl min-h-screen mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 <header className="text-center mb-4">
                     <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
                         Branches - {capitalizeWords(collegeName)}

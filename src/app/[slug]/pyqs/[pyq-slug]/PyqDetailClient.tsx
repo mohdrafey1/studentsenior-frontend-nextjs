@@ -19,6 +19,9 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
 import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
+import { useSaveResource } from "@/hooks/useSaveResource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.mjs";
 
@@ -149,6 +152,11 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
     const downloadExpiryTimerRef = useRef<number | null>(null);
     const ownerId = "placeholder"; // Replace with actual user ID
+    const { saveResource, unsaveResource } = useSaveResource();
+    const { savedPYQs } = useSelector(
+        (state: RootState) => state.savedCollection
+    );
+    const [isSaved, setIsSaved] = useState(false);
 
     const handleGoBack = () => {
         router.back();
@@ -192,6 +200,23 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
         fetchSignedUrlForView();
     }, [pyq?.fileUrl]);
+
+    useEffect(() => {
+        const isSavedEntry = savedPYQs.some((entry) =>
+            typeof entry.pyqId === "string"
+                ? entry.pyqId === pyq._id
+                : entry.pyqId._id === pyq._id
+        );
+        setIsSaved(isSavedEntry);
+    }, [savedPYQs, pyq._id]);
+
+    const handleSave = async () => {
+        await saveResource("pyq", pyq._id);
+    };
+
+    const handleUnsave = async () => {
+        await unsaveResource("pyq", pyq._id);
+    };
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
     useEffect(() => {
@@ -316,7 +341,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             </p>
 
                             {/* Details Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                                         <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -358,9 +383,54 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                         </p>
                                     </div>
                                 </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => {
+                                            if (isSaved) {
+                                                handleUnsave();
+                                            } else {
+                                                handleSave();
+                                            }
+                                        }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 text-sky-700 hover:bg-sky-50 transition-colors"
+                                        title={
+                                            isSaved
+                                                ? "Unsave this PYQ"
+                                                : "Save this PYQ"
+                                        }
+                                        aria-label={
+                                            isSaved
+                                                ? "Unsave this PYQ"
+                                                : "Save this PYQ"
+                                        }
+                                    >
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill={
+                                                isSaved
+                                                    ? "currentColor"
+                                                    : "none"
+                                            }
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            style={{
+                                                color: isSaved
+                                                    ? "#0EA5E9"
+                                                    : "#0EA5E9",
+                                            }}
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                            ></path>
+                                        </svg>
+                                        {isSaved ? "Saved" : "Save"}
+                                    </button>
+                                </div>
                             </div>
-
-                            {/* Download controls moved to bottom */}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { INote } from "@/utils/interface";
 import {
@@ -11,6 +12,9 @@ import {
     BookOpen,
 } from "lucide-react";
 import Image from "next/image";
+import { useSaveResource } from "@/hooks/useSaveResource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface NotesCardProps {
     note: INote;
@@ -26,6 +30,29 @@ export const NotesCard: React.FC<NotesCardProps> = ({
     ownerId,
 }) => {
     const isOwner = note.owner._id === ownerId;
+    const { saveResource, unsaveResource } = useSaveResource();
+    const [isSaved, setIsSaved] = useState(false);
+
+    const { savedNotes } = useSelector(
+        (state: RootState) => state.savedCollection
+    );
+
+    useEffect(() => {
+        const isSavedEntry = savedNotes.some((entry) =>
+            typeof entry.noteId === "string"
+                ? entry.noteId === note._id
+                : entry.noteId._id === note._id
+        );
+        setIsSaved(isSavedEntry);
+    }, [savedNotes, note._id]);
+
+    const handleSave = async () => {
+        await saveResource("note", note._id);
+    };
+
+    const handleUnsave = async () => {
+        await unsaveResource("note", note._id);
+    };
 
     return (
         <article
@@ -118,6 +145,37 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                         <Download className="w-4 h-4" />
                         View Note
                     </Link>
+
+                    <button
+                        className="w-1/6 h-10 flex items-center justify-center py-2 px-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors shadow-sm hover:shadow"
+                        onClick={() => {
+                            if (isSaved) {
+                                handleUnsave();
+                            } else {
+                                handleSave();
+                            }
+                        }}
+                        title={isSaved ? "Unsave this Note" : "Save this Note"}
+                        aria-label={
+                            isSaved ? "Unsave this Note" : "Save this Note"
+                        }
+                    >
+                        <svg
+                            className="w-5 h-5"
+                            fill={isSaved ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ color: isSaved ? "#10B981" : "#9CA3AF" }}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                            ></path>
+                        </svg>
+                    </button>
 
                     {isOwner && (
                         <>

@@ -1,6 +1,75 @@
 import Link from "next/link";
+// import { useCallback, useEffect, useState } from "react";
+// import toast from "react-hot-toast";
+
+// // Minimal typing for the BeforeInstallPromptEvent used by Chromium browsers
+// interface BeforeInstallPromptEvent extends Event {
+//     prompt: () => Promise<void>;
+//     userChoice: Promise<{
+//         outcome: "accepted" | "dismissed";
+//         platform: string;
+//     }>;
+// }
 
 const Footer = () => {
+    // const [installPromptEvent, setInstallPromptEvent] =
+    //     useState<BeforeInstallPromptEvent | null>(null);
+    // const [isInstallable, setIsInstallable] = useState(false);
+
+    // // Capture the PWA install prompt event when available
+    // useEffect(() => {
+    //     if (typeof window === "undefined") return;
+
+    //     const handleBeforeInstallPrompt = (e: Event) => {
+    //         e.preventDefault();
+    //         const bipEvent = e as BeforeInstallPromptEvent;
+    //         setInstallPromptEvent(bipEvent);
+    //         setIsInstallable(true);
+    //     };
+
+    //     const handleAppInstalled = () => {
+    //         setInstallPromptEvent(null);
+    //         setIsInstallable(false);
+    //         toast.success("App installed successfully");
+    //     };
+
+    //     window.addEventListener(
+    //         "beforeinstallprompt",
+    //         handleBeforeInstallPrompt as EventListener
+    //     );
+    //     window.addEventListener("appinstalled", handleAppInstalled);
+    //     return () => {
+    //         window.removeEventListener(
+    //             "beforeinstallprompt",
+    //             handleBeforeInstallPrompt as EventListener
+    //         );
+    //         window.removeEventListener("appinstalled", handleAppInstalled);
+    //     };
+    // }, []);
+
+    // const handleInstall = useCallback(async () => {
+    //     try {
+    //         if (!installPromptEvent) {
+    //             toast.error(
+    //                 "Install not available on this device/browser right now."
+    //             );
+    //             return;
+    //         }
+    //         await installPromptEvent.prompt();
+    //         const choice = await installPromptEvent.userChoice;
+    //         if (choice.outcome === "accepted") {
+    //             toast.success("Installing app...");
+    //         } else {
+    //             toast("Installation dismissed");
+    //         }
+    //         setInstallPromptEvent(null);
+    //         setIsInstallable(false);
+    //     } catch (err) {
+    //         toast.error("Failed to start installation");
+    //         console.log(err);
+    //     }
+    // }, [installPromptEvent]);
+
     const socialLinks = [
         {
             href: "https://t.me/studentsenior12",
@@ -174,11 +243,11 @@ const Footer = () => {
                                     {link.icon}
                                 </a>
                             ))}
-                            <a
-                                href="https://studentsenior.com/install"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center px-4 py-1 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200"
+                            {/* <button
+                                onClick={handleInstall}
+                                disabled={!isInstallable}
+                                aria-label="Install Student Senior app"
+                                className="inline-flex items-center px-4 py-1 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 <svg
                                     className="w-5 h-5 mr-2"
@@ -193,8 +262,8 @@ const Footer = () => {
                                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                                     />
                                 </svg>
-                                Install App
-                            </a>
+                                {isInstallable ? "Install App" : "Install"}
+                            </button> */}
                         </div>
                     </div>
                 </div>

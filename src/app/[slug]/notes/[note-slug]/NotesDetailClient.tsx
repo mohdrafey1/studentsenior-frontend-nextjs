@@ -4,7 +4,7 @@ import { INote } from "@/utils/interface";
 import {
     ArrowLeft,
     FileText,
-    Calendar,
+    // Calendar,
     BookOpen,
     Lock,
     Loader2,
@@ -19,6 +19,9 @@ import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { api } from "@/config/apiUrls";
 import Image from "next/image";
 import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
+import { useSaveResource } from "@/hooks/useSaveResource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-worker/pdf.worker.min.mjs";
 
@@ -149,6 +152,11 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
     const downloadExpiryTimerRef = useRef<number | null>(null);
     const ownerId = "placeholder"; // Replace with actual user ID
+    const { saveResource, unsaveResource } = useSaveResource();
+    const { savedNotes } = useSelector(
+        (state: RootState) => state.savedCollection
+    );
+    const [isSaved, setIsSaved] = useState(false);
 
     const handleGoBack = () => {
         router.back();
@@ -192,6 +200,23 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
         fetchSignedUrlForView();
     }, [note?.fileUrl]);
+
+    useEffect(() => {
+        const isSavedEntry = savedNotes.some((entry) =>
+            typeof entry.noteId === "string"
+                ? entry.noteId === note._id
+                : entry.noteId._id === note._id
+        );
+        setIsSaved(isSavedEntry);
+    }, [savedNotes, note._id]);
+
+    const handleSave = async () => {
+        await saveResource("note", note._id);
+    };
+
+    const handleUnsave = async () => {
+        await unsaveResource("note", note._id);
+    };
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
     useEffect(() => {
@@ -299,10 +324,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     return (
         <div className="min-h-screen bg-sky-50 dark:bg-gray-900">
-            <DetailPageNavbar
-                path="notes"
-                fullPath={`/${slug}/notes/${note.slug}`}
-            />
+            <DetailPageNavbar path="notes" fullPath={`/${slug}/notes`} />
 
             {/* Document Info Section */}
             <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -347,7 +369,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
+                                {/* <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                                         <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                                     </div>
@@ -361,7 +383,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                             ).toLocaleDateString()}
                                         </p>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                                         <User className="w-5 h-5 text-orange-600 dark:text-orange-400" />
@@ -374,6 +396,53 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                             {note.owner.username}
                                         </p>
                                     </div>
+                                </div>
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => {
+                                            if (isSaved) {
+                                                handleUnsave();
+                                            } else {
+                                                handleSave();
+                                            }
+                                        }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition-colors"
+                                        title={
+                                            isSaved
+                                                ? "Unsave this Note"
+                                                : "Save this Note"
+                                        }
+                                        aria-label={
+                                            isSaved
+                                                ? "Unsave this Note"
+                                                : "Save this Note"
+                                        }
+                                    >
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill={
+                                                isSaved
+                                                    ? "currentColor"
+                                                    : "none"
+                                            }
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            style={{
+                                                color: isSaved
+                                                    ? "#10B981"
+                                                    : "#10B981",
+                                            }}
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                            ></path>
+                                        </svg>
+                                        {isSaved ? "Saved" : "Save"}
+                                    </button>
                                 </div>
                             </div>
                         </div>

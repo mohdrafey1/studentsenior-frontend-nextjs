@@ -53,7 +53,7 @@ export default async function SubjectNotesPage({
                 path="subjects"
                 fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
             />
-            <main>
+            <main className="min-h-screen">
                 <SubjectNotesClient
                     initialNotes={notes}
                     subjectCode={subjectCode}

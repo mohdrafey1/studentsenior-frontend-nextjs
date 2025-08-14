@@ -54,7 +54,7 @@ export default async function SubjectPyqsPage({
                 path="subjects"
                 fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
             />
-            <main>
+            <main className="min-h-screen">
                 <SubjectPyqsClient
                     initialPyqs={pyqs}
                     subjectCode={subjectCode}

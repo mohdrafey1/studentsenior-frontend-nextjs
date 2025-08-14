@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
@@ -28,12 +28,78 @@ type College = {
     slug: string;
 };
 
+// Minimal typing for the BeforeInstallPromptEvent used by Chromium browsers
+interface BeforeInstallPromptEvent extends Event {
+    prompt: () => Promise<void>;
+    userChoice: Promise<{
+        outcome: "accepted" | "dismissed";
+        platform: string;
+    }>;
+}
+
 const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
     const [visible, setVisible] = useState(false);
     const [selectedCollege, setSelectedCollege] = useState("");
     const [navigatePath, setNavigatePath] = useState("");
     const [isNavigating, setIsNavigating] = useState(false);
+    const [installPromptEvent, setInstallPromptEvent] =
+        useState<BeforeInstallPromptEvent | null>(null);
+    const [isInstallable, setIsInstallable] = useState(false);
     const router = useRouter();
+
+    // Capture the PWA install prompt event when available
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const handleBeforeInstallPrompt = (e: Event) => {
+            e.preventDefault();
+            const bipEvent = e as BeforeInstallPromptEvent;
+            setInstallPromptEvent(bipEvent);
+            setIsInstallable(true);
+        };
+
+        const handleAppInstalled = () => {
+            setInstallPromptEvent(null);
+            setIsInstallable(false);
+            toast.success("App installed successfully");
+        };
+
+        window.addEventListener(
+            "beforeinstallprompt",
+            handleBeforeInstallPrompt as EventListener
+        );
+        window.addEventListener("appinstalled", handleAppInstalled);
+        return () => {
+            window.removeEventListener(
+                "beforeinstallprompt",
+                handleBeforeInstallPrompt as EventListener
+            );
+            window.removeEventListener("appinstalled", handleAppInstalled);
+        };
+    }, []);
+
+    const handleInstall = useCallback(async () => {
+        try {
+            if (!installPromptEvent) {
+                toast.error(
+                    "Install not available on this device/browser right now."
+                );
+                return;
+            }
+            await installPromptEvent.prompt();
+            const choice = await installPromptEvent.userChoice;
+            if (choice.outcome === "accepted") {
+                toast.success("Installing app...");
+            } else {
+                toast("Installation dismissed");
+            }
+            setInstallPromptEvent(null);
+            setIsInstallable(false);
+        } catch (err) {
+            toast.error("Failed to start installation");
+            console.log(err);
+        }
+    }, [installPromptEvent]);
 
     const handleOpenModal = (path: string) => {
         setNavigatePath(path);
@@ -200,16 +266,18 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                                 </div>
                             </div>
 
-                            <a
-                                href="https://studentsenior.com/install"
+                            <button
+                                onClick={handleInstall}
                                 aria-label="Install Student Senior mobile application"
-                                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
+                                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                                 rel="noopener noreferrer"
-                                target="_blank"
+                                disabled={!isInstallable}
                             >
                                 <Download />
-                                <span>Install Now</span>
-                            </a>
+                                <span>
+                                    {isInstallable ? "Install Now" : "Install"}
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </aside>

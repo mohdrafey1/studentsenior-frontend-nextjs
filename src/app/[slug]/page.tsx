@@ -7,6 +7,8 @@ import { CollegePageProps } from "@/utils/interface";
 import CollegeAbout from "@/components/College/CollegeAbout";
 import FeaturedProducts from "@/components/College/FeaturedProducts";
 import FeaturedSeniors from "@/components/College/FeaturedSeniors";
+import Link from "next/link";
+import { Play, ArrowRight } from "lucide-react";
 
 interface CollegeWithFeaturedSeniorsAndProducts {
     data: {
@@ -186,6 +188,25 @@ export default async function CollegePage({ params }: CollegePageProps) {
                             Connect with seniors, access resources, and grow
                             your academic journey at {capitalizeWords(slug)}
                         </p>
+                    </div>
+
+                    <div className="flex gap-4">
+                        <Link
+                            href={`/${slug}/pyqs`}
+                            className="group flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white font-semibold transition-all duration-200 transform hover:scale-105 hover:shadow-lg shadow-sky-500/25"
+                        >
+                            <Play className="w-4 h-4" />
+                            Pyqs
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <Link
+                            href={`/${slug}/notes`}
+                            className="group flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white font-semibold transition-all duration-200 transform hover:scale-105 hover:shadow-lg shadow-green-500/25"
+                        >
+                            <Play className="w-4 h-4" />
+                            Notes
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                     </div>
                 </div>
             </section>

@@ -45,11 +45,20 @@ const Header: React.FC = () => {
         }
     };
 
-    const menuItems: { name: string; path: string }[] = [
+    const menuItems: { name: string; path: string; isExternal?: boolean }[] = [
         { name: "Home", path: "/" },
         { name: "Collection", path: "/collections" },
-        { name: "Add Your College", path: "/add-college" },
         { name: "Leaderboard", path: "/leaderboard" },
+        {
+            name: "Blogs",
+            path: "https://blog.studentsenior.com",
+            isExternal: true,
+        },
+        {
+            name: "Course",
+            path: "https://course.studentsenior.com",
+            isExternal: true,
+        },
     ];
 
     return (
@@ -88,7 +97,13 @@ const Header: React.FC = () => {
                         {menuItems.map((item) => (
                             <Link
                                 key={item.path}
-                                href={item.path}
+                                href={item.isExternal ? item.path : item.path}
+                                target={item.isExternal ? "_blank" : undefined}
+                                rel={
+                                    item.isExternal
+                                        ? "noopener noreferrer"
+                                        : undefined
+                                }
                                 className={`px-4 py-2 rounded-lg text font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${
                                     pathname === item.path
                                         ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"

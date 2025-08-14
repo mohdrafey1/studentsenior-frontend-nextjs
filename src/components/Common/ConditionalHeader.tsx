@@ -3,15 +3,16 @@
 import { usePathname } from "next/navigation";
 import Header from "@/components/Common/Header";
 
-const hideOnPaths = ["/collections"];
+const hideExactPaths = ["/test"];
+
+const hidePrefixPaths = ["/test/"];
 
 export default function ConditionalHeader() {
     const pathname = usePathname();
 
-    // You can adjust this logic to use startsWith if needed
-    const shouldHideHeader = hideOnPaths.some((path) =>
-        pathname.startsWith(path)
-    );
+    const shouldHideHeader =
+        hideExactPaths.includes(pathname) ||
+        hidePrefixPaths.some((prefix) => pathname.startsWith(prefix));
 
     if (shouldHideHeader) return null;
     return <Header />;

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IPyq } from "@/utils/interface";
 import {
     Edit,
@@ -12,6 +12,9 @@ import {
     BookOpen,
 } from "lucide-react";
 import Link from "next/link";
+import { useSaveResource } from "@/hooks/useSaveResource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface PyqCardProps {
     pyq: IPyq;
@@ -27,6 +30,29 @@ export const PyqCard: React.FC<PyqCardProps> = ({
     ownerId,
 }) => {
     const isOwner = ownerId === pyq.owner._id;
+    const { saveResource, unsaveResource } = useSaveResource();
+    const [isSaved, setIsSaved] = useState(false);
+
+    const { savedPYQs } = useSelector(
+        (state: RootState) => state.savedCollection
+    );
+
+    useEffect(() => {
+        const isSavedEntry = savedPYQs.some((entry) =>
+            typeof entry.pyqId === "string"
+                ? entry.pyqId === pyq._id
+                : entry.pyqId._id === pyq._id
+        );
+        setIsSaved(isSavedEntry);
+    }, [savedPYQs, pyq._id]);
+
+    const handleSave = async () => {
+        await saveResource("pyq", pyq._id);
+    };
+
+    const handleUnsave = async () => {
+        await unsaveResource("pyq", pyq._id);
+    };
 
     return (
         <article
@@ -97,6 +123,38 @@ export const PyqCard: React.FC<PyqCardProps> = ({
                         <Download className="w-4 h-4" />
                         View PYQ
                     </Link>
+                    <button
+                        className="w-1/6 h-10 flex items-center justify-center py-2 px-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors shadow-sm hover:shadow"
+                        onClick={() => {
+                            if (isSaved) {
+                                handleUnsave();
+                            } else {
+                                handleSave();
+                            }
+                        }}
+                        title={isSaved ? "Unsave this PYQ" : "Save this PYQ"}
+                        aria-label={
+                            isSaved ? "Unsave this PYQ" : "Save this PYQ"
+                        }
+                    >
+                        <svg
+                            className="w-5 h-5"
+                            fill={isSaved ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{
+                                color: isSaved ? "#3B82F6" : "#9CA3AF",
+                            }}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                            ></path>
+                        </svg>
+                    </button>
 
                     {isOwner && (
                         <>
