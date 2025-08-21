@@ -329,60 +329,61 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
             <DetailPageNavbar path="pyqs" fullPath={`/${slug}/pyqs`} />
             {/* Document Info Section */}
             <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-8 mb-8">
-                    <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 sm:p-8 mb-6 sm:mb-8">
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4 sm:gap-6">
                         {/* Main Info */}
                         <div className="flex-1">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                            <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">
                                 {pyq.subject.subjectName}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 text-lg mb-6">
+                            <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg mb-4 sm:mb-6">
                                 {pyq.examType} - {pyq.year}
                             </p>
 
-                            {/* Details Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                        <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            {/* Details Grid - Compact on Mobile */}
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-md sm:rounded-lg flex items-center justify-center">
+                                        <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                             Semester
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {pyq.subject.semester}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                        <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 dark:bg-purple-900/30 rounded-md sm:rounded-lg flex items-center justify-center">
+                                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                             Year
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {pyq.year}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                                        <Eye className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 dark:bg-orange-900/30 rounded-md sm:rounded-lg flex items-center justify-center">
+                                        <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                             Views
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {pyq.clickCounts}
                                         </p>
                                     </div>
                                 </div>
+
                                 <div className="flex items-center gap-3">
                                     <button
                                         onClick={() => {
@@ -392,7 +393,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                 handleSave();
                                             }
                                         }}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-sky-200 text-sky-700 hover:bg-sky-50 transition-colors"
+                                        className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-sky-200 text-sky-700 hover:bg-sky-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center"
                                         title={
                                             isSaved
                                                 ? "Unsave this PYQ"
@@ -405,7 +406,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                         }
                                     >
                                         <svg
-                                            className="w-5 h-5"
+                                            className="w-4 h-4 sm:w-5 sm:h-5"
                                             fill={
                                                 isSaved
                                                     ? "currentColor"
@@ -427,7 +428,9 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                 d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
                                             ></path>
                                         </svg>
-                                        {isSaved ? "Saved" : "Save"}
+                                        <span className="inline">
+                                            {isSaved ? "Saved" : "Save"}
+                                        </span>
                                     </button>
                                 </div>
                             </div>

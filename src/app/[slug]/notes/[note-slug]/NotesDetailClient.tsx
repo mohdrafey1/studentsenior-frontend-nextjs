@@ -332,15 +332,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     <div className="flex flex-col lg:flex-row lg:items-start gap-6">
                         {/* Main Info */}
                         <div className="flex-1">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                            <h1 className="sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
                                 {note.title}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 text-lg mb-6">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg mb-6">
                                 {note.description}
                             </p>
 
                             {/* Details Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
                                         <FileText className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -349,7 +349,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Subject
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {note.subject.subjectName}
                                         </p>
                                     </div>
@@ -363,7 +363,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Semester
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {note.subject.semester}
                                         </p>
                                     </div>
@@ -392,7 +392,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Uploaded By
                                         </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                             {note.owner.username}
                                         </p>
                                     </div>
@@ -419,7 +419,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         }
                                     >
                                         <svg
-                                            className="w-5 h-5"
+                                            className="w-4 h-4 sm:w-5 sm:h-5"
                                             fill={
                                                 isSaved
                                                     ? "currentColor"
