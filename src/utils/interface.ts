@@ -87,6 +87,7 @@ export interface ISenior {
     branch: {
         _id: string;
         branchName: string;
+        branchCode: string;
     };
     image?: string;
     year: string;

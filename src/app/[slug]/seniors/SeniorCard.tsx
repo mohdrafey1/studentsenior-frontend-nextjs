@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { ISenior } from "@/utils/interface";
-import { capitalizeWords, formatDate } from "@/utils/formatting";
+import { capitalizeWords } from "@/utils/formatting";
 import {
     Edit,
     Trash2,
@@ -153,7 +153,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                     <div className="flex items-center text-gray-600 dark:text-gray-300">
                         <GraduationCap className="w-4 h-4 mr-2" />
                         <span className="text-sm">
-                            {senior.branch?.branchName || "Branch"}
+                            {senior.branch?.branchCode || "Branch"}
                         </span>
                     </div>
                     {senior.domain && (
@@ -203,13 +203,13 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
 
                 {/* Footer Section */}
                 <div className="mt-auto">
-                    <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    {/* <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
                         <div className="flex items-center gap-2 text-xs">
                             <time className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
                                 Joined on {formatDate(senior.createdAt)}
                             </time>
                         </div>
-                    </div>
+                    </div> */}
 
                     <Link
                         href={`seniors/${senior.slug}`}

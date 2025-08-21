@@ -28,7 +28,7 @@ const StoreClient = ({
     );
     const [searchTerm, setSearchTerm] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const [availableFilter, setAvailableFilter] = useState("");
+    // const [availableFilter, setAvailableFilter] = useState("");
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -70,7 +70,7 @@ const StoreClient = ({
                 limit: String(STORE_PAGE_SIZE),
             });
             if (searchTerm.trim()) params.append("search", searchTerm.trim());
-            if (availableFilter) params.append("available", availableFilter);
+            // if (availableFilter) params.append("available", availableFilter);
 
             const url = `${api.store.getStoreByCollegeSlug(
                 collegeName
@@ -89,7 +89,7 @@ const StoreClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, availableFilter]);
+    }, [collegeName, page, searchTerm]);
 
     useEffect(() => {
         fetchItems();
@@ -227,7 +227,7 @@ const StoreClient = ({
             <section className="mb-8" aria-label="Search and Add Item">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
-                        <div className="flex gap-3 w-full sm:w-3/5 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
+                        <div className="flex gap-3 w-full sm:w-4/5 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
                             <SearchIcon className="w-5 h-5 text-gray-400" />
                             <input
                                 type="text"
@@ -237,7 +237,7 @@ const StoreClient = ({
                                 className="w-full bg-transparent outline-none"
                             />
                         </div>
-                        <select
+                        {/* <select
                             value={availableFilter}
                             onChange={(e) => setAvailableFilter(e.target.value)}
                             className="w-full sm:w-1/5 p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
@@ -245,7 +245,7 @@ const StoreClient = ({
                             <option value="">All Status</option>
                             <option value="true">Available</option>
                             <option value="false">Sold</option>
-                        </select>
+                        </select> */}
                         <button
                             onClick={() => openModal()}
                             className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
@@ -270,7 +270,7 @@ const StoreClient = ({
                             {pagination?.totalItems ?? 0} items
                         </p>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                             {items.map((item) => (
                                 <StoreCard
                                     key={item._id}
