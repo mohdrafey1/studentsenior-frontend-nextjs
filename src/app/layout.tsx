@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import Providers from "@/components/Providers";
 import ConditionalHeader from "@/components/Common/ConditionalHeader";
 import ConditionalFooter from "@/components/Common/ConditionalFooter";
+import Script from "next/script";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,6 +27,21 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
+            <head>
+                {/* Google Tag Manager */}
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-LPDNDJ72CJ"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-analytics" strategy="afterInteractive">
+                    {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-LPDNDJ72CJ');
+        `}
+                </Script>
+            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
