@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { IVideo } from "@/utils/interface";
-import { Video, CheckCircle, X, Youtube, ExternalLink } from "lucide-react";
+import { CheckCircle, X, Youtube, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface EditVideoModalProps {
@@ -64,7 +64,8 @@ const EditVideoModal: React.FC<EditVideoModalProps> = ({
                 }
             } catch (error) {
                 console.log(
-                    "Could not fetch YouTube oEmbed data, using fallback"
+                    "Could not fetch YouTube oEmbed data, using fallback",
+                    error
                 );
             }
 
