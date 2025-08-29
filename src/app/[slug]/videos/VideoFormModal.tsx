@@ -143,6 +143,20 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
             return null;
         }
 
+        // Check for playlist
+        const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+        if (playlistMatch) {
+            toast.success(
+                "YouTube playlist detected. Playlist info cannot be auto-filled."
+            );
+            return {
+                title: "",
+                description: "",
+                thumbnail: "",
+                isPlaylist: true,
+            };
+        }
+
         setLoadingVideoData(true);
         try {
             // Extract video ID from various YouTube URL formats
@@ -164,7 +178,6 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                 const response = await fetch(oembedUrl);
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);
                     return {
                         title: data.title,
                         description: data.description || "",
@@ -172,10 +185,8 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                     };
                 }
             } catch (error) {
-                console.log(
-                    "Could not fetch YouTube oEmbed data, using fallback"
-                );
-                console.log(error);
+                console.error("Error fetching oEmbed data:", error);
+                // fallback
             }
 
             // Fallback: just return the video ID for thumbnail
@@ -201,13 +212,21 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
         // Auto-fill video data if it's a YouTube URL
         if (url && (url.includes("youtube.com") || url.includes("youtu.be"))) {
             const videoData = await extractYouTubeData(url);
-            if (videoData && videoData.title) {
-                setForm((prev) => ({
-                    ...prev,
-                    title: videoData.title,
-                    description: videoData.description || prev.description,
-                }));
-                toast.success("Video information auto-filled from YouTube!");
+            if (videoData) {
+                if (videoData.isPlaylist) {
+                    // Playlist detected, do not autofill title/desc
+                    return;
+                }
+                if (videoData.title) {
+                    setForm((prev) => ({
+                        ...prev,
+                        title: videoData.title,
+                        description: videoData.description || prev.description,
+                    }));
+                    toast.success(
+                        "Video information auto-filled from YouTube!"
+                    );
+                }
             }
         }
     };
@@ -310,7 +329,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                     {/* Video URL */}
                     <div>
                         <label className="block font-semibold text-sky-500 dark:text-sky-400 mb-1">
-                            YouTube Video URL *
+                            YouTube Video or Playlist URL*
                         </label>
                         <div className="relative">
                             <Youtube className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />

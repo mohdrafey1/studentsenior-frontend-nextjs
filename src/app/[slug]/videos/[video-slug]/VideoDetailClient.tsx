@@ -28,6 +28,12 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
 
     // Extract YouTube video ID from URL
     const getYouTubeEmbedUrl = (url: string) => {
+        // Check for playlist
+        const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+        if (playlistMatch) {
+            return `https://www.youtube.com/embed/videoseries?list=${playlistMatch[1]}`;
+        }
+        // Fallback to single video
         const regExp =
             /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
