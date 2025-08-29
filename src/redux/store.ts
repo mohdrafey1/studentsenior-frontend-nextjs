@@ -4,6 +4,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import { combineReducers } from "redux";
 import userReducer from "./slices/userSlice";
 import savedCollectionReducer from "./slices/savedCollectionSlice";
+import userDataReducer from "./slices/userDataSlice";
 
 // Noop storage to avoid server-side errors in SSR
 const noopStorage = {
@@ -21,6 +22,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     user: userReducer,
     savedCollection: savedCollectionReducer,
+    userData: userDataReducer,
 });
 
 // ✅ Proper serializableCheck ignore list (recommended)

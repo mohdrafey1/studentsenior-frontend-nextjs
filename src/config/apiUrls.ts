@@ -12,6 +12,7 @@ export const api = {
 
     user: {
         update: (id: string) => `${API_BASE_URL}/users/update/${id}`,
+        userData: `${API_BASE_URL}/users/data`,
     },
 
     college: {

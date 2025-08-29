@@ -519,50 +519,54 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 {!note.isPaid && (
                     <div className="mt-8">
                         <div className="flex flex-wrap gap-3 justify-center">
-                            <a
-                                href={
-                                    !isDownloadDisabled && signedUrl
-                                        ? signedUrl
-                                        : "#"
-                                }
-                                download={downloadFileName}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
-                                    !isDownloadDisabled && signedUrl
-                                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                                        : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
-                                }`}
-                                aria-disabled={isDownloadDisabled}
-                                title={
-                                    !isDownloadDisabled && signedUrl
-                                        ? `Download ${downloadFileName}`
-                                        : "Link expired. Please refresh to get a new link."
-                                }
-                            >
-                                <Download className="w-5 h-5" />
-                                Download
-                            </a>
-
-                            <button
-                                onClick={handleRefreshDownloadUrl}
-                                disabled={isRefreshing}
-                                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm border ${
-                                    isRefreshing
-                                        ? "bg-gray-100 text-gray-500 border-gray-200 cursor-wait"
-                                        : "bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
-                                }`}
-                                title="Refresh the download link"
-                            >
-                                <RefreshCw
-                                    className={`w-5 h-5 ${
-                                        isRefreshing ? "animate-spin" : ""
+                            {!isDownloadDisabled && (
+                                <a
+                                    href={
+                                        !isDownloadDisabled && signedUrl
+                                            ? signedUrl
+                                            : "#"
+                                    }
+                                    download={downloadFileName}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
+                                        !isDownloadDisabled && signedUrl
+                                            ? "bg-sky-600 text-white hover:bg-sky-700"
+                                            : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
                                     }`}
-                                />
-                                {isRefreshing
-                                    ? "Refreshing..."
-                                    : "Refresh link"}
-                            </button>
+                                    aria-disabled={isDownloadDisabled}
+                                    title={
+                                        !isDownloadDisabled && signedUrl
+                                            ? `Download ${downloadFileName}`
+                                            : "Link expired. Please refresh to get a new link."
+                                    }
+                                >
+                                    <Download className="w-5 h-5" />
+                                    Download
+                                </a>
+                            )}
+
+                            {isDownloadDisabled && (
+                                <button
+                                    onClick={handleRefreshDownloadUrl}
+                                    disabled={isRefreshing}
+                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm border ${
+                                        isRefreshing
+                                            ? "bg-gray-100 text-gray-500 border-gray-200 cursor-wait"
+                                            : "bg-white text-sky-700 border-sky-200 hover:bg-sky-50"
+                                    }`}
+                                    title="Refresh the download link"
+                                >
+                                    <RefreshCw
+                                        className={`w-5 h-5 ${
+                                            isRefreshing ? "animate-spin" : ""
+                                        }`}
+                                    />
+                                    {isRefreshing
+                                        ? "Refreshing..."
+                                        : "Refresh link"}
+                                </button>
+                            )}
                         </div>
                         {isDownloadDisabled && (
                             <p className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
