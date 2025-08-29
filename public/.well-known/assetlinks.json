@@ -1,0 +1,12 @@
+[
+    {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.studentsenior.beta.twa",
+            "sha256_cert_fingerprints": [
+                "22:7E:CB:DF:43:B2:AA:75:6E:DF:51:24:12:C9:5A:B1:41:1F:32:10:67:C4:62:3C:2A:96:C2:77:19:46:8D:97"
+            ]
+        }
+    }
+]
