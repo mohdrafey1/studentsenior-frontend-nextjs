@@ -9,7 +9,7 @@ import {
     Zap,
     User,
     Store,
-    Users,
+    Video,
     MessageCircle,
     Search,
     Compass,
@@ -84,6 +84,11 @@ const Collegelink2 = () => {
             href: `/${slug}/resources`,
             icon: <Zap size={20} />,
             text: "Resources",
+        },
+        {
+            href: `/${slug}/videos`,
+            icon: <Video size={20} />,
+            text: "Videos",
         },
     ];
 

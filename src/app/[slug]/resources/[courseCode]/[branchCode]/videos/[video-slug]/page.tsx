@@ -1,17 +1,10 @@
 import { api } from "@/config/apiUrls";
 import { capitalizeWords } from "@/utils/formatting";
 import type { Metadata } from "next";
-import {
-    Video,
-    Eye,
-    Plus,
-    FileText,
-    BookOpen,
-    ExternalLink,
-    Play,
-} from "lucide-react";
+import { Video, Eye, Plus, FileText, BookOpen, Play } from "lucide-react";
 import Link from "next/link";
 import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
+import Image from "next/image";
 
 interface IVideoItem {
     _id: string;
@@ -63,6 +56,18 @@ export default async function SubjectVideosPage({
     } catch (error) {
         console.error("Failed to fetch Videos by subject:", error);
     }
+
+    const getYouTubeThumbnail = (url: string) => {
+        const regExp =
+            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://img.youtube.com/vi/${match[2]}/mqdefault.jpg`;
+        }
+        return null;
+    };
+
+    const thumbnailUrl = getYouTubeThumbnail(videos[0]?.videoUrl || "");
 
     return (
         <>
@@ -142,27 +147,45 @@ export default async function SubjectVideosPage({
                                     key={video._id}
                                     className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
                                 >
-                                    {/* Video Thumbnail/Header */}
-                                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 text-white">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-3">
-                                            <Play className="w-6 h-6" />
+                                    <div className="relative aspect-video overflow-hidden">
+                                        {thumbnailUrl ? (
+                                            <Image
+                                                src={thumbnailUrl}
+                                                alt={video.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                width={500}
+                                                height={500}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                                <Video className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                                            </div>
+                                        )}
+
+                                        {/* Play Button Overlay */}
+                                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="w-16 h-16 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-lg">
+                                                <Play className="w-8 h-8 text-gray-800 dark:text-white ml-1" />
+                                            </div>
                                         </div>
-                                        <h3 className="font-semibold text-white line-clamp-2 text-lg">
-                                            {video.title}
-                                        </h3>
                                     </div>
 
                                     {/* Video Content */}
                                     <div className="p-4">
-                                        {video.description && (
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">
-                                                {video.description}
-                                            </p>
-                                        )}
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 line-clamp-2 leading-tight">
+                                                {video.title}
+                                            </h3>
+                                            {video.description && (
+                                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                                                    {video.description}
+                                                </p>
+                                            )}
+                                        </div>
 
                                         {/* Stats */}
                                         {video.clickCounts !== undefined && (
-                                            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                                            <div className="flex mt-2 items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-4">
                                                 <Eye className="w-4 h-4" />
                                                 <span>
                                                     {video.clickCounts} views
@@ -173,16 +196,18 @@ export default async function SubjectVideosPage({
 
                                     {/* Video Footer */}
                                     <div className="border-t border-gray-100 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-750">
-                                        <a
-                                            href={video.videoUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors"
+                                        <Link
+                                            href={`/${slug}/videos/${video.slug}`}
+                                            className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-emerald-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-200 group-hover:shadow-lg"
                                         >
-                                            <Play className="w-4 h-4" />
-                                            Watch Video
-                                            <ExternalLink className="w-4 h-4" />
-                                        </a>
+                                            <Play className="w-3 h-3 sm:w-4 sm:h-4" />
+                                            <span className="hidden sm:inline">
+                                                Watch Video
+                                            </span>
+                                            <span className="sm:hidden">
+                                                Watch
+                                            </span>
+                                        </Link>
                                     </div>
                                 </article>
                             ))}

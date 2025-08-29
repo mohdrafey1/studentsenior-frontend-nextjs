@@ -259,6 +259,30 @@ export interface INote {
     clickCounts: number;
 }
 
+export interface IVideo {
+    _id: string;
+    title: string;
+    description?: string;
+    videoUrl: string;
+    subject: ISubject;
+    owner: {
+        _id: string;
+        username: string;
+        profilePicture?: string;
+    };
+    college: {
+        _id: string;
+        name: string;
+        slug: string;
+    };
+    slug: string;
+    submissionStatus: "pending" | "approved" | "rejected";
+    rejectionReason?: string;
+    createdAt: string;
+    updatedAt: string;
+    clickCounts: number;
+}
+
 export interface IPyqResponse {
     pyqs: IPyq[];
     pagination: IPagination;
@@ -266,5 +290,10 @@ export interface IPyqResponse {
 
 export interface INoteResponse {
     notes: INote[];
+    pagination: IPagination;
+}
+
+export interface IVideoResponse {
+    videos: IVideo[];
     pagination: IPagination;
 }

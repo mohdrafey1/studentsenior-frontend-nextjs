@@ -40,6 +40,15 @@ export const api = {
         getNoteBySlug: (slug: string) => `${API_BASE_URL}/notes/${slug}`,
     },
 
+    videos: {
+        getVideosByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/videos/college/${slug}`,
+        createVideo: `${API_BASE_URL}/videos`,
+        editVideo: (id: string) => `${API_BASE_URL}/videos/${id}`,
+        deleteVideo: (id: string) => `${API_BASE_URL}/videos/${id}`,
+        getVideoBySlug: (slug: string) => `${API_BASE_URL}/videos/${slug}`,
+    },
+
     seniors: {
         getSeniorsByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/seniors/college/${slug}`,
