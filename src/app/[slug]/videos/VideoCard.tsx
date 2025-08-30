@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { IVideo } from "@/utils/interface";
 import { Video, Edit2, Trash2, Play, Calendar, BookOpen } from "lucide-react";
@@ -18,19 +19,28 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     ownerId,
 }) => {
     const isOwner = video.owner._id === ownerId;
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
-    // Extract YouTube video ID from URL
-    const getYouTubeThumbnail = (url: string) => {
-        const regExp =
-            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        if (match && match[2].length === 11) {
-            return `https://img.youtube.com/vi/${match[2]}/mqdefault.jpg`;
-        }
-        return null;
-    };
+    useEffect(() => {
+        const getYouTubeThumbnail = (url: string) => {
+            if (url.includes("playlist?list=")) {
+                // Show a default playlist placeholder image
+                setThumbnailUrl("/assets/images/playlist.png"); // Add a local image in /public
+                return;
+            }
 
-    const thumbnailUrl = getYouTubeThumbnail(video.videoUrl);
+            const regExp =
+                /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                setThumbnailUrl(
+                    `https://img.youtube.com/vi/${match[2]}/mqdefault.jpg`
+                );
+            }
+        };
+
+        getYouTubeThumbnail(video.videoUrl);
+    }, [video.videoUrl]);
 
     return (
         <article

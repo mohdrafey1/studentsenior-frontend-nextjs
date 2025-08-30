@@ -15,11 +15,14 @@ import {
     FilterIcon,
     XIcon,
     FileText,
+    Grid3X3,
+    List,
 } from "lucide-react";
 import PyqFormModal, { PyqFormData } from "./PyqFormModal";
 import EditPyqModal from "./EditPyqModal";
 import SearchableSelect from "@/components/Common/SearchableSelect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PyqListItem } from "./PyqListItem";
 
 const PyqsClient = ({
     initialPyqs,
@@ -81,6 +84,7 @@ const PyqsClient = ({
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     // Course and Branch data
     const [courses, setCourses] = useState<ICourse[]>([]);
@@ -404,61 +408,88 @@ const PyqsClient = ({
 
     return (
         <div className="space-y-6">
-            {/* Header with Add Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className="flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg  dark:bg-gray-500 dark:hover:bg-gray-600"
-                    >
-                        <FilterIcon className="w-4 h-4" />
-                        Filters
-                        {hasActiveFilters && (
-                            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full">
-                                {
-                                    [
-                                        searchTerm,
-                                        courseFilter,
-                                        branchFilter,
-                                        yearFilter,
-                                        examTypeFilter,
-                                        semesterFilter,
-                                    ].filter(Boolean).length
-                                }
-                            </span>
-                        )}
-                    </button>
-                    {hasActiveFilters && (
+            {/* Header with Add Button and View Toggle */}
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-4">
                         <button
-                            onClick={clearFilters}
-                            className="inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 "
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg dark:bg-gray-500 dark:hover:bg-gray-600"
                         >
-                            <XIcon className="w-4 h-4" />
-                            Clear
+                            <FilterIcon className="w-4 h-4" />
+                            Filters
+                            {hasActiveFilters && (
+                                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full">
+                                    {
+                                        [
+                                            searchTerm,
+                                            courseFilter,
+                                            branchFilter,
+                                            yearFilter,
+                                            examTypeFilter,
+                                            semesterFilter,
+                                        ].filter(Boolean).length
+                                    }
+                                </span>
+                            )}
                         </button>
-                    )}
-                </div>
+                        {hasActiveFilters && (
+                            <button
+                                onClick={clearFilters}
+                                className="inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400"
+                            >
+                                <XIcon className="w-4 h-4" />
+                                Clear
+                            </button>
+                        )}
+                    </div>
 
-                <div className="relative flex-grow">
-                    <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
-                        <SearchIcon className="w-5 h-5 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search PYQs..."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full bg-transparent outline-none"
-                        />
+                    <div className="relative flex-grow">
+                        <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
+                            <SearchIcon className="w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Search PYQs..."
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                className="w-full bg-transparent outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={openAddModal}
+                        className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
+                    >
+                        <PlusIcon className="w-4 h-4" />
+                        Add PYQ
+                    </button>
+                    {/* View Mode Toggle */}
+                    <div className="flex justify-end">
+                        <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-2">
+                            <button
+                                onClick={() => setViewMode("grid")}
+                                className={`p-2 rounded-md transition-colors ${
+                                    viewMode === "grid"
+                                        ? "bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm"
+                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                }`}
+                            >
+                                <Grid3X3 className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => setViewMode("list")}
+                                className={`p-2 rounded-md transition-colors ${
+                                    viewMode === "list"
+                                        ? "bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm"
+                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                }`}
+                            >
+                                <List className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <button
-                    onClick={openAddModal}
-                    className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
-                >
-                    <PlusIcon className="w-4 h-4" />
-                    Add PYQ
-                </button>
             </div>
 
             {/* Filters Section */}
@@ -477,7 +508,6 @@ const PyqsClient = ({
 
                         {/* Course Filter */}
                         <SearchableSelect
-                            // label="Course"
                             value={courseFilter}
                             onChange={setCourseFilter}
                             options={courses.map((course) => ({
@@ -490,7 +520,6 @@ const PyqsClient = ({
 
                         {/* Branch Filter */}
                         <SearchableSelect
-                            // label="Branch"
                             value={branchFilter}
                             onChange={setBranchFilter}
                             options={branches.map((branch) => ({
@@ -556,21 +585,37 @@ const PyqsClient = ({
                 </div>
             )}
 
-            {/* PYQs Grid */}
+            {/* PYQs Display */}
             {!loading && (
                 <>
                     {pyqs.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
-                            {pyqs.map((pyq) => (
-                                <PyqCard
-                                    key={pyq._id}
-                                    pyq={pyq}
-                                    onEdit={openEditModal}
-                                    onDelete={handleDeleteRequest}
-                                    ownerId={ownerId || ""}
-                                />
-                            ))}
-                        </div>
+                        <>
+                            {viewMode === "grid" ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                                    {pyqs.map((pyq) => (
+                                        <PyqCard
+                                            key={pyq._id}
+                                            pyq={pyq}
+                                            onEdit={openEditModal}
+                                            onDelete={handleDeleteRequest}
+                                            ownerId={ownerId || ""}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {pyqs.map((pyq) => (
+                                        <PyqListItem
+                                            key={pyq._id}
+                                            pyq={pyq}
+                                            onEdit={openEditModal}
+                                            onDelete={handleDeleteRequest}
+                                            ownerId={ownerId || ""}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="text-center py-12">
                             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto">
