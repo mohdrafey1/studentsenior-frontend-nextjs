@@ -364,7 +364,7 @@ const SeniorClient = ({
                         {/* Filter Toggle Button (Mobile) */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className='sm:hidden flex items-center justify-center gap-2 p-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+                            className='sm:hidden flex items-center text-black dark:text-white justify-center gap-2 p-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
                         >
                             <FilterIcon className='w-4 h-4' />
                             Filters
