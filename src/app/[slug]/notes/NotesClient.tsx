@@ -1,25 +1,25 @@
-"use client";
-import React, { useEffect, useState, useCallback } from "react";
-import { api } from "@/config/apiUrls";
-import toast from "react-hot-toast";
-import { IPagination, INote, ICourse, IBranch } from "@/utils/interface";
-import { SEARCH_DEBOUNCE, NOTES_PAGE_SIZE } from "@/constant";
-import DeleteConfirmationModal from "@/components/Common/DeleteConfirmationModal";
-import PaginationComponent from "@/components/Common/Pagination";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+'use client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { api } from '@/config/apiUrls';
+import toast from 'react-hot-toast';
+import { IPagination, INote, ICourse, IBranch } from '@/utils/interface';
+import { SEARCH_DEBOUNCE, NOTES_PAGE_SIZE } from '@/constant';
+import DeleteConfirmationModal from '@/components/Common/DeleteConfirmationModal';
+import PaginationComponent from '@/components/Common/Pagination';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 import {
     PlusIcon,
     SearchIcon,
     FilterIcon,
     XIcon,
     FileText,
-} from "lucide-react";
-import SearchableSelect from "@/components/Common/SearchableSelect";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import NotesCard from "./NotesCard";
-import NotesFormModal from "./NotesFormModal";
-import EditNotesModal from "./EditNotesModal";
+} from 'lucide-react';
+import SearchableSelect from '@/components/Common/SearchableSelect';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import NotesCard from './NotesCard';
+import NotesFormModal from './NotesFormModal';
+import EditNotesModal from './EditNotesModal';
 
 const NotesClient = ({
     initialNotes,
@@ -39,31 +39,31 @@ const NotesClient = ({
         initialPagination
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get("search") || ""
+        searchParams.get('search') || ''
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get("search") || ""
+        searchParams.get('search') || ''
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get("course") || ""
+        searchParams.get('course') || ''
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get("branch") || ""
+        searchParams.get('branch') || ''
     );
     const [semesterFilter, setSemesterFilter] = useState(
-        searchParams.get("semester") || ""
+        searchParams.get('semester') || ''
     );
 
-    const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [loading, setLoading] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editNote, setEditNote] = useState<INote | null>(null);
     const [form, setForm] = useState({
-        title: "",
-        description: "",
-        fileUrl: "",
-        subjectCode: "",
+        title: '',
+        description: '',
+        fileUrl: '',
+        subjectCode: '',
         isPaid: false,
         price: 0,
     });
@@ -106,13 +106,13 @@ const NotesClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to fetch courses");
+                throw new Error(data.message || 'Failed to fetch courses');
             }
 
             setCourses(data.data || []);
         } catch (error) {
-            console.error("Error fetching courses:", error);
-            toast.error("Failed to fetch courses");
+            console.error('Error fetching courses:', error);
+            toast.error('Failed to fetch courses');
         } finally {
             setLoadingCourses(false);
         }
@@ -125,13 +125,13 @@ const NotesClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to fetch branches");
+                throw new Error(data.message || 'Failed to fetch branches');
             }
 
             setBranches(data.data || []);
         } catch (error) {
-            console.error("Error fetching branches:", error);
-            toast.error("Failed to fetch branches");
+            console.error('Error fetching branches:', error);
+            toast.error('Failed to fetch branches');
         } finally {
             setLoadingBranches(false);
         }
@@ -140,11 +140,11 @@ const NotesClient = ({
     // Update URL when filters change
     useEffect(() => {
         const params = new URLSearchParams();
-        if (searchTerm) params.set("search", searchTerm);
-        if (courseFilter) params.set("course", courseFilter);
-        if (branchFilter) params.set("branch", branchFilter);
-        if (semesterFilter) params.set("semester", semesterFilter);
-        if (page > 1) params.set("page", page.toString());
+        if (searchTerm) params.set('search', searchTerm);
+        if (courseFilter) params.set('course', courseFilter);
+        if (branchFilter) params.set('branch', branchFilter);
+        if (semesterFilter) params.set('semester', semesterFilter);
+        if (page > 1) params.set('page', page.toString());
 
         const newUrl = params.toString()
             ? `${pathname}?${params.toString()}`
@@ -173,12 +173,12 @@ const NotesClient = ({
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            params.set("page", page.toString());
-            params.set("limit", NOTES_PAGE_SIZE.toString());
-            if (searchTerm) params.set("search", searchTerm);
-            if (courseFilter) params.set("course", courseFilter);
-            if (branchFilter) params.set("branch", branchFilter);
-            if (semesterFilter) params.set("semester", semesterFilter);
+            params.set('page', page.toString());
+            params.set('limit', NOTES_PAGE_SIZE.toString());
+            if (searchTerm) params.set('search', searchTerm);
+            if (courseFilter) params.set('course', courseFilter);
+            if (branchFilter) params.set('branch', branchFilter);
+            if (semesterFilter) params.set('semester', semesterFilter);
 
             const url = `${api.notes.getNotesByCollegeSlug(
                 collegeName
@@ -186,15 +186,15 @@ const NotesClient = ({
             const response = await fetch(url);
 
             if (!response.ok) {
-                throw new Error("Failed to fetch notes");
+                throw new Error('Failed to fetch notes');
             }
 
             const data = await response.json();
             setNotes(data.data.notes || []);
             setPagination(data.data.pagination || null);
         } catch (error) {
-            console.error("Error fetching notes:", error);
-            toast.error("Failed to fetch notes");
+            console.error('Error fetching notes:', error);
+            toast.error('Failed to fetch notes');
         } finally {
             setLoading(false);
         }
@@ -213,14 +213,14 @@ const NotesClient = ({
 
     const openAddModal = () => {
         if (!currentUser) {
-            toast.error("Please sign in to post notes");
+            toast.error('Please sign in to post notes');
             return;
         }
         setForm({
-            title: "",
-            description: "",
-            fileUrl: "",
-            subjectCode: "",
+            title: '',
+            description: '',
+            fileUrl: '',
+            subjectCode: '',
             isPaid: false,
             price: 0,
         });
@@ -230,10 +230,10 @@ const NotesClient = ({
     const closeAddModal = () => {
         setAddModalOpen(false);
         setForm({
-            title: "",
-            description: "",
-            fileUrl: "",
-            subjectCode: "",
+            title: '',
+            description: '',
+            fileUrl: '',
+            subjectCode: '',
             isPaid: false,
             price: 0,
         });
@@ -253,11 +253,11 @@ const NotesClient = ({
         setLoading(true);
         try {
             const response = await fetch(api.notes.createNote, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
-                credentials: "include",
+                credentials: 'include',
                 body: JSON.stringify({
                     ...formData,
                     college: collegeName,
@@ -267,14 +267,14 @@ const NotesClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to create note");
+                throw new Error(data.message || 'Failed to create note');
             }
-            toast.success(data.message || "Note created successfully!");
+            toast.success(data.message || 'Note created successfully!');
 
             // Refresh the notes list to show updated data
             await fetchNotes();
         } catch (error) {
-            console.error("Error creating note:", error);
+            console.error('Error creating note:', error);
             throw error;
         } finally {
             setLoading(false);
@@ -294,25 +294,25 @@ const NotesClient = ({
         setLoading(true);
         try {
             const response = await fetch(api.notes.editNote(editNote._id), {
-                method: "PUT",
+                method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
-                credentials: "include",
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to update note");
+                throw new Error(data.message || 'Failed to update note');
             }
-            toast.success(data.message || "Note updated successfully!");
+            toast.success(data.message || 'Note updated successfully!');
 
             // Refresh the notes list to show updated data
             await fetchNotes();
         } catch (error) {
-            console.error("Error updating note:", error);
+            console.error('Error updating note:', error);
             throw error;
         } finally {
             setLoading(false);
@@ -331,21 +331,21 @@ const NotesClient = ({
         setDeleteLoading(true);
         try {
             const response = await fetch(api.notes.deleteNote(deleteTargetId), {
-                method: "DELETE",
-                credentials: "include",
+                method: 'DELETE',
+                credentials: 'include',
             });
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || "Failed to delete note");
+                throw new Error(data.message || 'Failed to delete note');
             }
 
-            toast.success("Note deleted successfully!");
+            toast.success('Note deleted successfully!');
             fetchNotes();
         } catch (error) {
-            console.error("Error deleting note:", error);
+            console.error('Error deleting note:', error);
             toast.error(
-                error instanceof Error ? error.message : "Failed to delete note"
+                error instanceof Error ? error.message : 'Failed to delete note'
             );
         } finally {
             setDeleteLoading(false);
@@ -364,10 +364,10 @@ const NotesClient = ({
     };
 
     const clearFilters = () => {
-        setSearchInput("");
-        setCourseFilter("");
-        setBranchFilter("");
-        setSemesterFilter("");
+        setSearchInput('');
+        setCourseFilter('');
+        setBranchFilter('');
+        setSemesterFilter('');
         setPage(1);
     };
 
@@ -375,18 +375,18 @@ const NotesClient = ({
         searchTerm || courseFilter || branchFilter || semesterFilter;
 
     return (
-        <div className="space-y-6">
+        <div className='space-y-6'>
             {/* Header with Add Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+                <div className='flex items-center gap-4'>
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg  dark:bg-gray-500 dark:hover:bg-gray-600"
+                        className='flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg  dark:bg-gray-500 dark:hover:bg-gray-600'
                     >
-                        <FilterIcon className="w-4 h-4" />
+                        <FilterIcon className='w-4 h-4' />
                         Filters
                         {hasActiveFilters && (
-                            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full">
+                            <span className='inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full'>
                                 {
                                     [
                                         searchTerm,
@@ -401,40 +401,40 @@ const NotesClient = ({
                     {hasActiveFilters && (
                         <button
                             onClick={clearFilters}
-                            className="inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 "
+                            className='inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 '
                         >
-                            <XIcon className="w-4 h-4" />
+                            <XIcon className='w-4 h-4' />
                             Clear
                         </button>
                     )}
                 </div>
 
-                <div className="relative flex-grow">
-                    <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
-                        <SearchIcon className="w-5 h-5 text-gray-400" />
+                <div className='relative flex-grow'>
+                    <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'>
+                        <SearchIcon className='w-5 h-5 text-gray-400' />
                         <input
-                            type="text"
-                            placeholder="Search notes..."
+                            type='text'
+                            placeholder='Search notes...'
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full bg-transparent outline-none"
+                            className='w-full bg-transparent outline-none text-black dark:text-white'
                         />
                     </div>
                 </div>
 
                 <button
                     onClick={openAddModal}
-                    className="flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
+                    className='flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
                 >
-                    <PlusIcon className="w-4 h-4" />
+                    <PlusIcon className='w-4 h-4' />
                     Add Note
                 </button>
             </div>
 
             {/* Filters Section */}
             {showFilters && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-black dark:text-white'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {/* Course Filter */}
                         <SearchableSelect
                             value={courseFilter}
@@ -443,7 +443,7 @@ const NotesClient = ({
                                 value: course.courseCode,
                                 label: course.courseName,
                             }))}
-                            placeholder="Select Course"
+                            placeholder='Select Course'
                             loading={loadingCourses}
                         />
 
@@ -455,7 +455,7 @@ const NotesClient = ({
                                 value: branch.branchCode,
                                 label: branch.branchName,
                             }))}
-                            placeholder="Select Branch"
+                            placeholder='Select Branch'
                             loading={loadingBranches}
                             disabled={!courseFilter}
                         />
@@ -464,18 +464,18 @@ const NotesClient = ({
                         <select
                             value={semesterFilter}
                             onChange={(e) => setSemesterFilter(e.target.value)}
-                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                            className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
                         >
-                            <option value="">All Semesters</option>
-                            <option value="1">1st Semester</option>
-                            <option value="2">2nd Semester</option>
-                            <option value="3">3rd Semester</option>
-                            <option value="4">4th Semester</option>
-                            <option value="5">5th Semester</option>
-                            <option value="6">6th Semester</option>
-                            <option value="7">7th Semester</option>
-                            <option value="8">8th Semester</option>
-                            <option value="9">9th Semester</option>
+                            <option value=''>All Semesters</option>
+                            <option value='1'>1st Semester</option>
+                            <option value='2'>2nd Semester</option>
+                            <option value='3'>3rd Semester</option>
+                            <option value='4'>4th Semester</option>
+                            <option value='5'>5th Semester</option>
+                            <option value='6'>6th Semester</option>
+                            <option value='7'>7th Semester</option>
+                            <option value='8'>8th Semester</option>
+                            <option value='9'>9th Semester</option>
                         </select>
                     </div>
                 </div>
@@ -483,8 +483,8 @@ const NotesClient = ({
 
             {/* Loading State */}
             {loading && (
-                <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+                <div className='flex justify-center items-center py-12'>
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
                 </div>
             )}
 
@@ -492,36 +492,36 @@ const NotesClient = ({
             {!loading && (
                 <>
                     {notes.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                        <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6'>
                             {notes.map((note) => (
                                 <NotesCard
                                     key={note._id}
                                     note={note}
                                     onEdit={openEditModal}
                                     onDelete={handleDeleteRequest}
-                                    ownerId={ownerId || ""}
+                                    ownerId={ownerId || ''}
                                 />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12">
-                            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto">
-                                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                                    <FileText className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                        <div className='text-center py-12'>
+                            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto'>
+                                <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center'>
+                                    <FileText className='w-8 h-8 text-gray-400 dark:text-gray-500' />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
                                     No Notes Found
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                <p className='text-gray-600 dark:text-gray-400 mb-4'>
                                     {hasActiveFilters
-                                        ? "Try adjusting your filters or add a new note."
-                                        : "Be the first to add a note for this college!"}
+                                        ? 'Try adjusting your filters or add a new note.'
+                                        : 'Be the first to add a note for this college!'}
                                 </p>
                                 <button
                                     onClick={openAddModal}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
+                                    className='inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200'
                                 >
-                                    <PlusIcon className="w-4 h-4" />
+                                    <PlusIcon className='w-4 h-4' />
                                     Add Note
                                 </button>
                             </div>
@@ -567,7 +567,7 @@ const NotesClient = ({
                 onCancel={handleDeleteCancel}
                 onConfirm={handleDeleteConfirm}
                 loading={deleteLoading}
-                message="Are you sure you want to delete this note? This action cannot be undone."
+                message='Are you sure you want to delete this note? This action cannot be undone.'
             />
         </div>
     );
