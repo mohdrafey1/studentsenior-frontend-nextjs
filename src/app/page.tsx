@@ -142,22 +142,17 @@ export default async function HomePage() {
                     </div>
 
                     {/* Main Content */}
-                    <div className='relativ z-10 flex flex-col items-center justify-center px-4 py-16'>
+                    <div className='relative z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
                         {/* Welcome Text */}
-                        <div className='text-center max-w-4xl mx-auto '>
-                            <h1 className='text-3xl sm:text-5xl font-fugaz md:text-6xl lg:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
-                                The best place to get
-                                <br />
-                                <span className='bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up'>
-                                    PYQs{' '}
-                                </span>
-                                and
-                                <span className='bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up'>
-                                    {' '}
-                                    Notes
+                        <div className='text-center max-w-4xl mx-auto'>
+                            <h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight'>
+                                <span className='bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
+                                    Welcome to
                                 </span>
                                 <br />
-                                for Students
+                                <span className='bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up'>
+                                    Student Senior
+                                </span>
                             </h1>
 
                             {/* Subtitle */}
@@ -165,11 +160,6 @@ export default async function HomePage() {
                                 Connect with seniors, access resources, and grow
                                 your academic journey
                             </p>
-                            <a href='#QuickStart'>
-                                <button className='py-3 px-6 font-quicksand font-semibold rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white'>
-                                    Explore
-                                </button>
-                            </a>
                         </div>
 
                         {/* College Selector */}
@@ -184,10 +174,10 @@ export default async function HomePage() {
                 <QuickLinks colleges={colleges} />
 
                 {/* Features Section for SEO */}
-                <section className='py-16 bg-white dark:bg-gray-900'>
+                <section className='py-16 bg-gray-50 dark:bg-gray-800'>
                     <div className='container mx-auto px-4'>
                         <div className='text-center mb-12'>
-                            <h2 className='text-3xl font-fugaz font-bold text-gray-900 dark:text-white mb-4'>
+                            <h2 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>
                                 Why Choose Student Senior?
                             </h2>
                             <p className='text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
@@ -195,18 +185,12 @@ export default async function HomePage() {
                                 peer connection
                             </p>
                         </div>
-
                         <div className='grid md:grid-cols-3 gap-8'>
-                            {/* Card 1 */}
-                            <div
-                                className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20 
-                      transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-blue-200/50 
-                      dark:hover:shadow-blue-900/30'
-                            >
+                            <div className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20'>
                                 <div className='w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4'>
                                     <GraduationCap className='text-blue-600 dark:text-blue-400' />
                                 </div>
-                                <h3 className='text-xl font-fugaz font-semibold mb-3 text-gray-900 dark:text-white'>
+                                <h3 className='text-xl font-semibold mb-3 text-gray-900 dark:text-white'>
                                     Expert Mentorship
                                 </h3>
                                 <p className='text-gray-600 dark:text-gray-300'>
@@ -214,17 +198,11 @@ export default async function HomePage() {
                                     personalized academic guidance
                                 </p>
                             </div>
-
-                            {/* Card 2 */}
-                            <div
-                                className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20 
-                      transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-green-200/50 
-                      dark:hover:shadow-green-900/30'
-                            >
+                            <div className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20'>
                                 <div className='w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4'>
                                     <File className='text-green-600 dark:text-green-400' />
                                 </div>
-                                <h3 className='text-xl font-fugaz font-semibold mb-3 text-gray-900 dark:text-white'>
+                                <h3 className='text-xl font-semibold mb-3 text-gray-900 dark:text-white'>
                                     Comprehensive Resources
                                 </h3>
                                 <p className='text-gray-600 dark:text-gray-300'>
@@ -232,17 +210,11 @@ export default async function HomePage() {
                                     curated academic materials
                                 </p>
                             </div>
-
-                            {/* Card 3 */}
-                            <div
-                                className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20 
-                      transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-purple-200/50 
-                      dark:hover:shadow-purple-900/30'
-                            >
+                            <div className='text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-sm dark:shadow-gray-900/20'>
                                 <div className='w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4'>
                                     <User className='text-purple-600 dark:text-purple-400' />
                                 </div>
-                                <h3 className='text-xl font-fugaz font-semibold mb-3 text-gray-900 dark:text-white'>
+                                <h3 className='text-xl font-semibold mb-3 text-gray-900 dark:text-white'>
                                     Active Community
                                 </h3>
                                 <p className='text-gray-600 dark:text-gray-300'>
@@ -253,7 +225,6 @@ export default async function HomePage() {
                         </div>
                     </div>
                 </section>
-
                 <OurFeatures />
 
                 <FAQPage />
