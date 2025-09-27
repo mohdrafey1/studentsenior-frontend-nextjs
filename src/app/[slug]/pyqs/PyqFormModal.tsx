@@ -1,10 +1,10 @@
-"use client";
-import React, { useEffect, useState, useRef } from "react";
-import { ICourse, IBranch } from "@/utils/interface";
-import { api } from "@/config/apiUrls";
-import { UploadIcon, DollarSign, CheckCircle, X } from "lucide-react";
-import SearchableSelect from "@/components/Common/SearchableSelect";
-import toast from "react-hot-toast";
+'use client';
+import React, { useEffect, useState, useRef } from 'react';
+import { ICourse, IBranch } from '@/utils/interface';
+import { api } from '@/config/apiUrls';
+import { UploadIcon, DollarSign, CheckCircle, X } from 'lucide-react';
+import SearchableSelect from '@/components/Common/SearchableSelect';
+import toast from 'react-hot-toast';
 
 export interface PyqFormData {
     subject: string;
@@ -42,8 +42,8 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     fetchBranches,
 }) => {
     const [loading, setLoading] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState("");
-    const [selectedBranch, setSelectedBranch] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState('');
+    const [selectedBranch, setSelectedBranch] = useState('');
     const [file, setFile] = useState<File | null>(null);
     const [subjects, setSubjects] = useState<
         Array<{
@@ -59,7 +59,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     // Reset form when modal opens/closes
     useEffect(() => {
         if (isOpen) {
-            setSelectedCourse("");
+            setSelectedCourse('');
             setSubjects([]);
             appliedPrefRef.current = false;
         }
@@ -69,7 +69,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     useEffect(() => {
         if (!isOpen || courses.length === 0 || selectedCourse) return;
         try {
-            const saved = localStorage.getItem("ss:resourcePref");
+            const saved = localStorage.getItem('ss:resourcePref');
             if (!saved) return;
             const pref = JSON.parse(saved) as { courseCode?: string };
             if (!pref.courseCode) return;
@@ -87,12 +87,12 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     useEffect(() => {
         if (!isOpen || appliedPrefRef.current || branches.length === 0) return;
         try {
-            const saved = localStorage.getItem("ss:resourcePref");
+            const saved = localStorage.getItem('ss:resourcePref');
             if (!saved) return;
             const pref = JSON.parse(saved) as { branchCode?: string };
             if (!pref.branchCode) return;
             const match = branches.find(
-                (b) => b.branchCode === pref.branchCode
+                (b) => b.branchCode === pref.branchCode,
             );
             if (match) {
                 setSelectedBranch(match._id);
@@ -111,12 +111,12 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to fetch subjects");
+                throw new Error(data.message || 'Failed to fetch subjects');
             }
 
             setSubjects(data.data || []);
         } catch (error) {
-            console.error("Error fetching subjects:", error);
+            console.error('Error fetching subjects:', error);
         } finally {
             setLoadingSubjects(false);
         }
@@ -141,12 +141,12 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            if (selectedFile.type !== "application/pdf") {
-                toast.error("Only PDF files are allowed.");
+            if (selectedFile.type !== 'application/pdf') {
+                toast.error('Only PDF files are allowed.');
                 return;
             }
             if (selectedFile.size > 10 * 1024 * 1024) {
-                toast.error("File size exceeds 10MB.");
+                toast.error('File size exceeds 10MB.');
                 return;
             }
             setFile(selectedFile);
@@ -158,44 +158,44 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
         // Validate required fields
         if (!selectedCourse) {
-            toast.error("Please select a course");
+            toast.error('Please select a course');
             return;
         }
 
         if (!selectedBranch) {
-            toast.error("Please select a branch");
+            toast.error('Please select a branch');
             return;
         }
 
         if (!form.subject) {
-            toast.error("Please select a subject");
+            toast.error('Please select a subject');
             return;
         }
 
         if (!form.year) {
-            toast.error("Please select a year");
+            toast.error('Please select a year');
             return;
         }
 
         if (!form.examType) {
-            toast.error("Please select an exam type");
+            toast.error('Please select an exam type');
             return;
         }
 
         if (!file) {
-            toast.error("Please select a PDF file");
+            toast.error('Please select a PDF file');
             return;
         }
 
         if (form.isPaid && (!form.price || form.price < 25)) {
             toast.error(
-                "Please set a valid price (minimum 25 points) for paid content"
+                'Please set a valid price (minimum 25 points) for paid content',
             );
             return;
         }
 
         setLoading(true);
-        const loadingToast = toast.loading("Processing your request...");
+        const loadingToast = toast.loading('Processing your request...');
 
         try {
             let fileUrl = form.fileUrl;
@@ -210,11 +210,11 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
                 // Step 1: Get pre-signed URL
                 const response = await fetch(`${api.aws.presignedUrl}`, {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
+                        'Content-Type': 'application/json',
                     },
-                    credentials: "include",
+                    credentials: 'include',
                     body: JSON.stringify({
                         fileName: `ss-pyq/${fileName}`,
                         fileType,
@@ -224,7 +224,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(
-                        data.message || "Failed to get presigned URL"
+                        data.message || 'Failed to get presigned URL',
                     );
                 }
 
@@ -232,15 +232,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
                 // Step 2: Upload file directly to S3
                 const uploadResponse = await fetch(uploadUrl, {
-                    method: "PUT",
+                    method: 'PUT',
                     headers: {
-                        "Content-Type": fileType,
+                        'Content-Type': fileType,
                     },
                     body: file,
                 });
 
                 if (!uploadResponse.ok) {
-                    throw new Error("Failed to upload file");
+                    throw new Error('Failed to upload file');
                 }
 
                 fileUrl = `https://dixu7g0y1r80v.cloudfront.net/${key}`;
@@ -248,7 +248,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
             }
 
             if (!fileUrl) {
-                throw new Error("File URL is required");
+                throw new Error('File URL is required');
             }
 
             // Submit the form data
@@ -259,9 +259,9 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
             onClose();
         } catch (error) {
-            console.error("Error submitting form:", error);
+            console.error('Error submitting form:', error);
             toast.error(
-                error instanceof Error ? error.message : "Failed to save PYQ"
+                error instanceof Error ? error.message : 'Failed to save PYQ',
             );
         } finally {
             toast.dismiss(loadingToast);
@@ -286,49 +286,49 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     }));
 
     const examTypeOptions = [
-        { value: "midsem1", label: "Midsem 1" },
-        { value: "midsem2", label: "Midsem 2" },
-        { value: "improvement", label: "Improvement" },
-        { value: "endsem", label: "Endsem" },
+        { value: 'midsem1', label: 'Midsem 1' },
+        { value: 'midsem2', label: 'Midsem 2' },
+        { value: 'improvement', label: 'Improvement' },
+        { value: 'endsem', label: 'Endsem' },
     ];
 
     const yearOptions = [
-        { value: "2024-25", label: "2024-25" },
-        { value: "2023-24", label: "2023-24" },
-        { value: "2022-23", label: "2022-23" },
+        { value: '2024-25', label: '2024-25' },
+        { value: '2023-24', label: '2023-24' },
+        { value: '2022-23', label: '2022-23' },
     ];
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
+                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
                         Add New PYQ
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                        className='text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors'
                     >
-                        <X className="w-6 h-6" />
+                        <X className='w-6 h-6' />
                     </button>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="p-6 space-y-4 bg-white dark:bg-gray-800"
+                    className='p-6 space-y-4 bg-white dark:bg-gray-800'
                 >
                     <>
                         {/* Course Selection */}
                         <div>
                             <SearchableSelect
-                                label="Course *"
+                                label='Course *'
                                 value={selectedCourse}
                                 onChange={handleCourseChange}
                                 options={courseOptions}
-                                placeholder="Select Course"
+                                placeholder='Select Course'
                                 loading={loadingCourses}
                             />
                         </div>
@@ -336,11 +336,11 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                         {/* Branch Selection */}
                         <div>
                             <SearchableSelect
-                                label="Branch *"
+                                label='Branch *'
                                 value={selectedBranch}
                                 onChange={handleBranchChange}
                                 options={branchOptions}
-                                placeholder="Select Branch"
+                                placeholder='Select Branch'
                                 loading={loadingBranches}
                                 disabled={!selectedCourse}
                             />
@@ -349,7 +349,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                         {/* Subject Selection */}
                         <div>
                             <SearchableSelect
-                                label="Subject *"
+                                label='Subject *'
                                 value={form.subject}
                                 onChange={(subjectId) =>
                                     setForm((prev) => ({
@@ -358,15 +358,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                     }))
                                 }
                                 options={subjectOptions}
-                                placeholder="Select Subject"
+                                placeholder='Select Subject'
                                 loading={loadingSubjects}
                             />
                         </div>
 
                         {/* Year and Exam Type */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className='grid grid-cols-2 gap-4'>
                             <div>
-                                <label className="block font-semibold text-sky-500 dark:text-sky-400 mb-1">
+                                <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
                                     Year *
                                 </label>
                                 <select
@@ -377,10 +377,10 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                             year: e.target.value,
                                         }))
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
                                     required
                                 >
-                                    <option value="">Select Year</option>
+                                    <option value=''>Select Year</option>
                                     {yearOptions.map((option) => (
                                         <option
                                             key={option.value}
@@ -392,7 +392,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 </select>
                             </div>
                             <div>
-                                <label className="block font-semibold text-sky-500 dark:text-sky-400 mb-1">
+                                <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
                                     Exam Type *
                                 </label>
 
@@ -404,10 +404,10 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                             examType: e.target.value,
                                         }))
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
                                     required
                                 >
-                                    <option value="">Select Exam Type</option>
+                                    <option value=''>Select Exam Type</option>
                                     {examTypeOptions.map((option) => (
                                         <option
                                             key={option.value}
@@ -422,32 +422,32 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
                         {/* File Upload */}
                         <div>
-                            <label className="block font-semibold text-sky-500 dark:text-sky-400 mb-1">
+                            <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
                                 Upload PDF (Max 10MB) *
                             </label>
 
-                            <div className="flex items-center gap-4">
-                                <label className="flex-1 flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-sky-500 dark:hover:border-sky-400 transition-colors duration-200 cursor-pointer">
+                            <div className='flex items-center gap-4'>
+                                <label className='flex-1 flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-sky-500 dark:hover:border-sky-400 transition-colors duration-200 cursor-pointer'>
                                     <input
-                                        id="file-upload"
-                                        type="file"
-                                        className="w-full border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-500 file:text-white hover:file:bg-sky-600"
-                                        accept=".pdf"
+                                        id='file-upload'
+                                        type='file'
+                                        className='w-full border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-500 file:text-white hover:file:bg-sky-600'
+                                        accept='.pdf'
                                         onChange={handleFileChange}
                                         required
                                     />
-                                    <div className="text-center">
-                                        <UploadIcon className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    <div className='text-center'>
+                                        <UploadIcon className='w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2' />
+                                        <span className='text-sm text-gray-600 dark:text-gray-400'>
                                             {form.fileUrl
-                                                ? "File uploaded"
-                                                : "Click to upload file"}
+                                                ? 'File uploaded'
+                                                : 'Click to upload file'}
                                         </span>
                                     </div>
                                 </label>
                                 {form.fileUrl && (
-                                    <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                                        <CheckCircle className="w-4 h-4" />
+                                    <div className='flex items-center gap-2 text-sm text-green-600 dark:text-green-400'>
+                                        <CheckCircle className='w-4 h-4' />
                                         Uploaded
                                     </div>
                                 )}
@@ -455,12 +455,12 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                         </div>
 
                         {/* Solved Option */}
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <div className='flex items-center justify-between'>
+                            <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                                 Solved Paper
                             </span>
                             <button
-                                type="button"
+                                type='button'
                                 onClick={() =>
                                     setForm((prev) => ({
                                         ...prev,
@@ -474,15 +474,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 }
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                                     form.solved
-                                        ? "bg-violet-600"
-                                        : "bg-gray-200 dark:bg-gray-700"
+                                        ? 'bg-violet-600'
+                                        : 'bg-gray-200 dark:bg-gray-700'
                                 }`}
                             >
                                 <span
                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                                         form.solved
-                                            ? "translate-x-6"
-                                            : "translate-x-1"
+                                            ? 'translate-x-6'
+                                            : 'translate-x-1'
                                     }`}
                                 />
                             </button>
@@ -490,12 +490,12 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
                         {/* Paid Option - Only visible when solved */}
                         {form.solved && (
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <div className='flex items-center justify-between'>
+                                <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                                     Premium Content
                                 </span>
                                 <button
-                                    type="button"
+                                    type='button'
                                     onClick={() =>
                                         setForm((prev) => ({
                                             ...prev,
@@ -505,15 +505,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                     }
                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                                         form.isPaid
-                                            ? "bg-violet-600"
-                                            : "bg-gray-200 dark:bg-gray-700"
+                                            ? 'bg-violet-600'
+                                            : 'bg-gray-200 dark:bg-gray-700'
                                     }`}
                                 >
                                     <span
                                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                                             form.isPaid
-                                                ? "translate-x-6"
-                                                : "translate-x-1"
+                                                ? 'translate-x-6'
+                                                : 'translate-x-1'
                                         }`}
                                     />
                                 </button>
@@ -524,13 +524,13 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     {/* Price Input - Only visible when isPaid is true */}
                     {form.solved && form.isPaid && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                                 Price (in Points - 5 points = 1 INR)
                             </label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <div className='relative'>
+                                <DollarSign className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
                                 <input
-                                    type="number"
+                                    type='number'
                                     value={form.price}
                                     onChange={(e) =>
                                         setForm((prev) => ({
@@ -538,25 +538,25 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                             price: Number(e.target.value),
                                         }))
                                     }
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                                    placeholder="25"
-                                    min="25"
+                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                                    placeholder='25'
+                                    min='25'
                                 />
                             </div>
                         </div>
                     )}
 
                     {/* Submit Button */}
-                    <div className="flex justify-end gap-3 pt-4">
+                    <div className='flex justify-end gap-3 pt-4'>
                         <button
-                            type="button"
+                            type='button'
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+                            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200'
                         >
                             Cancel
                         </button>
                         <button
-                            type="submit"
+                            type='submit'
                             disabled={
                                 loading ||
                                 !form.subject ||
@@ -565,9 +565,9 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                 (form.isPaid &&
                                     (!form.price || form.price < 25))
                             }
-                            className="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className='px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
                         >
-                            {loading ? "Saving..." : "Add PYQ"}
+                            {loading ? 'Saving...' : 'Add PYQ'}
                         </button>
                     </div>
                 </form>

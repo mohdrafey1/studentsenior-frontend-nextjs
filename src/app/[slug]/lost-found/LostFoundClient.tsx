@@ -24,7 +24,7 @@ const LostFoundClient = ({
 }) => {
     const [items, setItems] = useState<ILostFoundItem[]>(initialItems);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState('');
     const [searchInput, setSearchInput] = useState('');
@@ -49,7 +49,7 @@ const LostFoundClient = ({
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -76,7 +76,7 @@ const LostFoundClient = ({
             if (statusFilter) params.append('currentStatus', statusFilter);
 
             const url = `${api.lostFound.getLostFoundByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
@@ -126,7 +126,7 @@ const LostFoundClient = ({
                       whatsapp: '',
                       imageUrl: '',
                       currentStatus: 'open',
-                  }
+                  },
         );
         setModalOpen(true);
     };
@@ -169,7 +169,7 @@ const LostFoundClient = ({
             if (!res.ok) throw new Error(data.message || 'Failed to save item');
 
             toast.success(
-                data.message || (editItem ? 'Item updated!' : 'Item added!')
+                data.message || (editItem ? 'Item updated!' : 'Item added!'),
             );
             closeModal();
             fetchItems();
@@ -194,7 +194,7 @@ const LostFoundClient = ({
                 {
                     method: 'DELETE',
                     credentials: 'include',
-                }
+                },
             );
             const data = await res.json();
             if (!res.ok)

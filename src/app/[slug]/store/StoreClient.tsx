@@ -24,7 +24,7 @@ const StoreClient = ({
 }) => {
     const [items, setItems] = useState<IStoreItem[]>(initialItems);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState('');
     const [searchInput, setSearchInput] = useState('');
@@ -47,7 +47,7 @@ const StoreClient = ({
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -73,7 +73,7 @@ const StoreClient = ({
             // if (availableFilter) params.append("available", availableFilter);
 
             const url = `${api.store.getStoreByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
@@ -118,7 +118,7 @@ const StoreClient = ({
                       image: '',
                       whatsapp: '',
                       telegram: '',
-                  }
+                  },
         );
         setModalOpen(true);
     };
@@ -164,7 +164,7 @@ const StoreClient = ({
 
             toast.success(
                 data.message ||
-                    (editItem ? 'Product updated!' : 'Product added!')
+                    (editItem ? 'Product updated!' : 'Product added!'),
             );
             closeModal();
             fetchItems();
@@ -191,7 +191,7 @@ const StoreClient = ({
                 {
                     method: 'DELETE',
                     credentials: 'include',
-                }
+                },
             );
 
             const data = await response.json();

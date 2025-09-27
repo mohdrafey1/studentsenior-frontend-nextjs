@@ -30,22 +30,22 @@ const VideosClient = ({
 
     const [videos, setVideos] = useState<IVideo[]>(initialVideos);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || ''
+        searchParams.get('course') || '',
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || ''
+        searchParams.get('branch') || '',
     );
     const [semesterFilter, setSemesterFilter] = useState(
-        searchParams.get('semester') || ''
+        searchParams.get('semester') || '',
     );
 
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
@@ -72,7 +72,7 @@ const VideosClient = ({
     const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -173,7 +173,7 @@ const VideosClient = ({
             if (semesterFilter) params.set('semester', semesterFilter);
 
             const url = `${api.videos.getVideosByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const response = await fetch(url);
 
@@ -321,7 +321,7 @@ const VideosClient = ({
                 {
                     method: 'DELETE',
                     credentials: 'include',
-                }
+                },
             );
 
             if (!response.ok) {
@@ -336,7 +336,7 @@ const VideosClient = ({
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : 'Failed to delete video'
+                    : 'Failed to delete video',
             );
         } finally {
             setDeleteLoading(false);

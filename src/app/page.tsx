@@ -105,7 +105,7 @@ export default async function HomePage() {
 
     if (!AllColleges.data?.length) {
         console.warn(
-            '⚠️ Using rawColleges fallback due to fetch failure or empty response'
+            '⚠️ Using rawColleges fallback due to fetch failure or empty response',
         );
     }
 

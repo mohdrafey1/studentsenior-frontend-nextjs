@@ -13,7 +13,7 @@ import Link from 'next/link';
 
 const CollectionClient = () => {
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     if (!currentUser) {
@@ -68,7 +68,7 @@ const CollectionClient = () => {
 
     const renderPYQCard = (
         item: { _id?: string; pyqId?: IPyq | string; savedAt?: string } | IPyq,
-        isPurchased = false
+        isPurchased = false,
     ) => {
         // Handle both structures from the data
         const pyq = (
@@ -110,7 +110,7 @@ const CollectionClient = () => {
                                 {pyq.slug
                                     ?.replace(/-/g, ' ')
                                     .replace(/(^\w|\s\w)/g, (m: string) =>
-                                        m.toUpperCase()
+                                        m.toUpperCase(),
                                     )}
                             </div>
                         </div>
@@ -121,7 +121,7 @@ const CollectionClient = () => {
                                     (!isPurchased &&
                                         (item as { savedAt?: string })
                                             .savedAt) ||
-                                        pyq.createdAt
+                                        pyq.createdAt,
                                 )}
                             </span>
                             {pyq.isPaid && (
@@ -193,7 +193,7 @@ const CollectionClient = () => {
         item:
             | { _id?: string; noteId?: INote | string; savedAt?: string }
             | INote,
-        isPurchased = false
+        isPurchased = false,
     ) => {
         // Handle both structures from the data
         const note = (
@@ -236,7 +236,7 @@ const CollectionClient = () => {
                                 {note?.slug
                                     ?.replace(/-/g, ' ')
                                     .replace(/(^\w|\s\w)/g, (m: string) =>
-                                        m.toUpperCase()
+                                        m.toUpperCase(),
                                     )}
                             </div>
                         </div>
@@ -247,7 +247,7 @@ const CollectionClient = () => {
                                     (!isPurchased &&
                                         (item as { savedAt?: string })
                                             .savedAt) ||
-                                        note.createdAt
+                                        note.createdAt,
                                 )}
                             </span>
                             {note?.isPaid && (
@@ -306,7 +306,8 @@ const CollectionClient = () => {
                                 />
                             </svg>
                             {Array.isArray(
-                                (note as unknown as { likes?: unknown[] }).likes
+                                (note as unknown as { likes?: unknown[] })
+                                    .likes,
                             )
                                 ? (
                                       (note as unknown as { likes?: unknown[] })
@@ -362,7 +363,7 @@ const CollectionClient = () => {
                 return purchasedPYQs?.length > 0 ? (
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {purchasedPYQs.map((item) =>
-                            renderPYQCard(item as unknown as IPyq, true)
+                            renderPYQCard(item as unknown as IPyq, true),
                         )}
                     </div>
                 ) : (
@@ -372,7 +373,7 @@ const CollectionClient = () => {
                 return purchasedNotes?.length > 0 ? (
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {purchasedNotes.map((item) =>
-                            renderNoteCard(item as unknown as INote, true)
+                            renderNoteCard(item as unknown as INote, true),
                         )}
                     </div>
                 ) : (

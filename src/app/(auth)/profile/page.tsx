@@ -33,7 +33,7 @@ export default function Profile() {
     const [loading1, setLoading1] = useState<boolean>(false);
 
     const { currentUser } = useSelector(
-        (state: { user: UserState }) => state.user
+        (state: { user: UserState }) => state.user,
     );
 
     useEffect(() => {

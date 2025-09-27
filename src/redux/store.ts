@@ -1,10 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
-import storage from "redux-persist/lib/storage";
-import { persistReducer, persistStore } from "redux-persist";
-import { combineReducers } from "redux";
-import userReducer from "./slices/userSlice";
-import savedCollectionReducer from "./slices/savedCollectionSlice";
-import userDataReducer from "./slices/userDataSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer, persistStore } from 'redux-persist';
+import { combineReducers } from 'redux';
+import userReducer from './slices/userSlice';
+import savedCollectionReducer from './slices/savedCollectionSlice';
+import userDataReducer from './slices/userDataSlice';
 
 // Noop storage to avoid server-side errors in SSR
 const noopStorage = {
@@ -15,9 +15,9 @@ const noopStorage = {
 
 // Common storage config
 const persistConfig = {
-    key: "root",
-    storage: typeof window !== "undefined" ? storage : noopStorage,
-    whitelist: ["user", "savedCollection"],
+    key: 'root',
+    storage: typeof window !== 'undefined' ? storage : noopStorage,
+    whitelist: ['user', 'savedCollection'],
 };
 const rootReducer = combineReducers({
     user: userReducer,

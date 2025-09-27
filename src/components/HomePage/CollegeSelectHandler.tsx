@@ -74,7 +74,7 @@ export default function CollegeSelectHandler({
                                         college.name.length > 40
                                             ? `${college.name.substring(
                                                   0,
-                                                  37
+                                                  37,
                                               )}...`
                                             : college.name;
                                     return (

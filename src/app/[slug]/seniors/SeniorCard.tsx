@@ -103,7 +103,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                             key={i}
                             href={formatSocialMediaLink(
                                 link.platform,
-                                link.url
+                                link.url,
                             )}
                             target='_blank'
                             rel='noopener noreferrer'

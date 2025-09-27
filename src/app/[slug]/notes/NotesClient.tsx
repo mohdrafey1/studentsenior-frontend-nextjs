@@ -36,22 +36,22 @@ const NotesClient = ({
 
     const [notes, setNotes] = useState<INote[]>(initialNotes);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || ''
+        searchParams.get('course') || '',
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || ''
+        searchParams.get('branch') || '',
     );
     const [semesterFilter, setSemesterFilter] = useState(
-        searchParams.get('semester') || ''
+        searchParams.get('semester') || '',
     );
 
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
@@ -80,7 +80,7 @@ const NotesClient = ({
     const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -181,7 +181,7 @@ const NotesClient = ({
             if (semesterFilter) params.set('semester', semesterFilter);
 
             const url = `${api.notes.getNotesByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const response = await fetch(url);
 
@@ -345,7 +345,9 @@ const NotesClient = ({
         } catch (error) {
             console.error('Error deleting note:', error);
             toast.error(
-                error instanceof Error ? error.message : 'Failed to delete note'
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to delete note',
             );
         } finally {
             setDeleteLoading(false);

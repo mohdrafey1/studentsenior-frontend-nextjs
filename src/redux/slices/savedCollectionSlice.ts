@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/config/apiUrls";
-import type { IPyq, INote } from "@/utils/interface";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { api } from '@/config/apiUrls';
+import type { IPyq, INote } from '@/utils/interface';
 
 type SavedPyqEntry = {
     pyqId: IPyq | string;
@@ -25,18 +25,18 @@ export const fetchSavedCollection = createAsyncThunk<
     SavedCollectionPayload,
     void,
     { rejectValue: FetchError }
->("savedCollection/fetchSavedCollection", async (_, { rejectWithValue }) => {
+>('savedCollection/fetchSavedCollection', async (_, { rejectWithValue }) => {
     try {
         const response = await fetch(`${api.savedData.savedCollection}`, {
-            method: "GET",
-            credentials: "include",
+            method: 'GET',
+            credentials: 'include',
         });
 
         const json = await response.json();
 
         if (!response.ok || json?.success === false) {
             return rejectWithValue({
-                message: json?.message || "Failed to fetch saved collection",
+                message: json?.message || 'Failed to fetch saved collection',
                 status: json?.statusCode || response.status,
             });
         }
@@ -51,7 +51,9 @@ export const fetchSavedCollection = createAsyncThunk<
         } as SavedCollectionPayload;
     } catch (error) {
         return rejectWithValue(
-            error instanceof Error ? error.message : "An unknown error occurred"
+            error instanceof Error
+                ? error.message
+                : 'An unknown error occurred',
         );
     }
 });
@@ -75,7 +77,7 @@ const initialState: SavedCollectionState = {
 };
 
 const savedCollectionSlice = createSlice({
-    name: "savedCollection",
+    name: 'savedCollection',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -95,10 +97,10 @@ const savedCollectionSlice = createSlice({
                 state.loading = false;
                 const payload = action.payload;
                 state.error =
-                    typeof payload === "string"
+                    typeof payload === 'string'
                         ? payload
                         : (payload as { message?: string } | undefined)
-                              ?.message || "Failed to fetch saved collection";
+                              ?.message || 'Failed to fetch saved collection';
             });
     },
 });

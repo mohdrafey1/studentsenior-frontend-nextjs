@@ -1,14 +1,14 @@
-import { api } from "@/config/apiUrls";
-import { capitalizeWords } from "@/utils/formatting";
-import type { Metadata } from "next";
-import { IPyq } from "@/utils/interface";
-import SubjectPyqsClient from "./SubjectPyqsClient";
+import { api } from '@/config/apiUrls';
+import { capitalizeWords } from '@/utils/formatting';
+import type { Metadata } from 'next';
+import { IPyq } from '@/utils/interface';
+import SubjectPyqsClient from './SubjectPyqsClient';
 
-import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
+import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
 
 interface SubjectPyqsPageProps {
     params: Promise<{
-        "pyq-slug": string;
+        'pyq-slug': string;
         slug: string;
         courseCode: string;
         branchCode: string;
@@ -18,12 +18,12 @@ interface SubjectPyqsPageProps {
 export async function generateMetadata({
     params,
 }: SubjectPyqsPageProps): Promise<Metadata> {
-    const { "pyq-slug": subjectCode, slug } = await params;
+    const { 'pyq-slug': subjectCode, slug } = await params;
     return {
         title: `${capitalizeWords(subjectCode)} - PYQs | ${capitalizeWords(
-            slug
+            slug,
         )}`,
-        description: "Past year questions for the subject",
+        description: 'Past year questions for the subject',
     };
 }
 
@@ -31,7 +31,7 @@ export default async function SubjectPyqsPage({
     params,
 }: SubjectPyqsPageProps) {
     const {
-        "pyq-slug": subjectCode,
+        'pyq-slug': subjectCode,
         slug,
         courseCode,
         branchCode,
@@ -40,21 +40,21 @@ export default async function SubjectPyqsPage({
     let pyqs: IPyq[] = [];
     try {
         const url = `${api.resources.getPyqsBySubject(subjectCode, slug)}`;
-        const res = await fetch(url, { cache: "no-store" });
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
         pyqs = data?.data || [];
     } catch (error) {
-        console.error("Failed to fetch PYQs by subject:", error);
+        console.error('Failed to fetch PYQs by subject:', error);
     }
 
     return (
         <>
             <DetailPageNavbar
-                path="subjects"
+                path='subjects'
                 fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
             />
-            <main className="min-h-screen">
+            <main className='min-h-screen'>
                 <SubjectPyqsClient
                     initialPyqs={pyqs}
                     subjectCode={subjectCode}

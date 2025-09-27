@@ -39,31 +39,31 @@ const PyqsClient = ({
 
     const [pyqs, setPyqs] = useState<IPyq[]>(initialPyqs);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || ''
+        searchParams.get('course') || '',
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || ''
+        searchParams.get('branch') || '',
     );
     const [yearFilter, setYearFilter] = useState(
-        searchParams.get('year') || ''
+        searchParams.get('year') || '',
     );
     const [examTypeFilter, setExamTypeFilter] = useState(
-        searchParams.get('examType') || ''
+        searchParams.get('examType') || '',
     );
     const [semesterFilter, setSemesterFilter] = useState(
-        searchParams.get('semester') || ''
+        searchParams.get('semester') || '',
     );
     const [isSolvedFilter, setIsSolvedFilter] = useState(
-        searchParams.get('isSolved') || ''
+        searchParams.get('isSolved') || '',
     );
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ const PyqsClient = ({
     const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -202,7 +202,7 @@ const PyqsClient = ({
             if (semesterFilter) params.set('semester', semesterFilter);
             if (isSolvedFilter) params.set('isSolved', isSolvedFilter);
             const url = `${api.pyq.getPyqByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const response = await fetch(url);
 
@@ -368,7 +368,7 @@ const PyqsClient = ({
         } catch (error) {
             console.error('Error deleting PYQ:', error);
             toast.error(
-                error instanceof Error ? error.message : 'Failed to delete PYQ'
+                error instanceof Error ? error.message : 'Failed to delete PYQ',
             );
         } finally {
             setDeleteLoading(false);

@@ -1,20 +1,20 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { api } from "@/config/apiUrls";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { api } from '@/config/apiUrls';
 
 // Types
 interface Transaction {
     id: string;
     points: number;
     type:
-        | "earn"
-        | "redeem"
-        | "reduction"
-        | "bonus"
-        | "pyq-purchase"
-        | "note-purchase"
-        | "add-point"
-        | "pyq-sale"
-        | "note-sale";
+        | 'earn'
+        | 'redeem'
+        | 'reduction'
+        | 'bonus'
+        | 'pyq-purchase'
+        | 'note-purchase'
+        | 'add-point'
+        | 'pyq-sale'
+        | 'note-sale';
     createdAt: string;
     resourceType: string;
     resourceId: string;
@@ -77,16 +77,16 @@ export const fetchUserData = createAsyncThunk<
     UserDataState,
     void,
     { rejectValue: string }
->("userData/fetchUserData", async (_, { rejectWithValue }) => {
+>('userData/fetchUserData', async (_, { rejectWithValue }) => {
     try {
         const response = await fetch(`${api.user.userData}`, {
-            method: "GET",
-            credentials: "include",
+            method: 'GET',
+            credentials: 'include',
         });
         const data = await response.json();
 
         if (!response.ok || data.success === false) {
-            throw new Error(data.message || "Failed to fetch user data");
+            throw new Error(data.message || 'Failed to fetch user data');
         }
 
         console.log(data);
@@ -104,7 +104,9 @@ export const fetchUserData = createAsyncThunk<
         };
     } catch (error) {
         return rejectWithValue(
-            error instanceof Error ? error.message : "An unknown error occurred"
+            error instanceof Error
+                ? error.message
+                : 'An unknown error occurred',
         );
     }
 });
@@ -122,7 +124,7 @@ const initialState: UserDataState = {
 };
 
 const userDataSlice = createSlice({
-    name: "userData",
+    name: 'userData',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -143,11 +145,11 @@ const userDataSlice = createSlice({
                     state.userNoteAdd = action.payload.userNoteAdd;
                     state.loading = false;
                     state.error = null;
-                }
+                },
             )
             .addCase(fetchUserData.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || "Failed to fetch user data";
+                state.error = action.payload || 'Failed to fetch user data';
             });
     },
 });

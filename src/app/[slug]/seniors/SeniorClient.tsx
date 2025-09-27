@@ -30,22 +30,22 @@ const SeniorClient = ({
 
     const [seniors, setSeniors] = useState<ISenior[]>(initialSeniors);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || ''
+        searchParams.get('search') || '',
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || ''
+        searchParams.get('course') || '',
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || ''
+        searchParams.get('branch') || '',
     );
     const [yearFilter, setYearFilter] = useState(
-        searchParams.get('year') || ''
+        searchParams.get('year') || '',
     );
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [loading, setLoading] = useState(false);
@@ -72,7 +72,7 @@ const SeniorClient = ({
     const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -175,7 +175,7 @@ const SeniorClient = ({
             if (yearFilter) params.append('year', yearFilter);
 
             const url = `${api.seniors.getSeniorsByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
@@ -222,7 +222,7 @@ const SeniorClient = ({
                       profilePicture: '',
                       socialMediaLinks: [],
                       description: '',
-                  }
+                  },
         );
         setModalOpen(true);
     };
@@ -266,7 +266,7 @@ const SeniorClient = ({
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || 'Failed to save senior profile'
+                    data.message || 'Failed to save senior profile',
                 );
             }
 
@@ -274,7 +274,7 @@ const SeniorClient = ({
                 data.message ||
                     (editSenior
                         ? 'Senior profile updated!'
-                        : 'Senior profile added!')
+                        : 'Senior profile added!'),
             );
             closeModal();
             fetchSeniors();
@@ -301,14 +301,14 @@ const SeniorClient = ({
                 {
                     method: 'DELETE',
                     credentials: 'include',
-                }
+                },
             );
 
             const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || 'Failed to delete senior profile'
+                    data.message || 'Failed to delete senior profile',
                 );
             }
 

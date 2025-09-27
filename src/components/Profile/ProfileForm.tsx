@@ -60,7 +60,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const [editMode, setEditMode] = useState<boolean>(false);
 
     const { currentUser, loading, error } = useSelector(
-        (state: { user: UserState }) => state.user
+        (state: { user: UserState }) => state.user,
     );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

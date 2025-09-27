@@ -1,6 +1,6 @@
 // firebase.ts
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,4 +14,4 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const analytics =
-    typeof window !== "undefined" ? getAnalytics(app) : null;
+    typeof window !== 'undefined' ? getAnalytics(app) : null;

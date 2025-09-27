@@ -336,19 +336,19 @@ const SignUp: React.FC = () => {
                                                 passwordStrength <= 2
                                                     ? 'text-red-600'
                                                     : passwordStrength <= 3
-                                                    ? 'text-yellow-600'
-                                                    : 'text-green-600'
+                                                      ? 'text-yellow-600'
+                                                      : 'text-green-600'
                                             }`}
                                         >
                                             {getPasswordStrengthText(
-                                                passwordStrength
+                                                passwordStrength,
                                             )}
                                         </span>
                                     </div>
                                     <div className='mt-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5'>
                                         <div
                                             className={`h-1.5 rounded-full transition-all duration-300 ${getPasswordStrengthColor(
-                                                passwordStrength
+                                                passwordStrength,
                                             )}`}
                                             style={{
                                                 width: `${

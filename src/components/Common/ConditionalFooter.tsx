@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Footer from "@/components/Common/Footer";
+import { usePathname } from 'next/navigation';
+import Footer from '@/components/Common/Footer';
 
 // Exact paths you want to hide footer on
 const hideExactPaths = [
-    "/integral-university/pyqs",
-    "/integral-university/notes",
-    "/integral-university/seniors",
-    "/integral-university/lost-found",
-    "/integral-university/opportunities",
-    "/integral-university/store",
-    "/integral-university/groups",
-    "/profile",
+    '/integral-university/pyqs',
+    '/integral-university/notes',
+    '/integral-university/seniors',
+    '/integral-university/lost-found',
+    '/integral-university/opportunities',
+    '/integral-university/store',
+    '/integral-university/groups',
+    '/profile',
 ];
 
 // Prefix paths (hide all subpages under these)
-const hidePrefixPaths = ["/integral-university/resources"];
+const hidePrefixPaths = ['/integral-university/resources'];
 
 export default function ConditionalFooter() {
     const pathname = usePathname();

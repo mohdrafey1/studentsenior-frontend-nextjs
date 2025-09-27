@@ -1,34 +1,34 @@
-import React from "react";
-import { api } from "@/config/apiUrls";
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import OpportunityDetailClient from "./OpportunityDetailClient";
+import React from 'react';
+import { api } from '@/config/apiUrls';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import OpportunityDetailClient from './OpportunityDetailClient';
 
 interface OpportunityPageProps {
     params: Promise<{
-        "opportunity-slug": string;
+        'opportunity-slug': string;
     }>;
 }
 
 export async function generateMetadata({
     params,
 }: OpportunityPageProps): Promise<Metadata> {
-    const { "opportunity-slug": opportunitySlug } = await params;
+    const { 'opportunity-slug': opportunitySlug } = await params;
 
     try {
         const res = await fetch(
             `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
             {
-                cache: "no-store",
-            }
+                cache: 'no-store',
+            },
         );
         const data = await res.json();
         const opportunity = data?.data;
 
         if (!opportunity) {
             return {
-                title: "Opportunity Not Found",
-                description: "The requested opportunity could not be found.",
+                title: 'Opportunity Not Found',
+                description: 'The requested opportunity could not be found.',
             };
         }
 
@@ -39,8 +39,8 @@ export async function generateMetadata({
     } catch (error) {
         console.log(error);
         return {
-            title: "Opportunity - Student Senior",
-            description: "View opportunity details",
+            title: 'Opportunity - Student Senior',
+            description: 'View opportunity details',
         };
     }
 }
@@ -48,13 +48,13 @@ export async function generateMetadata({
 export default async function OpportunityPage({
     params,
 }: OpportunityPageProps) {
-    const { "opportunity-slug": opportunitySlug } = await params;
+    const { 'opportunity-slug': opportunitySlug } = await params;
 
     const res = await fetch(
         `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
         {
-            cache: "no-store",
-        }
+            cache: 'no-store',
+        },
     );
     const data = await res.json();
 
