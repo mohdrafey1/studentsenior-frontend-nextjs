@@ -327,14 +327,21 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
                                             <div className='flex items-center gap-2 mb-3 p-2 bg-gray-50 dark:bg-gray-600 rounded-lg'>
                                                 <div className='w-8 h-8 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm'>
                                                     {getCollegeInitials(
-                                                        pyq.college.name,
+                                                        pyq.submissionStatus,
                                                     )}
                                                 </div>
                                                 <div className='flex-1 min-w-0'>
                                                     <span className='text-sm font-medium text-gray-700 dark:text-gray-200 truncate block'>
-                                                        {pyq.college.name}
+                                                        {pyq.submissionStatus}
                                                     </span>
                                                 </div>
+                                                {pyq.submissionStatus ===
+                                                    'rejected' && (
+                                                    <span className='text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full font-semibold'>
+                                                        {pyq.rejectionReason ||
+                                                            'Rejected'}
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Date */}

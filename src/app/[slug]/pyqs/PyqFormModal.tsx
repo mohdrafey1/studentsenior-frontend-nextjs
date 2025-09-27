@@ -293,6 +293,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     ];
 
     const yearOptions = [
+        { value: '2025-26', label: '2025-26' },
         { value: '2024-25', label: '2024-25' },
         { value: '2023-24', label: '2023-24' },
         { value: '2022-23', label: '2022-23' },

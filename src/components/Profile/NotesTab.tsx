@@ -293,12 +293,22 @@ export default function NotesTab({ notes }: NotesTabProps) {
                                                 <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
                                                     <div className='w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold'>
                                                         {getCollegeInitials(
-                                                            note.college.name,
+                                                            note.submissionStatus,
                                                         )}
                                                     </div>
                                                     <span className='truncate'>
-                                                        {note.college.name}
+                                                        {note.submissionStatus ||
+                                                            'Unknown'}
                                                     </span>
+                                                    {note.rejectionReason && (
+                                                        <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                            (
+                                                            {
+                                                                note.rejectionReason
+                                                            }
+                                                            )
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
 

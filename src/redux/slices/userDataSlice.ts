@@ -30,6 +30,8 @@ interface Product {
     };
     slug: string;
     description: string;
+    submissionStatus: string;
+    rejectionReason?: string;
 }
 interface PYQ {
     id: string;
@@ -45,6 +47,8 @@ interface PYQ {
 
     createdAt: string;
     examType: string;
+    submissionStatus: string;
+    rejectionReason?: string;
 }
 interface Note {
     id: string;
@@ -59,6 +63,8 @@ interface Note {
     subject: {
         subjectName: string;
     };
+    submissionStatus: string;
+    rejectionReason?: string;
 }
 export interface UserDataState {
     rewardPoints: number;
