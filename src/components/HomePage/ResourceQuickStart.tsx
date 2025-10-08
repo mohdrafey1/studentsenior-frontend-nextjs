@@ -189,7 +189,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
         <div className='w-full max-w-2xl mx-auto mt-8' id='QuickStart'>
             <div className='relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl shadow-sky-100/50 dark:shadow-gray-900/30 p-6 sm:p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-sky-200/60 dark:hover:shadow-gray-900/40'>
                 {/* Background decoration */}
-                <div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-sky-400/10 to-cyan-400/10 rounded-full blur-2xl'></div>
+                <div className='absolute -top-4 right-0 w-24 h-24 bg-gradient-to-br from-sky-400/10 to-cyan-400/10 rounded-full blur-2xl'></div>
                 <div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-tr from-blue-400/10 to-purple-400/10 rounded-full blur-2xl'></div>
 
                 {/* Header */}

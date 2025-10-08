@@ -142,33 +142,37 @@ export default async function HomePage() {
                         <div className='absolute inset-0 bg-gradient-to-r from-transparent via-sky-100/10 to-transparent dark:via-sky-900/10'></div>
                     </div>
                     <div className='h-screen flex flex-col'>
-    <LandingHeader />
+                        <LandingHeader />
 
-    {/* Main Content */}
-    <div className='relative my-auto z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
-        {/* Welcome Text */}
-        <div className='text-center max-w-4xl mx-auto'>
-            <h1 className='text-xl sm:text-xl md:text-7xl lg:text-6xl font-bold mb-6 leading-tight'>
-                <span className='bg-gradient-to-r from-black via-[#2563eb] to-[#2563eb] dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
-                Student Senior - Where College Life Gets Easier                
-                </span>
-            </h1>
+                        {/* Main Content */}
+                        <div className='relative my-auto z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
+                            {/* Welcome Text */}
+                            <div className='text-center max-w-4xl mx-auto'>
+                                <h1 className='text-xl sm:text-xl md:text-7xl lg:text-6xl font-bold mb-6 leading-tight'>
+                                    <span className='bg-gradient-to-r from-black via-[#2563eb] to-[#2563eb] dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
+                                        Student Senior - Where College Life Gets
+                                        Easier
+                                    </span>
+                                </h1>
 
-            {/* Subtitle */}
-            <p className='text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay'>
-                Learn smarter with PYQs, notes, and real senior support — connect with seniors, access trusted resources, and take your academic journey further.
-            </p>
-        </div>
+                                {/* Subtitle */}
+                                <p className='text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay'>
+                                    Learn smarter with PYQs, notes, and real
+                                    senior support — connect with seniors,
+                                    access trusted resources, and take your
+                                    academic journey further.
+                                </p>
+                            </div>
 
-        {/* College Selector */}
-        <div className='w-full max-w-2xl space-y-4 pt-8'>
-            <CollegeSelectHandler colleges={colleges} />
-        </div>
-    </div>
-</div>
+                            {/* College Selector */}
+                            <div className='w-full max-w-2xl space-y-4 pt-8'>
+                                <CollegeSelectHandler colleges={colleges} />
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 <div className='py-8 bg-gradient-to-tr from-sky-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900'>
-                            <ResourceQuickStart colleges={colleges} />
+                    <ResourceQuickStart colleges={colleges} />
                 </div>
 
                 {/* Quick Access Section */}
