@@ -1,8 +1,8 @@
-import { api } from "@/config/apiUrls";
-import { capitalizeWords } from "@/utils/formatting";
-import type { Metadata } from "next";
-import { CollegePageProps, IPagination, IPyq } from "@/utils/interface";
-import PyqsClient from "./PyqsClient";
+import { api } from '@/config/apiUrls';
+import { capitalizeWords } from '@/utils/formatting';
+import type { Metadata } from 'next';
+import { CollegePageProps, IPagination, IPyq } from '@/utils/interface';
+import PyqsClient from './PyqsClient';
 
 export async function generateMetadata({
     params,
@@ -11,7 +11,7 @@ export async function generateMetadata({
     return {
         title: `PYQs - ${capitalizeWords(slug)}`,
         description:
-            "Access past year question papers, understand trends, improve strategies, and ace exams confidently with a well-organized, easy-to-use database for students.",
+            'Access past year question papers, understand trends, improve strategies, and ace exams confidently with a well-organized, easy-to-use database for students.',
     };
 }
 
@@ -24,7 +24,7 @@ export default async function PyqsPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.pyq.getPyqByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { cache: "no-store" });
+        const res = await fetch(url, { cache: 'no-store' });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -34,16 +34,16 @@ export default async function PyqsPage({ params }: CollegePageProps) {
         pyqs = data?.data?.pyqs || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error("Error fetching PYQs:", error);
+        console.error('Error fetching PYQs:', error);
     }
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <header className="text-center mb-8">
-                <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
+        <main className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
+            <header className='text-center mb-8'>
+                <h1 className='text-2xl font-fugaz sm:text-4xl font-bold text-gray-800 dark:text-white mb-3'>
                     PYQs - {capitalizeWords(collegeName)}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+                <p className='text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto'>
                     Access past year question papers, understand trends, improve
                     strategies, and ace exams confidently with a well-organized,
                     easy-to-use database for students.

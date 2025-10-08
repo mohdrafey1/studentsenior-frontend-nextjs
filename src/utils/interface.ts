@@ -68,15 +68,15 @@ export interface IProduct {
 
 export interface ISocialMediaLink {
     platform:
-        | "whatsapp"
-        | "telegram"
-        | "instagram"
-        | "linkedin"
-        | "facebook"
-        | "twitter"
-        | "youtube"
-        | "github"
-        | "other";
+        | 'whatsapp'
+        | 'telegram'
+        | 'instagram'
+        | 'linkedin'
+        | 'facebook'
+        | 'twitter'
+        | 'youtube'
+        | 'github'
+        | 'other';
     url: string;
 }
 
@@ -104,7 +104,7 @@ export interface ISenior {
     };
     clickCount: number;
     slug: string;
-    submissionStatus: "pending" | "approved" | "rejected";
+    submissionStatus: 'pending' | 'approved' | 'rejected';
     rejectionReason?: string;
     description?: string;
     deleted?: boolean;
@@ -135,10 +135,10 @@ export interface ILostFoundItem {
     _id: string;
     title: string;
     description: string;
-    type: "lost" | "found";
+    type: 'lost' | 'found';
     location: string;
     date: string;
-    currentStatus: "open" | "closed";
+    currentStatus: 'open' | 'closed';
     imageUrl?: string;
     whatsapp: string;
     owner: {
@@ -225,7 +225,7 @@ export interface IPyq {
     isPaid: boolean;
     price: number;
     purchasedBy: string[];
-    submissionStatus: "pending" | "approved" | "rejected";
+    submissionStatus: 'pending' | 'approved' | 'rejected';
     rejectionReason?: string;
     description?: string;
     createdAt: string;
@@ -252,7 +252,7 @@ export interface INote {
         slug: string;
     };
     slug: string;
-    submissionStatus: "pending" | "approved" | "rejected";
+    submissionStatus: 'pending' | 'approved' | 'rejected';
     rejectionReason?: string;
     createdAt: string;
     updatedAt: string;
@@ -276,7 +276,7 @@ export interface IVideo {
         slug: string;
     };
     slug: string;
-    submissionStatus: "pending" | "approved" | "rejected";
+    submissionStatus: 'pending' | 'approved' | 'rejected';
     rejectionReason?: string;
     createdAt: string;
     updatedAt: string;

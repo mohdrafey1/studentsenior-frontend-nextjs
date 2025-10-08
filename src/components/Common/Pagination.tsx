@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 
 interface PaginationProps {
     currentPage: number;
@@ -35,33 +35,33 @@ const Pagination: React.FC<PaginationProps> = ({
                 if (i <= totalPages) pages.push(i);
             }
             if (totalPages > visiblePages) {
-                pages.push("...");
+                pages.push('...');
                 pages.push(totalPages);
             }
         } else if (currentPage > totalPages - visiblePages) {
             // At the end
             pages.push(1);
-            pages.push("...");
+            pages.push('...');
             for (let i = totalPages - visiblePages + 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
             // In the middle
             pages.push(1);
-            pages.push("...");
+            pages.push('...');
             for (let i = currentPage - 1; i <= currentPage + 1; i++) {
                 pages.push(i);
             }
-            pages.push("...");
+            pages.push('...');
             pages.push(totalPages);
         }
 
         return pages.map((p, index) => {
-            if (p === "...") {
+            if (p === '...') {
                 return (
                     <span
                         key={`ellipsis-${index}`}
-                        className="px-2 text-gray-700 dark:text-gray-200"
+                        className='px-2 text-gray-700 dark:text-gray-200'
                     >
                         {p}
                     </span>
@@ -71,10 +71,10 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     key={p}
                     onClick={() => onPageChange(p as number)}
-                    className={`px-3 py-2 rounded transition-colors duration-200 ${
+                    className={`px-4 hover:bg-sky-300 dark:hover:bg-gray-500 py-2 rounded-2xl transition-colors  duration-200 ${
                         p === currentPage
-                            ? "bg-sky-500 text-white dark:bg-sky-400 dark:text-gray-900"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                            ? 'bg-sky-500 text-white dark:bg-sky-400 dark:text-gray-900'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                     }`}
                     aria-label={`Page ${p}`}
                 >
@@ -86,14 +86,14 @@ const Pagination: React.FC<PaginationProps> = ({
 
     return (
         <nav
-            className="flex flex-wrap justify-center items-center gap-2 mt-8"
-            aria-label="Pagination"
+            className='flex flex-wrap justify-center items-center gap-2 mt-8'
+            aria-label='Pagination'
         >
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50"
-                aria-label="Previous page"
+                className='px-4 hover:bg-sky-300 dark:hover:bg-gray-500 py-2 rounded-2xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50'
+                aria-label='Previous page'
             >
                 Prev
             </button>
@@ -101,8 +101,8 @@ const Pagination: React.FC<PaginationProps> = ({
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50"
-                aria-label="Next page"
+                className='px-4 hover:bg-sky-300 dark:hover:bg-gray-500 py-2 rounded-2xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50'
+                aria-label='Next page'
             >
                 Next
             </button>

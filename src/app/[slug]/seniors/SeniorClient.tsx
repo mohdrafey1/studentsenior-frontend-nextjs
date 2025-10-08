@@ -1,19 +1,19 @@
-"use client";
-import React, { useEffect, useState, useCallback } from "react";
-import { api } from "@/config/apiUrls";
-import toast from "react-hot-toast";
-import { IPagination, ISenior, ICourse, IBranch } from "@/utils/interface";
-import { SEARCH_DEBOUNCE, SENIOR_PAGE_SIZE } from "@/constant";
-import DeleteConfirmationModal from "@/components/Common/DeleteConfirmationModal";
-import PaginationComponent from "@/components/Common/Pagination";
-import { SeniorCard } from "./SeniorCard";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { PlusIcon, SearchIcon, FilterIcon, XIcon } from "lucide-react";
-import SeniorFormModal, { SeniorFormData } from "./SeniorFormModal";
-import { capitalizeWords } from "@/utils/formatting";
-import SearchableSelect from "@/components/Common/SearchableSelect";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+'use client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { api } from '@/config/apiUrls';
+import toast from 'react-hot-toast';
+import { IPagination, ISenior, ICourse, IBranch } from '@/utils/interface';
+import { SEARCH_DEBOUNCE, SENIOR_PAGE_SIZE } from '@/constant';
+import DeleteConfirmationModal from '@/components/Common/DeleteConfirmationModal';
+import PaginationComponent from '@/components/Common/Pagination';
+import { SeniorCard } from './SeniorCard';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { PlusIcon, SearchIcon, FilterIcon, XIcon } from 'lucide-react';
+import SeniorFormModal, { SeniorFormData } from './SeniorFormModal';
+import { capitalizeWords } from '@/utils/formatting';
+import SearchableSelect from '@/components/Common/SearchableSelect';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const SeniorClient = ({
     initialSeniors,
@@ -30,35 +30,35 @@ const SeniorClient = ({
 
     const [seniors, setSeniors] = useState<ISenior[]>(initialSeniors);
     const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination
+        initialPagination,
     );
     const [searchTerm, setSearchTerm] = useState(
-        searchParams.get("search") || ""
+        searchParams.get('search') || '',
     );
     const [searchInput, setSearchInput] = useState(
-        searchParams.get("search") || ""
+        searchParams.get('search') || '',
     );
     const [courseFilter, setCourseFilter] = useState(
-        searchParams.get("course") || ""
+        searchParams.get('course') || '',
     );
     const [branchFilter, setBranchFilter] = useState(
-        searchParams.get("branch") || ""
+        searchParams.get('branch') || '',
     );
     const [yearFilter, setYearFilter] = useState(
-        searchParams.get("year") || ""
+        searchParams.get('year') || '',
     );
-    const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editSenior, setEditSenior] = useState<ISenior | null>(null);
     const [form, setForm] = useState({
-        name: "",
-        domain: "",
-        branch: "",
-        year: "",
-        profilePicture: "",
+        name: '',
+        domain: '',
+        branch: '',
+        year: '',
+        profilePicture: '',
         socialMediaLinks: [] as { platform: string; url: string }[],
-        description: "",
+        description: '',
     });
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -72,7 +72,7 @@ const SeniorClient = ({
     const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
-        (state: RootState) => state.user.currentUser
+        (state: RootState) => state.user.currentUser,
     );
 
     const ownerId = currentUser?._id;
@@ -98,13 +98,13 @@ const SeniorClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to fetch courses");
+                throw new Error(data.message || 'Failed to fetch courses');
             }
 
             setCourses(data.data || []);
         } catch (error) {
-            console.error("Error fetching courses:", error);
-            toast.error("Failed to fetch courses");
+            console.error('Error fetching courses:', error);
+            toast.error('Failed to fetch courses');
         } finally {
             setLoadingCourses(false);
         }
@@ -117,13 +117,13 @@ const SeniorClient = ({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to fetch branches");
+                throw new Error(data.message || 'Failed to fetch branches');
             }
 
             setBranches(data.data || []);
         } catch (error) {
-            console.error("Error fetching branches:", error);
-            toast.error("Failed to fetch branches");
+            console.error('Error fetching branches:', error);
+            toast.error('Failed to fetch branches');
         } finally {
             setLoadingBranches(false);
         }
@@ -132,11 +132,11 @@ const SeniorClient = ({
     useEffect(() => {
         const params = new URLSearchParams();
 
-        if (searchTerm) params.set("search", searchTerm);
-        if (courseFilter) params.set("course", courseFilter);
-        if (branchFilter) params.set("branch", branchFilter);
-        if (yearFilter) params.set("year", yearFilter);
-        if (page > 1) params.set("page", String(page));
+        if (searchTerm) params.set('search', searchTerm);
+        if (courseFilter) params.set('course', courseFilter);
+        if (branchFilter) params.set('branch', branchFilter);
+        if (yearFilter) params.set('year', yearFilter);
+        if (page > 1) params.set('page', String(page));
 
         // Only push to history if params have changed
         if (params.toString() !== searchParams.toString()) {
@@ -170,24 +170,24 @@ const SeniorClient = ({
                 page: String(page),
                 limit: String(SENIOR_PAGE_SIZE),
             });
-            if (searchTerm.trim()) params.append("search", searchTerm.trim());
-            if (branchFilter) params.append("branch", branchFilter);
-            if (yearFilter) params.append("year", yearFilter);
+            if (searchTerm.trim()) params.append('search', searchTerm.trim());
+            if (branchFilter) params.append('branch', branchFilter);
+            if (yearFilter) params.append('year', yearFilter);
 
             const url = `${api.seniors.getSeniorsByCollegeSlug(
-                collegeName
+                collegeName,
             )}?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
 
             if (!res.ok)
-                throw new Error(data.message || "Failed to fetch seniors");
+                throw new Error(data.message || 'Failed to fetch seniors');
 
             setSeniors(data.data.seniors || []);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to fetch seniors");
+            else toast.error('Failed to fetch seniors');
         } finally {
             setLoading(false);
         }
@@ -199,7 +199,7 @@ const SeniorClient = ({
 
     const openModal = (senior?: ISenior) => {
         if (!currentUser) {
-            toast.error("Please sign in to add senior profile");
+            toast.error('Please sign in to add senior profile');
             return;
         }
         setEditSenior(senior || null);
@@ -207,22 +207,22 @@ const SeniorClient = ({
             senior
                 ? {
                       name: senior.name,
-                      domain: senior.domain || "",
+                      domain: senior.domain || '',
                       branch: senior.branch._id,
                       year: senior.year,
-                      profilePicture: senior.profilePicture || "",
+                      profilePicture: senior.profilePicture || '',
                       socialMediaLinks: senior.socialMediaLinks || [],
-                      description: senior.description || "",
+                      description: senior.description || '',
                   }
                 : {
-                      name: "",
-                      domain: "",
-                      branch: "",
-                      year: "",
-                      profilePicture: "",
+                      name: '',
+                      domain: '',
+                      branch: '',
+                      year: '',
+                      profilePicture: '',
                       socialMediaLinks: [],
-                      description: "",
-                  }
+                      description: '',
+                  },
         );
         setModalOpen(true);
     };
@@ -231,20 +231,20 @@ const SeniorClient = ({
         setModalOpen(false);
         setEditSenior(null);
         setForm({
-            name: "",
-            domain: "",
-            branch: "",
-            year: "",
-            profilePicture: "",
+            name: '',
+            domain: '',
+            branch: '',
+            year: '',
+            profilePicture: '',
             socialMediaLinks: [],
-            description: "",
+            description: '',
         });
     };
 
     const handleSubmit = async (formData: SeniorFormData) => {
         setLoading(true);
         try {
-            const method = editSenior ? "PUT" : "POST";
+            const method = editSenior ? 'PUT' : 'POST';
 
             const url = editSenior
                 ? api.seniors.editSenior(editSenior._id)
@@ -252,35 +252,35 @@ const SeniorClient = ({
 
             const body = {
                 ...formData,
-                ...(method === "POST" && { college: collegeName }),
+                ...(method === 'POST' && { college: collegeName }),
             };
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
-                credentials: "include",
+                credentials: 'include',
             });
 
             const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || "Failed to save senior profile"
+                    data.message || 'Failed to save senior profile',
                 );
             }
 
             toast.success(
                 data.message ||
                     (editSenior
-                        ? "Senior profile updated!"
-                        : "Senior profile added!")
+                        ? 'Senior profile updated!'
+                        : 'Senior profile added!'),
             );
             closeModal();
             fetchSeniors();
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to save senior profile");
+            else toast.error('Failed to save senior profile');
         } finally {
             setLoading(false);
         }
@@ -299,26 +299,26 @@ const SeniorClient = ({
             const response = await fetch(
                 api.seniors.deleteSenior(deleteTargetId),
                 {
-                    method: "DELETE",
-                    credentials: "include",
-                }
+                    method: 'DELETE',
+                    credentials: 'include',
+                },
             );
 
             const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || "Failed to delete senior profile"
+                    data.message || 'Failed to delete senior profile',
                 );
             }
 
-            toast.success("Senior profile deleted successfully");
+            toast.success('Senior profile deleted successfully');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
             fetchSeniors();
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
-            else toast.error("Failed to delete senior profile");
+            else toast.error('Failed to delete senior profile');
         } finally {
             setDeleteLoading(false);
         }
@@ -341,22 +341,22 @@ const SeniorClient = ({
     return (
         <>
             {/* Header with Add Button */}
-            <section className="mb-8" aria-label="Search and Add Senior">
-                <div className="flex flex-col gap-4">
+            <section className='mb-8' aria-label='Search and Add Senior'>
+                <div className='flex flex-col gap-4'>
                     {/* Search and Add Button Row */}
-                    <div className="flex flex-col sm:flex-row gap-4 w-full">
+                    <div className='flex flex-col sm:flex-row gap-4 w-full'>
                         {/* Search Input */}
-                        <div className="relative flex-grow">
-                            <div className="flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all">
-                                <SearchIcon className="w-5 h-5 text-gray-400" />
+                        <div className='relative flex-grow'>
+                            <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 text-black dark:text-white transition-all'>
+                                <SearchIcon className='w-5 h-5 text-gray-400' />
                                 <input
-                                    type="text"
-                                    placeholder="Search seniors..."
+                                    type='text'
+                                    placeholder='Search seniors...'
                                     value={searchInput}
                                     onChange={(e) =>
                                         setSearchInput(e.target.value)
                                     }
-                                    className="w-full bg-transparent outline-none"
+                                    className='w-full bg-transparent outline-none text-black dark:text-white'
                                 />
                             </div>
                         </div>
@@ -364,20 +364,20 @@ const SeniorClient = ({
                         {/* Filter Toggle Button (Mobile) */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="sm:hidden flex items-center justify-center gap-2 p-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            className='sm:hidden flex items-center text-black dark:text-white justify-center gap-2 p-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
                         >
-                            <FilterIcon className="w-4 h-4" />
+                            <FilterIcon className='w-4 h-4' />
                             Filters
-                            {showFilters ? <XIcon className="w-4 h-4" /> : null}
+                            {showFilters ? <XIcon className='w-4 h-4' /> : null}
                         </button>
 
                         {/* Add Senior Button */}
                         <button
                             onClick={() => openModal()}
-                            className="flex gap-3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600"
+                            className='flex gap-3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
                         >
-                            <PlusIcon className="w-4 h-4" />
-                            <span className="whitespace-nowrap">
+                            <PlusIcon className='w-4 h-4' />
+                            <span className='whitespace-nowrap'>
                                 Add Senior
                             </span>
                         </button>
@@ -386,27 +386,27 @@ const SeniorClient = ({
                     {/* Filters Section */}
                     <div
                         className={`${
-                            showFilters ? "block" : "hidden"
+                            showFilters ? 'block' : 'hidden'
                         } sm:block`}
                     >
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className='flex flex-col sm:flex-row gap-4'>
                             {/* Course Filter */}
-                            <div className="w-full sm:w-1/3">
+                            <div className='w-full sm:w-1/3 text-black dark:text-white'>
                                 <SearchableSelect
                                     options={courseOptions}
                                     value={courseFilter}
                                     onChange={(value) => {
                                         setCourseFilter(value);
-                                        setBranchFilter(""); // Reset branch when course changes
+                                        setBranchFilter(''); // Reset branch when course changes
                                     }}
-                                    placeholder="Select Course"
+                                    placeholder='Select Course'
                                     loading={loadingCourses}
                                     required={true}
                                 />
                             </div>
 
                             {/* Branch Filter */}
-                            <div className="w-full sm:w-1/3">
+                            <div className='w-full sm:w-1/3 text-black dark:text-white'>
                                 {courseFilter ? (
                                     <SearchableSelect
                                         options={branches.map((branch) => ({
@@ -417,52 +417,52 @@ const SeniorClient = ({
                                         onChange={(value) =>
                                             setBranchFilter(value)
                                         }
-                                        placeholder="Select Branch"
+                                        placeholder='Select Branch'
                                         loading={loadingBranches}
                                         required={true}
                                         disabled={!courseFilter}
                                     />
                                 ) : (
-                                    <div className="p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                    <div className='p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'>
                                         Select a course first
                                     </div>
                                 )}
                             </div>
 
                             {/* Year Filter */}
-                            <div className="w-full sm:w-1/4">
+                            <div className='w-full sm:w-1/4 text-black dark:text-white'>
                                 <select
                                     value={yearFilter}
                                     onChange={(e) =>
                                         setYearFilter(e.target.value)
                                     }
-                                    className="w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
+                                    className='w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'
                                 >
-                                    <option value="">All Years</option>
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year">2nd Year</option>
-                                    <option value="3rd Year">3rd Year</option>
-                                    <option value="4th Year">4th Year</option>
-                                    <option value="5th Year">5th Year</option>
-                                    <option value="Alumni">Alumni</option>
+                                    <option value=''>All Years</option>
+                                    <option value='1st Year'>1st Year</option>
+                                    <option value='2nd Year'>2nd Year</option>
+                                    <option value='3rd Year'>3rd Year</option>
+                                    <option value='4th Year'>4th Year</option>
+                                    <option value='5th Year'>5th Year</option>
+                                    <option value='Alumni'>Alumni</option>
                                 </select>
                             </div>
 
                             {/* Clear Filters Button */}
-                            <div className="w-full sm:w-auto">
+                            <div className='w-full sm:w-auto'>
                                 <button
-                                    className="w-full h-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-all"
+                                    className='w-full h-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-all'
                                     onClick={() => {
-                                        setCourseFilter("");
-                                        setBranchFilter("");
-                                        setYearFilter("");
-                                        setSearchInput("");
-                                        setSearchTerm("");
+                                        setCourseFilter('');
+                                        setBranchFilter('');
+                                        setYearFilter('');
+                                        setSearchInput('');
+                                        setSearchTerm('');
                                         setPage(1);
                                     }}
                                 >
-                                    <XIcon className="w-4 h-4" />
-                                    <span className="whitespace-nowrap">
+                                    <XIcon className='w-4 h-4' />
+                                    <span className='whitespace-nowrap'>
                                         Clear Filters
                                     </span>
                                 </button>
@@ -472,27 +472,27 @@ const SeniorClient = ({
                 </div>
             </section>
 
-            <section aria-label="Seniors List">
+            <section aria-label='Seniors List'>
                 {/* Loading State */}
                 {loading ? (
-                    <div className="text-center py-10 text-gray-700 dark:text-gray-200">
+                    <div className='text-center py-10 text-gray-700 dark:text-gray-200'>
                         Loading...
                     </div>
                 ) : seniors.length > 0 ? (
                     <>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
-                            Showing {seniors.length} of{" "}
+                        <p className='text-gray-600 dark:text-gray-300 mb-4 text-sm'>
+                            Showing {seniors.length} of{' '}
                             {pagination?.totalItems ?? 0} seniors
                         </p>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                             {seniors.map((senior) => (
                                 <SeniorCard
                                     key={senior._id}
                                     senior={senior}
                                     onEdit={openModal}
                                     onDelete={handleDeleteRequest}
-                                    ownerId={ownerId || ""}
+                                    ownerId={ownerId || ''}
                                 />
                             ))}
                         </div>
@@ -503,19 +503,19 @@ const SeniorClient = ({
                         />
                     </>
                 ) : (
-                    <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                        <i className="fas fa-users text-5xl text-gray-400 mb-4"></i>
-                        <h3 className="text-xl font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
+                        <i className='fas fa-users text-5xl text-gray-400 mb-4'></i>
+                        <h3 className='text-xl font-medium text-gray-700 dark:text-gray-200 mb-2'>
                             No Seniors Found
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">
-                            Be the first to add your senior profile in{" "}
+                        <p className='text-gray-500 dark:text-gray-400 mb-6'>
+                            Be the first to add your senior profile in{' '}
                             {capitalizeWords(collegeName)}
                         </p>
                         <button
                             onClick={() => openModal()}
-                            className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600"
-                            aria-label="Add New Senior"
+                            className='px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600'
+                            aria-label='Add New Senior'
                         >
                             Add New Senior
                         </button>
@@ -540,7 +540,7 @@ const SeniorClient = ({
                 onCancel={handleDeleteCancel}
                 onConfirm={handleDeleteConfirm}
                 loading={deleteLoading}
-                message="Are you sure you want to delete this senior profile? This action cannot be undone."
+                message='Are you sure you want to delete this senior profile? This action cannot be undone.'
             />
         </>
     );

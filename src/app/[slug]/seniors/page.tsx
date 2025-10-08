@@ -1,8 +1,8 @@
-import { api } from "@/config/apiUrls";
-import { capitalizeWords } from "@/utils/formatting";
-import type { Metadata } from "next";
-import { CollegePageProps, IPagination, ISenior } from "@/utils/interface";
-import SeniorClient from "./SeniorClient";
+import { api } from '@/config/apiUrls';
+import { capitalizeWords } from '@/utils/formatting';
+import type { Metadata } from 'next';
+import { CollegePageProps, IPagination, ISenior } from '@/utils/interface';
+import SeniorClient from './SeniorClient';
 
 export async function generateMetadata({
     params,
@@ -11,7 +11,7 @@ export async function generateMetadata({
     return {
         title: `Seniors - ${capitalizeWords(slug)}`,
         description:
-            "Connect with seniors to get valuable insights and advice for your college journey.",
+            'Connect with seniors to get valuable insights and advice for your college journey.',
     };
 }
 
@@ -24,7 +24,7 @@ export default async function SeniorsPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.seniors.getSeniorsByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { cache: "no-store" });
+        const res = await fetch(url, { cache: 'no-store' });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -34,16 +34,16 @@ export default async function SeniorsPage({ params }: CollegePageProps) {
         seniors = data?.data?.seniors || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error("Error fetching seniors:", error);
+        console.error('Error fetching seniors:', error);
     }
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <header className="text-center mb-8">
-                <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-white mb-3">
+        <main className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
+            <header className='text-center mb-8'>
+                <h1 className='text-2xl font-fugaz sm:text-4xl font-bold text-gray-800 dark:text-white mb-3'>
                     Seniors - {capitalizeWords(collegeName)}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
+                <p className='text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto'>
                     Connect with seniors to get valuable insights and advice for
                     your college journey.
                 </p>

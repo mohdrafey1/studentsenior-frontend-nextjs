@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { store, persistor } from "@/redux/store";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { UserInitProvider } from "./AuthCheck";
+import { store, persistor } from '@/redux/store';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { UserInitProvider } from './AuthCheck';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (

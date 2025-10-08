@@ -1,13 +1,13 @@
-import { api } from "@/config/apiUrls";
-import { capitalizeWords } from "@/utils/formatting";
-import type { Metadata } from "next";
-import { INote } from "@/utils/interface";
-import SubjectNotesClient from "./SubjectNotesClient";
-import DetailPageNavbar from "@/components/Common/DetailPageNavbar";
+import { api } from '@/config/apiUrls';
+import { capitalizeWords } from '@/utils/formatting';
+import type { Metadata } from 'next';
+import { INote } from '@/utils/interface';
+import SubjectNotesClient from './SubjectNotesClient';
+import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
 
 interface SubjectNotesPageProps {
     params: Promise<{
-        "note-slug": string;
+        'note-slug': string;
         slug: string;
         courseCode: string;
         branchCode: string;
@@ -17,12 +17,12 @@ interface SubjectNotesPageProps {
 export async function generateMetadata({
     params,
 }: SubjectNotesPageProps): Promise<Metadata> {
-    const { "note-slug": subjectCode, slug } = await params;
+    const { 'note-slug': subjectCode, slug } = await params;
     return {
         title: `${capitalizeWords(subjectCode)} - Notes | ${capitalizeWords(
-            slug
+            slug,
         )}`,
-        description: "Notes for the subject",
+        description: 'Notes for the subject',
     };
 }
 
@@ -30,7 +30,7 @@ export default async function SubjectNotesPage({
     params,
 }: SubjectNotesPageProps) {
     const {
-        "note-slug": subjectCode,
+        'note-slug': subjectCode,
         slug,
         courseCode,
         branchCode,
@@ -39,21 +39,21 @@ export default async function SubjectNotesPage({
     let notes: INote[] = [];
     try {
         const url = `${api.resources.getNotesBySubject(subjectCode, slug)}`;
-        const res = await fetch(url, { cache: "no-store" });
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
         notes = data?.data || [];
     } catch (error) {
-        console.error("Failed to fetch Notes by subject:", error);
+        console.error('Failed to fetch Notes by subject:', error);
     }
 
     return (
         <>
             <DetailPageNavbar
-                path="subjects"
+                path='subjects'
                 fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
             />
-            <main className="min-h-screen">
+            <main className='min-h-screen'>
                 <SubjectNotesClient
                     initialNotes={notes}
                     subjectCode={subjectCode}

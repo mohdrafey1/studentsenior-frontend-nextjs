@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { RootState } from '@/redux/store';
 import { Moon, Sun, Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
 
-const Header: React.FC = () => {
+const LandingHeader: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -65,13 +65,13 @@ const Header: React.FC = () => {
     ];
 
     return (
-        <header className='sticky top-0 left-0 w-full bg-white dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50 transition-all duration-300'>
-            <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-                <div className='flex items-center justify-between h-16'>
+        <header className='sticky top-0 left-0 w-full backdrop-blur-md z-50 transition-all duration-300'>
+            <div className='container mx-auto px-4 sm:px-6 lg:px-2'>
+                <div className='flex items-center justify-between h-16 pt-8'>
                     {/* Logo */}
                     <Link
                         href='/'
-                        className='flex items-center space-x-2 group'
+                        className='flex items-center bg-blue-100 dark:bg-gray-700 p-2 rounded-xl space-x-2 group'
                     >
                         <div className='relative'>
                             <Image
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className='hidden lg:flex items-center space-x-1'>
+                    <nav className='hidden lg:flex items-center space-x-1 bg-blue-100 dark:bg-gray-700 p-2 rounded-xl'>
                         {menuItems.map((item) => (
                             <Link
                                 key={item.path}
@@ -122,7 +122,7 @@ const Header: React.FC = () => {
                     </nav>
 
                     {/* Right side actions */}
-                    <div className='flex items-center space-x-3'>
+                    <div className='flex items-center space-x-2 bg-blue-100 dark:bg-gray-700 p-2 rounded-xl'>
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}
@@ -141,7 +141,7 @@ const Header: React.FC = () => {
                             <div className='relative'>
                                 <button
                                     onClick={toggleProfileDropdown}
-                                    className='flex items-center space-x-2 p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
+                                    className='flex items-center space-x-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
                                 >
                                     <Image
                                         src={
@@ -192,13 +192,13 @@ const Header: React.FC = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className='flex items-center space-x-2'>
+                            <div className='flex items-center space-x-0'>
                                 <Link
                                     href={{
                                         pathname: '/sign-up',
                                         query: { from: pathname },
                                     }}
-                                    className='hidden sm:block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'
+                                    className='hidden sm:block px-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'
                                 >
                                     Sign Up
                                 </Link>
@@ -299,4 +299,4 @@ const Header: React.FC = () => {
     );
 };
 
-export default Header;
+export default LandingHeader;

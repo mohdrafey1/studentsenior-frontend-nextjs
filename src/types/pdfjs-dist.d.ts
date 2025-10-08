@@ -1,4 +1,4 @@
-declare module "pdfjs-dist/legacy/build/pdf" {
+declare module 'pdfjs-dist/legacy/build/pdf' {
     export const GlobalWorkerOptions: {
         workerSrc: string;
     };

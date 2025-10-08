@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { api } from "@/config/apiUrls";
-import { signOut } from "@/redux/slices/userSlice";
-import { fetchUserData } from "@/redux/slices/userDataSlice";
-import { ProfileForm, ProfileTabs, SignOutDialog } from "@/components/Profile";
-import type { AppDispatch } from "@/redux/store";
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { api } from '@/config/apiUrls';
+import { signOut } from '@/redux/slices/userSlice';
+import { fetchUserData } from '@/redux/slices/userDataSlice';
+import { ProfileForm, ProfileTabs, SignOutDialog } from '@/components/Profile';
+import type { AppDispatch } from '@/redux/store';
 
 interface User {
     _id: string;
@@ -33,7 +33,7 @@ export default function Profile() {
     const [loading1, setLoading1] = useState<boolean>(false);
 
     const { currentUser } = useSelector(
-        (state: { user: UserState }) => state.user
+        (state: { user: UserState }) => state.user,
     );
 
     useEffect(() => {
@@ -44,22 +44,22 @@ export default function Profile() {
         try {
             setLoading1(true);
             const response = await fetch(`${api.auth.signout}`, {
-                method: "POST",
-                credentials: "include",
+                method: 'POST',
+                credentials: 'include',
             });
 
             if (response.ok) {
                 dispatch(signOut());
                 setLoading1(false);
-                toast.success("You are Logout Now");
-                router.push("/sign-in");
+                toast.success('You are Logout Now');
+                router.push('/sign-in');
             } else {
-                console.error("Signout failed:", response);
-                toast.error("Signout failed");
+                console.error('Signout failed:', response);
+                toast.error('Signout failed');
             }
         } catch (error) {
-            console.error("Signout error:", error);
-            toast.error("Signout error");
+            console.error('Signout error:', error);
+            toast.error('Signout error');
         } finally {
             setLoading1(false);
         }
@@ -75,10 +75,10 @@ export default function Profile() {
 
     if (!currentUser) {
         return (
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400">
+            <div className='min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center'>
+                <div className='text-center'>
+                    <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto'></div>
+                    <p className='mt-4 text-gray-600 dark:text-gray-400'>
                         Loading...
                     </p>
                 </div>
@@ -87,7 +87,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className='min-h-screen bg-gray-100 dark:bg-gray-900'>
             {/* Sign Out Dialog */}
             <SignOutDialog
                 showDialog={showDialog}
@@ -96,14 +96,14 @@ export default function Profile() {
                 loading={loading1}
             />
 
-            <div className="flex flex-col lg:flex-row">
+            <div className='flex flex-col lg:flex-row'>
                 {/* Profile Form Section */}
-                <div className="lg:w-1/3 p-6">
+                <div className='lg:w-1/3 p-6'>
                     <ProfileForm onSignOut={handleSignOutClick} />
                 </div>
 
                 {/* Profile Details Section with Tabs */}
-                <div className="lg:w-2/3 p-6 overflow-auto">
+                <div className='lg:w-2/3 p-6 overflow-auto'>
                     <ProfileTabs />
                 </div>
             </div>

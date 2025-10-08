@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Header from "@/components/Common/Header";
+import { usePathname } from 'next/navigation';
+import Header from '@/components/Common/Header';
 
-const hideExactPaths = ["/test"];
-
-const hidePrefixPaths = ["/test/"];
+const hideExactPaths = ['/', '/test'];
+const hidePrefixPaths = ['/test/'];
 
 export default function ConditionalHeader() {
     const pathname = usePathname();

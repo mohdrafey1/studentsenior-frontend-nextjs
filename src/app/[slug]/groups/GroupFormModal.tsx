@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 
 interface GroupFormModalProps {
     open: boolean;
@@ -40,75 +40,75 @@ const GroupFormModal: React.FC<GroupFormModalProps> = ({
 }) => {
     if (!open) return null;
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-50 dark:bg-black dark:bg-opacity-70">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-lg relative">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-50 dark:bg-black dark:bg-opacity-70'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-lg relative'>
                 <button
-                    className="absolute text-4xl top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100"
+                    className='absolute text-4xl top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100'
                     onClick={onClose}
-                    aria-label="Close modal"
+                    aria-label='Close modal'
                 >
                     &times;
                 </button>
-                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-                    {editGroup ? "Edit Group" : "Add Group"}
+                <h2 className='text-xl font-bold mb-4 text-gray-900 dark:text-white'>
+                    {editGroup ? 'Edit Group' : 'Add Group'}
                 </h2>
-                <form onSubmit={onSubmit} className="space-y-4">
+                <form onSubmit={onSubmit} className='space-y-4'>
                     <input
-                        type="text"
-                        name="title"
-                        placeholder="Group Title"
+                        type='text'
+                        name='title'
+                        placeholder='Group Title'
                         value={form.title}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className='w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                         required
-                        aria-label="Group Title"
+                        aria-label='Group Title'
                     />
                     <input
-                        type="text"
-                        name="domain"
-                        placeholder="Domain (e.g. Study, Events)"
+                        type='text'
+                        name='domain'
+                        placeholder='Domain (e.g. Study, Events)'
                         value={form.domain}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className='w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                         required
-                        aria-label="Domain"
+                        aria-label='Domain'
                     />
                     <input
-                        type="url"
-                        name="link"
-                        placeholder="WhatsApp Group Link"
+                        type='url'
+                        name='link'
+                        placeholder='WhatsApp Group Link'
                         value={form.link}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className='w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                         required
-                        aria-label="WhatsApp Group Link"
+                        aria-label='WhatsApp Group Link'
                     />
                     <textarea
-                        name="info"
-                        placeholder="Description"
+                        name='info'
+                        placeholder='Description'
                         value={form.info}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className='w-full border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                         required
-                        aria-label="Description"
+                        aria-label='Description'
                         minLength={10}
                     />
                     <button
-                        type="submit"
-                        className="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg py-2 dark:bg-sky-500 dark:hover:bg-sky-600"
+                        type='submit'
+                        className='w-full bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg py-2 dark:bg-sky-500 dark:hover:bg-sky-600'
                         disabled={loading}
-                        aria-label={editGroup ? "Update Group" : "Add Group"}
+                        aria-label={editGroup ? 'Update Group' : 'Add Group'}
                     >
                         {loading
-                            ? "Saving..."
+                            ? 'Saving...'
                             : editGroup
-                            ? "Update Group"
-                            : "Add Group"}
+                              ? 'Update Group'
+                              : 'Add Group'}
                     </button>
                 </form>
             </div>

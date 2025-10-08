@@ -1,5 +1,5 @@
-import Collegelinks from "@/components/Common/CollegeLinks";
-import Collegelink2 from "@/components/Common/CollegeLink2";
+import Collegelinks from '@/components/Common/CollegeLinks';
+import Collegelink2 from '@/components/Common/CollegeLink2';
 
 export default function CollegeLayout({
     children,
@@ -8,7 +8,7 @@ export default function CollegeLayout({
 }) {
     return (
         <>
-            <div className="min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-15">
+            <div className='min-h-screen bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-15'>
                 <Collegelinks />
                 {children}
             </div>
