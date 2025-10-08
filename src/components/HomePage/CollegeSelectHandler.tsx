@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Building2, ChevronDown, University } from 'lucide-react';
+import { Building2, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 type College = {
@@ -102,12 +102,12 @@ export default function CollegeSelectHandler({
 
             <p className='text-sm text-gray-500 mt-4 text-center'>
                 Can’t find your college?{' '}
-                <a
+                <Link
                     href='/add-college'
                     className='text-blue-600 hover:underline'
                 >
                     Click here
-                </a>{' '}
+                </Link>{' '}
                 to add it.
             </p>
         </div>

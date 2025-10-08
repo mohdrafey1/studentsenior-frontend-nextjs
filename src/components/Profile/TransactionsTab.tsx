@@ -7,7 +7,6 @@ import {
     Filter,
     TrendingUp,
     TrendingDown,
-    ParkingCircle,
 } from 'lucide-react';
 
 interface TransactionsTabProps {

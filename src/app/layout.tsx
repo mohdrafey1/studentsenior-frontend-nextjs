@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PT_Serif, Geist_Mono, Quicksand, Titan_One } from 'next/font/google';
+import { PT_Serif, Geist_Mono, Quicksand } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import Providers from '@/components/Providers';

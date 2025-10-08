@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
@@ -10,16 +10,7 @@ import {
     updateUserSuccess,
     updateUserFailure,
 } from '@/redux/slices/userSlice';
-import {
-    Moon,
-    User,
-    Settings,
-    LogOut,
-    Phone,
-    Mail,
-    GraduationCap,
-    Lock,
-} from 'lucide-react';
+import { User, LogOut, Phone, GraduationCap, Lock } from 'lucide-react';
 
 interface User {
     _id: string;
@@ -51,12 +42,10 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const dispatch = useDispatch();
-    const fileRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<FormData>({});
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
-    const [passwordShown, setPasswordShown] = useState<boolean>(false);
-    const [imageLoading, setImageLoading] = useState<boolean>(false);
+
     const [editMode, setEditMode] = useState<boolean>(false);
 
     const { currentUser, loading, error } = useSelector(
@@ -182,7 +171,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                         onChange={handleChange}
                     />
                     <input
-                        type={passwordShown ? 'text' : 'password'}
+                        type='password'
                         id='password'
                         placeholder='Password'
                         className='w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700'

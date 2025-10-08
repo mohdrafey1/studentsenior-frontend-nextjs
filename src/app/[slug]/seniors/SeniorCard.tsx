@@ -1,15 +1,7 @@
 'use client';
 import React from 'react';
 import { ISenior } from '@/utils/interface';
-import {
-    Linkedin,
-    Github,
-    Mail,
-    Globe,
-    Youtube,
-    Send,
-    Phone,
-} from 'lucide-react';
+import { Linkedin, Github, Globe, Youtube, Send, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -22,9 +14,9 @@ interface SeniorCardProps {
 
 export const SeniorCard: React.FC<SeniorCardProps> = ({
     senior,
-    onEdit,
-    onDelete,
-    ownerId,
+    // onEdit,
+    // onDelete,
+    // ownerId,
 }) => {
     const formatSocialMediaLink = (platform: string, url: string) => {
         switch (platform.toLowerCase()) {
