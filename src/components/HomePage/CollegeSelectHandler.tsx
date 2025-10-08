@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { University } from 'lucide-react';
+import { Building2, ChevronDown, University } from 'lucide-react';
 import Link from 'next/link';
 
 type College = {
@@ -41,76 +41,65 @@ export default function CollegeSelectHandler({
     };
 
     return (
-        <div className='w-full max-w-md mx-auto'>
-            <div className='relative'>
-                <div className='bg-white rounded-2xl border-2 border-blue-200 shadow-xl p-6 transition-all duration-300 hover:shadow-2xl hover:border-blue-300'>
-                    <div className='flex items-center space-x-4'>
-                        <div className='flex-shrink-0'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center'>
-                                <University className='text-white ' />
-                            </div>
-                        </div>
-
-                        <div className='flex-1'>
-                            <label
-                                htmlFor='college-select'
-                                className='block text-sm font-medium text-gray-700 mb-2'
-                            >
-                                Select Your College
-                            </label>
-                            <select
-                                id='college-select'
-                                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 bg-white'
-                                value={selectedCollege}
-                                onChange={handleChange}
-                                disabled={isLoading}
-                                aria-label='Choose your college from the dropdown'
-                            >
-                                <option value=''>
-                                    Choose your institution...
-                                </option>
-                                {colleges.map((college) => {
-                                    const displayName =
-                                        college.name.length > 40
-                                            ? `${college.name.substring(
-                                                  0,
-                                                  37,
-                                              )}...`
-                                            : college.name;
-                                    return (
-                                        <option
-                                            key={college.slug}
-                                            value={college.slug}
-                                        >
-                                            {displayName}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-
-                            {isLoading && (
-                                <div className='mt-2 flex items-center text-sm text-blue-600'>
-                                    Loading your college...
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Decorative glow effect */}
-                <div className='absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-2xl blur-xl opacity-20 -z-10 animate-pulse'></div>
+       <div className='w-full max-w-md mx-auto'>
+      <div className='relative'>
+        <div className='relative bg-white dark:bg-gray-700 rounded-full border border-blue-300 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:shadow-blue-500/40'>
+          <div className='flex items-center w-full px-4'>
+            {/* Icon container - Updated to use Lucide */}
+            <div className='flex-shrink-0'>
+              <Building2 className='h-5 w-5 text-blue-500' strokeWidth={2} />
             </div>
 
-            <p className='text-sm text-gray-500 mt-3 text-center'>
-                Cant find your college?{' '}
-                <Link
-                    href='/add-college'
-                    className='text-blue-600 hover:underline'
-                >
-                    Click here
-                </Link>{' '}
-                to add it.
-            </p>
+            <div className='flex-1 ml-3'>
+              <select
+                id='college-select'
+                className='w-full bg-transparent py-4 outline-none focus:ring-0 appearance-none dark:text-white text-gray-700 font-medium'
+                value={selectedCollege}
+                onChange={handleChange}
+                disabled={isLoading}
+                aria-label='Select Your College'
+              >
+                <option value='' disabled className='bg-white dark:bg-gray-700 text-gray-800 dark:text-white'>
+                  Select Your College
+                </option>
+                {colleges.map((college) => {
+                  const displayName =
+                    college.name.length > 40
+                      ? `${college.name.substring(0, 37)}...`
+                      : college.name;
+                  return (
+                    <option 
+                     key={college.slug} 
+                     value={college.slug}
+                     className="bg-white dark:bg-gray-700 text-gray-800 dark:text-white py-3 px-4 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100 last:border-b-0"
+                     >
+                      {displayName}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* Custom arrow icon - Updated to use Lucide */}
+            <div className='flex-shrink-0'>
+              <ChevronDown
+                className='h-5 w-5 text-gray-400'
+                strokeWidth={2.5}
+              />
+            </div>
+          </div>
         </div>
+
+        <div className='absolute -inset-1 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full blur-xl opacity-30 -z-10'></div>
+      </div>
+
+      <p className='text-sm text-gray-500 mt-4 text-center'>
+        Can’t find your college?{' '}
+        <a href='/add-college' className='text-blue-600 hover:underline'>
+          Click here
+        </a>{' '}
+        to add it.
+      </p>
+    </div>
     );
 }

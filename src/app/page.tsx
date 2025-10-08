@@ -8,6 +8,7 @@ import FAQPage from '@/components/HomePage/FAQ';
 import OurFeatures from '@/components/HomePage/OurFeatures';
 import { IApiResponse } from '@/utils/interface';
 import { rawColleges } from '@/constant';
+import LandingHeader from '@/components/Common/LandingHeader';
 
 type College = {
     name: string;
@@ -140,35 +141,35 @@ export default async function HomePage() {
                         {/* Gradient Mesh */}
                         <div className='absolute inset-0 bg-gradient-to-r from-transparent via-sky-100/10 to-transparent dark:via-sky-900/10'></div>
                     </div>
+                    <div className='h-screen flex flex-col'>
+    <LandingHeader />
 
-                    {/* Main Content */}
-                    <div className='relative z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
-                        {/* Welcome Text */}
-                        <div className='text-center max-w-4xl mx-auto'>
-                            <h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight'>
-                                <span className='bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
-                                    Welcome to
-                                </span>
-                                <br />
-                                <span className='bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up'>
-                                    Student Senior
-                                </span>
-                            </h1>
+    {/* Main Content */}
+    <div className='relative my-auto z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
+        {/* Welcome Text */}
+        <div className='text-center max-w-4xl mx-auto'>
+            <h1 className='text-xl sm:text-xl md:text-7xl lg:text-6xl font-bold mb-6 leading-tight'>
+                <span className='bg-gradient-to-r from-black via-[#2563eb] to-[#2563eb] dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
+                Student Senior - Where College Life Gets Easier                
+                </span>
+            </h1>
 
-                            {/* Subtitle */}
-                            <p className='text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay'>
-                                Connect with seniors, access resources, and grow
-                                your academic journey
-                            </p>
-                        </div>
+            {/* Subtitle */}
+            <p className='text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in-delay'>
+                Learn smarter with PYQs, notes, and real senior support — connect with seniors, access trusted resources, and take your academic journey further.
+            </p>
+        </div>
 
-                        {/* College Selector */}
-                        <div className='w-full max-w-2xl space-y-4'>
-                            <CollegeSelectHandler colleges={colleges} />
-                            <ResourceQuickStart colleges={colleges} />
-                        </div>
-                    </div>
+        {/* College Selector */}
+        <div className='w-full max-w-2xl space-y-4 pt-8'>
+            <CollegeSelectHandler colleges={colleges} />
+        </div>
+    </div>
+</div>
                 </section>
+                <div className='py-8 bg-gradient-to-tr from-sky-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900'>
+                            <ResourceQuickStart colleges={colleges} />
+                </div>
 
                 {/* Quick Access Section */}
                 <QuickLinks colleges={colleges} />
