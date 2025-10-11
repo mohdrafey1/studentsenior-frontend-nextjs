@@ -135,10 +135,10 @@ const LandingHeader: React.FC = () => {
                                 <Moon className='w-5 h-5 text-gray-700 dark:text-gray-300' />
                             )}
                         </button>
-
+                            <div className='lg:block md:block hidden'>
                         {/* User Profile or Login */}
                         {currentUser ? (
-                            <div className='relative'>
+                            <div className='relative '>
                                 <button
                                     onClick={toggleProfileDropdown}
                                     className='flex items-center space-x-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
@@ -213,6 +213,7 @@ const LandingHeader: React.FC = () => {
                                 </Link>
                             </div>
                         )}
+                        </div>
 
                         {/* Mobile Menu Button */}
                         <button
@@ -231,24 +232,27 @@ const LandingHeader: React.FC = () => {
             </div>
 
             {/* Mobile Navigation */}
-            <div
-                className={`lg:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-40 ${
+            <div className='absolute bg-red-300 min-h-screen'> <div
+                className={`lg:hidden fixed py-3 inset-x-0 top-0 min-h-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-50 ${
                     isMenuOpen
                         ? 'opacity-100 visible translate-y-0'
                         : 'opacity-0 invisible -translate-y-4'
                 }`}
-            >
-                <nav className='container mx-auto px-4 py-4'>
-                    <div className='flex flex-col space-y-1'>
+             >
+                <p className='w-full flex justify-end px-8 pt-6' onClick={() => setIsMenuOpen(false)}>
+                    <X className='w-5 h-5 text-gray-700 dark:text-gray-300' />
+                    </p>
+                <nav className='container mx-auto px-2 py-4 flex flex-col items-center justify-center text-center'>
+                    <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
                         {menuItems.map((item) => (
                             <Link
                                 key={item.path}
                                 href={item.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`px-4 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
+                                className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
                                     pathname === item.path
-                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40'
+                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800'
                                 }`}
                             >
                                 {item.name}
@@ -260,7 +264,7 @@ const LandingHeader: React.FC = () => {
                             </Link>
                         ))}
 
-                        {!currentUser && (
+                        {!currentUser ? (
                             <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
                                 <Link
                                     href={{
@@ -283,10 +287,66 @@ const LandingHeader: React.FC = () => {
                                     Create Account
                                 </Link>
                             </div>
+                        ):(
+                            <div className={`px-4 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}>
+                                <button
+                                    onClick={toggleProfileDropdown}
+                                    className='flex items-center space-x-2 rounded-md transition-colors duration-200 group'
+                                ><Link
+                                            href='/profile'
+                                            className='flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-200'
+                                            onClick={() =>
+                                                setIsProfileDropdownOpen(false)
+                                            }
+                                        >
+                                    <Image
+                                        src={
+                                            currentUser.profilePicture ||
+                                            '/default-avatar.png'
+                                        }
+                                        alt='Profile'
+                                        width={36}
+                                        height={36}
+                                        className='rounded-full h-10 w-10 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
+                                    />
+                                    <span className='sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                        {currentUser.username}
+                                    </span>
+                                    
+                                    </Link>
+                                </button>
+
+                                {/* Profile Dropdown */}
+                                {/* {isProfileDropdownOpen && (
+                                    <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'>
+                                        <Link
+                                            href='/profile'
+                                            className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                            onClick={() =>
+                                                setIsProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <User className='w-4 h-4 mr-2' />
+                                            Profile
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                // Add your sign out logic here
+                                                setIsProfileDropdownOpen(false);
+                                            }}
+                                            className='flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                        >
+                                            <LogOut className='w-4 h-4 mr-2' />
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                )} */}
+                            </div>
                         )}
                     </div>
                 </nav>
-            </div>
+            </div></div>
+           
 
             {/* Backdrop for mobile menu */}
             {isMenuOpen && (
