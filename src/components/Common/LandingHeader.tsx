@@ -139,6 +139,13 @@ const LandingHeader: React.FC = () => {
                         {/* User Profile or Login */}
                         {currentUser ? (
                             <div className='relative '>
+                                <Link
+                                            href='/profile'
+                                            className='flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                            onClick={() =>
+                                                setIsProfileDropdownOpen(false)
+                                            }
+                                        >
                                 <button
                                     onClick={toggleProfileDropdown}
                                     className='flex items-center space-x-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
@@ -156,40 +163,24 @@ const LandingHeader: React.FC = () => {
                                     <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
                                         {currentUser.username}
                                     </span>
-                                    <ChevronDown
+                                    {/* <ChevronDown
                                         className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
                                             isProfileDropdownOpen
                                                 ? 'rotate-180'
                                                 : ''
                                         }`}
-                                    />
-                                </button>
-
+                                    /> */}
+                                </button></Link>
                                 {/* Profile Dropdown */}
-                                {isProfileDropdownOpen && (
+                                {/* {isProfileDropdownOpen && (
                                     <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'>
-                                        <Link
-                                            href='/profile'
-                                            className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-                                            onClick={() =>
-                                                setIsProfileDropdownOpen(false)
-                                            }
-                                        >
+                                        
                                             <User className='w-4 h-4 mr-2' />
                                             Profile
                                         </Link>
-                                        <button
-                                            onClick={() => {
-                                                // Add your sign out logic here
-                                                setIsProfileDropdownOpen(false);
-                                            }}
-                                            className='flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-                                        >
-                                            <LogOut className='w-4 h-4 mr-2' />
-                                            Sign Out
-                                        </button>
+                                       
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         ) : (
                             <div className='flex items-center space-x-0'>
