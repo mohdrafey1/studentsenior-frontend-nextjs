@@ -126,7 +126,7 @@ const LandingHeader: React.FC = () => {
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}
-                            className='p-2 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
+                            className='p-2 rounded-md cursor-pointer bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
                             aria-label='Toggle theme'
                         >
                             {isDarkMode ? (
@@ -209,7 +209,7 @@ const LandingHeader: React.FC = () => {
                         {/* Mobile Menu Button */}
                         <button
                             onClick={toggleMenu}
-                            className='lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
+                            className='lg:hidden p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
                             aria-label='Toggle menu'
                         >
                             {isMenuOpen ? (
@@ -231,7 +231,7 @@ const LandingHeader: React.FC = () => {
                 }`}
              >
                 <p className='w-full flex justify-end px-8 pt-6' onClick={() => setIsMenuOpen(false)}>
-                    <X className='w-5 h-5 text-gray-700 dark:text-gray-300' />
+                    <X className='w-8 h-8 bg-red-500 p-2 cursor-pointer rounded-3xl text-white hover:text-gray-900 dark:text-gray-300' />
                     </p>
                 <nav className='container mx-auto px-2 py-4 flex flex-col items-center justify-center text-center'>
                     <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
