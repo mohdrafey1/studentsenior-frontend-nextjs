@@ -43,7 +43,7 @@ export default function CollegeSelectHandler({
     return (
         <div className='w-full max-w-md mx-auto'>
             <div className='relative'>
-                <div className='relative bg-white dark:bg-gray-700 rounded-full border border-blue-300 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:shadow-blue-500/40'>
+                <div className='relative bg-white lg:w-full mx-auto w-3/4 dark:bg-gray-700 rounded-full border border-blue-300 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:shadow-blue-500/40'>
                     <div className='flex items-center w-full px-4'>
                         {/* Icon container - Updated to use Lucide */}
                         <div className='flex-shrink-0'>
