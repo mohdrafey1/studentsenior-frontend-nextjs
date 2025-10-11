@@ -6,12 +6,11 @@ import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { RootState } from '@/redux/store';
-import { Moon, Sun, Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
+import { Moon, Sun, Menu, X } from 'lucide-react';
 
 const LandingHeader: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const pathname = usePathname();
     const { currentUser } = useSelector((state: RootState) => state.user);
 
@@ -32,8 +31,8 @@ const LandingHeader: React.FC = () => {
     }, []);
 
     const toggleMenu = () => setIsMenuOpen((prev) => !prev);
-    const toggleProfileDropdown = () =>
-        setIsProfileDropdownOpen((prev) => !prev);
+    // const toggleProfileDropdown = () =>
+    //     setIsProfileDropdownOpen((prev) => !prev);
 
     const toggleTheme = () => {
         const newTheme = !isDarkMode;
@@ -142,12 +141,9 @@ const LandingHeader: React.FC = () => {
                                 <Link
                                             href='/profile'
                                             className='flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-                                            onClick={() =>
-                                                setIsProfileDropdownOpen(false)
-                                            }
+                                         
                                         >
                                 <button
-                                    onClick={toggleProfileDropdown}
                                     className='flex items-center space-x-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
                                 >
                                     <Image
@@ -281,14 +277,11 @@ const LandingHeader: React.FC = () => {
                         ):(
                             <div className={`px-4 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}>
                                 <button
-                                    onClick={toggleProfileDropdown}
                                     className='flex items-center space-x-2 rounded-md transition-colors duration-200 group'
                                 ><Link
                                             href='/profile'
                                             className='flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-200'
-                                            onClick={() =>
-                                                setIsProfileDropdownOpen(false)
-                                            }
+                                           
                                         >
                                     <Image
                                         src={
