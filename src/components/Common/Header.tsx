@@ -176,7 +176,7 @@ const Header: React.FC = () => {
 
                                 {/* Profile Dropdown */}
                                 {isProfileDropdownOpen && (
-                                    <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'>
+                                    <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-99999'>
                                         <Link
                                             href='/profile'
                                             className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'

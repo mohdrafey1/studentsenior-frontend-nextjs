@@ -141,7 +141,7 @@ const DetailPageNavbar = ({
     return (
         <>
             {/* Navbar */}
-            <div className='sticky top-0 left-0 z-50 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 sm:px-6'>
+            <div className='sticky top-0 left-0 z-40 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 sm:px-6'>
                 {/* Back Button */}
                 <button
                     onClick={handleBackNavigation}
