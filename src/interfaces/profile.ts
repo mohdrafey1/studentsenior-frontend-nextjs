@@ -10,6 +10,7 @@ export interface User {
 export interface UserState {
     currentUser: User;
     loading: boolean;
+    isAuthenticated: boolean;
     error: string | null;
 }
 

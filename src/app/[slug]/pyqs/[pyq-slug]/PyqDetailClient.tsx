@@ -13,7 +13,7 @@ import {
     Download,
     RefreshCw,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import 'pdfjs-dist/legacy/web/pdf_viewer.css';
@@ -145,6 +145,7 @@ const LazyPDFPage = ({
 const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const { slug } = useParams();
     const router = useRouter();
+    const pathname = usePathname();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -478,9 +479,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     </p>
                                     <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
                                         <button
-                                            onClick={() =>
-                                                setIsPaymentModalOpen(true)
-                                            }
+                                            onClick={() => {
+                                                if (!currentUser) {
+                                                    router.push(
+                                                        `/sign-in?from=${pathname}`,
+                                                    );
+                                                } else {
+                                                    setIsPaymentModalOpen(true);
+                                                }
+                                            }}
                                             className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
                                         >
                                             <ShoppingCart className='w-5 h-5' />

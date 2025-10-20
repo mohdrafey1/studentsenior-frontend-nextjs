@@ -13,7 +13,7 @@ import {
     Download,
     RefreshCw,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import 'pdfjs-dist/legacy/web/pdf_viewer.css';
 import { api } from '@/config/apiUrls';
@@ -144,6 +144,7 @@ const LazyPDFPage = ({
 
 const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const router = useRouter();
+    const pathname = usePathname();
     const { slug } = useParams();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -490,9 +491,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                     </p>
                                     <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
                                         <button
-                                            onClick={() =>
-                                                setIsPaymentModalOpen(true)
-                                            }
+                                            onClick={() => {
+                                                if (!currentUser) {
+                                                    router.push(
+                                                        `/sign-in?from=${pathname}`,
+                                                    );
+                                                } else {
+                                                    setIsPaymentModalOpen(true);
+                                                }
+                                            }}
                                             className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
                                         >
                                             <ShoppingCart className='w-5 h-5' />

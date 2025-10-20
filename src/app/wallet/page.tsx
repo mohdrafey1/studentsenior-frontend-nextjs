@@ -1,5 +1,8 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081';
 
@@ -27,6 +30,9 @@ type Redemption = {
 };
 
 export default function WalletPage() {
+    const router = useRouter();
+    const { currentUser } = useSelector((state: RootState) => state.user);
+
     const [wallet, setWallet] = useState<{
         currentBalance: number;
         totalEarning: number;
@@ -124,8 +130,13 @@ export default function WalletPage() {
     };
 
     useEffect(() => {
+        // Redirect to sign-in if not logged in
+        if (!currentUser) {
+            router.push('/sign-in?from=/wallet');
+            return;
+        }
         fetchAll();
-    }, []);
+    }, [currentUser, router]);
 
     const isObjId = (v: unknown): v is ObjId =>
         !!v &&

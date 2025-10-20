@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useSelector } from 'react-redux';
+import { usePathname, useRouter } from 'next/navigation';
+import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import { RootState } from '@/redux/store';
 import {
@@ -16,12 +16,16 @@ import {
     LogOut,
     Wallet,
 } from 'lucide-react';
+import { signOut } from '@/redux/slices/userSlice';
+import { api } from '@/config/apiUrls';
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
+    const dispatch = useDispatch();
     const { currentUser } = useSelector((state: RootState) => state.user);
 
     // Initialize theme from localStorage or system preference
@@ -39,6 +43,23 @@ const Header: React.FC = () => {
             document.documentElement.classList.remove('dark');
         }
     }, []);
+
+    const handleSignOut = async () => {
+        try {
+            await fetch(api.auth.signout, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } catch (error) {
+            console.error('Error signing out:', error);
+        } finally {
+            dispatch(signOut());
+            router.push('/');
+        }
+    };
 
     const toggleMenu = () => setIsMenuOpen((prev) => !prev);
     const toggleProfileDropdown = () =>
@@ -199,7 +220,7 @@ const Header: React.FC = () => {
                                         </Link>
                                         <button
                                             onClick={() => {
-                                                // Add your sign out logic here
+                                                handleSignOut();
                                                 setIsProfileDropdownOpen(false);
                                             }}
                                             className='flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
