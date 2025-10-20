@@ -135,4 +135,24 @@ export const api = {
         savedCollection: `${API_BASE_URL}/saved-data/saved-collection`,
         leaderboard: `${API_BASE_URL}/saved-data/leaderboard`,
     },
+
+    payment: {
+        // Order endpoints
+        createOrder: `${API_BASE_URL}/payment/orders`,
+        getOrder: (orderId: string) =>
+            `${API_BASE_URL}/payment/orders/${orderId}`,
+        getUserOrders: `${API_BASE_URL}/payment/orders`,
+        refundOrder: (orderId: string) =>
+            `${API_BASE_URL}/payment/orders/${orderId}/refund`,
+
+        // Payment endpoints
+        payWithPoints: (orderId: string) =>
+            `${API_BASE_URL}/payment/orders/${orderId}/pay/points`,
+        payOnline: `${API_BASE_URL}/payment/pay/online`,
+
+        // Wallet endpoints
+        getBalance: `${API_BASE_URL}/payment/wallet/balance`,
+        getTransactions: `${API_BASE_URL}/payment/wallet/transactions`,
+        getStats: `${API_BASE_URL}/payment/wallet/stats`,
+    },
 };

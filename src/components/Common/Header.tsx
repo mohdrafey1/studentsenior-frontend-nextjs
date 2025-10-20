@@ -6,7 +6,16 @@ import { usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { RootState } from '@/redux/store';
-import { Moon, Sun, Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
+import {
+    Moon,
+    Sun,
+    Menu,
+    X,
+    ChevronDown,
+    User,
+    LogOut,
+    Wallet,
+} from 'lucide-react';
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -177,6 +186,16 @@ const Header: React.FC = () => {
                                         >
                                             <User className='w-4 h-4 mr-2' />
                                             Profile
+                                        </Link>
+                                        <Link
+                                            href='/wallet'
+                                            className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                            onClick={() =>
+                                                setIsProfileDropdownOpen(false)
+                                            }
+                                        >
+                                            <Wallet className='w-4 h-4 mr-2' />
+                                            Wallet
                                         </Link>
                                         <button
                                             onClick={() => {

@@ -67,9 +67,11 @@ interface Note {
     rejectionReason?: string;
 }
 export interface UserDataState {
-    rewardPoints: number;
-    rewardBalance: number;
-    rewardRedeemed: number;
+    wallet: {
+        currentBalance: number;
+        totalEarning: number;
+        totalWithdrawal: number;
+    };
     userTransaction: Transaction[];
     userProductAdd: Product[];
     userPyqAdd: PYQ[];
@@ -98,9 +100,11 @@ export const fetchUserData = createAsyncThunk<
         console.log(data);
 
         return {
-            rewardPoints: data.data.rewardPoints,
-            rewardBalance: data.data.rewardBalance,
-            rewardRedeemed: data.data.rewardRedeemed,
+            wallet: data.data.wallet || {
+                currentBalance: 0,
+                totalEarning: 0,
+                totalWithdrawal: 0,
+            },
             userTransaction: data.data.transactions,
             userProductAdd: data.data.productsAdded,
             userPyqAdd: data.data.pyqAdded,
@@ -118,9 +122,11 @@ export const fetchUserData = createAsyncThunk<
 });
 
 const initialState: UserDataState = {
-    rewardPoints: 0,
-    rewardBalance: 0,
-    rewardRedeemed: 0,
+    wallet: {
+        currentBalance: 0,
+        totalEarning: 0,
+        totalWithdrawal: 0,
+    },
     userTransaction: [],
     userProductAdd: [],
     userPyqAdd: [],
@@ -142,9 +148,7 @@ const userDataSlice = createSlice({
             .addCase(
                 fetchUserData.fulfilled,
                 (state, action: PayloadAction<UserDataState>) => {
-                    state.rewardPoints = action.payload.rewardPoints;
-                    state.rewardBalance = action.payload.rewardBalance;
-                    state.rewardRedeemed = action.payload.rewardRedeemed;
+                    state.wallet = action.payload.wallet;
                     state.userTransaction = action.payload.userTransaction;
                     state.userProductAdd = action.payload.userProductAdd;
                     state.userPyqAdd = action.payload.userPyqAdd;

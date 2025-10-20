@@ -46,9 +46,11 @@ export interface Note {
 }
 
 export interface UserData {
-    rewardPoints: number;
-    rewardBalance: number;
-    rewardRedeemed: number;
+    wallet: {
+        currentBalance: number;
+        totalEarning: number;
+        totalWithdrawal: number;
+    };
     userTransaction: Transaction[];
     userProductAdd: Product[];
     userPyqAdd: PYQ[];

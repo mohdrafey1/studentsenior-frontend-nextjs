@@ -241,6 +241,7 @@ export interface INote {
     branch: IBranch;
     isPaid: boolean;
     price: number;
+    purchasedBy?: string[];
     owner: {
         _id: string;
         username: string;

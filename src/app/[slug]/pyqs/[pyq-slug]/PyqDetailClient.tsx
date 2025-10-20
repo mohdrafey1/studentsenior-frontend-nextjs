@@ -22,6 +22,7 @@ import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
 import { useSaveResource } from '@/hooks/useSaveResource';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import PaymentModal from '@/components/PaymentModal';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.mjs';
 
@@ -151,7 +152,13 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
     const downloadExpiryTimerRef = useRef<number | null>(null);
-    const ownerId = 'placeholder'; // Replace with actual user ID
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+    const currentUser = useSelector(
+        (state: RootState) => state.user.currentUser,
+    );
+    const ownerId = currentUser?._id;
+
     const { saveResource, unsaveResource } = useSaveResource();
     const { savedPYQs } = useSelector(
         (state: RootState) => state.savedCollection,
@@ -294,7 +301,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     const isOwner = pyq.owner._id === ownerId;
     const isPaidAndNotOwner =
-        pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId);
+        pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId || '');
     const downloadFileName = `${pyq.subject.subjectCode}-${pyq.examType}-${pyq.year}.pdf`;
     const isDownloadDisabled = !isDownloadUrlValid || !signedUrl;
 
@@ -470,10 +477,14 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                         complete PYQ with solutions.
                                     </p>
                                     <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                                        <button className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'>
+                                        <button
+                                            onClick={() =>
+                                                setIsPaymentModalOpen(true)
+                                            }
+                                            className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                        >
                                             <ShoppingCart className='w-5 h-5' />
-                                            Purchase for {pyq.price} points or ₹
-                                            {pyq.price / 5}
+                                            Purchase for {pyq.price} points
                                         </button>
                                     </div>
                                 </div>
@@ -566,6 +577,23 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     </div>
                 )}
             </div>
+
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                resourceType='pyq'
+                resourceId={pyq._id}
+                price={pyq.price}
+                title={pyq.subject.subjectName}
+                metadata={{
+                    college: pyq.college.name,
+                    subject: pyq.subject.subjectName,
+                    examType: pyq.examType,
+                    year: pyq.year.toString(),
+                }}
+                onSuccess={() => window.location.reload()}
+            />
         </div>
     );
 };
