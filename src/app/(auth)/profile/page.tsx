@@ -37,8 +37,13 @@ export default function Profile() {
     );
 
     useEffect(() => {
+        // Redirect to sign-in if not logged in
+        if (!currentUser) {
+            router.push('/sign-in?from=/profile');
+            return;
+        }
         dispatch(fetchUserData());
-    }, [dispatch]);
+    }, [dispatch, currentUser, router]);
 
     const handleSignOut = async () => {
         try {

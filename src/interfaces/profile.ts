@@ -10,6 +10,7 @@ export interface User {
 export interface UserState {
     currentUser: User;
     loading: boolean;
+    isAuthenticated: boolean;
     error: string | null;
 }
 
@@ -46,9 +47,11 @@ export interface Note {
 }
 
 export interface UserData {
-    rewardPoints: number;
-    rewardBalance: number;
-    rewardRedeemed: number;
+    wallet: {
+        currentBalance: number;
+        totalEarning: number;
+        totalWithdrawal: number;
+    };
     userTransaction: Transaction[];
     userProductAdd: Product[];
     userPyqAdd: PYQ[];

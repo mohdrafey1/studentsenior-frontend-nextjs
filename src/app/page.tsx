@@ -148,7 +148,7 @@ export default async function HomePage() {
                         <div className='relative my-auto z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
                             {/* Welcome Text */}
                             <div className='text-center max-w-4xl mx-auto'>
-                                <h1 className='text-xl sm:text-xl md:text-7xl lg:text-6xl font-bold mb-6 leading-tight'>
+                                <h1 className='text-xl sm:text-xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight'>
                                     <span className='bg-gradient-to-r from-black via-[#2563eb] to-[#2563eb] dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
                                         Student Senior - Where College Life Gets
                                         Easier

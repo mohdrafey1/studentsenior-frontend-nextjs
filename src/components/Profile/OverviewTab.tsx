@@ -12,7 +12,7 @@ export default function OverviewTab({ data }: OverviewTabProps) {
                     Total Earned Points
                 </h3>
                 <p className='text-3xl font-bold text-blue-600 dark:text-blue-400'>
-                    {data.rewardPoints || 0}
+                    {data.wallet.totalEarning}
                 </p>
             </div>
             <div className='bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md'>
@@ -20,7 +20,7 @@ export default function OverviewTab({ data }: OverviewTabProps) {
                     Remaining Balance
                 </h3>
                 <p className='text-3xl font-bold text-green-600 dark:text-green-400'>
-                    {data.rewardBalance || 0}
+                    {data.wallet.currentBalance}
                 </p>
             </div>
             <div className='bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md'>
@@ -28,7 +28,7 @@ export default function OverviewTab({ data }: OverviewTabProps) {
                     Total Redeemed
                 </h3>
                 <p className='text-3xl font-bold text-red-600 dark:text-red-400'>
-                    {data.rewardRedeemed || 0}
+                    {data.wallet.totalWithdrawal}
                 </p>
             </div>
             <div className='bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md'>

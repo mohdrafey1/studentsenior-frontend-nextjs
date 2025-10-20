@@ -13,7 +13,7 @@ import {
     Download,
     RefreshCw,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import 'pdfjs-dist/legacy/web/pdf_viewer.css';
 import { api } from '@/config/apiUrls';
@@ -22,6 +22,7 @@ import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
 import { useSaveResource } from '@/hooks/useSaveResource';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import PaymentModal from '@/components/PaymentModal';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.mjs';
 
@@ -143,6 +144,7 @@ const LazyPDFPage = ({
 
 const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const router = useRouter();
+    const pathname = usePathname();
     const { slug } = useParams();
     const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -151,7 +153,13 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
     const downloadExpiryTimerRef = useRef<number | null>(null);
-    const ownerId = 'placeholder'; // Replace with actual user ID
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+    const currentUser = useSelector(
+        (state: RootState) => state.user.currentUser,
+    );
+    const ownerId = currentUser?._id;
+
     const { saveResource, unsaveResource } = useSaveResource();
     const { savedNotes } = useSelector(
         (state: RootState) => state.savedCollection,
@@ -292,7 +300,8 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     }
 
     const isOwner = note.owner._id === ownerId;
-    const isPaidAndNotOwner = note.isPaid && !isOwner;
+    const isPaidAndNotOwner =
+        note.isPaid && !isOwner && !note.purchasedBy?.includes(ownerId || '');
     const isDownloadDisabled = !isDownloadUrlValid || !signedUrl;
     const downloadFileName = `${note.subject.subjectCode}-notes.pdf`;
 
@@ -481,10 +490,20 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         complete notes.
                                     </p>
                                     <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                                        <button className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'>
+                                        <button
+                                            onClick={() => {
+                                                if (!currentUser) {
+                                                    router.push(
+                                                        `/sign-in?from=${pathname}`,
+                                                    );
+                                                } else {
+                                                    setIsPaymentModalOpen(true);
+                                                }
+                                            }}
+                                            className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                        >
                                             <ShoppingCart className='w-5 h-5' />
-                                            Purchase for {note.price} points or
-                                            ₹{note.price / 5}
+                                            Purchase for {note.price} points
                                         </button>
                                     </div>
                                 </div>
@@ -577,6 +596,21 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     </div>
                 )}
             </div>
+
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                resourceType='notes'
+                resourceId={note._id}
+                price={note.price}
+                title={note.title}
+                metadata={{
+                    college: note.college.name,
+                    subject: note.subject.subjectName,
+                }}
+                onSuccess={() => window.location.reload()}
+            />
         </div>
     );
 };
