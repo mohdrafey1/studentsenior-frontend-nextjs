@@ -24,7 +24,7 @@ type Redemption = {
     _id: string;
     upiId: string;
     rewardBalance: string;
-    status: 'Pending' | 'Approved' | 'Rejected' | string;
+    status: 'pending' | 'approved' | 'rejected' | string;
     rejectionReason?: string;
     createdAt?: string;
 };
@@ -264,11 +264,11 @@ export default function WalletPage() {
 
     const getStatusBadgeColor = (status: string) => {
         switch (status) {
-            case 'Pending':
+            case 'pending':
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'Approved':
+            case 'approved':
                 return 'bg-green-100 text-green-800 border-green-200';
-            case 'Rejected':
+            case 'rejected':
                 return 'bg-red-100 text-red-800 border-red-200';
             default:
                 return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -632,11 +632,11 @@ export default function WalletPage() {
                                         }}
                                     >
                                         <option value=''>All Status</option>
-                                        <option value='Pending'>Pending</option>
-                                        <option value='Approved'>
+                                        <option value='pending'>Pending</option>
+                                        <option value='approved'>
                                             Approved
                                         </option>
-                                        <option value='Rejected'>
+                                        <option value='rejected'>
                                             Rejected
                                         </option>
                                     </select>
