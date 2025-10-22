@@ -147,7 +147,7 @@ const DetailPageNavbar = ({
                     onClick={handleBackNavigation}
                     className='flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200 group'
                 >
-                    <ArrowLeft className='w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200' />
+                    <ArrowLeft className='w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200' />
                     <span className='font-medium'>
                         Back {path && `to ${path}`}
                     </span>
@@ -160,8 +160,8 @@ const DetailPageNavbar = ({
                         onClick={() => setShowReportModal(true)}
                         className='flex flex-col items-center gap-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group'
                     >
-                        <Flag className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                        <span className='text-xs font-medium'>Report</span>
+                        <Flag aria-label='Report' className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                        {/* <span className='text-xs font-medium'>Report</span> */}
                     </button>
 
                     {/* Share Button */}
@@ -169,8 +169,8 @@ const DetailPageNavbar = ({
                         onClick={handleShare}
                         className='flex flex-col items-center gap-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group'
                     >
-                        <Share2 className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                        <span className='text-xs font-medium'>Share</span>
+                        <Share2 aria-label='Share' className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                        {/* <span className='text-xs font-medium'>Share</span> */}
                     </button>
                 </div>
             </div>
