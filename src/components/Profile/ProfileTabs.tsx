@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UserDataState } from '@/redux/slices/userDataSlice';
 import OverviewTab from './OverviewTab';
-import TransactionsTab from './TransactionsTab';
 import ProductsTab from './ProductsTab';
 import NotesTab from './NotesTab';
 import PYQTab from './PYQTab';
@@ -20,7 +19,6 @@ export default function ProfileTabs() {
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: '📊' },
-        { id: 'transactions', label: 'Transactions', icon: '💳' },
         { id: 'products', label: 'Products', icon: '🛍️' },
         { id: 'notes', label: 'Notes', icon: '📝' },
         { id: 'pyqs', label: 'PYQs', icon: '📋' },
@@ -30,12 +28,7 @@ export default function ProfileTabs() {
         switch (activeTab) {
             case 'overview':
                 return <OverviewTab data={userData} />;
-            case 'transactions':
-                return (
-                    <TransactionsTab
-                        transactions={userData.userTransaction || []}
-                    />
-                );
+
             case 'products':
                 return <ProductsTab products={userData.userProductAdd || []} />;
             case 'notes':
