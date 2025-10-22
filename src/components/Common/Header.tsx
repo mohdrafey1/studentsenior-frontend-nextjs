@@ -11,7 +11,6 @@ import {
     Sun,
     Menu,
     X,
-    ChevronDown,
     User,
     LogOut,
     Wallet,
@@ -171,7 +170,7 @@ const Header: React.FC = () => {
                             <div className='relative'>
                                 <button
                                     onClick={toggleProfileDropdown}
-                                    className='flex items-center space-x-2 p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
+                                    className='hidden lg:flex items-center space-x-2 p-0.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
                                 >
                                     <Image
                                         src={
@@ -181,18 +180,18 @@ const Header: React.FC = () => {
                                         alt='Profile'
                                         width={36}
                                         height={36}
-                                        className='rounded-full h-10 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
+                                        className='rounded-full h-9 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
                                     />
-                                    <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    {/* <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
                                         {currentUser.username}
-                                    </span>
-                                    <ChevronDown
+                                    </span> */}
+                                    {/* <ChevronDown
                                         className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
                                             isProfileDropdownOpen
                                                 ? 'rotate-180'
                                                 : ''
                                         }`}
-                                    />
+                                    /> */}
                                 </button>
 
                                 {/* Profile Dropdown */}
@@ -270,25 +269,31 @@ const Header: React.FC = () => {
                 </div>
             </div>
 
-            {/* Mobile Navigation */}
+           {/* Mobile Navigation */}
             <div
-                className={`lg:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-40 ${
+                className={`lg:hidden fixed py-3 inset-x-0 top-0 min-h-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-50 ${
                     isMenuOpen
                         ? 'opacity-100 visible translate-y-0'
                         : 'opacity-0 invisible -translate-y-4'
                 }`}
             >
-                <nav className='container mx-auto px-4 py-4'>
-                    <div className='flex flex-col space-y-1'>
+                <p
+                    className='w-full flex justify-end px-8 pt-6'
+                    onClick={() => setIsMenuOpen(false)}
+                >
+                    <X className='w-8 h-8 bg-red-500 p-2 cursor-pointer rounded-3xl text-white hover:text-gray-900 dark:text-gray-300' />
+                </p>
+                <nav className='container mx-auto px-2 py-4 flex flex-col items-center justify-center text-center'>
+                    <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
                         {menuItems.map((item) => (
                             <Link
                                 key={item.path}
                                 href={item.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`px-4 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
+                                className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
                                     pathname === item.path
-                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40'
+                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800'
                                 }`}
                             >
                                 {item.name}
@@ -300,7 +305,7 @@ const Header: React.FC = () => {
                             </Link>
                         ))}
 
-                        {!currentUser && (
+                        {!currentUser ? (
                             <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
                                 <Link
                                     href={{
@@ -322,6 +327,44 @@ const Header: React.FC = () => {
                                 >
                                     Create Account
                                 </Link>
+                            </div>
+                        ) : (
+                            <div className='flex flex-col space-y-1 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
+                                <Link
+                                    href='/profile'
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`px-8 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}
+                                >
+                                    <Image
+                                        src={
+                                            currentUser.profilePicture ||
+                                            '/default-avatar.png'
+                                        }
+                                        alt='Profile'
+                                        width={30}
+                                        height={30}
+                                        className='rounded-full h-9 object-cover mr-3 border-2 border-white dark:border-gray-800'
+                                    />
+                                    {currentUser.username}
+                                </Link>
+                                <Link
+                                    href='/wallet'
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}
+                                >
+                                    <Wallet className='w-5 h-5 mr-3' />
+                                    Wallet
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        handleSignOut();
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center w-full text-red-600 dark:text-red-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}
+                                >
+                                    <LogOut className='w-5 h-5 mr-3' />
+                                    Sign Out
+                                </button>
                             </div>
                         )}
                     </div>

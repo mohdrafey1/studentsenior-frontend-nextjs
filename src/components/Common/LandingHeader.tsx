@@ -140,11 +140,11 @@ const LandingHeader: React.FC = () => {
                             <div className='relative '>
                                 <Link
                                             href='/profile'
-                                            className='flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                            className='flex items-center text-sm rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
                                          
                                         >
                                 <button
-                                    className='flex items-center space-x-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
+                                    className='flex items-center space-x-2 rounded-md px-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
                                 >
                                     <Image
                                         src={
@@ -154,7 +154,7 @@ const LandingHeader: React.FC = () => {
                                         alt='Profile'
                                         width={36}
                                         height={36}
-                                        className='rounded-full h-10 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
+                                        className='rounded-full h-9 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
                                     />
                                     <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
                                         {currentUser.username}

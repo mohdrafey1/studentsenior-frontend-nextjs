@@ -10,6 +10,7 @@ import {
     Calendar,
     BookOpen,
     Eye,
+    Folder,
 } from 'lucide-react';
 // import Image from "next/image";
 import { useSaveResource } from '@/hooks/useSaveResource';
@@ -82,6 +83,12 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                     <FileText className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
                     <span className='truncate'>{note.subject.subjectName}</span>
                 </div>
+                <div className='flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
+                    <Folder className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
+                    <span className='text-gray-400 dark:text-gray-500'>
+                        {note.subject.branch.branchCode}
+                    </span>
+                </div>
 
                 {/* Details Grid - More compact on mobile */}
                 <div className='grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm'>
@@ -106,8 +113,8 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                 </div>
 
                 {/* Status Indicators - More compact on mobile */}
-                <div className='flex flex-wrap gap-1.5 sm:gap-2'>
-                    {note.isPaid && (
+                {note.isPaid && (
+                    <div className='flex flex-wrap gap-1.5 sm:gap-2'>
                         <span className='inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'>
                             <Lock className='w-2.5 h-2.5 sm:w-3 sm:h-3' />
                             <span className='hidden sm:inline'>
@@ -115,8 +122,8 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                             </span>
                             <span className='sm:hidden'>₹{note.price}</span>
                         </span>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             {/* Action Buttons - More compact on mobile */}
