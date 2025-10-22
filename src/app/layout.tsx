@@ -51,6 +51,27 @@ export default function RootLayout({
           gtag('config', 'G-SQLNKSP4K7');
         `}
                 </Script>
+                {/* Clear old PWA service workers */}
+                <Script id='clear-old-pwa' strategy='afterInteractive'>
+                    {`
+          // Unregister all service workers from old PWA
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              for(let registration of registrations) {
+                registration.unregister();
+              }
+            });
+          }
+          // Clear old caches
+          if ('caches' in window) {
+            caches.keys().then(function(cacheNames) {
+              cacheNames.forEach(function(cacheName) {
+                caches.delete(cacheName);
+              });
+            });
+          }
+        `}
+                </Script>
             </head>
             <body
                 className={`${quicksand.variable} ${geistMono.variable} ${fugazOne.variable} antialiased`}
