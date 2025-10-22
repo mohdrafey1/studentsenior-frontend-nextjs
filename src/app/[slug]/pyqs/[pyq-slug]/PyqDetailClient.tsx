@@ -23,6 +23,7 @@ import { useSaveResource } from '@/hooks/useSaveResource';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import PaymentModal from '@/components/PaymentModal';
+import GoogleAd from '@/components/GoogleAd';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.mjs';
 
@@ -520,6 +521,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             </div>
                         </div>
                     )}
+                </div>
+
+                {/* Google Ad */}
+                <div className='my-6 w-full max-w-4xl mx-auto'>
+                    <GoogleAd
+                        adSlot='9984010614'
+                        adFormat='auto'
+                        className='w-full'
+                    />
                 </div>
 
                 {/* Bottom controls: Download for Unsolved */}

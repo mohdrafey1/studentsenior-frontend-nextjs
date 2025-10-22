@@ -93,7 +93,7 @@ const Collegelink2 = () => {
     ];
 
     return (
-        <div className='lg:hidden'>
+        <div className='lg:hidden mt-15'>
             {/* Fixed Bottom Navigation Bar */}
             <nav className='fixed z-30 bottom-0 left-0 right-0'>
                 <div className='bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 shadow-lg'>
