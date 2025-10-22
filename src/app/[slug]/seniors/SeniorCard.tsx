@@ -87,6 +87,9 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                 <p className='text-sm text-gray-500 dark:text-gray-400'>
                     {senior.domain || 'Tech Enthusiast'}
                 </p>
+                <p className='text-xs mt-2 text-gray-500 dark:text-gray-400'>
+                    {senior.branch?.branchCode || 'Tech Enthusiast'}
+                </p>
 
                 {/* Social Links */}
                 <div className='flex justify-center flex-wrap gap-4 mt-4'>
