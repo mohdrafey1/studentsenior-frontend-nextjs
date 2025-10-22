@@ -38,6 +38,13 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <head>
+                {/* Google AdSense */}
+                <Script
+                    async
+                    src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4435788387381825'
+                    crossOrigin='anonymous'
+                    strategy='afterInteractive'
+                />
                 {/* Google Tag Manager */}
                 <Script
                     src='https://www.googletagmanager.com/gtag/js?id=G-SQLNKSP4K7'
