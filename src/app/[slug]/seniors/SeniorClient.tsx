@@ -475,8 +475,8 @@ const SeniorClient = ({
             <section aria-label='Seniors List'>
                 {/* Loading State */}
                 {loading ? (
-                    <div className='text-center py-10 text-gray-700 dark:text-gray-200'>
-                        Loading...
+                    <div className='flex justify-center min-h-screen py-12'>
+                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
                     </div>
                 ) : seniors.length > 0 ? (
                     <>

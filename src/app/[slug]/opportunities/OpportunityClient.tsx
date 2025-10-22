@@ -247,8 +247,8 @@ const OpportunityClient = ({
 
             <section aria-label='Opportunities List'>
                 {loading ? (
-                    <div className='text-center py-10 text-gray-700 dark:text-gray-200'>
-                        Loading...
+                    <div className='flex justify-center min-h-screen py-12'>
+                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
                     </div>
                 ) : opportunities.length > 0 ? (
                     <>
