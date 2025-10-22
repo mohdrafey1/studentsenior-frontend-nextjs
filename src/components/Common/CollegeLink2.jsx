@@ -81,14 +81,14 @@ const Collegelink2 = () => {
         //     text: "Community",
         // },
         {
-            href: `/${slug}/resources`,
-            icon: <Zap size={20} />,
-            text: 'Resources',
-        },
-        {
             href: `/${slug}/videos`,
             icon: <Video size={20} />,
             text: 'Videos',
+        },
+        {
+            href: `/${slug}/resources`,
+            icon: <Zap size={20} />,
+            text: 'Resources',
         },
     ];
 
