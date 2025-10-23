@@ -11,12 +11,69 @@ export async function generateMetadata({
     params,
 }: SeniorDetailPageProps): Promise<Metadata> {
     const { slug, 'senior-slug': seniorSlug } = await params;
-    return {
-        title: `${capitalizeWords(seniorSlug)} - Seniors - ${capitalizeWords(
-            slug,
-        )}`,
-        description: 'Senior profile details and contact information.',
-    };
+
+    try {
+        // Fetch senior details for dynamic metadata
+        const res = await fetch(`${api.seniors.getSeniorBySlug(seniorSlug)}`, {
+            cache: 'force-cache',
+        });
+
+        if (!res.ok) throw new Error(`Failed to fetch senior data`);
+
+        const data = await res.json();
+        const senior = data?.data || {};
+        console.log(senior);
+        
+
+        const title = `${capitalizeWords(senior.name || seniorSlug)} - ${capitalizeWords(
+            slug
+        )} | Senior Profile`;
+
+        const description =
+            senior.bio ||
+            senior.designation ||
+            `Know more about ${capitalizeWords(
+                senior.name || seniorSlug
+            )} from ${capitalizeWords(slug)}. View profile details, interests, and achievements.`;
+
+        const image =
+            senior.profilePicture || '/icons/image192edge.png';
+
+        return {
+            title,
+            description,
+            openGraph: {
+                title,
+                description,
+                type: 'profile',
+                images: [
+                    {
+                        url: image,
+                        width: 800,
+                        height: 800,
+                        alt: senior.name || seniorSlug,
+                    },
+                ],
+                siteName: 'Student Senior',
+                locale: 'en_IN',
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title,
+                description,
+                images: [image],
+            },
+        };
+    } catch (error) {
+        console.error('Error generating metadata:', error);
+        return {
+            title: `${capitalizeWords(seniorSlug)} - Seniors - ${capitalizeWords(slug)}`,
+            description: 'Senior profile details and contact information.',
+            openGraph: {
+                images: ['/icons/image192edge.png'],
+            },
+        };
+    }
 }
 
 export default async function SeniorDetailPage({
