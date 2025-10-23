@@ -88,6 +88,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                     {senior.domain || 'Tech Enthusiast'}
                 </p>
                 <p className='text-xs mt-2 text-gray-500 dark:text-gray-400'>
+                    {senior.year} -{' '}
                     {senior.branch?.branchCode || 'Tech Enthusiast'}
                 </p>
 
