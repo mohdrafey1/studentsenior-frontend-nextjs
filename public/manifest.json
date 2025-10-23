@@ -2,7 +2,7 @@
     "name": "Student Senior",
     "short_name": "Student Senior",
     "description": "A platform for college resources and study materials.",
-    "start_url": "https://www.studentsenior.com/",
+    "start_url": "https://studentsenior.com/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#4f46e5",
