@@ -37,7 +37,7 @@ export async function generateMetadata({
             )} from ${capitalizeWords(slug)}. View profile details, interests, and achievements.`;
 
         const image =
-            senior.profilePicture || '/image192edge.png';
+            senior.profilePicture || '/icons/image192edge.png';
 
         return {
             title,
@@ -70,7 +70,7 @@ export async function generateMetadata({
             title: `${capitalizeWords(seniorSlug)} - Seniors - ${capitalizeWords(slug)}`,
             description: 'Senior profile details and contact information.',
             openGraph: {
-                images: ['/image192edge.png'],
+                images: ['/icons/image192edge.png'],
             },
         };
     }

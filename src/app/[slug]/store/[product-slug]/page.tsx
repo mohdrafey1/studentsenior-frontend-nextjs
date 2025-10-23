@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
         description: product?.description || 'Product details and specifications.',
         images: [
           {
-            url: product?.image || '/image192edge.png',
+            url: product?.image || '/icons/image192edge.png',
             width: 800,
             height: 600,
             alt: product?.name || 'Product Image',
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
         card: 'summary_large_image',
         title: product?.name || 'Product',
         description: product?.description || 'Product details and specifications.',
-        images: [product?.image || '/image192edge.png'],
+        images: [product?.image || '/icons/image192edge.png'],
       },
     };
   } catch (error) {
