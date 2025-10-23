@@ -8,7 +8,7 @@ import CollegeAbout from '@/components/College/CollegeAbout';
 import FeaturedProducts from '@/components/College/FeaturedProducts';
 import FeaturedSeniors from '@/components/College/FeaturedSeniors';
 import Link from 'next/link';
-import { Play, ArrowRight, Archive, FileText, BookOpen } from 'lucide-react';
+import { ArrowRight, Archive, FileText, BookOpen } from 'lucide-react';
 
 interface CollegeWithFeaturedSeniorsAndProducts {
     data: {
