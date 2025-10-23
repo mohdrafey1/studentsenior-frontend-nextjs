@@ -447,6 +447,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     </div>
                 </div>
 
+                {/* Google Ad */}
+                <div className='my-6 w-full max-w-4xl mx-auto'>
+                    <GoogleAd
+                        adSlot='9984010614'
+                        adFormat='auto'
+                        className='w-full'
+                    />
+                </div>
+
                 {/* PDF Viewer Section */}
                 <div className='pdf-viewer max-w-4xl mx-auto'>
                     {pdfDoc ? (

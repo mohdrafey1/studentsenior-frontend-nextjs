@@ -157,7 +157,7 @@ export default function FeaturedSeniors({
                 {seniors.length === 4 && (
                     <div className='text-center mt-8'>
                         <Link
-                            href='seniors'
+                            href={`${collegeName}/seniors`}
                             className='inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/25 hover:scale-[1.02]'
                         >
                             View All Seniors
