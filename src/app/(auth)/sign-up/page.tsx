@@ -423,14 +423,14 @@ const SignUp: React.FC = () => {
                     <p className='text-xs text-gray-500 dark:text-gray-400'>
                         By creating an account, you agree to our{' '}
                         <Link
-                            href='/terms'
+                            href='/terms-and-conditions'
                             className='text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors'
                         >
                             Terms of Service
                         </Link>{' '}
                         and{' '}
                         <Link
-                            href='/privacy'
+                            href='/privacy-policy'
                             className='text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors'
                         >
                             Privacy Policy
