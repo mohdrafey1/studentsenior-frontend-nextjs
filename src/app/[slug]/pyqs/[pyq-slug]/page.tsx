@@ -8,13 +8,36 @@ interface PyqDetailPageProps {
 }
 
 export async function generateMetadata({
-    params,
+  params,
 }: PyqDetailPageProps): Promise<Metadata> {
-    const { 'pyq-slug': pyqSlug } = await params;
-    return {
-        title: `${capitalizeWords(pyqSlug)} - PYQs`,
-        description: 'PYQ PDF',
-    };
+  const { 'pyq-slug': pyqSlug } = await params;
+
+  const title = `${capitalizeWords(pyqSlug)} - PYQs`;
+  const description = 'PYQ PDF for exam preparation';
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: '/image192edge.png',
+          width: 800,
+          height: 600,
+          alt: title,
+        },
+      ],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/image192edge.png'],
+    },
+  };
 }
 
 export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
