@@ -1,6 +1,6 @@
     'use client';
 
-    import { useState, useRef, useEffect } from 'react';
+    import { useState, useRef } from 'react';
     import { useSelector, useDispatch } from 'react-redux';
     import Image from 'next/image';
     import toast from 'react-hot-toast';
@@ -51,7 +51,6 @@
         const [imageLoading, setImageLoading] = useState<boolean>(false);
 
         // Image upload states
-        const [image, setImage] = useState<File | null>(null);
         const [imageUploadProgress, setImageUploadProgress] = useState<number | null>(null);
         const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
@@ -116,7 +115,7 @@
            setFormData((prev) => ({ ...prev, profilePicture: url }));
            toast.success("Image uploaded successfully, Click Update Profile");
          } catch (error) {
-           toast.error("Failed to upload image");
+           toast.error("Failed to upload image"+error);
          } finally {
            setImageLoading(false);
            toast.dismiss(loadingToast);
