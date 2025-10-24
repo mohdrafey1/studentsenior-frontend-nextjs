@@ -93,7 +93,7 @@ const Collegelink2 = () => {
     ];
 
     return (
-        <div className='lg:hidden mt-15'>
+        <div className='lg:hidden absolute mt-15'>
             {/* Fixed Bottom Navigation Bar */}
             <nav className='fixed z-30 bottom-0 left-0 right-0'>
                 <div className='bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 shadow-lg'>
@@ -103,11 +103,10 @@ const Collegelink2 = () => {
                                 <Link
                                     key={index}
                                     href={link.href}
-                                    className={`group flex-1 flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${
-                                        pathname === link.href
-                                            ? 'text-sky-600 dark:text-sky-400'
-                                            : 'text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-300'
-                                    }`}
+                                    className={`group flex-1 flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${pathname === link.href
+                                        ? 'text-sky-600 dark:text-sky-400'
+                                        : 'text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-300'
+                                        }`}
                                 >
                                     <div className='relative'>
                                         {link.icon}
@@ -123,11 +122,10 @@ const Collegelink2 = () => {
                             {/* More Button */}
                             <button
                                 onClick={handleMore}
-                                className={`group flex-1 flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${
-                                    isOpen
-                                        ? 'text-sky-600 dark:text-sky-400'
-                                        : 'text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-300'
-                                }`}
+                                className={`group flex-1 flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${isOpen
+                                    ? 'text-sky-600 dark:text-sky-400'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-300'
+                                    }`}
                                 aria-expanded={isOpen}
                                 aria-label='Toggle menu'
                             >
@@ -165,11 +163,10 @@ const Collegelink2 = () => {
                                         key={index}
                                         href={link.href}
                                         onClick={handleMore}
-                                        className={`flex flex-col items-center p-4 rounded-xl transition-all duration-200 ${
-                                            pathname === link.href
-                                                ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
-                                                : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300'
-                                        }`}
+                                        className={`flex flex-col items-center p-4 rounded-xl transition-all duration-200 ${pathname === link.href
+                                            ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300'
+                                            }`}
                                     >
                                         <div className='p-2 rounded-lg mb-1'>
                                             {link.icon}
