@@ -12,7 +12,6 @@
     } from '@/redux/slices/userSlice';
     import { User, LogOut, Phone, GraduationCap, Lock, Camera } from 'lucide-react';
 
-
     interface User {
         _id: string;
         username: string;
