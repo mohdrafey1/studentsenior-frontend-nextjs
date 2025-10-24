@@ -109,7 +109,7 @@ export default function FeaturedSeniors({
                                     <div className='flex items-center text-gray-600 dark:text-gray-300'>
                                         <GraduationCap className='w-4 h-4 mr-2' />
                                         <span className='text-sm'>
-                                            {senior.branch.branchName}
+                                            {senior?.branch?.branchName}
                                         </span>
                                     </div>
                                     {senior.domain && (
