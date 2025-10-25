@@ -9,7 +9,6 @@ import PyqFormModal, { PyqFormData } from './pyqForm';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 
-
 interface SubjectPyqsClientProps {
     initialPyqs: IPyq[];
     subjectCode: string;
@@ -26,8 +25,8 @@ export default function SubjectPyqsClient({
     branchCode,
 }: SubjectPyqsClientProps) {
     const [activeExamType, setActiveExamType] = useState<string>('all');
-    const [addPyq,setAddPyq] = useState(false);
-    const [loading,setLoading] = useState(false);
+    const [addPyq, setAddPyq] = useState(false);
+
     const initialFormState: PyqFormData = {
         subject: '',
         year: '',
@@ -47,11 +46,10 @@ export default function SubjectPyqsClient({
         return Array.from(setTypes).sort();
     }, [initialPyqs]);
 
-    const handleAddPyq = () =>{
+    const handleAddPyq = () => {
         setAddPyq(!addPyq);
-    }
+    };
     const handleSubmit = async (formData: PyqFormData) => {
-        setLoading(true);
         try {
             const response = await fetch(api.pyq.createPyq, {
                 method: 'POST',
@@ -71,12 +69,9 @@ export default function SubjectPyqsClient({
                 throw new Error(data.message || 'Failed to create PYQ');
             }
             toast.success(data.message || 'PYQ created successfully!');
-
         } catch (error) {
             console.error('Error creating PYQ:', error);
             throw error;
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -137,8 +132,9 @@ export default function SubjectPyqsClient({
                             Videos
                         </Link>
                         <button
-                        onClick={handleAddPyq}
-                        className='px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'>
+                            onClick={handleAddPyq}
+                            className='px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
+                        >
                             <Plus className='w-4 h-4' />
                             Add PYQ
                         </button>
@@ -281,7 +277,7 @@ export default function SubjectPyqsClient({
                     ))}
                 </div>
             )}
-            
+
             <PyqFormModal
                 isOpen={addPyq}
                 onClose={handleAddPyq}
