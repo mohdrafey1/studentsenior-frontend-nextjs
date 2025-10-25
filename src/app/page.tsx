@@ -9,6 +9,7 @@ import OurFeatures from '@/components/HomePage/OurFeatures';
 import { IApiResponse } from '@/utils/interface';
 import { rawColleges } from '@/constant';
 import LandingHeader from '@/components/Common/LandingHeader';
+import AcademicChatbot from '@/components/Common/AcademicChatbot';
 
 type College = {
     name: string;
@@ -234,6 +235,9 @@ export default async function HomePage() {
 
                 <FAQPage />
             </main>
+
+            {/* Academic Chatbot */}
+            <AcademicChatbot />
         </>
     );
 }
