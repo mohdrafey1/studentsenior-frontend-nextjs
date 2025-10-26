@@ -155,4 +155,8 @@ export const api = {
         getTransactions: `${API_BASE_URL}/payment/wallet/transactions`,
         getStats: `${API_BASE_URL}/payment/wallet/stats`,
     },
+
+    chatbot: {
+        track: `${API_BASE_URL}/chatbot/track`,
+    },
 };
