@@ -1,11 +1,15 @@
 [
     {
-        "relation": ["delegate_permission/common.handle_all_urls"],
+        "relation": [
+            "delegate_permission/common.handle_all_urls",
+            "delegate_permission/common.get_login_creds"
+        ],
         "target": {
             "namespace": "android_app",
             "package_name": "com.studentsenior.twa",
             "sha256_cert_fingerprints": [
-                "FB:66:B6:94:3E:94:01:50:5D:71:54:E8:DB:D7:B1:9D:30:D9:54:FE:93:83:74:79:9A:36:06:EE:F6:A5:E1:E4"
+                "FB:66:B6:94:3E:94:01:50:5D:71:54:E8:DB:D7:B1:9D:30:D9:54:FE:93:83:74:79:9A:36:06:EE:F6:A5:E1:E4",
+                "51:6C:A3:02:A9:1F:AE:0E:E0:00:B9:C7:10:3F:4A:BF:63:5D:52:A4:79:B1:E3:FA:6A:83:8A:F6:82:CA:2A:A2"
             ]
         }
     }
