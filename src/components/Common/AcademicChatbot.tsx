@@ -13,6 +13,7 @@ import {
     Check,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '@/config/apiUrls';
 
 interface ChatbotPreferences {
     collegeId?: string;
@@ -97,6 +98,7 @@ interface VideoType {
 }
 
 const STORAGE_KEY = 'chatbot_preferences';
+const SESSION_KEY = 'chatbot_session_id';
 const API_BASE =
     process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v2';
 
@@ -106,7 +108,50 @@ export default function AcademicChatbot() {
     const [preferences, setPreferences] = useState<ChatbotPreferences>({});
     const [loading, setLoading] = useState(false);
     const [copiedLink, setCopiedLink] = useState<string | null>(null);
+    const [sessionId, setSessionId] = useState<string>('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Generate or retrieve session ID
+    useEffect(() => {
+        let storedSessionId = localStorage.getItem(SESSION_KEY);
+        if (!storedSessionId) {
+            storedSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem(SESSION_KEY, storedSessionId);
+        }
+        setSessionId(storedSessionId);
+    }, []);
+
+    // Track chatbot usage
+    const trackUsage = async (
+        action: string,
+        additionalData?: {
+            collegeId?: string;
+            courseId?: string;
+            branchId?: string;
+            subjectId?: string;
+            semester?: number;
+            resourceType?: string;
+            resourceId?: string;
+            resourceLink?: string;
+        },
+    ) => {
+        if (!sessionId) return;
+
+        try {
+            await fetch(api.chatbot.track, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    sessionId,
+                    action,
+                    ...additionalData,
+                }),
+            });
+        } catch (error) {
+            console.error('Failed to track usage:', error);
+        }
+    };
 
     useEffect(() => {
         // Load preferences from localStorage
@@ -459,7 +504,7 @@ export default function AcademicChatbot() {
                     collegeName: option.collegeName,
                     collegeSlug: selectedCollegeSlug,
                 }));
-                // Fetch courses using the selected college slug directly
+                trackUsage('college', { collegeId: option.value });
                 fetchCourses(selectedCollegeSlug);
                 break;
 
@@ -469,6 +514,7 @@ export default function AcademicChatbot() {
                     courseId: option.value,
                     courseName: option.courseName,
                 }));
+                trackUsage('course', { courseId: option.value });
                 fetchBranches(option.value);
                 break;
 
@@ -478,6 +524,7 @@ export default function AcademicChatbot() {
                     branchId: option.value,
                     branchName: option.branchName,
                 }));
+                trackUsage('branch', { branchId: option.value });
                 fetchSemesters(option.value);
                 break;
 
@@ -487,12 +534,14 @@ export default function AcademicChatbot() {
                     ...prev,
                     semester,
                 }));
+                trackUsage('semester', { semester });
                 if (preferences.branchId) {
                     fetchSubjects(preferences.branchId, semester);
                 }
                 break;
 
             case 'select_subject':
+                trackUsage('subject', { subjectId: option.value });
                 addBotMessage(
                     `Perfect! You've selected ${option.subjectName}. What would you like to explore?`,
                     [
@@ -519,14 +568,26 @@ export default function AcademicChatbot() {
                 break;
 
             case 'fetch_pyqs':
+                trackUsage('pyq', {
+                    subjectId: option.value,
+                    resourceType: 'pyq',
+                });
                 fetchPYQs(option.value, option.subjectName || '');
                 break;
 
             case 'fetch_notes':
+                trackUsage('note', {
+                    subjectId: option.value,
+                    resourceType: 'note',
+                });
                 fetchNotes(option.value, option.subjectName || '');
                 break;
 
             case 'fetch_videos':
+                trackUsage('video', {
+                    subjectId: option.value,
+                    resourceType: 'video',
+                });
                 fetchVideos(option.value, option.subjectName || '');
                 break;
 
@@ -668,6 +729,21 @@ export default function AcademicChatbot() {
                                                                     }
                                                                     target='_blank'
                                                                     rel='noopener noreferrer'
+                                                                    onClick={() => {
+                                                                        // Track resource view
+                                                                        trackUsage(
+                                                                            link.type,
+                                                                            {
+                                                                                resourceType:
+                                                                                    link.type ===
+                                                                                    'notes'
+                                                                                        ? 'note'
+                                                                                        : link.type,
+                                                                                resourceLink:
+                                                                                    link.url,
+                                                                            },
+                                                                        );
+                                                                    }}
                                                                     className='flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-600 transition-colors group text-sm'
                                                                 >
                                                                     <div className='flex items-center gap-2'>
