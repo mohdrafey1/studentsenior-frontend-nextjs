@@ -8,38 +8,37 @@ interface NoteDetailPageProps {
 }
 
 export async function generateMetadata({
-  params,
+    params,
 }: NoteDetailPageProps): Promise<Metadata> {
-  const { 'note-slug': noteSlug } = await params;
+    const { 'note-slug': noteSlug } = await params;
 
-  const title = `${capitalizeWords(noteSlug)} - Notes`;
-  const description = 'High-quality notes to boost your learning efficiency.';
+    const title = `${capitalizeWords(noteSlug)} - Notes`;
+    const description = 'High-quality notes to boost your learning efficiency.';
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [
-        {
-          url: '/image192edge.png',
-          width: 800,
-          height: 600,
-          alt: title,
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: [
+                {
+                    url: '/image192edge.png',
+                    width: 800,
+                    height: 600,
+                    alt: title,
+                },
+            ],
+            type: 'article',
         },
-      ],
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: ['/image192edge.png'],
-    },
-  };
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ['/image192edge.png'],
+        },
+    };
 }
-
 
 export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
     const { 'note-slug': noteSlug } = await params;

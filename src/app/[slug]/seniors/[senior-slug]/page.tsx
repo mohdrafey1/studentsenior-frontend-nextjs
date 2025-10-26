@@ -23,21 +23,19 @@ export async function generateMetadata({
         const data = await res.json();
         const senior = data?.data || {};
         console.log(senior);
-        
 
         const title = `${capitalizeWords(senior.name || seniorSlug)} - ${capitalizeWords(
-            slug
+            slug,
         )} | Senior Profile`;
 
         const description =
             senior.bio ||
             senior.designation ||
             `Know more about ${capitalizeWords(
-                senior.name || seniorSlug
+                senior.name || seniorSlug,
             )} from ${capitalizeWords(slug)}. View profile details, interests, and achievements.`;
 
-        const image =
-            senior.profilePicture || '/icons/image192edge.png';
+        const image = senior.profilePicture || '/icons/image192edge.png';
 
         return {
             title,

@@ -6,7 +6,7 @@ import {
     Edit,
     Trash2,
     Eye,
-    Phone,
+    MessageCircle,
     IndianRupee,
     ExternalLink,
 } from 'lucide-react';
@@ -139,13 +139,13 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                 <div className='space-y-1.5 sm:space-y-3 mb-2 sm:mb-4'>
                     {item.whatsapp && (
                         <a
-                            href={`https://wa.me/91${item.whatsapp}`}
+                            href={`https://wa.me/91${item.whatsapp}?text=${encodeURIComponent(`Hey! I came from StudentSenior. I want to know about the "${item.name}" listed on StudentSenior.`)}`}
                             target='_blank'
                             rel='noopener noreferrer'
                             className='flex items-center group/contact p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gray-50/50 hover:bg-emerald-50 dark:bg-gray-800/50 dark:hover:bg-emerald-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
                         >
                             <div className='p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-emerald-100 dark:bg-emerald-900/40 group-hover/contact:bg-emerald-200 dark:group-hover/contact:bg-emerald-800/60 transition-colors duration-200'>
-                                <Phone className='w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400' />
+                                <MessageCircle className='w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400' />
                             </div>
                             <span className='ml-2 sm:ml-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300 group-hover/contact:text-emerald-700 dark:group-hover/contact:text-emerald-300 transition-colors duration-200 font-medium'>
                                 WhatsApp

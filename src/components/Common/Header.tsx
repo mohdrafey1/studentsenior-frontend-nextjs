@@ -6,15 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import { RootState } from '@/redux/store';
-import {
-    Moon,
-    Sun,
-    Menu,
-    X,
-    User,
-    LogOut,
-    Wallet,
-} from 'lucide-react';
+import { Moon, Sun, Menu, X, User, LogOut, Wallet } from 'lucide-react';
 import { signOut } from '@/redux/slices/userSlice';
 import { api } from '@/config/apiUrls';
 
@@ -269,7 +261,7 @@ const Header: React.FC = () => {
                 </div>
             </div>
 
-           {/* Mobile Navigation */}
+            {/* Mobile Navigation */}
             <div
                 className={`lg:hidden fixed py-3 inset-x-0 top-0 min-h-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-50 ${
                     isMenuOpen

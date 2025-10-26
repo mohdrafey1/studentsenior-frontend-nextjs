@@ -160,7 +160,10 @@ const DetailPageNavbar = ({
                         onClick={() => setShowReportModal(true)}
                         className='flex flex-col items-center gap-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group'
                     >
-                        <Flag aria-label='Report' className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                        <Flag
+                            aria-label='Report'
+                            className='w-4 h-4 group-hover:scale-110 transition-transform duration-200'
+                        />
                         {/* <span className='text-xs font-medium'>Report</span> */}
                     </button>
 
@@ -169,7 +172,10 @@ const DetailPageNavbar = ({
                         onClick={handleShare}
                         className='flex flex-col items-center gap-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group'
                     >
-                        <Share2 aria-label='Share' className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                        <Share2
+                            aria-label='Share'
+                            className='w-4 h-4 group-hover:scale-110 transition-transform duration-200'
+                        />
                         {/* <span className='text-xs font-medium'>Share</span> */}
                     </button>
                 </div>

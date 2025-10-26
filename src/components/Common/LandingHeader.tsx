@@ -134,41 +134,39 @@ const LandingHeader: React.FC = () => {
                                 <Moon className='w-5 h-5 text-gray-700 dark:text-gray-300' />
                             )}
                         </button>
-                            <div className='lg:block md:block hidden'>
-                        {/* User Profile or Login */}
-                        {currentUser ? (
-                            <div className='relative '>
-                                <Link
-                                            href='/profile'
-                                            className='flex items-center text-sm rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-                                         
-                                        >
-                                <button
-                                    className='flex items-center space-x-2 rounded-md px-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'
-                                >
-                                    <Image
-                                        src={
-                                            currentUser.profilePicture ||
-                                            '/default-avatar.png'
-                                        }
-                                        alt='Profile'
-                                        width={36}
-                                        height={36}
-                                        className='rounded-full h-9 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
-                                    />
-                                    <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                        {currentUser.username}
-                                    </span>
-                                    {/* <ChevronDown
+                        <div className='lg:block md:block hidden'>
+                            {/* User Profile or Login */}
+                            {currentUser ? (
+                                <div className='relative '>
+                                    <Link
+                                        href='/profile'
+                                        className='flex items-center text-sm rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
+                                    >
+                                        <button className='flex items-center space-x-2 rounded-md px-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group'>
+                                            <Image
+                                                src={
+                                                    currentUser.profilePicture ||
+                                                    '/default-avatar.png'
+                                                }
+                                                alt='Profile'
+                                                width={36}
+                                                height={36}
+                                                className='rounded-full h-9 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
+                                            />
+                                            <span className='hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                                {currentUser.username}
+                                            </span>
+                                            {/* <ChevronDown
                                         className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
                                             isProfileDropdownOpen
                                                 ? 'rotate-180'
                                                 : ''
                                         }`}
                                     /> */}
-                                </button></Link>
-                                {/* Profile Dropdown */}
-                                {/* {isProfileDropdownOpen && (
+                                        </button>
+                                    </Link>
+                                    {/* Profile Dropdown */}
+                                    {/* {isProfileDropdownOpen && (
                                     <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'>
                                         
                                             <User className='w-4 h-4 mr-2' />
@@ -177,29 +175,29 @@ const LandingHeader: React.FC = () => {
                                        
                                     </div>
                                 )} */}
-                            </div>
-                        ) : (
-                            <div className='flex items-center space-x-0'>
-                                <Link
-                                    href={{
-                                        pathname: '/sign-up',
-                                        query: { from: pathname },
-                                    }}
-                                    className='hidden sm:block px-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'
-                                >
-                                    Sign Up
-                                </Link>
-                                <Link
-                                    href={{
-                                        pathname: '/sign-in',
-                                        query: { from: pathname },
-                                    }}
-                                    className='px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md'
-                                >
-                                    Sign In
-                                </Link>
-                            </div>
-                        )}
+                                </div>
+                            ) : (
+                                <div className='flex items-center space-x-0'>
+                                    <Link
+                                        href={{
+                                            pathname: '/sign-up',
+                                            query: { from: pathname },
+                                        }}
+                                        className='hidden sm:block px-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'
+                                    >
+                                        Sign Up
+                                    </Link>
+                                    <Link
+                                        href={{
+                                            pathname: '/sign-in',
+                                            query: { from: pathname },
+                                        }}
+                                        className='px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md'
+                                    >
+                                        Sign In
+                                    </Link>
+                                </div>
+                            )}
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -219,89 +217,93 @@ const LandingHeader: React.FC = () => {
             </div>
 
             {/* Mobile Navigation */}
-            <div className='absolute bg-red-300 min-h-screen'> <div
-                className={`lg:hidden fixed py-3 inset-x-0 top-0 min-h-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-50 ${
-                    isMenuOpen
-                        ? 'opacity-100 visible translate-y-0'
-                        : 'opacity-0 invisible -translate-y-4'
-                }`}
-             >
-                <p className='w-full flex justify-end px-8 pt-6' onClick={() => setIsMenuOpen(false)}>
-                    <X className='w-8 h-8 bg-red-500 p-2 cursor-pointer rounded-3xl text-white hover:text-gray-900 dark:text-gray-300' />
+            <div className='absolute bg-red-300 min-h-screen'>
+                {' '}
+                <div
+                    className={`lg:hidden fixed py-3 inset-x-0 top-0 min-h-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out z-50 ${
+                        isMenuOpen
+                            ? 'opacity-100 visible translate-y-0'
+                            : 'opacity-0 invisible -translate-y-4'
+                    }`}
+                >
+                    <p
+                        className='w-full flex justify-end px-8 pt-6'
+                        onClick={() => setIsMenuOpen(false)}
+                    >
+                        <X className='w-8 h-8 bg-red-500 p-2 cursor-pointer rounded-3xl text-white hover:text-gray-900 dark:text-gray-300' />
                     </p>
-                <nav className='container mx-auto px-2 py-4 flex flex-col items-center justify-center text-center'>
-                    <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
-                        {menuItems.map((item) => (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                onClick={() => setIsMenuOpen(false)}
-                                className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
-                                    pathname === item.path
-                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800'
-                                }`}
-                            >
-                                {item.name}
-                                {item.isExternal && (
-                                    <span className='ml-2 text-xs opacity-70'>
-                                        ↗
-                                    </span>
-                                )}
-                            </Link>
-                        ))}
+                    <nav className='container mx-auto px-2 py-4 flex flex-col items-center justify-center text-center'>
+                        <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
+                            {menuItems.map((item) => (
+                                <Link
+                                    key={item.path}
+                                    href={item.path}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center ${
+                                        pathname === item.path
+                                            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800'
+                                    }`}
+                                >
+                                    {item.name}
+                                    {item.isExternal && (
+                                        <span className='ml-2 text-xs opacity-70'>
+                                            ↗
+                                        </span>
+                                    )}
+                                </Link>
+                            ))}
 
-                        {!currentUser ? (
-                            <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
-                                <Link
-                                    href={{
-                                        pathname: '/sign-in',
-                                        query: { from: pathname },
-                                    }}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className='px-4 py-3 text-center text-base font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors duration-200'
+                            {!currentUser ? (
+                                <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
+                                    <Link
+                                        href={{
+                                            pathname: '/sign-in',
+                                            query: { from: pathname },
+                                        }}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className='px-4 py-3 text-center text-base font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors duration-200'
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        href={{
+                                            pathname: '/sign-up',
+                                            query: { from: pathname },
+                                        }}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className='px-4 py-3 text-center text-base font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-colors duration-200'
+                                    >
+                                        Create Account
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div
+                                    className={`px-4 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}
                                 >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    href={{
-                                        pathname: '/sign-up',
-                                        query: { from: pathname },
-                                    }}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className='px-4 py-3 text-center text-base font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-colors duration-200'
-                                >
-                                    Create Account
-                                </Link>
-                            </div>
-                        ):(
-                            <div className={`px-4 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}>
-                                <button
-                                    className='flex items-center space-x-2 rounded-md transition-colors duration-200 group'
-                                ><Link
+                                    <button className='flex items-center space-x-2 rounded-md transition-colors duration-200 group'>
+                                        <Link
                                             href='/profile'
                                             className='flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-200'
-                                           
                                         >
-                                    <Image
-                                        src={
-                                            currentUser.profilePicture ||
-                                            '/default-avatar.png'
-                                        }
-                                        alt='Profile'
-                                        width={36}
-                                        height={36}
-                                        className='rounded-full h-10 w-10 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
-                                    />
-                                    <span className='sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                        {currentUser.username}
-                                    </span>
-                                    
-                                    </Link>
-                                </button>
+                                            <Image
+                                                src={
+                                                    currentUser.profilePicture ||
+                                                    '/default-avatar.png'
+                                                }
+                                                alt='Profile'
+                                                width={36}
+                                                height={36}
+                                                className='rounded-full h-10 w-10 object-cover border-2 border-white dark:border-gray-800 shadow-sm transition-transform duration-200 group-hover:scale-105'
+                                            />
+                                            <span className='sm:block text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                                {currentUser.username}
+                                            </span>
+                                        </Link>
+                                    </button>
 
-                                {/* Profile Dropdown */}
-                                {/* {isProfileDropdownOpen && (
+                                    {/* Profile Dropdown */}
+                                    {/* {isProfileDropdownOpen && (
                                     <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'>
                                         <Link
                                             href='/profile'
@@ -325,12 +327,12 @@ const LandingHeader: React.FC = () => {
                                         </button>
                                     </div>
                                 )} */}
-                            </div>
-                        )}
-                    </div>
-                </nav>
-            </div></div>
-           
+                                </div>
+                            )}
+                        </div>
+                    </nav>
+                </div>
+            </div>
 
             {/* Backdrop for mobile menu */}
             {isMenuOpen && (
