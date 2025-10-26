@@ -258,6 +258,7 @@ export interface INote {
     createdAt: string;
     updatedAt: string;
     clickCounts: number;
+    isDownloadable: boolean;
 }
 
 export interface IVideo {

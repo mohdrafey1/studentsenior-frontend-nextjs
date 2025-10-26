@@ -554,7 +554,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 </div>
 
                 {/* Bottom controls: Download for Unpaid Notes */}
-                {!note.isPaid && (
+                {!note.isPaid && note.isDownloadable && (
                     <div className='mt-8'>
                         <div className='flex flex-wrap gap-3 justify-center'>
                             {!isDownloadDisabled && (
