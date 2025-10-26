@@ -28,7 +28,8 @@ const fugazOne = PT_Serif({
 
 export const metadata: Metadata = {
     title: 'Student Senior',
-    description: 'Your Academic Companion for Notes, PYQs, and College Resources',
+    description:
+        'Your Academic Companion for Notes, PYQs, and College Resources',
     manifest: '/manifest.json',
     themeColor: '#ffffff',
     icons: [
@@ -57,7 +58,15 @@ export const metadata: Metadata = {
             sizes: '512x512',
         },
     ],
-    keywords: ['student', 'college', 'notes', 'PYQs', 'study', 'academic companion','integral university'],
+    keywords: [
+        'student',
+        'college',
+        'notes',
+        'PYQs',
+        'study',
+        'academic companion',
+        'integral university',
+    ],
     authors: [
         {
             name: 'Student Senior',
@@ -66,7 +75,8 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         title: 'Student Senior',
-        description: 'Your Academic Companion for Notes, PYQs, and College Resources',
+        description:
+            'Your Academic Companion for Notes, PYQs, and College Resources',
         url: 'https://www.studentsenior.com/',
         siteName: 'Student Senior',
         type: 'website',
@@ -82,13 +92,13 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'Student Senior',
-        description: 'Your Academic Companion for Notes, PYQs, and College Resources',
+        description:
+            'Your Academic Companion for Notes, PYQs, and College Resources',
         siteId: '@studentsenior',
         creator: '@studentsenior',
         images: ['/icons/image512.png'],
     },
 };
-
 
 export default function RootLayout({
     children,
@@ -96,7 +106,7 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <head>
-                <link rel="icon" href="./favicon.webp" />
+                <link rel='icon' href='./favicon.webp' />
                 {/* Google AdSense */}
                 <Script
                     async

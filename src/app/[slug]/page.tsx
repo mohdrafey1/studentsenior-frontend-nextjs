@@ -168,77 +168,77 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 </div>
 
                 {/* Main Content */}
-                <div className="relative isolate overflow-hidden bg-white dark:bg-gray-900">
-            {/* Background Aurora Effect */}
-            <div
-                className="absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2"
-                aria-hidden="true"
-            >
-                <div
-                    className="aspect-[1.5] w-[80rem] bg-gradient-to-tr from-[#06b6d4] to-[#3b82f6] opacity-20 dark:opacity-30"
-                    style={{
-                        clipPath:
-                            'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-                    }}
-                />
-            </div>
-
-            {/* Main Content */}
-            <div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] px-4 py-16 text-center">
-                {/* Pre-title Badge */}
-                <div className="animate-fade-in mb-4">
-                    <span className="inline-flex items-center gap-x-2 rounded-full bg-cyan-100/80 px-4 py-1 text-sm font-medium text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-200 ring-1 ring-inset ring-cyan-600/20">
-                        <BookOpen className="w-4 h-4" />
-                        Your Academic Partner
-                    </span>
-                </div>
-
-                {/* Welcome Text */}
-                <div className="max-w-4xl mx-auto">
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                        <span className="bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in">
-                            Welcome to
-                        </span>
-                        <br />
-                        <span className="bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up">
-                            {capitalizeWords(slug)}
-                        </span>
-                    </h1>
-
-                    {/* Subtitle */}
-                    <p className="text-xl sm:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto animate-fade-in-delay">
-                        Connect with seniors, access resources, and grow
-                        your academic journey at {capitalizeWords(slug)}
-                    </p>
-                </div>
-
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-in-delay">
-                    {/* Primary CTA */}
-                    <Link
-                        href={`/${slug}/pyqs`}
-                        className="group flex-1 flex items-center justify-center gap-2.5 py-3 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl shadow-lg shadow-cyan-500/30 dark:shadow-cyan-400/20 animate-pulse-slow"
-                        aria-label={`View Previous Year Questions for ${capitalizeWords(slug)}`}
+                <div className='relative isolate overflow-hidden bg-white dark:bg-gray-900'>
+                    {/* Background Aurora Effect */}
+                    <div
+                        className='absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2'
+                        aria-hidden='true'
                     >
-                        <Archive className="w-4 h-4" />
-                        View PYQs
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                    
-                    {/* Secondary CTA */}
-                    <Link
-                        href={`/${slug}/notes`}
-                        className="group flex-1 flex items-center justify-center gap-2.5 py-3 px-6 rounded-xl bg-slate-100 text-slate-800 font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-xl shadow-slate-500/10
-                                    dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        aria-label={`View Notes for ${capitalizeWords(slug)}`}
-                    >
-                        <FileText className="w-4 h-4" />
-                        Browse Notes
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                        <div
+                            className='aspect-[1.5] w-[80rem] bg-gradient-to-tr from-[#06b6d4] to-[#3b82f6] opacity-20 dark:opacity-30'
+                            style={{
+                                clipPath:
+                                    'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                            }}
+                        />
+                    </div>
+
+                    {/* Main Content */}
+                    <div className='relative z-10 flex flex-col items-center justify-center min-h-[70vh] px-4 py-16 text-center'>
+                        {/* Pre-title Badge */}
+                        <div className='animate-fade-in mb-4'>
+                            <span className='inline-flex items-center gap-x-2 rounded-full bg-cyan-100/80 px-4 py-1 text-sm font-medium text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-200 ring-1 ring-inset ring-cyan-600/20'>
+                                <BookOpen className='w-4 h-4' />
+                                Your Academic Partner
+                            </span>
+                        </div>
+
+                        {/* Welcome Text */}
+                        <div className='max-w-4xl mx-auto'>
+                            <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight'>
+                                <span className='bg-gradient-to-r from-gray-900 via-sky-800 to-cyan-700 dark:from-white dark:via-sky-200 dark:to-cyan-300 bg-clip-text text-transparent animate-fade-in'>
+                                    Welcome to
+                                </span>
+                                <br />
+                                <span className='bg-gradient-to-r from-sky-600 via-cyan-500 to-blue-600 dark:from-sky-400 dark:via-cyan-300 dark:to-blue-400 bg-clip-text text-transparent animate-slide-up'>
+                                    {capitalizeWords(slug)}
+                                </span>
+                            </h1>
+
+                            {/* Subtitle */}
+                            <p className='text-xl sm:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto animate-fade-in-delay'>
+                                Connect with seniors, access resources, and grow
+                                your academic journey at {capitalizeWords(slug)}
+                            </p>
+                        </div>
+
+                        {/* CTAs */}
+                        <div className='flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-in-delay'>
+                            {/* Primary CTA */}
+                            <Link
+                                href={`/${slug}/pyqs`}
+                                className='group flex-1 flex items-center justify-center gap-2.5 py-3 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl shadow-lg shadow-cyan-500/30 dark:shadow-cyan-400/20 animate-pulse-slow'
+                                aria-label={`View Previous Year Questions for ${capitalizeWords(slug)}`}
+                            >
+                                <Archive className='w-4 h-4' />
+                                View PYQs
+                                <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
+                            </Link>
+
+                            {/* Secondary CTA */}
+                            <Link
+                                href={`/${slug}/notes`}
+                                className='group flex-1 flex items-center justify-center gap-2.5 py-3 px-6 rounded-xl bg-slate-100 text-slate-800 font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-xl shadow-slate-500/10
+                                    dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                                aria-label={`View Notes for ${capitalizeWords(slug)}`}
+                            >
+                                <FileText className='w-4 h-4' />
+                                Browse Notes
+                                <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
             </section>
 
             {/* Featured Seniors Section */}

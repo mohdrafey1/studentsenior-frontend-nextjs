@@ -1,7 +1,14 @@
 'use client';
 import React from 'react';
 import { ISenior } from '@/utils/interface';
-import { Linkedin, Github, Globe, Youtube, Send, Phone } from 'lucide-react';
+import {
+    Linkedin,
+    Github,
+    Globe,
+    Youtube,
+    Send,
+    MessageCircle,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -21,7 +28,10 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
     const formatSocialMediaLink = (platform: string, url: string) => {
         switch (platform.toLowerCase()) {
             case 'whatsapp':
-                return `https://wa.me/${url}`;
+                const message = encodeURIComponent(
+                    'Hey! I came from StudentSenior. I would like to connect with you.',
+                );
+                return `https://wa.me/${url}?text=${message}`;
             case 'telegram':
                 return `https://t.me/${url}`;
             case 'linkedin':
@@ -37,7 +47,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
     const renderSocialIcon = (platform: string) => {
         switch (platform.toLowerCase()) {
             case 'whatsapp':
-                return <Phone size={20} className='text-green-600' />;
+                return <MessageCircle size={20} className='text-green-600' />;
             case 'telegram':
                 return <Send size={20} className='text-sky-500' />;
             case 'github':
