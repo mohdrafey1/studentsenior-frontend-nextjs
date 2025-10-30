@@ -163,6 +163,113 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                     priority: 0.8,
                 });
             });
+
+            // PYQ filter combinations
+            const pyqCombinations = [
+                // Common course/branch combinations
+                { course: 'CSE', branch: 'BTech-CSE' },
+                { course: 'CA', branch: 'BCA' },
+            ];
+
+            const examTypes = ['midsem1', 'midsem2', 'endsem'];
+            const years = ['2023-24', '2024-25'];
+            const semesters = [1, 2, 3, 4, 5, 6, 7];
+
+            // Generate combinations WITH year AND examType
+            pyqCombinations.forEach(({ course, branch }) => {
+                years.forEach((year) => {
+                    examTypes.forEach((examType) => {
+                        semesters.forEach((semester) => {
+                            const params = new URLSearchParams({
+                                course,
+                                branch,
+                                year,
+                                examType,
+                                semester: semester.toString(),
+                            });
+                            // Replace & with &amp; for XML compatibility
+                            const queryString = params
+                                .toString()
+                                .replace(/&/g, '&amp;');
+                            dynamicRoutes.push({
+                                url: `${SITE_URL}/${collegeSlug}/pyqs?${queryString}`,
+                                lastModified: currentDate,
+                                changeFrequency: 'monthly',
+                                priority: 0.6,
+                            });
+                        });
+                    });
+                });
+            });
+
+            // Generate combinations WITHOUT year but WITH examType
+            pyqCombinations.forEach(({ course, branch }) => {
+                examTypes.forEach((examType) => {
+                    semesters.forEach((semester) => {
+                        const params = new URLSearchParams({
+                            course,
+                            branch,
+                            examType,
+                            semester: semester.toString(),
+                        });
+                        // Replace & with &amp; for XML compatibility
+                        const queryString = params
+                            .toString()
+                            .replace(/&/g, '&amp;');
+                        dynamicRoutes.push({
+                            url: `${SITE_URL}/${collegeSlug}/pyqs?${queryString}`,
+                            lastModified: currentDate,
+                            changeFrequency: 'monthly',
+                            priority: 0.6,
+                        });
+                    });
+                });
+            });
+
+            // Generate combinations WITH year but WITHOUT examType
+            pyqCombinations.forEach(({ course, branch }) => {
+                years.forEach((year) => {
+                    semesters.forEach((semester) => {
+                        const params = new URLSearchParams({
+                            course,
+                            branch,
+                            year,
+                            semester: semester.toString(),
+                        });
+                        // Replace & with &amp; for XML compatibility
+                        const queryString = params
+                            .toString()
+                            .replace(/&/g, '&amp;');
+                        dynamicRoutes.push({
+                            url: `${SITE_URL}/${collegeSlug}/pyqs?${queryString}`,
+                            lastModified: currentDate,
+                            changeFrequency: 'monthly',
+                            priority: 0.6,
+                        });
+                    });
+                });
+            });
+
+            // Generate combinations WITHOUT year AND WITHOUT examType
+            pyqCombinations.forEach(({ course, branch }) => {
+                semesters.forEach((semester) => {
+                    const params = new URLSearchParams({
+                        course,
+                        branch,
+                        semester: semester.toString(),
+                    });
+                    // Replace & with &amp; for XML compatibility
+                    const queryString = params
+                        .toString()
+                        .replace(/&/g, '&amp;');
+                    dynamicRoutes.push({
+                        url: `${SITE_URL}/${collegeSlug}/pyqs?${queryString}`,
+                        lastModified: currentDate,
+                        changeFrequency: 'monthly',
+                        priority: 0.6,
+                    });
+                });
+            });
         });
 
         // PYQ pages
