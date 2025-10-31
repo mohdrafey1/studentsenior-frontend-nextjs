@@ -15,6 +15,7 @@ interface SubjectPyqsClientProps {
     collegeSlug: string;
     courseCode: string;
     branchCode: string;
+    subjectName:string;
 }
 
 export default function SubjectPyqsClient({
@@ -23,6 +24,7 @@ export default function SubjectPyqsClient({
     collegeSlug,
     courseCode,
     branchCode,
+    subjectName
 }: SubjectPyqsClientProps) {
     const [activeExamType, setActiveExamType] = useState<string>('all');
     const [addPyq, setAddPyq] = useState(false);
@@ -107,8 +109,8 @@ export default function SubjectPyqsClient({
             <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6'>
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
                     <div>
-                        <h1 className='text-2xl font-fugaz font-bold text-gray-900 dark:text-white'>
-                            {subjectCode.toUpperCase()} - Previous Year
+                        <h1 className='text-2xl font-fugaz capitalize font-bold text-gray-900 dark:text-white'>
+                            {subjectName} - Previous Year
                             Questions
                         </h1>
                         <p className='text-gray-600 dark:text-gray-400 mt-1'>
