@@ -32,8 +32,9 @@ export default function SubjectPyqsClient({
         year: '',
         examType: '',
         fileUrl: '',
-        // isPaid: false,
-        // price: 0,
+        solved: false,
+        isPaid: false,
+        price: 0,
     };
     const [form, setForm] = useState<PyqFormData>(initialFormState);
 
