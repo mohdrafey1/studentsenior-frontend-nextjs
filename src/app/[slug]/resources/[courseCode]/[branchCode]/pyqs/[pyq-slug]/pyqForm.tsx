@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/config/apiUrls';
-import { UploadIcon, CheckCircle, X } from 'lucide-react';
+import { UploadIcon, CheckCircle, X, DollarSign } from 'lucide-react';
 import SearchableSelect from '@/components/Common/SearchableSelect';
 import toast from 'react-hot-toast';
 
@@ -10,6 +10,9 @@ export interface PyqFormData {
     year: string;
     examType: string;
     fileUrl: string;
+    solved: boolean;
+    isPaid: boolean;
+    price: number;
 }
 
 // Define ISubject interface for clarity
@@ -77,8 +80,6 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         }
     }, [isOpen, branchCode, fetchSubjects]);
 
-    // --- NEW: Effect to pre-select subject ---
-    // This runs after subjects are fetched and whenever subjectCode changes
     useEffect(() => {
         if (subjects.length > 0 && subjectCode) {
             const matchingSubject = subjects.find(
@@ -88,9 +89,6 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                 setForm((prev) => ({ ...prev, subject: matchingSubject._id }));
             }
         }
-        // We only want this to run when subjects are loaded or the code changes.
-        // Adding setForm to deps can cause loops if not careful, but here it's fine
-        // as it only sets the form based on external props (subjectCode)
     }, [subjects, subjectCode, setForm]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -264,6 +262,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             options={subjectOptions}
                             placeholder='Select Subject'
                             loading={loadingSubjects}
+                            disabled={true}
                         />
                     </div>
 
@@ -357,7 +356,96 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             )}
                         </div>
                     </div>
+                        {/* Solved Option */}
+                        <div className='flex items-center justify-between'>
+                            <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                Solved Paper
+                            </span>
+                            <button
+                                type='button'
+                                onClick={() =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        solved: !prev.solved,
+                                        // Reset paid status when unsolved
+                                        isPaid: !prev.solved
+                                            ? false
+                                            : prev.isPaid,
+                                        price: !prev.solved ? 0 : prev.price,
+                                    }))
+                                }
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                    form.solved
+                                        ? 'bg-violet-600'
+                                        : 'bg-gray-200 dark:bg-gray-700'
+                                }`}
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                        form.solved
+                                            ? 'translate-x-6'
+                                            : 'translate-x-1'
+                                    }`}
+                                />
+                            </button>
+                        </div>
 
+                        {/* Paid Option - Only visible when solved */}
+                        {form.solved && (
+                            <div className='flex items-center justify-between'>
+                                <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Premium Content
+                                </span>
+                                <button
+                                    type='button'
+                                    onClick={() =>
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            isPaid: !prev.isPaid,
+                                            price: !prev.isPaid ? 25 : 0,
+                                        }))
+                                    }
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                        form.isPaid
+                                            ? 'bg-violet-600'
+                                            : 'bg-gray-200 dark:bg-gray-700'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                            form.isPaid
+                                                ? 'translate-x-6'
+                                                : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
+                        )}
+
+                         {/* Price Input - Only visible when isPaid is true */}
+                    {form.solved && form.isPaid && (
+                        <div>
+                            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+                                Price (in Points - 5 points = 1 INR)
+                            </label>
+                            <div className='relative'>
+                                <DollarSign className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
+                                <input
+                                    type='number'
+                                    value={form.price}
+                                    onChange={(e) =>
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            price: Number(e.target.value),
+                                        }))
+                                    }
+                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                                    placeholder='25'
+                                    min='25'
+                                />
+                            </div>
+                        </div>
+                    )}
                     {/* Submit Button */}
                     <div className='flex justify-end gap-3 pt-4'>
                         <button

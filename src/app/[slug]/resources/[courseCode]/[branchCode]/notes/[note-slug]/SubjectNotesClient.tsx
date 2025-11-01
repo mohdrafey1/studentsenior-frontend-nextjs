@@ -6,12 +6,15 @@ import { INote } from '@/utils/interface';
 import { BookOpen, Search, Eye, Plus, FileText, Video } from 'lucide-react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { api } from '@/config/apiUrls';
+import NotesFormModal from './noteForm';
 
 interface SubjectNotesClientProps {
     initialNotes: INote[];
     subjectCode: string;
     collegeSlug: string;
     courseCode: string;
+    subjectName:string;
     branchCode: string;
 }
 
@@ -21,8 +24,19 @@ export default function SubjectNotesClient({
     collegeSlug,
     courseCode,
     branchCode,
+    subjectName,
 }: SubjectNotesClientProps) {
     const [search, setSearch] = useState('');
+    const [addNote, setAddNotes] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+            title: '',
+            description: '',
+            fileUrl: '',
+            subjectCode: '',
+            isPaid: false,
+            price: 0,
+        });
 
     const filtered = useMemo(() => {
         return initialNotes.filter((n) => {
@@ -36,8 +50,7 @@ export default function SubjectNotesClient({
     }, [initialNotes, search]);
 
     const handleOpenAddNoteModal = () => {
-        toast.success('Coming Soon');
-        // setModalOpen(true);
+        setAddNotes(!addNote);
     };
 
     const formatDate = (dateString: string) => {
@@ -49,6 +62,48 @@ export default function SubjectNotesClient({
         });
     };
 
+        const handleAddSubmit = async (formData: typeof form) => {
+        setLoading(true);
+        try {
+            const response = await fetch(api.notes.createNote, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    ...formData,
+                    college: collegeSlug,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to create note');
+            }
+            toast.success(data.message || 'Note created successfully!');
+        } catch (error) {
+            console.error('Error creating note:', error);
+            throw error;
+        } finally {
+            setLoading(false);
+            closeAddModal();
+        }
+    };
+
+     const closeAddModal = () => {
+        setAddNotes(false);
+        setForm({
+            title: '',
+            description: '',
+            fileUrl: '',
+            subjectCode: '',
+            isPaid: false,
+            price: 0,
+        });
+    };
+
     return (
         <div className='max-w-7xl mx-auto p-4 space-y-6'>
             {/* Header Section */}
@@ -56,7 +111,7 @@ export default function SubjectNotesClient({
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
                     <div>
                         <h1 className='text-2xl font-bold text-gray-900 dark:text-white'>
-                            {subjectCode.toUpperCase()} - Study Notes
+                            {subjectName} - Study Notes
                         </h1>
                         <p className='text-gray-600 dark:text-gray-400 mt-1'>
                             Browse and access study notes and materials
@@ -160,7 +215,7 @@ export default function SubjectNotesClient({
                             </div>
 
                             {/* Note Footer */}
-                            <div className='border-t border-gray-100 dark:border-gray-700 px-4 py-3 bg-gray-50 dark:bg-gray-750'>
+                            <div className='border-t border-gray-100 dark:border-gray-700 px-4 py-3 bg-gray-50 dark:bg-gray-700'>
                                 <div className='flex justify-between items-center'>
                                     {/* Stats */}
                                     <div className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400'>
@@ -222,6 +277,16 @@ export default function SubjectNotesClient({
                     </div>
                 </div>
             )}
+          <NotesFormModal
+          isOpen={addNote}
+          onClose={() => setAddNotes(false)}
+          onSubmit={handleAddSubmit}
+          form={form}
+          setForm={setForm}
+          subject={subjectCode}
+          branchCode={branchCode}
+          />
+
         </div>
     );
 }
