@@ -12,8 +12,13 @@ import {
     ShoppingCart,
     Download,
     RefreshCw,
+    Sparkles,
+    Video,
+    NotebookPen,
+    FileStack,
 } from 'lucide-react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import 'pdfjs-dist/legacy/web/pdf_viewer.css';
@@ -156,6 +161,18 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const downloadExpiryTimerRef = useRef<number | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+    // Suggested PYQs state
+    const [suggestedPyqs, setSuggestedPyqs] = useState<{
+        sameSubjectExamType: IPyq[];
+        sameSubject: IPyq[];
+        sameSemester: IPyq[];
+    }>({
+        sameSubjectExamType: [],
+        sameSubject: [],
+        sameSemester: [],
+    });
+    const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
     );
@@ -218,6 +235,39 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         );
         setIsSaved(isSavedEntry);
     }, [savedPYQs, pyq._id]);
+
+    // Fetch suggested PYQs
+    useEffect(() => {
+        const fetchSuggestedPyqs = async () => {
+            if (!pyq || !pyq.slug) return;
+
+            setLoadingSuggestions(true);
+            try {
+                const response = await fetch(
+                    api.pyq.getSuggestedPyqs(pyq.slug),
+                );
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || 'Failed to fetch suggested PYQs',
+                    );
+                }
+
+                setSuggestedPyqs({
+                    sameSubjectExamType: data.data?.sameSubjectExamType || [],
+                    sameSubject: data.data?.sameSubject || [],
+                    sameSemester: data.data?.sameSemester || [],
+                });
+            } catch (error) {
+                console.error('Error fetching suggested PYQs:', error);
+            } finally {
+                setLoadingSuggestions(false);
+            }
+        };
+
+        fetchSuggestedPyqs();
+    }, [pyq]);
 
     const handleSave = async () => {
         await saveResource('pyq', pyq._id);
@@ -335,7 +385,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     return (
         <div className='min-h-screen bg-sky-50 dark:bg-gray-900'>
-            <DetailPageNavbar path='pyqs' fullPath={`/${slug}/pyqs`} />
+            <DetailPageNavbar path='pyqs' />
             {/* Document Info Section */}
             <div className='max-w-6xl mx-auto px-4 py-8'>
                 <div className='bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 sm:p-8 mb-6 sm:mb-8'>
@@ -602,6 +652,230 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         )}
                     </div>
                 )}
+
+                {/* Related Resources Section */}
+                <div className='mt-12 mb-8'>
+                    <div className='flex items-center gap-3 mb-6'>
+                        <BookOpen className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                            Explore More Resources
+                        </h2>
+                    </div>
+
+                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                        {/* More PYQs Button */}
+                        <Link
+                            href={`/${slug}/resources/${pyq.subject.branch.course.courseCode}/${pyq.subject.branch.branchCode}/pyqs/${pyq.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border-2 border-sky-200 dark:border-sky-700 p-6 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <FileStack className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                More PYQs
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                View all {pyq.subject.subjectName} papers
+                            </p>
+                        </Link>
+
+                        {/* Notes Button */}
+                        <Link
+                            href={`/${slug}/resources/${pyq.subject.branch.course.courseCode}/${pyq.subject.branch.branchCode}/notes/${pyq.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <NotebookPen className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Notes
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Study notes for {pyq.subject.subjectName}
+                            </p>
+                        </Link>
+
+                        {/* Syllabus Button */}
+                        <Link
+                            href={`/${slug}/syllabus/${pyq.subject.subjectName.toLowerCase().replace(/\s+/g, '-')}-${pyq.subject.subjectCode.toLowerCase()}`}
+                            className='group bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 p-6 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <BookOpen className='w-6 h-6 text-purple-600 dark:text-purple-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Syllabus
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Syllabus of {pyq.subject.subjectName}
+                            </p>
+                        </Link>
+
+                        {/* Videos Button */}
+                        <Link
+                            href={`/${slug}/resources/${pyq.subject.branch.course.courseCode}/${pyq.subject.branch.branchCode}/videos/${pyq.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-700 p-6 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <Video className='w-6 h-6 text-orange-600 dark:text-orange-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Videos
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Videos for {pyq.subject.subjectName}
+                            </p>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Suggested PYQs Section */}
+                {!loadingSuggestions &&
+                    (suggestedPyqs.sameSubjectExamType.length > 0 ||
+                        suggestedPyqs.sameSubject.length > 0 ||
+                        suggestedPyqs.sameSemester.length > 0) && (
+                        <div className='mt-12 mb-8'>
+                            <div className='flex items-center gap-3 mb-6'>
+                                <Sparkles className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                                <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                                    Suggested PYQs
+                                </h2>
+                            </div>
+
+                            {/* Same Subject Same Exam Type */}
+                            {suggestedPyqs.sameSubjectExamType.length > 0 && (
+                                <div className='mb-8'>
+                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                        More {pyq.subject.subjectName} -{' '}
+                                        {pyq.examType} Papers
+                                    </h3>
+                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                        {suggestedPyqs.sameSubjectExamType.map(
+                                            (suggestedPyq) => (
+                                                <Link
+                                                    key={suggestedPyq._id}
+                                                    href={`/${slug}/pyqs/${suggestedPyq.slug}`}
+                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                >
+                                                    <div className='flex items-center gap-2 mb-2'>
+                                                        <FileText className='w-5 h-5 text-sky-600 dark:text-sky-400' />
+                                                        <span className='text-xs font-medium px-2 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded-md'>
+                                                            {
+                                                                suggestedPyq.examType
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
+                                                        {
+                                                            suggestedPyq.subject
+                                                                .subjectName
+                                                        }
+                                                    </h4>
+                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                                                        {suggestedPyq.year}
+                                                    </p>
+                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
+                                                        <Eye className='w-3 h-3' />
+                                                        {
+                                                            suggestedPyq.clickCounts
+                                                        }
+                                                    </div>
+                                                </Link>
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Same Subject (All Exam Types) */}
+                            {suggestedPyqs.sameSubject.length > 0 && (
+                                <div className='mb-8'>
+                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                        More {pyq.subject.subjectName} Papers
+                                    </h3>
+                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                        {suggestedPyqs.sameSubject.map(
+                                            (suggestedPyq: IPyq) => (
+                                                <Link
+                                                    key={suggestedPyq._id}
+                                                    href={`/${slug}/pyqs/${suggestedPyq.slug}`}
+                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                >
+                                                    <div className='flex items-center gap-2 mb-2'>
+                                                        <FileText className='w-5 h-5 text-purple-600 dark:text-purple-400' />
+                                                        <span className='text-xs font-medium px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md'>
+                                                            {
+                                                                suggestedPyq.examType
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
+                                                        {
+                                                            suggestedPyq.subject
+                                                                .subjectName
+                                                        }
+                                                    </h4>
+                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                                                        {suggestedPyq.year}
+                                                    </p>
+                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
+                                                        <Eye className='w-3 h-3' />
+                                                        {
+                                                            suggestedPyq.clickCounts
+                                                        }
+                                                    </div>
+                                                </Link>
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Same Semester (All Subjects) */}
+                            {suggestedPyqs.sameSemester.length > 0 && (
+                                <div className='mb-8'>
+                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                        Semester {pyq.subject.semester} Papers
+                                    </h3>
+                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                        {suggestedPyqs.sameSemester.map(
+                                            (suggestedPyq: IPyq) => (
+                                                <Link
+                                                    key={suggestedPyq._id}
+                                                    href={`/${slug}/pyqs/${suggestedPyq.slug}`}
+                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                >
+                                                    <div className='flex items-center gap-2 mb-2'>
+                                                        <FileText className='w-5 h-5 text-blue-600 dark:text-blue-400' />
+                                                        <span className='text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md'>
+                                                            {
+                                                                suggestedPyq.examType
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
+                                                        {
+                                                            suggestedPyq.subject
+                                                                .subjectName
+                                                        }
+                                                    </h4>
+                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                                                        {suggestedPyq.year}
+                                                    </p>
+                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
+                                                        <Eye className='w-3 h-3' />
+                                                        {
+                                                            suggestedPyq.clickCounts
+                                                        }
+                                                    </div>
+                                                </Link>
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
             </div>
 
             {/* Payment Modal */}

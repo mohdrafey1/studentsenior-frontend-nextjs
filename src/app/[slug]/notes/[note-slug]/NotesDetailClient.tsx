@@ -12,8 +12,13 @@ import {
     User,
     Download,
     RefreshCw,
+    Sparkles,
+    Video,
+    NotebookPen,
+    FileStack,
 } from 'lucide-react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import 'pdfjs-dist/legacy/web/pdf_viewer.css';
 import { api } from '@/config/apiUrls';
@@ -156,6 +161,14 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const downloadExpiryTimerRef = useRef<number | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+    // Suggested Notes state
+    const [suggestedNotes, setSuggestedNotes] = useState<{
+        sameSubjectNotes: INote[];
+    }>({
+        sameSubjectNotes: [],
+    });
+    const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
     );
@@ -218,6 +231,37 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
         );
         setIsSaved(isSavedEntry);
     }, [savedNotes, note._id]);
+
+    // Fetch suggested notes
+    useEffect(() => {
+        const fetchSuggestedNotes = async () => {
+            if (!note || !note.slug) return;
+
+            setLoadingSuggestions(true);
+            try {
+                const response = await fetch(
+                    api.notes.getSuggestedNotes(note.slug),
+                );
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || 'Failed to fetch suggested notes',
+                    );
+                }
+
+                setSuggestedNotes({
+                    sameSubjectNotes: data.data?.sameSubjectNotes || [],
+                });
+            } catch (error) {
+                console.error('Error fetching suggested notes:', error);
+            } finally {
+                setLoadingSuggestions(false);
+            }
+        };
+
+        fetchSuggestedNotes();
+    }, [note]);
 
     const handleSave = async () => {
         await saveResource('note', note._id);
@@ -614,7 +658,137 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         )}
                     </div>
                 )}
+
+                {/* Related Resources Section */}
+                <div className='mt-12 mb-8'>
+                    <div className='flex items-center gap-3 mb-6'>
+                        <BookOpen className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                            Explore More Resources
+                        </h2>
+                    </div>
+
+                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                        {/* More PYQs Button */}
+                        <Link
+                            href={`/${slug}/resources/${note.subject.branch.course.courseCode}/${note.subject.branch.branchCode}/pyqs/${note.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border-2 border-sky-200 dark:border-sky-700 p-6 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <FileStack className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                View PYQs
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                View all {note.subject.subjectName} papers
+                            </p>
+                        </Link>
+
+                        {/* Notes Button */}
+                        <Link
+                            href={`/${slug}/resources/${note.subject.branch.course.courseCode}/${note.subject.branch.branchCode}/notes/${note.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <NotebookPen className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Notes
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Study notes for {note.subject.subjectName}
+                            </p>
+                        </Link>
+
+                        {/* Syllabus Button */}
+                        <Link
+                            href={`/${slug}/syllabus/${note.subject.subjectName.toLowerCase().replace(/\s+/g, '-')}-${note.subject.subjectCode.toLowerCase()}`}
+                            className='group bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 p-6 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <BookOpen className='w-6 h-6 text-purple-600 dark:text-purple-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Syllabus
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Syllabus of {note.subject.subjectName}
+                            </p>
+                        </Link>
+
+                        {/* Videos Button */}
+                        <Link
+                            href={`/${slug}/resources/${note.subject.branch.course.courseCode}/${note.subject.branch.branchCode}/videos/${note.subject.subjectCode}`}
+                            className='group bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-700 p-6 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300'
+                        >
+                            <div className='flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
+                                <Video className='w-6 h-6 text-orange-600 dark:text-orange-400' />
+                            </div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                Videos
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                Videos for {note.subject.subjectName}
+                            </p>
+                        </Link>
+                    </div>
+                </div>
             </div>
+
+            {/* Suggested Notes Section */}
+            {!loadingSuggestions &&
+                suggestedNotes.sameSubjectNotes.length > 0 && (
+                    <div className='max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8'>
+                        <div className='flex items-center gap-3 mb-6'>
+                            <Sparkles className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
+                            <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                                More {note.subject.subjectName} Notes
+                            </h2>
+                        </div>
+
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                            {suggestedNotes.sameSubjectNotes.map(
+                                (suggestedNote: INote) => (
+                                    <div
+                                        key={suggestedNote._id}
+                                        onClick={() =>
+                                            router.push(
+                                                `/${slug}/notes/${suggestedNote.slug}`,
+                                            )
+                                        }
+                                        className='bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group'
+                                    >
+                                        <div className='flex items-start gap-3 mb-3'>
+                                            <div className='w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center flex-shrink-0'>
+                                                <FileText className='w-5 h-5 text-emerald-600 dark:text-emerald-400' />
+                                            </div>
+                                            <div className='flex-1 min-w-0'>
+                                                <h3 className='font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
+                                                    {suggestedNote.title}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                        <p className='text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-3'>
+                                            {suggestedNote.description}
+                                        </p>
+                                        <div className='flex items-center justify-between text-xs text-gray-500 dark:text-gray-400'>
+                                            <span className='flex items-center gap-1'>
+                                                <User className='w-3 h-3' />
+                                                {suggestedNote.owner.username}
+                                            </span>
+                                            {suggestedNote.isPaid && (
+                                                <span className='bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-full font-medium'>
+                                                    {suggestedNote.price} pts
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ),
+                            )}
+                        </div>
+                    </div>
+                )}
 
             {/* Payment Modal */}
             <PaymentModal
