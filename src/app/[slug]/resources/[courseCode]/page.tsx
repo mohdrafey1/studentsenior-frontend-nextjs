@@ -109,6 +109,12 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
                                         >
                                             Explore Subjects
                                         </Link>
+                                        <Link
+                                            href={`/${slug}/syllabus/branch/${branch.branchCode}`}
+                                            className='ml-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px]'
+                                        >
+                                            View Syllabus
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

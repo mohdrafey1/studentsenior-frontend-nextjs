@@ -16,9 +16,11 @@ interface ISubject {
 export default function SubjectsList({
     subjects,
     branchCode,
+    collegeSlug,
 }: {
     subjects: ISubject[];
     branchCode: string;
+    collegeSlug: string;
 }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -39,6 +41,17 @@ export default function SubjectsList({
         setActiveTab(initialActiveTab);
     }, [initialActiveTab]);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Generate syllabus slug from subject name and code
+    const generateSyllabusSlug = (
+        subjectName: string,
+        subjectCode: string,
+    ): string => {
+        const cleanSubjectName = subjectName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-');
+        return `${cleanSubjectName}-${subjectCode.toLowerCase()}`;
+    };
 
     // Get unique semesters from subjects
     const semesters = useMemo(() => {
@@ -80,6 +93,12 @@ export default function SubjectsList({
             label: 'Video Lectures',
             icon: PlayCircle,
             color: 'bg-purple-500 hover:bg-purple-600',
+        },
+        {
+            type: 'syllabus',
+            label: 'Syllabus',
+            icon: BookOpen,
+            color: 'bg-orange-500 hover:bg-orange-600',
         },
     ];
 
@@ -201,16 +220,24 @@ export default function SubjectsList({
                                             label,
                                             icon: Icon,
                                             color,
-                                        }) => (
-                                            <Link
-                                                key={type}
-                                                href={`${branchCode}/${type}/${subject.subjectCode}`}
-                                                className={`${color} text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[140px]`}
-                                            >
-                                                <Icon className='w-4 h-4' />
-                                                {label}
-                                            </Link>
-                                        ),
+                                        }) => {
+                                            // Generate proper URL based on resource type
+                                            const href =
+                                                type === 'syllabus'
+                                                    ? `/${collegeSlug}/syllabus/${generateSyllabusSlug(subject.subjectName, subject.subjectCode)}`
+                                                    : `${branchCode}/${type}/${subject.subjectCode}`;
+
+                                            return (
+                                                <Link
+                                                    key={type}
+                                                    href={href}
+                                                    className={`${color} text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[140px]`}
+                                                >
+                                                    <Icon className='w-4 h-4' />
+                                                    {label}
+                                                </Link>
+                                            );
+                                        },
                                     )}
                                 </div>
                             </div>

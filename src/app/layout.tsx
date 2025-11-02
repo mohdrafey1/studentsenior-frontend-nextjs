@@ -27,11 +27,11 @@ const fugazOne = PT_Serif({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://studentsenior.com'),
     title: 'Student Senior',
     description:
         'Your Academic Companion for Notes, PYQs, and College Resources',
     manifest: '/manifest.json',
-    themeColor: '#ffffff',
     icons: [
         {
             rel: 'icon',
@@ -98,6 +98,10 @@ export const metadata: Metadata = {
         creator: '@studentsenior',
         images: ['/icons/image512.png'],
     },
+};
+
+export const viewport = {
+    themeColor: '#ffffff',
 };
 
 export default function RootLayout({

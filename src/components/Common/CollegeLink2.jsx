@@ -15,6 +15,7 @@ import {
     Compass,
     Menu,
     X,
+    BookOpen,
 } from 'lucide-react';
 
 const Collegelink2 = () => {
@@ -84,6 +85,11 @@ const Collegelink2 = () => {
             href: `/${slug}/videos`,
             icon: <Video size={20} />,
             text: 'Videos',
+        },
+        {
+            href: `/${slug}/syllabus`,
+            icon: <BookOpen size={20} />,
+            text: 'Syllabus',
         },
         {
             href: `/${slug}/resources`,

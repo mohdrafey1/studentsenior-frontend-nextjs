@@ -30,6 +30,8 @@ export const api = {
         editPyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
         deletePyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
         getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyqs/${slug}`,
+        getSuggestedPyqs: (slug: string) =>
+            `${API_BASE_URL}/pyqs/${slug}/suggested`,
     },
 
     notes: {
@@ -39,6 +41,8 @@ export const api = {
         editNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
         deleteNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
         getNoteBySlug: (slug: string) => `${API_BASE_URL}/notes/${slug}`,
+        getSuggestedNotes: (slug: string) =>
+            `${API_BASE_URL}/notes/${slug}/suggested`,
     },
 
     videos: {
@@ -158,5 +162,16 @@ export const api = {
 
     chatbot: {
         track: `${API_BASE_URL}/chatbot/track`,
+    },
+
+    syllabus: {
+        getSyllabusByCollege: (collegeSlug: string) =>
+            `${API_BASE_URL}/syllabus/college/${collegeSlug}`,
+
+        getSyllabusBySlug: (slug: string) =>
+            `${API_BASE_URL}/syllabus/slug/${slug}`,
+
+        getSyllabusByBranch: (collegeSlug: string, branchCode: string) =>
+            `${API_BASE_URL}/syllabus/branch/${collegeSlug}/${branchCode}`,
     },
 };

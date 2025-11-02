@@ -1,64 +1,109 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '@/config/apiUrls';
-import { UploadIcon, CheckCircle, X, DollarSign } from 'lucide-react';
+import { UploadIcon, DollarSign, CheckCircle, X } from 'lucide-react';
 import SearchableSelect from '@/components/Common/SearchableSelect';
 import toast from 'react-hot-toast';
 
-export interface PyqFormData {
-    subject: string;
-    year: string;
-    examType: string;
+export interface NotesFormData {
+    title: string;
+    description: string;
     fileUrl: string;
-    solved: boolean;
+    subjectCode: string;
     isPaid: boolean;
     price: number;
 }
 
-// Define ISubject interface for clarity
-interface ISubject {
-    _id: string;
-    subjectName: string;
-    subjectCode: string;
-    semester: number;
-}
-
-interface PyqFormModalProps {
+interface NotesFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (formData: PyqFormData) => void;
-    form: PyqFormData;
-    setForm: React.Dispatch<React.SetStateAction<PyqFormData>>;
-    branchCode: string; // Prop to fetch subjects
-    subjectCode: string; // New prop to pre-select the subject
+    onSubmit: (data: NotesFormData) => Promise<void>;
+    form: NotesFormData;
+    setForm: React.Dispatch<React.SetStateAction<NotesFormData>>;
+    // courses: ICourse[];
+    branchCode: string;
+    subject: string;
 }
 
-const PyqFormModal: React.FC<PyqFormModalProps> = ({
+const NotesFormModal: React.FC<NotesFormModalProps> = ({
     isOpen,
     onClose,
     onSubmit,
     form,
     setForm,
+    // courses,
     branchCode,
-    subjectCode, // Destructure the new prop
+    subject,
 }) => {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    const [subjects, setSubjects] = useState<ISubject[]>([]);
+    const [subjects, setSubjects] = useState<
+        Array<{
+            _id: string;
+            subjectName: string;
+            subjectCode: string;
+            semester: number;
+        }>
+    >([]);
     const [loadingSubjects, setLoadingSubjects] = useState(false);
 
-    // Reset form when modal opens/closes
     useEffect(() => {
         if (isOpen) {
             setSubjects([]);
         }
     }, [isOpen]);
 
-    const fetchSubjects = useCallback(async (bCode: string) => {
-        if (!bCode) return;
+    useEffect(() => {
+        if (isOpen && branchCode) {
+            fetchSubjects(branchCode);
+        }
+    }, [isOpen, branchCode]);
+
+    // Apply saved preference: set course by courseCode when modal opens
+    // useEffect(() => {
+    //     if (!isOpen || courses.length === 0 || selectedCourse) return;
+    //     try {
+    //         const saved = localStorage.getItem('ss:resourcePref');
+    //         if (!saved) return;
+    //         const pref = JSON.parse(saved) as { courseCode?: string };
+    //         if (!pref.courseCode) return;
+    //         const match = courses.find((c) => c.courseCode === pref.courseCode);
+    //         if (match) {
+    //             setSelectedCourse(match._id);
+    //             // Trigger branches load
+    //             // fetchBranches(match.courseCode);
+    //         }
+    //     } catch {
+    //         // ignore
+    //     }
+    // }, [isOpen, courses, selectedCourse]);
+
+    // After branches load, apply saved branch by branchCode (once per open)
+    // useEffect(() => {
+    //     if (!isOpen || appliedPrefRef.current || branches.length === 0) return;
+    //     try {
+    //         const saved = localStorage.getItem('ss:resourcePref');
+    //         if (!saved) return;
+    //         const pref = JSON.parse(saved) as { branchCode?: string };
+    //         if (!pref.branchCode) return;
+    //         const match = branches.find(
+    //             (b) => b.branchCode === pref.branchCode,
+    //         );
+    //         if (match) {
+    //             setSelectedBranch(match._id);
+    //             // Also prefetch subjects list for convenience
+    //             fetchSubjects(match.branchCode);
+    //             appliedPrefRef.current = true;
+    //         }
+    //     } catch {
+    //         // ignore
+    //     }
+    // }, [isOpen, branches]);
+
+    const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
         try {
-            const response = await fetch(api.resources.getSubjects(bCode));
+            const response = await fetch(api.resources.getSubjects(branchCode));
             const data = await response.json();
 
             if (!response.ok) {
@@ -71,25 +116,22 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         } finally {
             setLoadingSubjects(false);
         }
-    }, []);
-
-    // Fetch subjects when the modal opens or branchCode changes
-    useEffect(() => {
-        if (isOpen && branchCode) {
-            fetchSubjects(branchCode);
-        }
-    }, [isOpen, branchCode, fetchSubjects]);
+    };
 
     useEffect(() => {
-        if (subjects.length > 0 && subjectCode) {
+        if (subjects.length > 0 && subject) {
             const matchingSubject = subjects.find(
-                (s) => s.subjectCode === subjectCode,
+                (s) => s.subjectCode === subject,
             );
             if (matchingSubject) {
-                setForm((prev) => ({ ...prev, subject: matchingSubject._id }));
+                setForm((prev) => ({
+                    ...prev,
+                    subjectCode: matchingSubject.subjectCode,
+                }));
+                console.log(matchingSubject);
             }
         }
-    }, [subjects, subjectCode, setForm]);
+    }, [subjects, subject, setForm]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -109,24 +151,30 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate required fields
-        if (!form.subject) {
+        if (!form.subjectCode) {
             toast.error('Please select a subject');
             return;
         }
 
-        if (!form.year) {
-            toast.error('Please select a year');
+        if (!form.title.trim()) {
+            toast.error('Please enter a title');
             return;
         }
 
-        if (!form.examType) {
-            toast.error('Please select an exam type');
+        if (!form.description.trim()) {
+            toast.error('Please enter a description');
             return;
         }
 
         if (!file) {
             toast.error('Please select a PDF file');
+            return;
+        }
+
+        if (form.isPaid && (!form.price || form.price < 25)) {
+            toast.error(
+                'Please set a valid price (minimum 25 points) for paid content',
+            );
             return;
         }
 
@@ -138,10 +186,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
 
             // Upload file if new file is selected
             if (file) {
-                const fileName = `${
-                    subjects.find((s) => s._id === form.subject)?.subjectCode ||
-                    form.subject
-                }-${Date.now()}.pdf`;
+                const fileName = `${form.subjectCode}-${Date.now()}.pdf`;
                 const fileType = file.type;
 
                 // Step 1: Get pre-signed URL
@@ -152,7 +197,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     },
                     credentials: 'include',
                     body: JSON.stringify({
-                        fileName: `ss-pyq/${fileName}`,
+                        fileName: `ss-notes/${fileName}`,
                         fileType,
                     }),
                 });
@@ -197,7 +242,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         } catch (error) {
             console.error('Error submitting form:', error);
             toast.error(
-                error instanceof Error ? error.message : 'Failed to save PYQ',
+                error instanceof Error ? error.message : 'Failed to save note',
             );
         } finally {
             toast.dismiss(loadingToast);
@@ -206,35 +251,30 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     };
 
     // Format data for searchable selects
+    // const courseOptions = courses.map((course) => ({
+    //     value: course._id,
+    //     label: `${course.courseName} (${course.courseCode})`,
+    // }));
+
+    // const branchOptions = branches.map((branch) => ({
+    //     value: branch._id,
+    //     label: `${branch.branchName} (${branch.branchCode})`,
+    // }));
+
     const subjectOptions = subjects.map((subject) => ({
-        value: subject._id,
+        value: subject.subjectCode,
         label: `${subject.subjectName} (${subject.subjectCode})`,
     }));
-
-    const examTypeOptions = [
-        { value: 'midsem1', label: 'Midsem 1' },
-        { value: 'midsem2', label: 'Midsem 2' },
-        { value: 'improvement', label: 'Improvement' },
-        { value: 'endsem', label: 'Endsem' },
-    ];
-
-    const yearOptions = [
-        { value: '2025-26', label: '2025-26' },
-        { value: '2024-25', label: '2024-25' },
-        { value: '2023-24', label: '2023-24' },
-        { value: '2022-23', label: '2022-23' },
-    ];
 
     if (!isOpen) return null;
 
     return (
-        // Added a higher z-index as requested in the previous turn
-        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-[9999] p-4'>
+        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
             <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
                 {/* Header */}
                 <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
                     <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
-                        Add New PYQ
+                        Add New Note
                     </h2>
                     <button
                         onClick={onClose}
@@ -248,79 +288,87 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                     onSubmit={handleSubmit}
                     className='p-6 space-y-4 bg-white dark:bg-gray-800'
                 >
+                    {/* Title */}
+                    <div>
+                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
+                            Title *
+                        </label>
+                        <input
+                            type='text'
+                            value={form.title}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    title: e.target.value,
+                                }))
+                            }
+                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            placeholder='Enter note title'
+                            required
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
+                            Description *
+                        </label>
+                        <textarea
+                            value={form.description}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    description: e.target.value,
+                                }))
+                            }
+                            rows={3}
+                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            placeholder='Enter note description'
+                            required
+                        />
+                    </div>
+
+                    {/* Course Selection */}
+                    {/* <div>
+                        <SearchableSelect
+                            label='Course *'
+                            value={selectedCourse}
+                            onChange={handleCourseChange}
+                            options={courseOptions}
+                            placeholder='Select Course'
+                            loading={loadingCourses}
+                        />
+                    </div> */}
+
+                    {/* Branch Selection */}
+                    {/* <div>
+                        <SearchableSelect
+                            label='Branch *'
+                            value={selectedBranch}
+                            onChange={handleBranchChange}
+                            options={branchOptions}
+                            placeholder='Select Branch'
+                            loading={loadingBranches}
+                            disabled={!selectedCourse}
+                        />
+                    </div> */}
+
                     {/* Subject Selection */}
                     <div>
                         <SearchableSelect
                             label='Subject *'
-                            value={form.subject} // This is now pre-filled
-                            onChange={(subjectId) =>
+                            value={form.subjectCode}
+                            onChange={(subjectCode) =>
                                 setForm((prev) => ({
                                     ...prev,
-                                    subject: subjectId,
+                                    subjectCode,
                                 }))
                             }
                             options={subjectOptions}
                             placeholder='Select Subject'
                             loading={loadingSubjects}
-                            disabled={true}
+                            disabled={!branchCode}
                         />
-                    </div>
-
-                    {/* Year and Exam Type */}
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div>
-                            <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                                Year *
-                            </label>
-                            <select
-                                value={form.year}
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        year: e.target.value,
-                                    }))
-                                }
-                                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
-                                required
-                            >
-                                <option value=''>Select Year</option>
-                                {yearOptions.map((option) => (
-                                    <option
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                                Exam Type *
-                            </label>
-
-                            <select
-                                value={form.examType}
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        examType: e.target.value,
-                                    }))
-                                }
-                                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
-                                required
-                            >
-                                <option value=''>Select Exam Type</option>
-                                {examTypeOptions.map((option) => (
-                                    <option
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
                     </div>
 
                     {/* File Upload */}
@@ -356,74 +404,39 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             )}
                         </div>
                     </div>
-                        {/* Solved Option */}
-                        <div className='flex items-center justify-between'>
-                            <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                Solved Paper
-                            </span>
-                            <button
-                                type='button'
-                                onClick={() =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        solved: !prev.solved,
-                                        // Reset paid status when unsolved
-                                        isPaid: !prev.solved
-                                            ? false
-                                            : prev.isPaid,
-                                        price: !prev.solved ? 0 : prev.price,
-                                    }))
-                                }
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    form.solved
-                                        ? 'bg-violet-600'
-                                        : 'bg-gray-200 dark:bg-gray-700'
+
+                    {/* Paid Option */}
+                    <div className='flex items-center justify-between'>
+                        <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                            Premium Content
+                        </span>
+                        <button
+                            type='button'
+                            onClick={() =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    isPaid: !prev.isPaid,
+                                    price: !prev.isPaid ? 25 : 0,
+                                }))
+                            }
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                form.isPaid
+                                    ? 'bg-violet-600'
+                                    : 'bg-gray-200 dark:bg-gray-700'
+                            }`}
+                        >
+                            <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    form.isPaid
+                                        ? 'translate-x-6'
+                                        : 'translate-x-1'
                                 }`}
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        form.solved
-                                            ? 'translate-x-6'
-                                            : 'translate-x-1'
-                                    }`}
-                                />
-                            </button>
-                        </div>
+                            />
+                        </button>
+                    </div>
 
-                        {/* Paid Option - Only visible when solved */}
-                        {form.solved && (
-                            <div className='flex items-center justify-between'>
-                                <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                    Premium Content
-                                </span>
-                                <button
-                                    type='button'
-                                    onClick={() =>
-                                        setForm((prev) => ({
-                                            ...prev,
-                                            isPaid: !prev.isPaid,
-                                            price: !prev.isPaid ? 25 : 0,
-                                        }))
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        form.isPaid
-                                            ? 'bg-violet-600'
-                                            : 'bg-gray-200 dark:bg-gray-700'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            form.isPaid
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
-                            </div>
-                        )}
-
-                         {/* Price Input - Only visible when isPaid is true */}
-                    {form.solved && form.isPaid && (
+                    {/* Price Input - Only visible when isPaid is true */}
+                    {form.isPaid && (
                         <div>
                             <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                                 Price (in Points - 5 points = 1 INR)
@@ -446,6 +459,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             </div>
                         </div>
                     )}
+
                     {/* Submit Button */}
                     <div className='flex justify-end gap-3 pt-4'>
                         <button
@@ -459,13 +473,15 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             type='submit'
                             disabled={
                                 loading ||
-                                !form.subject ||
-                                !form.year ||
-                                !form.examType
+                                !form.title ||
+                                !form.description ||
+                                !form.subjectCode ||
+                                (form.isPaid &&
+                                    (!form.price || form.price < 25))
                             }
                             className='px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
                         >
-                            {loading ? 'Saving...' : 'Add PYQ'}
+                            {loading ? 'Saving...' : 'Add Note'}
                         </button>
                     </div>
                 </form>
@@ -474,4 +490,4 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     );
 };
 
-export default PyqFormModal;
+export default NotesFormModal;

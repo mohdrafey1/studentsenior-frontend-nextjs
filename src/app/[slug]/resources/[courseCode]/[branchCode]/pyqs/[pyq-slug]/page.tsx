@@ -1,35 +1,112 @@
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
-import type { Metadata } from 'next';
 import { IPyq } from '@/utils/interface';
 import SubjectPyqsClient from './SubjectPyqsClient';
-
 import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
+import type { Metadata } from 'next';
 
-interface SubjectPyqsPageProps {
-    params: Promise<{
-        'pyq-slug': string;
-        slug: string;
-        courseCode: string;
-        branchCode: string;
-    }>;
+interface SubjectItem {
+    subjectCode: string;
+    subjectName: string;
+}
+
+interface PyqPageParams {
+    slug: string;
+    branchCode: string;
+    courseCode: string;
+    'pyq-slug': string;
+}
+
+// helper to fetch subject name
+async function getSubjectName(branchCode: string, subjectCode: string) {
+    const response = await fetch(api.resources.getSubjects(branchCode), {
+        cache: 'no-store',
+    });
+    const resp = await response.json();
+    const matched = resp.data.find(
+        (item: SubjectItem) => item.subjectCode === subjectCode,
+    );
+    return matched?.subjectName || '';
+}
+
+// sanitize subject name
+function cleanSubjectName(name: string) {
+    return name.replace(/Endsem.*|Midsem.*|\d{4} ?\d{2}/gi, '').trim();
 }
 
 export async function generateMetadata({
     params,
-}: SubjectPyqsPageProps): Promise<Metadata> {
-    const { 'pyq-slug': subjectCode, slug } = await params;
+}: {
+    params: Promise<PyqPageParams>;
+}): Promise<Metadata> {
+    const {
+        slug,
+        branchCode,
+        courseCode,
+        'pyq-slug': subjectCode,
+    } = await params;
+
+    let subjectName = await getSubjectName(branchCode, subjectCode);
+    subjectName = cleanSubjectName(subjectName);
+
+    const pageTitle = `${subjectName} (${subjectCode}) PYQs – Download Free Past Papers | ${capitalizeWords(slug)}`;
+    const description = `Access free past year question papers (PYQs) of ${subjectName} for college and university students. Download and practice End-Sem, Mid-Sem 1, and Mid-Sem 2 exams to boost your exam preparation.`;
+
+    const url = `https://www.studentsenior.com/${slug}/resources/${courseCode}/${branchCode}/pyqs/${subjectCode}`;
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Course',
+        name: pageTitle,
+        description,
+        provider: {
+            '@type': 'CollegeOrUniversity',
+            name: capitalizeWords(slug.replace(/-/g, ' ')),
+            url: `https://www.studentsenior.com/${slug}`,
+        },
+        url,
+    };
+
     return {
-        title: `${capitalizeWords(subjectCode)} - PYQs | ${capitalizeWords(
-            slug,
-        )}`,
-        description: 'Past year questions for the subject',
+        title: pageTitle,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title: pageTitle,
+            description,
+            url,
+            siteName: 'Student Senior',
+            type: 'website',
+            images: [
+                {
+                    url: '/icons/image512.png',
+                    width: 512,
+                    height: 512,
+                    alt: pageTitle,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: pageTitle,
+            description,
+            images: ['/icons/image512.png'],
+            site: '@studentsenior',
+            creator: '@studentsenior',
+        },
+        other: {
+            'script:course-schema': JSON.stringify(jsonLd),
+        },
     };
 }
 
 export default async function SubjectPyqsPage({
     params,
-}: SubjectPyqsPageProps) {
+}: {
+    params: Promise<PyqPageParams>;
+}) {
     const {
         'pyq-slug': subjectCode,
         slug,
@@ -38,14 +115,16 @@ export default async function SubjectPyqsPage({
     } = await params;
 
     let pyqs: IPyq[] = [];
+    let subjectName = await getSubjectName(branchCode, subjectCode);
+    subjectName = cleanSubjectName(subjectName);
+
     try {
-        const url = `${api.resources.getPyqsBySubject(subjectCode, slug)}`;
+        const url = api.resources.getPyqsBySubject(subjectCode, slug);
         const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
         pyqs = data?.data || [];
-    } catch (error) {
-        console.error('Failed to fetch PYQs by subject:', error);
+    } catch (e) {
+        console.error('PYQ fetch error:', e);
     }
 
     return (
@@ -61,8 +140,21 @@ export default async function SubjectPyqsPage({
                     collegeSlug={slug}
                     courseCode={courseCode}
                     branchCode={branchCode}
+                    subjectName={subjectName}
                 />
             </main>
+
+            {/* ✅ Inject JSON-LD in body */}
+            <script
+                type='application/ld+json'
+                dangerouslySetInnerHTML={{
+                    __html:
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (globalThis as any).__METADATA?.other?.[
+                            'script:course-schema'
+                        ] ?? '',
+                }}
+            />
         </>
     );
 }
