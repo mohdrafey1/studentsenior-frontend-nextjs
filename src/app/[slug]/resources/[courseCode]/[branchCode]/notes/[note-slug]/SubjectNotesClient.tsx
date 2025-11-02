@@ -14,7 +14,7 @@ interface SubjectNotesClientProps {
     subjectCode: string;
     collegeSlug: string;
     courseCode: string;
-    subjectName:string;
+    subjectName: string;
     branchCode: string;
 }
 
@@ -28,15 +28,14 @@ export default function SubjectNotesClient({
 }: SubjectNotesClientProps) {
     const [search, setSearch] = useState('');
     const [addNote, setAddNotes] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
-            title: '',
-            description: '',
-            fileUrl: '',
-            subjectCode: '',
-            isPaid: false,
-            price: 0,
-        });
+        title: '',
+        description: '',
+        fileUrl: '',
+        subjectCode: '',
+        isPaid: false,
+        price: 0,
+    });
 
     const filtered = useMemo(() => {
         return initialNotes.filter((n) => {
@@ -62,8 +61,7 @@ export default function SubjectNotesClient({
         });
     };
 
-        const handleAddSubmit = async (formData: typeof form) => {
-        setLoading(true);
+    const handleAddSubmit = async (formData: typeof form) => {
         try {
             const response = await fetch(api.notes.createNote, {
                 method: 'POST',
@@ -87,12 +85,11 @@ export default function SubjectNotesClient({
             console.error('Error creating note:', error);
             throw error;
         } finally {
-            setLoading(false);
             closeAddModal();
         }
     };
 
-     const closeAddModal = () => {
+    const closeAddModal = () => {
         setAddNotes(false);
         setForm({
             title: '',
@@ -277,16 +274,15 @@ export default function SubjectNotesClient({
                     </div>
                 </div>
             )}
-          <NotesFormModal
-          isOpen={addNote}
-          onClose={() => setAddNotes(false)}
-          onSubmit={handleAddSubmit}
-          form={form}
-          setForm={setForm}
-          subject={subjectCode}
-          branchCode={branchCode}
-          />
-
+            <NotesFormModal
+                isOpen={addNote}
+                onClose={() => setAddNotes(false)}
+                onSubmit={handleAddSubmit}
+                form={form}
+                setForm={setForm}
+                subject={subjectCode}
+                branchCode={branchCode}
+            />
         </div>
     );
 }

@@ -12,6 +12,7 @@ import {
     Search,
     Compass,
     Video,
+    BookOpen,
 } from 'lucide-react';
 
 const Collegelinks = () => {
@@ -39,6 +40,11 @@ const Collegelinks = () => {
             href: `/${slug}/videos`,
             icon: <Video size={20} />,
             text: 'Videos',
+        },
+        {
+            href: `/${slug}/syllabus`,
+            icon: <BookOpen size={20} />,
+            text: 'Syllabus',
         },
         {
             href: `/${slug}/store`,
@@ -80,9 +86,9 @@ const Collegelinks = () => {
 
     return (
         <div className='hidden lg:flex sticky top-16 z-20 w-full bg-white dark:bg-gray-900 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 shadow-sm'>
-            <div className='max-w-7xl mx-auto px-4'>
+            <div className='px-4'>
                 <nav className='py-2'>
-                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-10 xl:grid-cols-10 gap-1 sm:gap-2'>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-11 xl:grid-cols-11 gap-1 sm:gap-2'>
                         {links.map((link, index) => (
                             <Link
                                 key={index}
@@ -97,10 +103,10 @@ const Collegelinks = () => {
                                     <span className='transition-colors duration-200'>
                                         {link.icon}
                                     </span>
-                                    <span className='text-sm font-medium hidden sm:inline'>
+                                    <span className='text-sm font-medium hidden xl:inline'>
                                         {link.text}
                                     </span>
-                                    <span className='text-xs font-medium sm:hidden'>
+                                    <span className='text-xs font-medium xl:hidden'>
                                         {link.text}
                                     </span>
                                 </div>

@@ -1,6 +1,5 @@
 'use client';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { ICourse, IBranch } from '@/utils/interface';
+import React, { useEffect, useState } from 'react';
 import { api } from '@/config/apiUrls';
 import { UploadIcon, DollarSign, CheckCircle, X } from 'lucide-react';
 import SearchableSelect from '@/components/Common/SearchableSelect';
@@ -22,8 +21,8 @@ interface NotesFormModalProps {
     form: NotesFormData;
     setForm: React.Dispatch<React.SetStateAction<NotesFormData>>;
     // courses: ICourse[];
-    branchCode:string;
-    subject:string;
+    branchCode: string;
+    subject: string;
 }
 
 const NotesFormModal: React.FC<NotesFormModalProps> = ({
@@ -35,10 +34,8 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     // courses,
     branchCode,
     subject,
-}) => {    
+}) => {
     const [loading, setLoading] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState('');
-    const [selectedBranch, setSelectedBranch] = useState('');
     const [file, setFile] = useState<File | null>(null);
     const [subjects, setSubjects] = useState<
         Array<{
@@ -50,18 +47,17 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     >([]);
     const [loadingSubjects, setLoadingSubjects] = useState(false);
 
-   useEffect(() => {
-           if (isOpen) {
-               setSubjects([]);
-           }
-       }, [isOpen]);
-   
-       useEffect(() => {
-           if (isOpen && branchCode) {
-               fetchSubjects(branchCode);
-           }
-       }, [isOpen, branchCode]);
-   
+    useEffect(() => {
+        if (isOpen) {
+            setSubjects([]);
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (isOpen && branchCode) {
+            fetchSubjects(branchCode);
+        }
+    }, [isOpen, branchCode]);
 
     // Apply saved preference: set course by courseCode when modal opens
     // useEffect(() => {
@@ -122,18 +118,20 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
         }
     };
 
-     useEffect(() => {
-            if (subjects.length > 0 && subject) {
-                const matchingSubject = subjects.find(
-                    (s) => s.subjectCode === subject,
-                );
-                if (matchingSubject) {
-                    setForm((prev) => ({ ...prev, subjectCode: matchingSubject.subjectCode }));
-                    console.log(matchingSubject);
-                    
-                }
+    useEffect(() => {
+        if (subjects.length > 0 && subject) {
+            const matchingSubject = subjects.find(
+                (s) => s.subjectCode === subject,
+            );
+            if (matchingSubject) {
+                setForm((prev) => ({
+                    ...prev,
+                    subjectCode: matchingSubject.subjectCode,
+                }));
+                console.log(matchingSubject);
             }
-        }, [subjects, subject, setForm]);
+        }
+    }, [subjects, subject, setForm]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -152,7 +150,6 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
 
         if (!form.subjectCode) {
             toast.error('Please select a subject');
@@ -370,7 +367,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                             options={subjectOptions}
                             placeholder='Select Subject'
                             loading={loadingSubjects}
-                            disabled={!selectedBranch}
+                            disabled={!branchCode}
                         />
                     </div>
 
