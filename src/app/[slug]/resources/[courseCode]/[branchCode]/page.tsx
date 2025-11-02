@@ -66,7 +66,11 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
                 </header>
 
                 {/* Pass data to client component */}
-                <SubjectsList subjects={subjects} branchCode={branchCode} />
+                <SubjectsList
+                    subjects={subjects}
+                    branchCode={branchCode}
+                    collegeSlug={slug}
+                />
             </main>
         </>
     );

@@ -159,4 +159,15 @@ export const api = {
     chatbot: {
         track: `${API_BASE_URL}/chatbot/track`,
     },
+
+    syllabus: {
+        getSyllabusByCollege: (collegeSlug: string) =>
+            `${API_BASE_URL}/syllabus/college/${collegeSlug}`,
+
+        getSyllabusBySlug: (slug: string) =>
+            `${API_BASE_URL}/syllabus/slug/${slug}`,
+
+        getSyllabusByBranch: (collegeSlug: string, branchCode: string) =>
+            `${API_BASE_URL}/syllabus/branch/${collegeSlug}/${branchCode}`,
+    },
 };

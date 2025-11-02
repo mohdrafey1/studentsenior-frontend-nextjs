@@ -177,6 +177,7 @@ export default function AcademicChatbot() {
         if (isOpen && messages.length === 0) {
             initializeChat();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     useEffect(() => {
