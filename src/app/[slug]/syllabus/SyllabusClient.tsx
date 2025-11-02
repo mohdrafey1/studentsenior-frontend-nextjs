@@ -1,7 +1,7 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { IPagination } from '@/utils/interface';
+import { IPagination, ICourse, IBranch } from '@/utils/interface';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/config/apiUrls';
 import {
@@ -11,9 +11,13 @@ import {
     BookOpenCheck,
     Eye,
     GraduationCap,
+    BookOpen,
+    Calendar,
+    ArrowRight,
 } from 'lucide-react';
 import PaginationComponent from '@/components/Common/Pagination';
 import Link from 'next/link';
+import SearchableSelect from '@/components/Common/SearchableSelect';
 
 interface ISyllabus {
     _id: string;
@@ -23,6 +27,9 @@ interface ISyllabus {
     subject: {
         subjectName?: string;
         subjectCode?: string;
+        branch?: {
+            branchCode?: string;
+        };
     };
     college: {
         name?: string;
@@ -58,6 +65,12 @@ const SyllabusClient = ({
     const [searchInput, setSearchInput] = useState(
         searchParams.get('search') || '',
     );
+    const [courseFilter, setCourseFilter] = useState(
+        searchParams.get('course') || '',
+    );
+    const [branchFilter, setBranchFilter] = useState(
+        searchParams.get('branch') || '',
+    );
     const [yearFilter, setYearFilter] = useState(
         searchParams.get('year') || '',
     );
@@ -69,10 +82,70 @@ const SyllabusClient = ({
     const [loading, setLoading] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
 
+    // Course and Branch data
+    const [courses, setCourses] = useState<ICourse[]>([]);
+    const [branches, setBranches] = useState<IBranch[]>([]);
+    const [loadingCourses, setLoadingCourses] = useState(false);
+    const [loadingBranches, setLoadingBranches] = useState(false);
+
+    // Fetch courses on component mount
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    // Fetch branches when course filter changes
+    useEffect(() => {
+        if (courseFilter) {
+            fetchBranches(courseFilter);
+        } else {
+            setBranches([]);
+        }
+    }, [courseFilter]);
+
+    const fetchCourses = async () => {
+        setLoadingCourses(true);
+        try {
+            const response = await fetch(api.resources.getCourses);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch courses');
+            }
+
+            setCourses(data.data || []);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+            toast.error('Failed to fetch courses');
+        } finally {
+            setLoadingCourses(false);
+        }
+    };
+
+    const fetchBranches = async (courseCode: string) => {
+        setLoadingBranches(true);
+        try {
+            const response = await fetch(api.resources.getBranches(courseCode));
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch branches');
+            }
+
+            setBranches(data.data || []);
+        } catch (error) {
+            console.error('Error fetching branches:', error);
+            toast.error('Failed to fetch branches');
+        } finally {
+            setLoadingBranches(false);
+        }
+    };
+
     // Update URL when filters change
     useEffect(() => {
         const params = new URLSearchParams();
         if (searchInput) params.set('search', searchInput);
+        if (courseFilter) params.set('course', courseFilter);
+        if (branchFilter) params.set('branch', branchFilter);
         if (yearFilter) params.set('year', yearFilter);
         if (semesterFilter) params.set('semester', semesterFilter);
         if (page > 1) params.set('page', page.toString());
@@ -82,13 +155,24 @@ const SyllabusClient = ({
             : pathname;
 
         router.replace(newUrl, { scroll: false });
-    }, [searchInput, yearFilter, semesterFilter, page, pathname, router]);
+    }, [
+        searchInput,
+        courseFilter,
+        branchFilter,
+        yearFilter,
+        semesterFilter,
+        page,
+        pathname,
+        router,
+    ]);
 
-    const fetchSyllabus = async () => {
+    const fetchSyllabus = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
             if (searchInput) params.set('search', searchInput);
+            if (courseFilter) params.set('course', courseFilter);
+            if (branchFilter) params.set('branch', branchFilter);
             if (yearFilter) params.set('year', yearFilter);
             if (semesterFilter) params.set('semester', semesterFilter);
             params.set('page', page.toString());
@@ -111,21 +195,35 @@ const SyllabusClient = ({
         } finally {
             setLoading(false);
         }
-    };
+    }, [
+        collegeName,
+        searchInput,
+        courseFilter,
+        branchFilter,
+        yearFilter,
+        semesterFilter,
+        page,
+    ]);
 
     useEffect(() => {
         fetchSyllabus();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchInput, yearFilter, semesterFilter, page]);
+    }, [fetchSyllabus]);
 
     const handleClearFilters = () => {
         setSearchInput('');
+        setCourseFilter('');
+        setBranchFilter('');
         setYearFilter('');
         setSemesterFilter('');
         setPage(1);
     };
 
-    const hasActiveFilters = searchInput || yearFilter || semesterFilter;
+    const hasActiveFilters =
+        searchInput ||
+        courseFilter ||
+        branchFilter ||
+        yearFilter ||
+        semesterFilter;
 
     return (
         <div className='space-y-6'>
@@ -172,7 +270,33 @@ const SyllabusClient = ({
                     {/* Filter Panel */}
                     {showFilters && (
                         <div className='p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600'>
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                {/* Course Filter */}
+                                <SearchableSelect
+                                    value={courseFilter}
+                                    onChange={setCourseFilter}
+                                    options={courses.map((course) => ({
+                                        value: course.courseCode,
+                                        label: course.courseName,
+                                    }))}
+                                    placeholder='Select Course'
+                                    loading={loadingCourses}
+                                />
+
+                                {/* Branch Filter */}
+                                <SearchableSelect
+                                    value={branchFilter}
+                                    onChange={setBranchFilter}
+                                    options={branches.map((branch) => ({
+                                        value: branch.branchCode,
+                                        label: branch.branchName,
+                                    }))}
+                                    placeholder='Select Branch'
+                                    loading={loadingBranches}
+                                    disabled={!courseFilter}
+                                />
+
+                                {/* Year Filter */}
                                 <select
                                     value={yearFilter}
                                     onChange={(e) =>
@@ -188,6 +312,7 @@ const SyllabusClient = ({
                                     ))}
                                 </select>
 
+                                {/* Semester Filter */}
                                 <select
                                     value={semesterFilter}
                                     onChange={(e) =>
@@ -219,60 +344,90 @@ const SyllabusClient = ({
                         <Link
                             key={item._id}
                             href={`/${collegeName}/syllabus/${item.slug}`}
-                            className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow'
+                            className='group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300 hover:-translate-y-1'
                         >
-                            <div className='flex items-start gap-4 mb-4'>
-                                <div className='flex-shrink-0'>
-                                    <div className='h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center'>
-                                        <GraduationCap className='h-6 w-6 text-blue-600 dark:text-blue-400' />
+                            {/* Gradient Top Border */}
+                            <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600'></div>
+
+                            <div className='p-6'>
+                                {/* Header with Icon and Code */}
+                                <div className='flex items-start gap-4 mb-4'>
+                                    <div className='flex-shrink-0'>
+                                        <div className='h-14 w-14 rounded-xl bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/40 dark:to-blue-900/40 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300'>
+                                            <GraduationCap className='h-7 w-7 text-sky-600 dark:text-sky-400' />
+                                        </div>
+                                    </div>
+                                    <div className='flex-1 min-w-0'>
+                                        <div className='flex items-center gap-2 mb-1'>
+                                            <h3 className='text-lg font-bold text-gray-900 dark:text-white'>
+                                                {item.subject?.subjectCode ||
+                                                    'N/A'}
+                                            </h3>
+                                            {item.subject?.branch
+                                                ?.branchCode && (
+                                                <span className='text-xs font-medium px-2 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded-md'>
+                                                    {
+                                                        item.subject.branch
+                                                            .branchCode
+                                                    }
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed'>
+                                            {item.subject?.subjectName ||
+                                                'Subject name not available'}
+                                        </p>
                                     </div>
                                 </div>
-                                <div className='flex-1 min-w-0'>
-                                    <h3 className='text-lg font-bold text-gray-900 dark:text-white mb-1'>
-                                        {item.subject?.subjectCode || 'N/A'}
-                                    </h3>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2'>
-                                        {item.subject?.subjectName ||
-                                            'Subject name not available'}
-                                    </p>
-                                </div>
-                            </div>
 
-                            <div className='mb-3 pb-3 border-b border-gray-100 dark:border-gray-700'>
+                                {/* Description */}
                                 {item.description && (
-                                    <p className='text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
-                                        {item.description}
-                                    </p>
+                                    <div className='mb-4 pb-4 border-b border-gray-100 dark:border-gray-700'>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed'>
+                                            {item.description}
+                                        </p>
+                                    </div>
                                 )}
-                            </div>
 
-                            <div className='space-y-2 mb-4'>
-                                <div className='flex items-center justify-between text-sm'>
-                                    <span className='text-gray-500 dark:text-gray-400'>
-                                        Year {item.year} • Semester{' '}
-                                        {item.semester}
-                                    </span>
-                                </div>
-                                <div className='flex items-center justify-between text-sm'>
-                                    <span className='text-gray-500 dark:text-gray-400'>
-                                        Units
-                                    </span>
-                                    <span className='font-semibold text-gray-900 dark:text-white'>
-                                        {item.units?.length || 0}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className='flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700'>
-                                <div className='flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400'>
-                                    <div className='flex items-center gap-1'>
-                                        <Eye className='w-4 h-4' />
-                                        {item.viewCount || 0}
+                                {/* Info Grid */}
+                                <div className='grid grid-cols-2 gap-3 mb-4'>
+                                    <div className='flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg'>
+                                        <Calendar className='w-4 h-4 text-sky-600 dark:text-sky-400' />
+                                        <div className='flex flex-col'>
+                                            <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                Year / Sem
+                                            </span>
+                                            <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                                                {item.year} / {item.semester}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg'>
+                                        <BookOpen className='w-4 h-4 text-sky-600 dark:text-sky-400' />
+                                        <div className='flex flex-col'>
+                                            <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                Units
+                                            </span>
+                                            <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                                                {item.units?.length || 0}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
-                                    View Details →
-                                </span>
+
+                                {/* Footer */}
+                                <div className='flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700'>
+                                    <div className='flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700/50 rounded-md'>
+                                        <Eye className='w-4 h-4 text-gray-500 dark:text-gray-400' />
+                                        <span className='text-xs font-medium text-gray-600 dark:text-gray-400'>
+                                            {item.viewCount || 0} views
+                                        </span>
+                                    </div>
+                                    <div className='flex items-center gap-1 text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:gap-2 transition-all duration-300'>
+                                        View Details
+                                        <ArrowRight className='w-4 h-4' />
+                                    </div>
+                                </div>
                             </div>
                         </Link>
                     ))}
