@@ -367,7 +367,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                             options={subjectOptions}
                             placeholder='Select Subject'
                             loading={loadingSubjects}
-                            disabled={!branchCode}
+                            disabled={true}
                         />
                     </div>
 
