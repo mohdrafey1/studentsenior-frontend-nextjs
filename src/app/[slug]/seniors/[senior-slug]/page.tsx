@@ -22,7 +22,6 @@ export async function generateMetadata({
 
         const data = await res.json();
         const senior = data?.data || {};
-        console.log(senior);
 
         const title = `${capitalizeWords(senior.name || seniorSlug)} - ${capitalizeWords(
             slug,

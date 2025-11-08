@@ -97,8 +97,6 @@ export const fetchUserData = createAsyncThunk<
             throw new Error(data.message || 'Failed to fetch user data');
         }
 
-        console.log(data);
-
         return {
             wallet: data.data.wallet || {
                 currentBalance: 0,
