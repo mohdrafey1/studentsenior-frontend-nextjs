@@ -1,6 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+    // Reduce initial JS by improving tree-shaking for icon libs and other ESM packages
+    experimental: {
+        optimizePackageImports: ['lucide-react'],
+    },
+    // Minor security/perf hardening
+    poweredByHeader: false,
+    reactStrictMode: true,
     images: {
         remotePatterns: [
             {
