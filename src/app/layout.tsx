@@ -110,7 +110,7 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <head>
-                <link rel='icon' href='./favicon.webp' />
+                {/* Favicon is provided via metadata.icons and served from /icons; no need for a duplicate link */}
                 {/* Google AdSense */}
                 <Script
                     async

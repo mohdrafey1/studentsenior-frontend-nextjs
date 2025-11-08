@@ -9,7 +9,7 @@ import OurFeatures from '@/components/HomePage/OurFeatures';
 import { IApiResponse } from '@/utils/interface';
 import { rawColleges } from '@/constant';
 import LandingHeader from '@/components/Common/LandingHeader';
-import AcademicChatbot from '@/components/Common/AcademicChatbot';
+import AcademicChatbotLazy from '@/components/Common/AcademicChatbotLazy';
 
 type College = {
     name: string;
@@ -100,6 +100,9 @@ export const metadata: Metadata = {
     },
     category: 'Education',
 };
+
+// Cache the entire home page for 1 hour by default
+export const revalidate = 3600;
 
 export default async function HomePage() {
     const AllColleges = await getColleges();
@@ -236,8 +239,8 @@ export default async function HomePage() {
                 <FAQPage />
             </main>
 
-            {/* Academic Chatbot */}
-            <AcademicChatbot />
+            {/* Academic Chatbot (lazy client-only) */}
+            <AcademicChatbotLazy />
         </>
     );
 }
