@@ -113,13 +113,18 @@ export default async function LeaderboardPage() {
                                                 <div className='relative mb-4'>
                                                     <Image
                                                         src={
-                                                            winner2.profilePicture
+                                                            winner2.profilePicture ||
+                                                            '/default-profile.png'
                                                         }
-                                                        alt={winner2.username}
+                                                        alt={
+                                                            winner2.username ||
+                                                            'User profile'
+                                                        }
                                                         width={80}
                                                         height={80}
-                                                        className='rounded-full border-4 border-slate-400 shadow-md'
+                                                        className='rounded-full w-[80px] h-[80px] border-4 border-slate-400 shadow-md object-cover'
                                                     />
+
                                                     <span
                                                         className='absolute -top-2 -right-2 text-3xl'
                                                         aria-label='2nd Place'
@@ -153,7 +158,7 @@ export default async function LeaderboardPage() {
                                                         alt={winner1.username}
                                                         width={100}
                                                         height={100}
-                                                        className='rounded-full border-4 border-amber-400 shadow-lg'
+                                                        className='rounded-full w-[100px] h-[100px] border-4 border-amber-400 shadow-lg'
                                                     />
                                                     <span
                                                         className='absolute -top-3 -right-3 text-4xl'
@@ -187,7 +192,7 @@ export default async function LeaderboardPage() {
                                                         alt={winner3.username}
                                                         width={70}
                                                         height={70}
-                                                        className='rounded-full border-4 border-orange-600 shadow-md'
+                                                        className='rounded-full w-[70px] h-[70px] border-4 border-orange-600 shadow-md'
                                                     />
                                                     <span
                                                         className='absolute -top-2 -right-2 text-3xl'
@@ -247,7 +252,7 @@ export default async function LeaderboardPage() {
                                                                 }
                                                                 width={40}
                                                                 height={40}
-                                                                className='rounded-full'
+                                                                className='rounded-full w-[40px] h-[40px]'
                                                             />
                                                             <span className='font-semibold'>
                                                                 {user.username}
@@ -290,7 +295,7 @@ export default async function LeaderboardPage() {
                                             alt={winner.username}
                                             width={50}
                                             height={50}
-                                            className='rounded-full h-14 w-14 object-cover border-2 border-amber-500'
+                                            className='rounded-full w-[50px] h-[50px] object-cover border-2 border-amber-500'
                                         />
                                         <div>
                                             <h4 className='font-semibold'>
