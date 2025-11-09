@@ -30,6 +30,13 @@ interface SitemapData {
     // groups: SitemapItem[];
     lostFound: SitemapItem[];
     store: SitemapItem[];
+    syllabus: SitemapItem[];
+    syllabusListings: Array<{
+        collegeSlug: string;
+        branchCode: string;
+        semesters: number[];
+        updatedAt?: string;
+    }>;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -93,7 +100,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         const response = await fetch(`${API_BASE_URL}/api/v2/sitemap`, {
             next: { revalidate: 3600 }, // Revalidate every hour
-            cache: 'no-store', // Disable cache during development
+            // Avoid blocking static generation in production
+            cache:
+                process.env.NODE_ENV === 'development'
+                    ? 'no-store'
+                    : 'force-cache',
         });
 
         if (!response.ok) {
@@ -285,6 +296,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 });
             }
         });
+        // Syllabus subject detail pages
+        // Syllabus subject detail pages
+        (sitemapData.syllabus || []).forEach((syll: SitemapItem) => {
+            if (syll.collegeSlug) {
+                dynamicRoutes.push({
+                    url: `${SITE_URL}/${sanitizeSlug(syll.collegeSlug)}/syllabus/${sanitizeSlug(syll.slug)}`,
+                    lastModified: syll.updatedAt
+                        ? new Date(syll.updatedAt)
+                        : currentDate,
+                    changeFrequency: 'monthly',
+                    priority: 0.7,
+                });
+            }
+        });
 
         // Notes pages
         (sitemapData.notes || []).forEach((note) => {
@@ -384,11 +409,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             }
         });
 
-        // Combine all routes
+        // Syllabus listings: branch-wise and branch+semester
+        (sitemapData.syllabusListings || []).forEach((listing) => {
+            const collegeSlug = sanitizeSlug(listing.collegeSlug);
+            const branchCode = sanitizeSlug(listing.branchCode);
+            // Branch-wise
+            dynamicRoutes.push({
+                url: `${SITE_URL}/${collegeSlug}/syllabus/branch/${branchCode}`,
+                lastModified: listing.updatedAt
+                    ? new Date(listing.updatedAt)
+                    : currentDate,
+                changeFrequency: 'weekly',
+                priority: 0.6,
+            });
+            // Branch with semester
+            (listing.semesters || []).forEach((semester) => {
+                const params = new URLSearchParams({
+                    semester: String(semester),
+                });
+                const queryString = params.toString().replace(/&/g, '&amp;');
+                dynamicRoutes.push({
+                    url: `${SITE_URL}/${collegeSlug}/syllabus/branch/${branchCode}?${queryString}`,
+                    lastModified: listing.updatedAt
+                        ? new Date(listing.updatedAt)
+                        : currentDate,
+                    changeFrequency: 'weekly',
+                    priority: 0.6,
+                });
+            });
+        });
+
+        // Deduplicate dynamic routes by URL
+        const seen = new Set<string>();
+        const dedupedDynamic = dynamicRoutes.filter((route) => {
+            if (seen.has(route.url)) return false;
+            seen.add(route.url);
+            return true;
+        });
+
         console.log(
-            `[Sitemap] Generated ${staticRoutes.length} static routes and ${dynamicRoutes.length} dynamic routes`,
+            `[Sitemap] Generated ${staticRoutes.length} static routes and ${dedupedDynamic.length} unique dynamic routes (before dedup ${dynamicRoutes.length})`,
         );
-        return [...staticRoutes, ...dynamicRoutes];
+        return [...staticRoutes, ...dedupedDynamic];
     } catch (error) {
         console.error('[Sitemap] Error generating sitemap:', error);
         console.error('[Sitemap] Falling back to static routes only');

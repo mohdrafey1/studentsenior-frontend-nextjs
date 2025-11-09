@@ -38,7 +38,6 @@ export default async function LeaderboardPage() {
         const json = await res.json();
         const data = json?.data || {};
         leaderboard = data.leaderboard || [];
-        console.log(leaderboard);
 
         previousWinners = data.previousWinners || [];
     } catch (e) {

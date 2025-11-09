@@ -15,8 +15,6 @@ export default function ProfileTabs() {
         (state: { userData: UserDataState }) => state.userData,
     );
 
-    console.log(userData);
-
     const tabs = [
         { id: 'overview', label: 'Overview', icon: '📊' },
         { id: 'products', label: 'Products', icon: '🛍️' },
