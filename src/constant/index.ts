@@ -9,6 +9,19 @@ export const SENIOR_PAGE_SIZE = 12;
 export const PYQ_PAGE_SIZE = 12;
 export const NOTES_PAGE_SIZE = 12;
 
+export const FILTER_ACADEMIC_YEARS = [
+    { value: '2022-23', label: '2022-2023' },
+    { value: '2023-24', label: '2023-2024' },
+    { value: '2024-25', label: '2024-2025' },
+    { value: '2025-26', label: '2025-2026' },
+];
+
+export const FORM_ACADEMIC_YEARS = [
+    { value: '2023-24', label: '2023-2024' },
+    { value: '2024-25', label: '2024-2025' },
+    { value: '2025-26', label: '2025-2026' },
+];
+
 export const faqs: FAQ[] = [
     {
         question: 'What is Student Senior?',

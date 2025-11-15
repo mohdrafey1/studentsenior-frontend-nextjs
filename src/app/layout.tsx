@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import Providers from '@/components/Providers';
 import ConditionalHeader from '@/components/Common/ConditionalHeader';
 import ConditionalFooter from '@/components/Common/ConditionalFooter';
+import EarningFlowModal from '@/components/Common/EarningFlowModal';
 import Script from 'next/script';
 
 const quicksand = Quicksand({
@@ -142,6 +143,7 @@ export default function RootLayout({
                             duration: 3000,
                         }}
                     />
+                    <EarningFlowModal />
                     <ConditionalHeader />
                     {children}
                     <ConditionalFooter />

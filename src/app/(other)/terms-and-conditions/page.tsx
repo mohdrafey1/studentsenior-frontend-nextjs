@@ -46,7 +46,7 @@ const TermsAndConditions = () => {
             title: 'User Content',
             icon: <FileText className='w-6 h-6' />,
             content:
-                'By submitting content to the website (such as notes, comments, or reviews), you grant us a non-exclusive, royalty-free, worldwide license to use, display, and distribute your content on the website.',
+                'By submitting content to the website (such as pyqs, notes, lab manuals, comments, or any resources), you grant us a non-exclusive, royalty-free, worldwide license to use, display, and distribute your content on the website.',
         },
         {
             id: 'payments',

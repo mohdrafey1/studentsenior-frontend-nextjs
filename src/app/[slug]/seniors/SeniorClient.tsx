@@ -2,18 +2,20 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
-import { IPagination, ISenior, ICourse, IBranch } from '@/utils/interface';
+import { IPagination, ISenior } from '@/utils/interface';
 import { SEARCH_DEBOUNCE, SENIOR_PAGE_SIZE } from '@/constant';
 import DeleteConfirmationModal from '@/components/Common/DeleteConfirmationModal';
 import PaginationComponent from '@/components/Common/Pagination';
 import { SeniorCard } from './SeniorCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { PlusIcon, SearchIcon, FilterIcon, XIcon } from 'lucide-react';
 import SeniorFormModal, { SeniorFormData } from './SeniorFormModal';
 import { capitalizeWords } from '@/utils/formatting';
-import SearchableSelect from '@/components/Common/SearchableSelect';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCoursesAndBranches } from '@/hooks/useCoursesAndBranches';
+import { useFilterState } from '@/hooks/useFilterState';
+import { ResourcePageHeader } from '@/components/Common/ResourcePageHeader';
+import { CommonFilters } from '@/components/Common/CommonFilters';
+import { SeniorListItem } from './SeniorListItem';
 
 const SeniorClient = ({
     initialSeniors,
@@ -24,30 +26,26 @@ const SeniorClient = ({
     initialPagination: IPagination;
     collegeName: string;
 }) => {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
+    // Common filters hook
+    const filterState = useFilterState();
+
+    // Courses and branches hook
+    const { courses, branches, loadingCourses, loadingBranches } =
+        useCoursesAndBranches(filterState.courseFilter);
+
+    // Senior-specific filter
+    const [yearFilter, setYearFilter] = useState(
+        typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search).get('year') || ''
+            : '',
+    );
+
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     const [seniors, setSeniors] = useState<ISenior[]>(initialSeniors);
     const [pagination, setPagination] = useState<IPagination | null>(
         initialPagination,
     );
-    const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || '',
-    );
-    const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || '',
-    );
-    const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || '',
-    );
-    const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || '',
-    );
-    const [yearFilter, setYearFilter] = useState(
-        searchParams.get('year') || '',
-    );
-    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editSenior, setEditSenior] = useState<ISenior | null>(null);
@@ -64,12 +62,6 @@ const SeniorClient = ({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
-    const [showFilters, setShowFilters] = useState(false);
-    // Course and Branch data
-    const [courses, setCourses] = useState<ICourse[]>([]);
-    const [branches, setBranches] = useState<IBranch[]>([]);
-    const [loadingCourses, setLoadingCourses] = useState(false);
-    const [loadingBranches, setLoadingBranches] = useState(false);
 
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
@@ -77,101 +69,51 @@ const SeniorClient = ({
 
     const ownerId = currentUser?._id;
 
-    // Fetch courses on component mount
-    useEffect(() => {
-        fetchCourses();
-    }, []);
-
-    // Fetch branches when course filter changes
-    useEffect(() => {
-        if (courseFilter) {
-            fetchBranches(courseFilter);
-        } else {
-            setBranches([]);
-        }
-    }, [courseFilter]);
-
-    const fetchCourses = async () => {
-        setLoadingCourses(true);
-        try {
-            const response = await fetch(api.resources.getCourses);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch courses');
-            }
-
-            setCourses(data.data || []);
-        } catch (error) {
-            console.error('Error fetching courses:', error);
-            toast.error('Failed to fetch courses');
-        } finally {
-            setLoadingCourses(false);
-        }
-    };
-
-    const fetchBranches = async (courseCode: string) => {
-        setLoadingBranches(true);
-        try {
-            const response = await fetch(api.resources.getBranches(courseCode));
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch branches');
-            }
-
-            setBranches(data.data || []);
-        } catch (error) {
-            console.error('Error fetching branches:', error);
-            toast.error('Failed to fetch branches');
-        } finally {
-            setLoadingBranches(false);
-        }
-    };
-
     useEffect(() => {
         const params = new URLSearchParams();
 
-        if (searchTerm) params.set('search', searchTerm);
-        if (courseFilter) params.set('course', courseFilter);
-        if (branchFilter) params.set('branch', branchFilter);
+        if (filterState.searchTerm)
+            params.set('search', filterState.searchTerm);
+        if (filterState.courseFilter)
+            params.set('course', filterState.courseFilter);
+        if (filterState.branchFilter)
+            params.set('branch', filterState.branchFilter);
         if (yearFilter) params.set('year', yearFilter);
-        if (page > 1) params.set('page', String(page));
+        if (filterState.page > 1) params.set('page', String(filterState.page));
 
-        // Only push to history if params have changed
-        if (params.toString() !== searchParams.toString()) {
-            router.replace(`${pathname}?${params.toString()}`);
-        }
+        const newUrl = `${filterState.pathname}?${params.toString()}`;
+        filterState.router.replace(newUrl);
     }, [
-        searchTerm,
-        courseFilter,
-        branchFilter,
+        filterState.searchTerm,
+        filterState.courseFilter,
+        filterState.branchFilter,
         yearFilter,
-        page,
-        pathname,
-        router,
-        searchParams,
+        filterState.page,
+        filterState.pathname,
+        filterState.router,
     ]);
 
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
-            setSearchTerm(searchInput);
-            setPage(1); // Reset to first page on new search
+            filterState.setSearchTerm(filterState.searchInput);
+            filterState.setPage(1);
         }, SEARCH_DEBOUNCE);
         return () => clearTimeout(handler);
-    }, [searchInput]);
+    }, [filterState.searchInput, filterState]);
 
     // Fetch seniors from backend - now uses URL params
     const fetchSeniors = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams({
-                page: String(page),
+                page: String(filterState.page),
                 limit: String(SENIOR_PAGE_SIZE),
             });
-            if (searchTerm.trim()) params.append('search', searchTerm.trim());
-            if (branchFilter) params.append('branch', branchFilter);
+            if (filterState.searchTerm.trim())
+                params.append('search', filterState.searchTerm.trim());
+            if (filterState.branchFilter)
+                params.append('branch', filterState.branchFilter);
             if (yearFilter) params.append('year', yearFilter);
 
             const url = `${api.seniors.getSeniorsByCollegeSlug(
@@ -191,7 +133,13 @@ const SeniorClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, branchFilter, yearFilter]);
+    }, [
+        collegeName,
+        filterState.page,
+        filterState.searchTerm,
+        filterState.branchFilter,
+        yearFilter,
+    ]);
 
     useEffect(() => {
         fetchSeniors();
@@ -329,147 +277,73 @@ const SeniorClient = ({
         setDeleteTargetId(null);
     };
 
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
-
-    const courseOptions = courses.map((course) => ({
-        value: course.courseCode,
-        label: course.courseName,
-    }));
+    // Check for active filters
+    const hasActiveFilters =
+        filterState.searchTerm ||
+        filterState.courseFilter ||
+        filterState.branchFilter ||
+        yearFilter;
 
     return (
         <>
-            {/* Header with Add Button */}
+            {/* Header with Search, Filters and Add Button */}
             <section className='mb-8' aria-label='Search and Add Senior'>
-                <div className='flex flex-col gap-4'>
-                    {/* Search and Add Button Row */}
-                    <div className='flex flex-col sm:flex-row gap-4 w-full'>
-                        {/* Search Input */}
-                        <div className='relative flex-grow'>
-                            <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 text-black dark:text-white transition-all'>
-                                <SearchIcon className='w-5 h-5 text-gray-400' />
-                                <input
-                                    type='text'
-                                    placeholder='Search seniors...'
-                                    value={searchInput}
-                                    onChange={(e) =>
-                                        setSearchInput(e.target.value)
-                                    }
-                                    className='w-full bg-transparent outline-none text-black dark:text-white'
-                                />
-                            </div>
-                        </div>
+                <ResourcePageHeader
+                    searchInput={filterState.searchInput}
+                    setSearchInput={filterState.setSearchInput}
+                    showFilters={filterState.showFilters}
+                    setShowFilters={filterState.setShowFilters}
+                    hasActiveFilters={!!hasActiveFilters}
+                    activeFilterCount={
+                        [
+                            filterState.searchTerm,
+                            filterState.courseFilter,
+                            filterState.branchFilter,
+                            yearFilter,
+                        ].filter(Boolean).length
+                    }
+                    clearFilters={() => {
+                        filterState.clearFilters();
+                        setYearFilter('');
+                    }}
+                    onAdd={() => openModal()}
+                    addButtonText='Add Senior'
+                    searchPlaceholder='Search seniors...'
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                />
 
-                        {/* Filter Toggle Button (Mobile) */}
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className='sm:hidden flex items-center text-black dark:text-white justify-center gap-2 p-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
-                        >
-                            <FilterIcon className='w-4 h-4' />
-                            Filters
-                            {showFilters ? <XIcon className='w-4 h-4' /> : null}
-                        </button>
+                {/* Filters Section */}
+                {filterState.showFilters && (
+                    <div className='mt-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                            <CommonFilters
+                                courseFilter={filterState.courseFilter}
+                                setCourseFilter={filterState.setCourseFilter}
+                                branchFilter={filterState.branchFilter}
+                                setBranchFilter={filterState.setBranchFilter}
+                                courses={courses}
+                                branches={branches}
+                                loadingCourses={loadingCourses}
+                                loadingBranches={loadingBranches}
+                            />
 
-                        {/* Add Senior Button */}
-                        <button
-                            onClick={() => openModal()}
-                            className='flex gap-3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
-                        >
-                            <PlusIcon className='w-4 h-4' />
-                            <span className='whitespace-nowrap'>
-                                Add Senior
-                            </span>
-                        </button>
-                    </div>
-
-                    {/* Filters Section */}
-                    <div
-                        className={`${
-                            showFilters ? 'block' : 'hidden'
-                        } sm:block`}
-                    >
-                        <div className='flex flex-col sm:flex-row gap-4'>
-                            {/* Course Filter */}
-                            <div className='w-full sm:w-1/3 text-black dark:text-white'>
-                                <SearchableSelect
-                                    options={courseOptions}
-                                    value={courseFilter}
-                                    onChange={(value) => {
-                                        setCourseFilter(value);
-                                        setBranchFilter(''); // Reset branch when course changes
-                                    }}
-                                    placeholder='Select Course'
-                                    loading={loadingCourses}
-                                    required={true}
-                                />
-                            </div>
-
-                            {/* Branch Filter */}
-                            <div className='w-full sm:w-1/3 text-black dark:text-white'>
-                                {courseFilter ? (
-                                    <SearchableSelect
-                                        options={branches.map((branch) => ({
-                                            value: branch._id,
-                                            label: branch.branchName,
-                                        }))}
-                                        value={branchFilter}
-                                        onChange={(value) =>
-                                            setBranchFilter(value)
-                                        }
-                                        placeholder='Select Branch'
-                                        loading={loadingBranches}
-                                        required={true}
-                                        disabled={!courseFilter}
-                                    />
-                                ) : (
-                                    <div className='p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'>
-                                        Select a course first
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Year Filter */}
-                            <div className='w-full sm:w-1/4 text-black dark:text-white'>
-                                <select
-                                    value={yearFilter}
-                                    onChange={(e) =>
-                                        setYearFilter(e.target.value)
-                                    }
-                                    className='w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'
-                                >
-                                    <option value=''>All Years</option>
-                                    <option value='1st Year'>1st Year</option>
-                                    <option value='2nd Year'>2nd Year</option>
-                                    <option value='3rd Year'>3rd Year</option>
-                                    <option value='4th Year'>4th Year</option>
-                                    <option value='5th Year'>5th Year</option>
-                                    <option value='Alumni'>Alumni</option>
-                                </select>
-                            </div>
-
-                            {/* Clear Filters Button */}
-                            <div className='w-full sm:w-auto'>
-                                <button
-                                    className='w-full h-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-all'
-                                    onClick={() => {
-                                        setCourseFilter('');
-                                        setBranchFilter('');
-                                        setYearFilter('');
-                                        setSearchInput('');
-                                        setSearchTerm('');
-                                        setPage(1);
-                                    }}
-                                >
-                                    <XIcon className='w-4 h-4' />
-                                    <span className='whitespace-nowrap'>
-                                        Clear Filters
-                                    </span>
-                                </button>
-                            </div>
+                            <select
+                                value={yearFilter}
+                                onChange={(e) => setYearFilter(e.target.value)}
+                                className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                            >
+                                <option value=''>All Years</option>
+                                <option value='1st Year'>1st Year</option>
+                                <option value='2nd Year'>2nd Year</option>
+                                <option value='3rd Year'>3rd Year</option>
+                                <option value='4th Year'>4th Year</option>
+                                <option value='5th Year'>5th Year</option>
+                                <option value='Alumni'>Alumni</option>
+                            </select>
                         </div>
                     </div>
-                </div>
+                )}
             </section>
 
             <section aria-label='Seniors List'>
@@ -485,21 +359,36 @@ const SeniorClient = ({
                             {pagination?.totalItems ?? 0} seniors
                         </p>
 
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-                            {seniors.map((senior) => (
-                                <SeniorCard
-                                    key={senior._id}
-                                    senior={senior}
-                                    onEdit={openModal}
-                                    onDelete={handleDeleteRequest}
-                                    ownerId={ownerId || ''}
-                                />
-                            ))}
-                        </div>
+                        {viewMode === 'grid' ? (
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                                {seniors.map((senior) => (
+                                    <SeniorCard
+                                        key={senior._id}
+                                        senior={senior}
+                                        onEdit={openModal}
+                                        onDelete={handleDeleteRequest}
+                                        ownerId={ownerId || ''}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className='space-y-3'>
+                                {seniors.map((senior) => (
+                                    <SeniorListItem
+                                        key={senior._id}
+                                        senior={senior}
+                                        onEdit={openModal}
+                                        onDelete={handleDeleteRequest}
+                                        ownerId={ownerId || ''}
+                                        collegeName={collegeName}
+                                    />
+                                ))}
+                            </div>
+                        )}
                         <PaginationComponent
-                            currentPage={page}
+                            currentPage={filterState.page}
                             totalPages={pagination?.totalPages || 1}
-                            onPageChange={goToPage}
+                            onPageChange={(p) => filterState.setPage(p)}
                         />
                     </>
                 ) : (
