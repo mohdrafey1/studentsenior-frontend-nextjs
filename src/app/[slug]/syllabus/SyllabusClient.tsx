@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { IPagination } from '@/utils/interface';
+import { ISyllabus, IPagination } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import {
     BookOpenCheck,
@@ -18,32 +18,6 @@ import { useFilterState } from '@/hooks/useFilterState';
 import { CommonFilters } from '@/components/Common/CommonFilters';
 import { SyllabusListItem } from './SyllabusListItem';
 import { ResourcePageHeader } from '@/components/Common/ResourcePageHeader';
-
-interface ISyllabus {
-    _id: string;
-    slug: string;
-    year: number;
-    semester: number;
-    subject: {
-        subjectName?: string;
-        subjectCode?: string;
-        branch?: {
-            branchCode?: string;
-        };
-    };
-    college: {
-        name?: string;
-    };
-    units: {
-        unitNumber: number;
-        title: string;
-        content: string;
-    }[];
-    referenceBooks: string;
-    description: string;
-    isActive: boolean;
-    viewCount: number;
-}
 
 const SyllabusClient = ({
     initialSyllabus,

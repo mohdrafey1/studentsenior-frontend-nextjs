@@ -22,6 +22,9 @@ const Collegelinks = () => {
     const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
+    // Prevent rendering if slug is not available
+    if (!slug) return null;
+
     const links = [
         {
             href: `/${slug}`,

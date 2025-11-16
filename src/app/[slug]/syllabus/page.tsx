@@ -1,31 +1,8 @@
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { api } from '@/config/apiUrls';
-import {
-    CollegeData,
-    CollegePageProps,
-    IPagination,
-    ISubject,
-} from '@/utils/interface';
+import { ISyllabus, CollegePageProps, IPagination } from '@/utils/interface';
 import SyllabusClient from './SyllabusClient';
-
-interface ISyllabus {
-    _id: string;
-    slug: string;
-    year: number;
-    semester: number;
-    subject: ISubject;
-    college: CollegeData;
-    units: {
-        unitNumber: number;
-        title: string;
-        content: string;
-    }[];
-    referenceBooks: string;
-    description: string;
-    isActive: boolean;
-    viewCount: number;
-}
 
 export async function generateMetadata({
     params,

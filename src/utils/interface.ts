@@ -285,6 +285,32 @@ export interface IVideo {
     clickCounts: number;
 }
 
+export interface ISyllabus {
+    _id: string;
+    slug: string;
+    year: number;
+    semester: number;
+    subject: {
+        subjectName?: string;
+        subjectCode?: string;
+        branch?: {
+            branchCode?: string;
+        };
+    };
+    college: {
+        name?: string;
+    };
+    units: {
+        unitNumber: number;
+        title: string;
+        content: string;
+    }[];
+    referenceBooks: string;
+    description: string;
+    isActive: boolean;
+    viewCount: number;
+}
+
 export interface IPyqResponse {
     pyqs: IPyq[];
     pagination: IPagination;

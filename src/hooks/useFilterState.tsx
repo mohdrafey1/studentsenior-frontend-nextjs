@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface UseFilterStateOptions {
@@ -45,6 +45,12 @@ export const useFilterState = (options: UseFilterStateOptions = {}) => {
         setPage(1);
     }, [courseFilter, branchFilter, semesterFilter]);
 
+    // Memoize additional filters to prevent unnecessary re-renders
+    const additionalFiltersString = useMemo(
+        () => JSON.stringify(additionalFilters),
+        [additionalFilters],
+    );
+
     // URL sync effect
     useEffect(() => {
         const params = new URLSearchParams();
@@ -71,7 +77,7 @@ export const useFilterState = (options: UseFilterStateOptions = {}) => {
         branchFilter,
         semesterFilter,
         page,
-        additionalFilters,
+        additionalFiltersString,
         pathname,
         router,
     ]);
