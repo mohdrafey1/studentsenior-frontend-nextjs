@@ -19,7 +19,7 @@ export async function generateMetadata({
         const res = await fetch(
             `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
             {
-                cache: 'no-store',
+                next: { revalidate: 300 },
             },
         );
         const data = await res.json();
@@ -51,9 +51,7 @@ export default async function LostFoundPage({ params }: LostFoundPageProps) {
 
     const res = await fetch(
         `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
-        {
-            cache: 'no-store',
-        },
+        { next: { revalidate: 300 } },
     );
     const data = await res.json();
 

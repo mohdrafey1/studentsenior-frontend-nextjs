@@ -14,7 +14,7 @@ export async function generateMetadata({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 300 } });
         if (!res.ok) throw new Error(`Failed to fetch product`);
 
         const data = await res.json();
@@ -65,7 +65,7 @@ export default async function ProductDetailPage({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 300 } });
 
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
 

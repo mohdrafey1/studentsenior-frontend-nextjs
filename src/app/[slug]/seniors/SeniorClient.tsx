@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, ISenior } from '@/utils/interface';
@@ -27,13 +33,13 @@ const SeniorClient = ({
     collegeName: string;
 }) => {
     // Senior-specific filter
-    const searchParams =
-        typeof window !== 'undefined'
-            ? new URLSearchParams(window.location.search)
-            : null;
-    const [yearFilter, setYearFilter] = useState(
-        searchParams?.get('year') || '',
-    );
+    const [yearFilter, setYearFilter] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('year') || '';
+        }
+        return '';
+    });
 
     // Common filters hook with additional yearFilter
     const filterState = useFilterState({
@@ -74,6 +80,37 @@ const SeniorClient = ({
 
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        branch: '',
+        year: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            branch: filterState.branchFilter,
+            year: yearFilter,
+            page: filterState.page,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.branchFilter,
+            yearFilter,
+            filterState.page,
+        ],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     // Fetch seniors from backend - now uses URL params
     const fetchSeniors = useCallback(async () => {
         setLoading(true);
@@ -113,41 +150,60 @@ const SeniorClient = ({
         yearFilter,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchSeniors();
-    }, [fetchSeniors]);
+        if (isInitialMount) return;
 
-    const openModal = (senior?: ISenior) => {
-        if (!currentUser) {
-            toast.error('Please sign in to add senior profile');
-            return;
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.year !== currentFilters.year ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchSeniors();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
         }
-        setEditSenior(senior || null);
-        setForm(
-            senior
-                ? {
-                      name: senior.name,
-                      domain: senior.domain || '',
-                      branch: senior.branch._id,
-                      year: senior.year,
-                      profilePicture: senior.profilePicture || '',
-                      socialMediaLinks: senior.socialMediaLinks || [],
-                      description: senior.description || '',
-                  }
-                : {
-                      name: '',
-                      domain: '',
-                      branch: '',
-                      year: '',
-                      profilePicture: '',
-                      socialMediaLinks: [],
-                      description: '',
-                  },
-        );
-        setModalOpen(true);
-    };
+    }, [currentFilters, isInitialMount, fetchSeniors, forceRefetch]);
 
-    const closeModal = () => {
+    const openModal = useCallback(
+        (senior?: ISenior) => {
+            if (!currentUser) {
+                toast.error('Please sign in to add senior profile');
+                return;
+            }
+            setEditSenior(senior || null);
+            setForm(
+                senior
+                    ? {
+                          name: senior.name,
+                          domain: senior.domain || '',
+                          branch: senior.branch._id,
+                          year: senior.year,
+                          profilePicture: senior.profilePicture || '',
+                          socialMediaLinks: senior.socialMediaLinks || [],
+                          description: senior.description || '',
+                      }
+                    : {
+                          name: '',
+                          domain: '',
+                          branch: '',
+                          year: '',
+                          profilePicture: '',
+                          socialMediaLinks: [],
+                          description: '',
+                      },
+            );
+            setModalOpen(true);
+        },
+        [currentUser],
+    );
+
+    const closeModal = useCallback(() => {
         setModalOpen(false);
         setEditSenior(null);
         setForm({
@@ -159,59 +215,62 @@ const SeniorClient = ({
             socialMediaLinks: [],
             description: '',
         });
-    };
+    }, []);
 
-    const handleSubmit = async (formData: SeniorFormData) => {
-        setLoading(true);
-        try {
-            const method = editSenior ? 'PUT' : 'POST';
+    const handleSubmit = useCallback(
+        async (formData: SeniorFormData) => {
+            setLoading(true);
+            try {
+                const method = editSenior ? 'PUT' : 'POST';
 
-            const url = editSenior
-                ? api.seniors.editSenior(editSenior._id)
-                : api.seniors.createSenior;
+                const url = editSenior
+                    ? api.seniors.editSenior(editSenior._id)
+                    : api.seniors.createSenior;
 
-            const body = {
-                ...formData,
-                ...(method === 'POST' && { college: collegeName }),
-            };
+                const body = {
+                    ...formData,
+                    ...(method === 'POST' && { college: collegeName }),
+                };
 
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-                credentials: 'include',
-            });
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(
-                    data.message || 'Failed to save senior profile',
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || 'Failed to save senior profile',
+                    );
+                }
+
+                toast.success(
+                    data.message ||
+                        (editSenior
+                            ? 'Senior profile updated!'
+                            : 'Senior profile added!'),
                 );
+                closeModal();
+                setForceRefetch(true);
+            } catch (error: unknown) {
+                if (error instanceof Error) toast.error(error.message);
+                else toast.error('Failed to save senior profile');
+            } finally {
+                setLoading(false);
             }
+        },
+        [editSenior, collegeName, closeModal],
+    );
 
-            toast.success(
-                data.message ||
-                    (editSenior
-                        ? 'Senior profile updated!'
-                        : 'Senior profile added!'),
-            );
-            closeModal();
-            fetchSeniors();
-        } catch (error: unknown) {
-            if (error instanceof Error) toast.error(error.message);
-            else toast.error('Failed to save senior profile');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteRequest = (seniorId: string) => {
+    const handleDeleteRequest = useCallback((seniorId: string) => {
         setDeleteTargetId(seniorId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -235,26 +294,58 @@ const SeniorClient = ({
             toast.success('Senior profile deleted successfully');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
-            fetchSeniors();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to delete senior profile');
         } finally {
             setDeleteLoading(false);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    // Check for active filters
-    const hasActiveFilters =
-        filterState.searchTerm ||
-        filterState.courseFilter ||
-        filterState.branchFilter ||
-        yearFilter;
+    // Memoize active filters check and count
+    const hasActiveFilters = useMemo(
+        () =>
+            !!(
+                filterState.searchTerm ||
+                filterState.courseFilter ||
+                filterState.branchFilter ||
+                yearFilter
+            ),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            yearFilter,
+        ],
+    );
+
+    const activeFilterCount = useMemo(
+        () =>
+            [
+                filterState.searchTerm,
+                filterState.courseFilter,
+                filterState.branchFilter,
+                yearFilter,
+            ].filter(Boolean).length,
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            yearFilter,
+        ],
+    );
+
+    const clearAllFilters = useCallback(() => {
+        filterState.clearFilters();
+        setYearFilter('');
+        setForceRefetch(true);
+    }, [filterState]);
 
     return (
         <>
@@ -265,19 +356,9 @@ const SeniorClient = ({
                     setSearchInput={filterState.setSearchInput}
                     showFilters={filterState.showFilters}
                     setShowFilters={filterState.setShowFilters}
-                    hasActiveFilters={!!hasActiveFilters}
-                    activeFilterCount={
-                        [
-                            filterState.searchTerm,
-                            filterState.courseFilter,
-                            filterState.branchFilter,
-                            yearFilter,
-                        ].filter(Boolean).length
-                    }
-                    clearFilters={() => {
-                        filterState.clearFilters();
-                        setYearFilter('');
-                    }}
+                    hasActiveFilters={hasActiveFilters}
+                    activeFilterCount={activeFilterCount}
+                    clearFilters={clearAllFilters}
                     onAdd={() => openModal()}
                     addButtonText='Add Senior'
                     searchPlaceholder='Search seniors...'

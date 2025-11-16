@@ -684,14 +684,14 @@ export default async function CollegePage({ params }: CollegePageProps) {
                                     <div className='relative z-10'>
                                         {/* Icon */}
                                         <div
-                                            className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} text-white shadow-lg mb-4 group-hover:scale-110 transition-transform`}
+                                            className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} text-white shadow-lg mb-4 group-hover:scale-50 transition-transform`}
                                         >
                                             <IconComponent className='w-6 h-6' />
                                         </div>
 
                                         {/* Title */}
                                         <h3
-                                            className='text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all'
+                                            className='text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-sky-900 group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all'
                                             style={{
                                                 backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
                                             }}
@@ -750,7 +750,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                             </div>
                             <Link
                                 href={`/${slug}/pyqs`}
-                                className='whitespace-nowrap inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl'
+                                className='whitespace-nowrap inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition-all shadow-sm hover:shadow-md'
                             >
                                 Get Started
                                 <ArrowRight className='w-4 h-4' />

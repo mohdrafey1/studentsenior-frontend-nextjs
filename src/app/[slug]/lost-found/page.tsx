@@ -27,7 +27,7 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.lostFound.getLostFoundByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

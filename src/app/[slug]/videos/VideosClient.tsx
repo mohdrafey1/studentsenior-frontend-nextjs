@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, IVideo } from '@/utils/interface';
@@ -65,6 +65,41 @@ const VideosClient = ({
     );
 
     const ownerId = currentUser?._id;
+
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        course: '',
+        branch: '',
+        semester: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            course: filterState.courseFilter,
+            branch: filterState.branchFilter,
+            semester: filterState.semesterFilter,
+            page: filterState.page,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            filterState.page,
+        ]
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     const fetchVideos = useCallback(async () => {
         setLoading(true);
         try {
@@ -107,11 +142,28 @@ const VideosClient = ({
         filterState.page,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchVideos();
-    }, [fetchVideos]);
+        if (isInitialMount) return;
 
-    const openAddModal = () => {
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.course !== currentFilters.course ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.semester !== currentFilters.semester ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchVideos();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchVideos, forceRefetch]);
+
+    const openAddModal = useCallback(() => {
         if (!currentUser) {
             toast.error('Please sign in to post videos');
             return;
@@ -123,9 +175,9 @@ const VideosClient = ({
             subjectCode: '',
         });
         setAddModalOpen(true);
-    };
+    }, [currentUser]);
 
-    const closeAddModal = () => {
+    const closeAddModal = useCallback(() => {
         setAddModalOpen(false);
         setForm({
             title: '',
@@ -133,19 +185,19 @@ const VideosClient = ({
             videoUrl: '',
             subjectCode: '',
         });
-    };
+    }, []);
 
-    const openEditModal = (video: IVideo) => {
+    const openEditModal = useCallback((video: IVideo) => {
         setEditVideo(video);
         setEditModalOpen(true);
-    };
+    }, []);
 
-    const closeEditModal = () => {
+    const closeEditModal = useCallback(() => {
         setEditModalOpen(false);
         setEditVideo(null);
-    };
+    }, []);
 
-    const handleAddSubmit = async (formData: typeof form) => {
+    const handleAddSubmit = useCallback(async (formData: typeof form) => {
         setLoading(true);
         try {
             const response = await fetch(api.videos.createVideo, {
@@ -167,8 +219,8 @@ const VideosClient = ({
             }
             toast.success(data.message || 'Video created successfully!');
 
-            // Refresh the videos list to show updated data
-            await fetchVideos();
+            closeAddModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error creating video:', error);
             throw error;
@@ -176,9 +228,9 @@ const VideosClient = ({
             setLoading(false);
             closeAddModal();
         }
-    };
+    }, [collegeName, closeAddModal]);
 
-    const handleEditSubmit = async (formData: {
+    const handleEditSubmit = useCallback(async (formData: {
         title?: string;
         description?: string;
         videoUrl?: string;
@@ -203,8 +255,8 @@ const VideosClient = ({
             }
             toast.success(data.message || 'Video updated successfully!');
 
-            // Refresh the videos list to show updated data
-            await fetchVideos();
+            closeEditModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error updating video:', error);
             throw error;
@@ -212,14 +264,14 @@ const VideosClient = ({
             setLoading(false);
             closeEditModal();
         }
-    };
+    }, [editVideo, closeEditModal]);
 
-    const handleDeleteRequest = (videoId: string) => {
+    const handleDeleteRequest = useCallback((videoId: string) => {
         setDeleteTargetId(videoId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -238,7 +290,7 @@ const VideosClient = ({
             }
 
             toast.success('Video deleted successfully!');
-            fetchVideos();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error deleting video:', error);
             toast.error(
@@ -251,18 +303,42 @@ const VideosClient = ({
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    const hasActiveFilters =
-        filterState.searchTerm ||
-        filterState.courseFilter ||
-        filterState.branchFilter ||
-        filterState.semesterFilter;
+    const hasActiveFilters = useMemo(
+        () =>
+            !!(filterState.searchTerm ||
+            filterState.courseFilter ||
+            filterState.branchFilter ||
+            filterState.semesterFilter),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+        ]
+    );
+
+    const activeFilterCount = useMemo(
+        () =>
+            [
+                filterState.searchTerm,
+                filterState.courseFilter,
+                filterState.branchFilter,
+                filterState.semesterFilter,
+            ].filter(Boolean).length,
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+        ]
+    );
 
     return (
         <div className='space-y-6'>
@@ -272,15 +348,8 @@ const VideosClient = ({
                 searchPlaceholder='Search videos...'
                 showFilters={filterState.showFilters}
                 setShowFilters={filterState.setShowFilters}
-                hasActiveFilters={!!hasActiveFilters}
-                activeFilterCount={
-                    [
-                        filterState.searchTerm,
-                        filterState.courseFilter,
-                        filterState.branchFilter,
-                        filterState.semesterFilter,
-                    ].filter(Boolean).length
-                }
+                hasActiveFilters={hasActiveFilters}
+                activeFilterCount={activeFilterCount}
                 clearFilters={filterState.clearFilters}
                 onAdd={openAddModal}
                 addButtonText='Add Video'
