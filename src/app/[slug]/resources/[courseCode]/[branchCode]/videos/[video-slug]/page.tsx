@@ -58,7 +58,7 @@ export default function SubjectVideosPage() {
         const fetchVideos = async () => {
             try {
                 const url = api.resources.getVideosBySubject(subjectCode, slug);
-                const res = await fetch(url, { cache: 'no-store' });
+                const res = await fetch(url, { next: { revalidate: 300 } });
                 if (!res.ok)
                     throw new Error(`Fetch failed with status ${res.status}`);
                 const data = await res.json();

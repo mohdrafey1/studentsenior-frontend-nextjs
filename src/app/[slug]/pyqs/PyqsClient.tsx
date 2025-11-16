@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, IPyq } from '@/utils/interface';
@@ -95,6 +95,49 @@ const PyqsClient = ({
 
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        course: '',
+        branch: '',
+        semester: '',
+        year: '',
+        examType: '',
+        isSolved: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            course: filterState.courseFilter,
+            branch: filterState.branchFilter,
+            semester: filterState.semesterFilter,
+            year: yearFilter,
+            examType: examTypeFilter,
+            isSolved: isSolvedFilter,
+            page: filterState.page,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+            filterState.page,
+        ]
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     const fetchPyqs = useCallback(async () => {
         setLoading(true);
         try {
@@ -142,11 +185,31 @@ const PyqsClient = ({
         filterState.page,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchPyqs();
-    }, [fetchPyqs]);
+        if (isInitialMount) return;
 
-    const openAddModal = () => {
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.course !== currentFilters.course ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.semester !== currentFilters.semester ||
+            prevFilters.year !== currentFilters.year ||
+            prevFilters.examType !== currentFilters.examType ||
+            prevFilters.isSolved !== currentFilters.isSolved ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchPyqs();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchPyqs, forceRefetch]);
+
+    const openAddModal = useCallback(() => {
         if (!currentUser) {
             toast.error('Please sign in to post pyqs');
             return;
@@ -161,9 +224,9 @@ const PyqsClient = ({
             price: 0,
         });
         setAddModalOpen(true);
-    };
+    }, [currentUser]);
 
-    const closeAddModal = () => {
+    const closeAddModal = useCallback(() => {
         setAddModalOpen(false);
         setForm({
             subject: '',
@@ -174,19 +237,19 @@ const PyqsClient = ({
             isPaid: false,
             price: 0,
         });
-    };
+    }, []);
 
-    const openEditModal = (pyq: IPyq) => {
+    const openEditModal = useCallback((pyq: IPyq) => {
         setEditPyq(pyq);
         setEditModalOpen(true);
-    };
+    }, []);
 
-    const closeEditModal = () => {
+    const closeEditModal = useCallback(() => {
         setEditModalOpen(false);
         setEditPyq(null);
-    };
+    }, []);
 
-    const handleAddSubmit = async (formData: PyqFormData) => {
+    const handleAddSubmit = useCallback(async (formData: PyqFormData) => {
         setLoading(true);
         try {
             const response = await fetch(api.pyq.createPyq, {
@@ -208,8 +271,8 @@ const PyqsClient = ({
             }
             toast.success(data.message || 'PYQ created successfully!');
 
-            // Refresh the PYQs list to show updated data
-            await fetchPyqs();
+            closeAddModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error creating PYQ:', error);
             throw error;
@@ -217,9 +280,9 @@ const PyqsClient = ({
             setLoading(false);
             closeAddModal();
         }
-    };
+    }, [collegeName, closeAddModal]);
 
-    const handleEditSubmit = async (formData: {
+    const handleEditSubmit = useCallback(async (formData: {
         isPaid: boolean;
         price: number;
     }) => {
@@ -243,8 +306,8 @@ const PyqsClient = ({
             }
             toast.success(data.message || 'PYQ updated successfully!');
 
-            // Refresh the PYQs list to show updated data
-            await fetchPyqs();
+            closeEditModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error updating PYQ:', error);
             throw error;
@@ -252,14 +315,14 @@ const PyqsClient = ({
             setLoading(false);
             closeEditModal();
         }
-    };
+    }, [editPyq, closeEditModal]);
 
-    const handleDeleteRequest = (pyqId: string) => {
+    const handleDeleteRequest = useCallback((pyqId: string) => {
         setDeleteTargetId(pyqId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -275,7 +338,7 @@ const PyqsClient = ({
             }
 
             toast.success('PYQ deleted successfully!');
-            fetchPyqs();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error deleting PYQ:', error);
             toast.error(
@@ -286,28 +349,61 @@ const PyqsClient = ({
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    const clearAllFilters = () => {
+    const clearAllFilters = useCallback(() => {
         filterState.clearFilters();
         setYearFilter('');
         setExamTypeFilter('');
         setIsSolvedFilter('');
-    };
+    }, [filterState]);
 
-    const hasActiveFilters =
-        filterState.searchTerm ||
-        filterState.courseFilter ||
-        filterState.branchFilter ||
-        filterState.semesterFilter ||
-        yearFilter ||
-        examTypeFilter ||
-        isSolvedFilter;
+    const hasActiveFilters = useMemo(
+        () =>
+            !!(filterState.searchTerm ||
+            filterState.courseFilter ||
+            filterState.branchFilter ||
+            filterState.semesterFilter ||
+            yearFilter ||
+            examTypeFilter ||
+            isSolvedFilter),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+        ]
+    );
+
+    const activeFilterCount = useMemo(
+        () =>
+            [
+                filterState.searchTerm,
+                filterState.courseFilter,
+                filterState.branchFilter,
+                filterState.semesterFilter,
+                yearFilter,
+                examTypeFilter,
+                isSolvedFilter,
+            ].filter(Boolean).length,
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+        ]
+    );
 
     return (
         <div className='space-y-6'>
@@ -317,18 +413,8 @@ const PyqsClient = ({
                 searchPlaceholder='Search PYQs...'
                 showFilters={filterState.showFilters}
                 setShowFilters={filterState.setShowFilters}
-                hasActiveFilters={!!hasActiveFilters}
-                activeFilterCount={
-                    [
-                        filterState.searchTerm,
-                        filterState.courseFilter,
-                        filterState.branchFilter,
-                        filterState.semesterFilter,
-                        yearFilter,
-                        examTypeFilter,
-                        isSolvedFilter,
-                    ].filter(Boolean).length
-                }
+                hasActiveFilters={hasActiveFilters}
+                activeFilterCount={activeFilterCount}
                 clearFilters={clearAllFilters}
                 onShowEarning={() => setShowEarningModal(true)}
                 onAdd={openAddModal}

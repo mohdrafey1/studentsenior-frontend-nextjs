@@ -338,7 +338,7 @@ const LostFoundClient = ({
                             Showing {items.length} of{' '}
                             {pagination?.totalItems ?? 0} items
                         </p>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6'>
                             {items.map((item) => (
                                 <LostFoundCard
                                     key={item._id}

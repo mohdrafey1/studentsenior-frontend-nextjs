@@ -23,7 +23,7 @@ export default async function NotesPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.notes.getNotesByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

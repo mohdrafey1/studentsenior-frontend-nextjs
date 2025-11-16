@@ -46,7 +46,7 @@ export async function generateMetadata({
     // Fetch syllabus to get actual subject info
     try {
         const url = api.syllabus.getSyllabusBySlug(subjectCode);
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 86400 } });
 
         if (res.ok) {
             const data = await res.json();
@@ -79,7 +79,7 @@ export default async function SyllabusDetailPage({
     try {
         // subjectCode parameter is actually the syllabus slug
         const url = api.syllabus.getSyllabusBySlug(subjectCode);
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 300 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

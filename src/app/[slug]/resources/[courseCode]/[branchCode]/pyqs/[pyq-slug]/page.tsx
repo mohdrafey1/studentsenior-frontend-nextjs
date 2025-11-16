@@ -20,7 +20,7 @@ interface PyqPageParams {
 // helper to fetch subject name
 async function getSubjectName(branchCode: string, subjectCode: string) {
     const response = await fetch(api.resources.getSubjects(branchCode), {
-        cache: 'no-store',
+        next: { revalidate: 300 },
     });
     const resp = await response.json();
     const matched = resp.data.find(
@@ -120,7 +120,7 @@ export default async function SubjectPyqsPage({
 
     try {
         const url = api.resources.getPyqsBySubject(subjectCode, slug);
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 3600 } });
         const data = await res.json();
         pyqs = data?.data || [];
     } catch (e) {

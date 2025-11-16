@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, INote } from '@/utils/interface';
@@ -67,6 +73,40 @@ const NotesClient = ({
 
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        course: '',
+        branch: '',
+        semester: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            course: filterState.courseFilter,
+            branch: filterState.branchFilter,
+            semester: filterState.semesterFilter,
+            page: filterState.page,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            filterState.page,
+        ],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     const fetchNotes = useCallback(async () => {
         setLoading(true);
         try {
@@ -109,11 +149,28 @@ const NotesClient = ({
         filterState.page,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchNotes();
-    }, [fetchNotes]);
+        if (isInitialMount) return;
 
-    const openAddModal = () => {
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.course !== currentFilters.course ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.semester !== currentFilters.semester ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchNotes();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchNotes, forceRefetch]);
+
+    const openAddModal = useCallback(() => {
         if (!currentUser) {
             toast.error('Please sign in to post notes');
             return;
@@ -127,9 +184,9 @@ const NotesClient = ({
             price: 0,
         });
         setAddModalOpen(true);
-    };
+    }, [currentUser]);
 
-    const closeAddModal = () => {
+    const closeAddModal = useCallback(() => {
         setAddModalOpen(false);
         setForm({
             title: '',
@@ -139,95 +196,101 @@ const NotesClient = ({
             isPaid: false,
             price: 0,
         });
-    };
+    }, []);
 
-    const openEditModal = (note: INote) => {
+    const openEditModal = useCallback((note: INote) => {
         setEditNote(note);
         setEditModalOpen(true);
-    };
+    }, []);
 
-    const closeEditModal = () => {
+    const closeEditModal = useCallback(() => {
         setEditModalOpen(false);
         setEditNote(null);
-    };
+    }, []);
 
-    const handleAddSubmit = async (formData: typeof form) => {
-        setLoading(true);
-        try {
-            const response = await fetch(api.notes.createNote, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    ...formData,
-                    college: collegeName,
-                }),
-            });
+    const handleAddSubmit = useCallback(
+        async (formData: typeof form) => {
+            setLoading(true);
+            try {
+                const response = await fetch(api.notes.createNote, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        ...formData,
+                        college: collegeName,
+                    }),
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create note');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to create note');
+                }
+                toast.success(data.message || 'Note created successfully!');
+
+                closeAddModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error creating note:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeAddModal();
             }
-            toast.success(data.message || 'Note created successfully!');
+        },
+        [collegeName, closeAddModal],
+    );
 
-            // Refresh the notes list to show updated data
-            await fetchNotes();
-        } catch (error) {
-            console.error('Error creating note:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeAddModal();
-        }
-    };
+    const handleEditSubmit = useCallback(
+        async (formData: {
+            title?: string;
+            description?: string;
+            fileUrl?: string;
+            isPaid?: boolean;
+            price?: number;
+        }) => {
+            if (!editNote) return;
 
-    const handleEditSubmit = async (formData: {
-        title?: string;
-        description?: string;
-        fileUrl?: string;
-        isPaid?: boolean;
-        price?: number;
-    }) => {
-        if (!editNote) return;
+            setLoading(true);
+            try {
+                const response = await fetch(api.notes.editNote(editNote._id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(formData),
+                });
 
-        setLoading(true);
-        try {
-            const response = await fetch(api.notes.editNote(editNote._id), {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(formData),
-            });
+                const data = await response.json();
 
-            const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to update note');
+                }
+                toast.success(data.message || 'Note updated successfully!');
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to update note');
+                closeEditModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error updating note:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeEditModal();
             }
-            toast.success(data.message || 'Note updated successfully!');
+        },
+        [editNote, closeEditModal],
+    );
 
-            // Refresh the notes list to show updated data
-            await fetchNotes();
-        } catch (error) {
-            console.error('Error updating note:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeEditModal();
-        }
-    };
-
-    const handleDeleteRequest = (noteId: string) => {
+    const handleDeleteRequest = useCallback((noteId: string) => {
         setDeleteTargetId(noteId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -243,7 +306,7 @@ const NotesClient = ({
             }
 
             toast.success('Note deleted successfully!');
-            fetchNotes();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error deleting note:', error);
             toast.error(
@@ -256,12 +319,12 @@ const NotesClient = ({
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
     return (
         <div className='space-y-6'>
