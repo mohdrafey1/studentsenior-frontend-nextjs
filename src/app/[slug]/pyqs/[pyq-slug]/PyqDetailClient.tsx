@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { IPyq } from '@/utils/interface';
+import toast from 'react-hot-toast';
 import {
     ArrowLeft,
     FileText,
@@ -357,7 +358,19 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const downloadFileName = `${pyq.subject.subjectCode}-${pyq.examType}-${pyq.year}.pdf`;
     const isDownloadDisabled = !isDownloadUrlValid || !signedUrl;
 
+    const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!currentUser) {
+            e.preventDefault();
+            toast.error('Please login to download resources');
+            return;
+        }
+    };
+
     const handleRefreshDownloadUrl = async () => {
+        if (!currentUser) {
+            toast.error('Please login to download resources');
+            return;
+        }
         if (!pyq?.fileUrl) return;
         try {
             setIsRefreshing(true);
@@ -605,6 +618,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     download={downloadFileName}
                                     target='_blank'
                                     rel='noopener noreferrer'
+                                    onClick={handleDownload}
                                     className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
                                         !isDownloadDisabled && signedUrl
                                             ? 'bg-sky-600 text-white hover:bg-sky-700'
