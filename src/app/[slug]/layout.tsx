@@ -16,8 +16,13 @@ export default function CollegeLayout({
     return (
         <>
             <div className='min-h-full bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-16 lg:pb-0'>
-                {!hideCollegeLinks && <Collegelinks />}
-                {children}
+                {!hideCollegeLinks && (
+                    <div className='flex'>
+                        <Collegelinks />
+                        <main className='flex-1 min-w-0'>{children}</main>
+                    </div>
+                )}
+                {hideCollegeLinks && children}
             </div>
             <Collegelink2 />
         </>
