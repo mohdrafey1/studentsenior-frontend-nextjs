@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import toast from 'react-hot-toast';
 import { ISyllabus, IPagination } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
@@ -10,6 +16,7 @@ import {
     BookOpen,
     Calendar,
     ArrowRight,
+    AlertCircle,
 } from 'lucide-react';
 import PaginationComponent from '@/components/Common/Pagination';
 import Link from 'next/link';
@@ -23,19 +30,21 @@ const SyllabusClient = ({
     initialSyllabus,
     initialPagination,
     collegeName,
+    initialError,
 }: {
     initialSyllabus: ISyllabus[];
     initialPagination: IPagination;
     collegeName: string;
+    initialError?: string | null;
 }) => {
     // Syllabus-specific filters
-    const searchParams =
-        typeof window !== 'undefined'
-            ? new URLSearchParams(window.location.search)
-            : null;
-    const [yearFilter, setYearFilter] = useState(
-        searchParams?.get('year') || '',
-    );
+    const [yearFilter, setYearFilter] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('year') || '';
+        }
+        return '';
+    });
 
     // Common filters hook with additional yearFilter
     const filterState = useFilterState({
@@ -54,9 +63,45 @@ const SyllabusClient = ({
         initialPagination,
     );
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(initialError || null);
+
+    // Track if this is the first mount
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        course: '',
+        branch: '',
+        year: '',
+        semester: '',
+    });
+
+    // Memoize current filters to avoid recreation
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            course: filterState.courseFilter,
+            branch: filterState.branchFilter,
+            year: yearFilter,
+            semester: filterState.semesterFilter,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            yearFilter,
+            filterState.semesterFilter,
+        ],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
 
     const fetchSyllabus = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
             const params = new URLSearchParams();
             if (filterState.searchTerm)
@@ -82,9 +127,12 @@ const SyllabusClient = ({
 
             setSyllabus(data?.data?.syllabus || []);
             setPagination(data?.data?.pagination || null);
-        } catch (error) {
-            console.error('Error fetching syllabus:', error);
-            toast.error('Failed to fetch syllabus');
+        } catch (err) {
+            console.error('Error fetching syllabus:', err);
+            const errorMessage =
+                err instanceof Error ? err.message : 'Failed to fetch syllabus';
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -98,21 +146,68 @@ const SyllabusClient = ({
         filterState.page,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchSyllabus();
-    }, [fetchSyllabus]);
+        if (isInitialMount) return;
 
-    const hasActiveFilters =
-        filterState.searchTerm ||
-        filterState.courseFilter ||
-        filterState.branchFilter ||
-        yearFilter ||
-        filterState.semesterFilter;
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.course !== currentFilters.course ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.year !== currentFilters.year ||
+            prevFilters.semester !== currentFilters.semester;
 
-    const clearAllFilters = () => {
+        if (filterChanged || forceRefetch) {
+            fetchSyllabus();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchSyllabus, forceRefetch]);
+
+    const hasActiveFilters = useMemo(
+        () =>
+            !!(
+                filterState.searchTerm ||
+                filterState.courseFilter ||
+                filterState.branchFilter ||
+                yearFilter ||
+                filterState.semesterFilter
+            ),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            yearFilter,
+            filterState.semesterFilter,
+        ],
+    );
+
+    const activeFilterCount = useMemo(
+        () =>
+            [
+                filterState.searchTerm,
+                filterState.courseFilter,
+                filterState.branchFilter,
+                yearFilter,
+                filterState.semesterFilter,
+            ].filter(Boolean).length,
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            yearFilter,
+            filterState.semesterFilter,
+        ],
+    );
+
+    const clearAllFilters = useCallback(() => {
         filterState.clearFilters();
         setYearFilter('');
-    };
+        setForceRefetch(true);
+    }, [filterState]);
 
     return (
         <div className='space-y-6'>
@@ -123,15 +218,7 @@ const SyllabusClient = ({
                 showFilters={filterState.showFilters}
                 setShowFilters={filterState.setShowFilters}
                 hasActiveFilters={!!hasActiveFilters}
-                activeFilterCount={
-                    [
-                        filterState.searchTerm,
-                        filterState.courseFilter,
-                        filterState.branchFilter,
-                        yearFilter,
-                        filterState.semesterFilter,
-                    ].filter(Boolean).length
-                }
+                activeFilterCount={activeFilterCount}
                 clearFilters={clearAllFilters}
                 addButtonText='Add Syllabus'
                 viewMode={viewMode}
@@ -171,7 +258,28 @@ const SyllabusClient = ({
                 </div>
             )}
 
-            {/* Syllabus Grid */}
+            {/* Error State */}
+            {error && (
+                <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3'>
+                    <AlertCircle className='w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0' />
+                    <div>
+                        <p className='text-sm font-medium text-red-800 dark:text-red-200'>
+                            Failed to load syllabus
+                        </p>
+                        <p className='text-xs text-red-600 dark:text-red-400 mt-1'>
+                            {error}
+                        </p>
+                    </div>
+                    <button
+                        onClick={fetchSyllabus}
+                        className='ml-auto px-3 py-1 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-md transition-colors'
+                    >
+                        Retry
+                    </button>
+                </div>
+            )}
+
+            {/* Syllabus Grid/List */}
             {loading ? (
                 <div className='flex items-center justify-center py-12'>
                     <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600'></div>
@@ -184,6 +292,7 @@ const SyllabusClient = ({
                                 <Link
                                     key={item._id}
                                     href={`/${collegeName}/syllabus/${item.slug}`}
+                                    prefetch={false}
                                     className='group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300 hover:-translate-y-1'
                                 >
                                     {/* Gradient Top Border */}
@@ -295,6 +404,14 @@ const SyllabusClient = ({
                     <p className='text-gray-500 dark:text-gray-400 text-lg'>
                         No syllabus found
                     </p>
+                    {hasActiveFilters && (
+                        <button
+                            onClick={clearAllFilters}
+                            className='mt-4 text-sky-600 dark:text-sky-400 hover:underline'
+                        >
+                            Clear all filters
+                        </button>
+                    )}
                 </div>
             )}
 
