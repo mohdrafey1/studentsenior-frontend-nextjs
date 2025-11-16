@@ -9,12 +9,12 @@ interface CollegeAboutProps {
 
 export default function CollegeAbout({ college }: CollegeAboutProps) {
     return (
-        <section className='py-16 '>
+        <section className='py-16 bg-white dark:bg-gray-900'>
             <div className='container mx-auto px-4'>
                 <div className='max-w-4xl mx-auto'>
                     <div className='space-y-6'>
                         <div>
-                            <h3 className='text-xl font-fugaz text-center font-semibold text-gray-900 dark:text-white mb-4'>
+                            <h3 className='text-xl font-fugaz text-center font-semibold text-gray-900  dark:text-white mb-4'>
                                 Institution Overview
                             </h3>
                             <p className='text-gray-600 text-center dark:text-gray-300 leading-relaxed'>
