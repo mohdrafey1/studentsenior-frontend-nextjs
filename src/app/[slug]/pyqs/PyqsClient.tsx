@@ -35,18 +35,6 @@ const PyqsClient = ({
 }) => {
     const searchParams = useSearchParams();
 
-    // Common filters hook
-    const filterState = useFilterState();
-
-    // Courses and branches hook
-    const {
-        courses,
-        branches,
-        loadingCourses,
-        loadingBranches,
-        fetchBranches,
-    } = useCoursesAndBranches(filterState.courseFilter);
-
     // PYQ-specific filters
     const [yearFilter, setYearFilter] = useState(
         searchParams.get('year') || '',
@@ -57,6 +45,25 @@ const PyqsClient = ({
     const [isSolvedFilter, setIsSolvedFilter] = useState(
         searchParams.get('isSolved') || '',
     );
+
+    // Common filters hook with additional PYQ filters
+    const filterState = useFilterState({
+        debounceMs: SEARCH_DEBOUNCE,
+        additionalFilters: {
+            year: yearFilter,
+            examType: examTypeFilter,
+            isSolved: isSolvedFilter,
+        },
+    });
+
+    // Courses and branches hook
+    const {
+        courses,
+        branches,
+        loadingCourses,
+        loadingBranches,
+        fetchBranches,
+    } = useCoursesAndBranches(filterState.courseFilter);
 
     const [pyqs, setPyqs] = useState<IPyq[]>(initialPyqs);
     const [pagination, setPagination] = useState<IPagination | null>(
@@ -87,63 +94,6 @@ const PyqsClient = ({
     );
 
     const ownerId = currentUser?._id;
-
-    // Update URL when filters change
-    useEffect(() => {
-        const params = new URLSearchParams();
-        if (filterState.searchTerm)
-            params.set('search', filterState.searchTerm);
-        if (filterState.courseFilter)
-            params.set('course', filterState.courseFilter);
-        if (filterState.branchFilter)
-            params.set('branch', filterState.branchFilter);
-        if (yearFilter) params.set('year', yearFilter);
-        if (examTypeFilter) params.set('examType', examTypeFilter);
-        if (filterState.semesterFilter)
-            params.set('semester', filterState.semesterFilter);
-        if (isSolvedFilter) params.set('isSolved', isSolvedFilter);
-        if (filterState.page > 1)
-            params.set('page', filterState.page.toString());
-
-        const newUrl = params.toString()
-            ? `${filterState.pathname}?${params.toString()}`
-            : filterState.pathname;
-        filterState.router.replace(newUrl);
-    }, [
-        filterState.searchTerm,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        yearFilter,
-        examTypeFilter,
-        filterState.semesterFilter,
-        isSolvedFilter,
-        filterState.page,
-        filterState.pathname,
-        filterState.router,
-    ]);
-
-    // Debounced search effect
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            filterState.setSearchTerm(filterState.searchInput);
-            filterState.setPage(1);
-        }, SEARCH_DEBOUNCE);
-
-        return () => clearTimeout(timer);
-    }, [filterState.searchInput, filterState]);
-
-    // Reset page when filters change
-    useEffect(() => {
-        filterState.setPage(1);
-    }, [
-        filterState,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        filterState.semesterFilter,
-        yearFilter,
-        examTypeFilter,
-        isSolvedFilter,
-    ]);
 
     const fetchPyqs = useCallback(async () => {
         setLoading(true);

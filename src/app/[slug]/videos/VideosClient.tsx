@@ -28,7 +28,7 @@ const VideosClient = ({
     collegeName: string;
 }) => {
     // Common filters hook
-    const filterState = useFilterState();
+    const filterState = useFilterState({ debounceMs: SEARCH_DEBOUNCE });
 
     // Courses and branches hook
     const {
@@ -65,55 +65,6 @@ const VideosClient = ({
     );
 
     const ownerId = currentUser?._id;
-
-    // Update URL when filters change
-    useEffect(() => {
-        const params = new URLSearchParams();
-        if (filterState.searchTerm)
-            params.set('search', filterState.searchTerm);
-        if (filterState.courseFilter)
-            params.set('course', filterState.courseFilter);
-        if (filterState.branchFilter)
-            params.set('branch', filterState.branchFilter);
-        if (filterState.semesterFilter)
-            params.set('semester', filterState.semesterFilter);
-        if (filterState.page > 1)
-            params.set('page', filterState.page.toString());
-
-        const newUrl = params.toString()
-            ? `${filterState.pathname}?${params.toString()}`
-            : filterState.pathname;
-        filterState.router.replace(newUrl);
-    }, [
-        filterState.searchTerm,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        filterState.semesterFilter,
-        filterState.page,
-        filterState.pathname,
-        filterState.router,
-    ]);
-
-    // Debounced search effect
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            filterState.setSearchTerm(filterState.searchInput);
-            filterState.setPage(1);
-        }, SEARCH_DEBOUNCE);
-
-        return () => clearTimeout(timer);
-    }, [filterState.searchInput, filterState]);
-
-    // Reset page when filters change
-    useEffect(() => {
-        filterState.setPage(1);
-    }, [
-        filterState,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        filterState.semesterFilter,
-    ]);
-
     const fetchVideos = useCallback(async () => {
         setLoading(true);
         try {

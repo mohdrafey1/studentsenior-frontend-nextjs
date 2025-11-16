@@ -54,19 +54,24 @@ const SyllabusClient = ({
     initialPagination: IPagination;
     collegeName: string;
 }) => {
-    // Common filters hook
-    const filterState = useFilterState();
+    // Syllabus-specific filters
+    const searchParams =
+        typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search)
+            : null;
+    const [yearFilter, setYearFilter] = useState(
+        searchParams?.get('year') || '',
+    );
+
+    // Common filters hook with additional yearFilter
+    const filterState = useFilterState({
+        debounceMs: 500,
+        additionalFilters: { year: yearFilter },
+    });
 
     // Courses and branches hook
     const { courses, branches, loadingCourses, loadingBranches } =
         useCoursesAndBranches(filterState.courseFilter);
-
-    // Syllabus-specific filters
-    const [yearFilter, setYearFilter] = useState(
-        typeof window !== 'undefined'
-            ? new URLSearchParams(window.location.search).get('year') || ''
-            : '',
-    );
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -75,58 +80,6 @@ const SyllabusClient = ({
         initialPagination,
     );
     const [loading, setLoading] = useState(false);
-
-    // Update URL when filters change
-    useEffect(() => {
-        const params = new URLSearchParams();
-        if (filterState.searchTerm)
-            params.set('search', filterState.searchTerm);
-        if (filterState.courseFilter)
-            params.set('course', filterState.courseFilter);
-        if (filterState.branchFilter)
-            params.set('branch', filterState.branchFilter);
-        if (yearFilter) params.set('year', yearFilter);
-        if (filterState.semesterFilter)
-            params.set('semester', filterState.semesterFilter);
-        if (filterState.page > 1)
-            params.set('page', filterState.page.toString());
-
-        const newUrl = params.toString()
-            ? `${filterState.pathname}?${params.toString()}`
-            : filterState.pathname;
-
-        filterState.router.replace(newUrl, { scroll: false });
-    }, [
-        filterState.searchTerm,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        yearFilter,
-        filterState.semesterFilter,
-        filterState.page,
-        filterState.pathname,
-        filterState.router,
-    ]);
-
-    // Debounced search effect
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            filterState.setSearchTerm(filterState.searchInput);
-            filterState.setPage(1);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [filterState.searchInput, filterState]);
-
-    // Reset page when filters change
-    useEffect(() => {
-        filterState.setPage(1);
-    }, [
-        filterState,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        filterState.semesterFilter,
-        yearFilter,
-    ]);
 
     const fetchSyllabus = useCallback(async () => {
         setLoading(true);

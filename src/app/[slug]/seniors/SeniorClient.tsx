@@ -26,19 +26,24 @@ const SeniorClient = ({
     initialPagination: IPagination;
     collegeName: string;
 }) => {
-    // Common filters hook
-    const filterState = useFilterState();
+    // Senior-specific filter
+    const searchParams =
+        typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search)
+            : null;
+    const [yearFilter, setYearFilter] = useState(
+        searchParams?.get('year') || '',
+    );
+
+    // Common filters hook with additional yearFilter
+    const filterState = useFilterState({
+        debounceMs: SEARCH_DEBOUNCE,
+        additionalFilters: { year: yearFilter },
+    });
 
     // Courses and branches hook
     const { courses, branches, loadingCourses, loadingBranches } =
         useCoursesAndBranches(filterState.courseFilter);
-
-    // Senior-specific filter
-    const [yearFilter, setYearFilter] = useState(
-        typeof window !== 'undefined'
-            ? new URLSearchParams(window.location.search).get('year') || ''
-            : '',
-    );
 
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -68,39 +73,6 @@ const SeniorClient = ({
     );
 
     const ownerId = currentUser?._id;
-
-    useEffect(() => {
-        const params = new URLSearchParams();
-
-        if (filterState.searchTerm)
-            params.set('search', filterState.searchTerm);
-        if (filterState.courseFilter)
-            params.set('course', filterState.courseFilter);
-        if (filterState.branchFilter)
-            params.set('branch', filterState.branchFilter);
-        if (yearFilter) params.set('year', yearFilter);
-        if (filterState.page > 1) params.set('page', String(filterState.page));
-
-        const newUrl = `${filterState.pathname}?${params.toString()}`;
-        filterState.router.replace(newUrl);
-    }, [
-        filterState.searchTerm,
-        filterState.courseFilter,
-        filterState.branchFilter,
-        yearFilter,
-        filterState.page,
-        filterState.pathname,
-        filterState.router,
-    ]);
-
-    // Debounce search
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            filterState.setSearchTerm(filterState.searchInput);
-            filterState.setPage(1);
-        }, SEARCH_DEBOUNCE);
-        return () => clearTimeout(handler);
-    }, [filterState.searchInput, filterState]);
 
     // Fetch seniors from backend - now uses URL params
     const fetchSeniors = useCallback(async () => {

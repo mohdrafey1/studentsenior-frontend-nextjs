@@ -87,7 +87,7 @@ export const ResourcePageHeader: React.FC<ResourcePageHeaderProps> = ({
                     title='Learn how to earn points'
                 >
                     <TrendingUp className='w-4 h-4' />
-                    <span className='hidden sm:inline'>How to Earn</span>
+                    <span className=''>How to Earn</span>
                 </button>
             )}
 

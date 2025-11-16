@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export const useFilterState = () => {
+interface UseFilterStateOptions {
+    additionalFilters?: Record<string, string>;
+    debounceMs?: number;
+}
+
+export const useFilterState = (options: UseFilterStateOptions = {}) => {
+    const { additionalFilters = {}, debounceMs = 500 } = options;
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -23,6 +29,52 @@ export const useFilterState = () => {
     );
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
     const [showFilters, setShowFilters] = useState(false);
+
+    // Debounced search effect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchTerm(searchInput);
+            setPage(1);
+        }, debounceMs);
+
+        return () => clearTimeout(timer);
+    }, [searchInput, debounceMs]);
+
+    // Reset page when filters change
+    useEffect(() => {
+        setPage(1);
+    }, [courseFilter, branchFilter, semesterFilter]);
+
+    // URL sync effect
+    useEffect(() => {
+        const params = new URLSearchParams();
+
+        // Add common filters
+        if (searchTerm) params.set('search', searchTerm);
+        if (courseFilter) params.set('course', courseFilter);
+        if (branchFilter) params.set('branch', branchFilter);
+        if (semesterFilter) params.set('semester', semesterFilter);
+        if (page > 1) params.set('page', page.toString());
+
+        // Add additional filters from pages (like yearFilter, examTypeFilter, etc.)
+        Object.entries(additionalFilters).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+        });
+
+        const newUrl = params.toString()
+            ? `${pathname}?${params.toString()}`
+            : pathname;
+        router.replace(newUrl, { scroll: false });
+    }, [
+        searchTerm,
+        courseFilter,
+        branchFilter,
+        semesterFilter,
+        page,
+        additionalFilters,
+        pathname,
+        router,
+    ]);
 
     const clearFilters = () => {
         setSearchInput('');
