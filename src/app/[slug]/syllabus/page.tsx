@@ -1,31 +1,11 @@
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { api } from '@/config/apiUrls';
-import {
-    CollegeData,
-    CollegePageProps,
-    IPagination,
-    ISubject,
-} from '@/utils/interface';
+import { ISyllabus, CollegePageProps, IPagination } from '@/utils/interface';
 import SyllabusClient from './SyllabusClient';
 
-interface ISyllabus {
-    _id: string;
-    slug: string;
-    year: number;
-    semester: number;
-    subject: ISubject;
-    college: CollegeData;
-    units: {
-        unitNumber: number;
-        title: string;
-        content: string;
-    }[];
-    referenceBooks: string;
-    description: string;
-    isActive: boolean;
-    viewCount: number;
-}
+// Add revalidation for ISR
+export const revalidate = 3600; // Cache for 1 hour
 
 export async function generateMetadata({
     params,
@@ -44,10 +24,14 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
 
     let syllabus: ISyllabus[] = [];
     let pagination: IPagination | null = null;
+    let error: string | null = null;
 
     try {
         const url = api.syllabus.getSyllabusByCollege(collegeName);
-        const res = await fetch(url, { cache: 'no-store' });
+        // ✅ Add caching with revalidation
+        const res = await fetch(url, {
+            next: { revalidate: 3600 }, // Cache for 1 hour
+        });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -56,8 +40,9 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
         const data = await res.json();
         syllabus = data?.data?.syllabus || [];
         pagination = data?.data?.pagination || null;
-    } catch (error) {
-        console.error('Error fetching syllabus:', error);
+    } catch (err) {
+        console.error('Error fetching syllabus:', err);
+        error = err instanceof Error ? err.message : 'Failed to load syllabus';
     }
 
     return (
@@ -83,6 +68,7 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
                     }
                 }
                 collegeName={collegeName}
+                initialError={error}
             />
         </main>
     );

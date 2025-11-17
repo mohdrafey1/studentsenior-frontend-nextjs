@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useRef,
+    useMemo,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import toast from 'react-hot-toast';
@@ -53,6 +59,25 @@ const OpportunityClient = ({
     );
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({ search: '', page: 1 });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: searchTerm,
+            page: page,
+        }),
+        [searchTerm, page],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -93,38 +118,55 @@ const OpportunityClient = ({
         }
     }, [collegeName, page, searchTerm, initialPagination]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchOpportunities();
-    }, [fetchOpportunities]);
+        if (isInitialMount) return;
+
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchOpportunities();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchOpportunities, forceRefetch]);
 
     // Modal logic
-    const openModal = (opportunity?: IOpportunity) => {
-        if (!currentUser) {
-            toast.error('Please sign in to post opportunities');
-            return;
-        }
-        setEditOpportunity(opportunity || null);
-        setForm(
-            opportunity
-                ? {
-                      name: opportunity.name,
-                      description: opportunity.description,
-                      email: opportunity.email || '',
-                      whatsapp: opportunity.whatsapp || '',
-                      link: opportunity.link || '',
-                  }
-                : {
-                      name: '',
-                      description: '',
-                      email: '',
-                      whatsapp: '',
-                      link: '',
-                  },
-        );
-        setModalOpen(true);
-    };
+    const openModal = useCallback(
+        (opportunity?: IOpportunity) => {
+            if (!currentUser) {
+                toast.error('Please sign in to post opportunities');
+                return;
+            }
+            setEditOpportunity(opportunity || null);
+            setForm(
+                opportunity
+                    ? {
+                          name: opportunity.name,
+                          description: opportunity.description,
+                          email: opportunity.email || '',
+                          whatsapp: opportunity.whatsapp || '',
+                          link: opportunity.link || '',
+                      }
+                    : {
+                          name: '',
+                          description: '',
+                          email: '',
+                          whatsapp: '',
+                          link: '',
+                      },
+            );
+            setModalOpen(true);
+        },
+        [currentUser],
+    );
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setModalOpen(false);
         setEditOpportunity(null);
         setForm({
@@ -134,56 +176,61 @@ const OpportunityClient = ({
             whatsapp: '',
             link: '',
         });
-    };
+    }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const method = editOpportunity ? 'PUT' : 'POST';
-            const url = editOpportunity
-                ? api.opportunities.editOpportunity(editOpportunity._id)
-                : api.opportunities.createOpportunity;
-            const body = {
-                ...form,
-                ...(method === 'POST' && { college: collegeName }),
-            };
+    const handleSubmit = useCallback(
+        async (e: React.FormEvent) => {
+            e.preventDefault();
+            setLoading(true);
+            try {
+                const method = editOpportunity ? 'PUT' : 'POST';
+                const url = editOpportunity
+                    ? api.opportunities.editOpportunity(editOpportunity._id)
+                    : api.opportunities.createOpportunity;
+                const body = {
+                    ...form,
+                    ...(method === 'POST' && { college: collegeName }),
+                };
 
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-                credentials: 'include',
-            });
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
 
-            const data = await res.json();
-            if (!res.ok)
-                throw new Error(data.message || 'Failed to save opportunity');
+                const data = await res.json();
+                if (!res.ok)
+                    throw new Error(
+                        data.message || 'Failed to save opportunity',
+                    );
 
-            toast.success(
-                data.message ||
-                    (editOpportunity
-                        ? 'Opportunity updated!'
-                        : 'Opportunity added!'),
-                { duration: 10000 },
-            );
+                toast.success(
+                    data.message ||
+                        (editOpportunity
+                            ? 'Opportunity updated!'
+                            : 'Opportunity added!'),
+                    { duration: 10000 },
+                );
 
-            closeModal();
-            fetchOpportunities();
-        } catch (error: unknown) {
-            if (error instanceof Error) toast.error(error.message);
-            else toast.error('Failed to save opportunity');
-        } finally {
-            setLoading(false);
-        }
-    };
+                closeModal();
+                setForceRefetch(true);
+            } catch (error: unknown) {
+                if (error instanceof Error) toast.error(error.message);
+                else toast.error('Failed to save opportunity');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [editOpportunity, collegeName, closeModal],
+    );
 
-    const handleDeleteRequest = (opportunityId: string) => {
+    const handleDeleteRequest = useCallback((opportunityId: string) => {
         setDeleteTargetId(opportunityId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
         setDeleteLoading(true);
         try {
@@ -201,24 +248,27 @@ const OpportunityClient = ({
             toast.success('Opportunity deleted!');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
-            fetchOpportunities();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to delete opportunity');
         } finally {
             setDeleteLoading(false);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
     // Pagination controls
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
+    const goToPage = useCallback(
+        (p: number) => {
+            if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
+        },
+        [pagination],
+    );
 
     return (
         <>

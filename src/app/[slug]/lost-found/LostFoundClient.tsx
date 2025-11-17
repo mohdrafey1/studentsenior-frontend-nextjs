@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import toast from 'react-hot-toast';
@@ -54,6 +60,32 @@ const LostFoundClient = ({
 
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        type: '',
+        status: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: searchTerm,
+            type: typeFilter,
+            status: statusFilter,
+            page: page,
+        }),
+        [searchTerm, typeFilter, statusFilter, page],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -94,44 +126,63 @@ const LostFoundClient = ({
         }
     }, [collegeName, page, searchTerm, typeFilter, statusFilter]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchItems();
-    }, [fetchItems]);
+        if (isInitialMount) return;
+
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.type !== currentFilters.type ||
+            prevFilters.status !== currentFilters.status ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchItems();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchItems, forceRefetch]);
 
     // Modal logic
-    const openModal = (item?: ILostFoundItem) => {
-        if (!currentUser) {
-            toast.error('Please sign in to post items');
-            return;
-        }
-        setEditItem(item || null);
-        setForm(
-            item
-                ? {
-                      title: item.title,
-                      description: item.description,
-                      type: item.type,
-                      location: item.location,
-                      date: new Date(item.date).toISOString().split('T')[0],
-                      whatsapp: item.whatsapp,
-                      imageUrl: item.imageUrl || '',
-                      currentStatus: item.currentStatus,
-                  }
-                : {
-                      title: '',
-                      description: '',
-                      type: 'lost',
-                      location: '',
-                      date: new Date().toISOString().split('T')[0],
-                      whatsapp: '',
-                      imageUrl: '',
-                      currentStatus: 'open',
-                  },
-        );
-        setModalOpen(true);
-    };
+    const openModal = useCallback(
+        (item?: ILostFoundItem) => {
+            if (!currentUser) {
+                toast.error('Please sign in to post items');
+                return;
+            }
+            setEditItem(item || null);
+            setForm(
+                item
+                    ? {
+                          title: item.title,
+                          description: item.description,
+                          type: item.type,
+                          location: item.location,
+                          date: new Date(item.date).toISOString().split('T')[0],
+                          whatsapp: item.whatsapp,
+                          imageUrl: item.imageUrl || '',
+                          currentStatus: item.currentStatus,
+                      }
+                    : {
+                          title: '',
+                          description: '',
+                          type: 'lost',
+                          location: '',
+                          date: new Date().toISOString().split('T')[0],
+                          whatsapp: '',
+                          imageUrl: '',
+                          currentStatus: 'open',
+                      },
+            );
+            setModalOpen(true);
+        },
+        [currentUser],
+    );
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setModalOpen(false);
         setEditItem(null);
         setForm({
@@ -144,48 +195,54 @@ const LostFoundClient = ({
             imageUrl: '',
             currentStatus: 'open',
         });
-    };
+    }, []);
 
-    const handleSubmit = async (formData: LostFoundFormData) => {
-        setLoading(true);
-        try {
-            const method = editItem ? 'PUT' : 'POST';
-            const url = editItem
-                ? api.lostFound.editLostFound(editItem._id)
-                : api.lostFound.createLostFound;
-            const body = {
-                ...formData,
-                ...(method === 'POST' && { college: collegeName }),
-            };
+    const handleSubmit = useCallback(
+        async (formData: LostFoundFormData) => {
+            setLoading(true);
+            try {
+                const method = editItem ? 'PUT' : 'POST';
+                const url = editItem
+                    ? api.lostFound.editLostFound(editItem._id)
+                    : api.lostFound.createLostFound;
+                const body = {
+                    ...formData,
+                    ...(method === 'POST' && { college: collegeName }),
+                };
 
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-                credentials: 'include',
-            });
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || 'Failed to save item');
+                const data = await res.json();
+                if (!res.ok)
+                    throw new Error(data.message || 'Failed to save item');
 
-            toast.success(
-                data.message || (editItem ? 'Item updated!' : 'Item added!'),
-            );
-            closeModal();
-            fetchItems();
-        } catch (error: unknown) {
-            if (error instanceof Error) toast.error(error.message);
-            else toast.error('Failed to save item');
-        } finally {
-            setLoading(false);
-        }
-    };
-    const handleDeleteRequest = (itemId: string) => {
+                toast.success(
+                    data.message ||
+                        (editItem ? 'Item updated!' : 'Item added!'),
+                );
+                closeModal();
+                setForceRefetch(true);
+            } catch (error: unknown) {
+                if (error instanceof Error) toast.error(error.message);
+                else toast.error('Failed to save item');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [editItem, collegeName, closeModal],
+    );
+
+    const handleDeleteRequest = useCallback((itemId: string) => {
         setDeleteTargetId(itemId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
         setDeleteLoading(true);
         try {
@@ -203,24 +260,27 @@ const LostFoundClient = ({
             toast.success('Item deleted!');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
-            fetchItems();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to delete item');
         } finally {
             setDeleteLoading(false);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
     // Pagination controls
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
+    const goToPage = useCallback(
+        (p: number) => {
+            if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
+        },
+        [pagination],
+    );
 
     return (
         <>
@@ -278,7 +338,7 @@ const LostFoundClient = ({
                             Showing {items.length} of{' '}
                             {pagination?.totalItems ?? 0} items
                         </p>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6'>
                             {items.map((item) => (
                                 <LostFoundCard
                                     key={item._id}

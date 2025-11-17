@@ -38,7 +38,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
 
     try {
         const url = `${api.resources.getSubjects(branchCode)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 3600 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
 
         const data = await res.json();

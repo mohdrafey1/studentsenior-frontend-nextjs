@@ -26,7 +26,7 @@ export default async function OpportunitiesPage({ params }: CollegePageProps) {
         const url = `${api.opportunities.getOpportunitiesByCollegeSlug(
             collegeName,
         )}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

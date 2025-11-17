@@ -1,28 +1,28 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
-import { IPagination, IPyq, ICourse, IBranch } from '@/utils/interface';
-import { SEARCH_DEBOUNCE, PYQ_PAGE_SIZE } from '@/constant';
+import { IPagination, IPyq } from '@/utils/interface';
+import {
+    SEARCH_DEBOUNCE,
+    PYQ_PAGE_SIZE,
+    FILTER_ACADEMIC_YEARS,
+} from '@/constant';
 import DeleteConfirmationModal from '@/components/Common/DeleteConfirmationModal';
 import PaginationComponent from '@/components/Common/Pagination';
 import { PyqCard } from './PyqCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import {
-    PlusIcon,
-    SearchIcon,
-    FilterIcon,
-    XIcon,
-    FileText,
-    Grid3X3,
-    List,
-} from 'lucide-react';
+import { FileText } from 'lucide-react';
 import PyqFormModal, { PyqFormData } from './PyqFormModal';
 import EditPyqModal from './EditPyqModal';
-import SearchableSelect from '@/components/Common/SearchableSelect';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import EarningFlowModal from '@/components/Common/EarningFlowModal';
 import { PyqListItem } from './PyqListItem';
+import { useCoursesAndBranches } from '@/hooks/useCoursesAndBranches';
+import { useFilterState } from '@/hooks/useFilterState';
+import { ResourcePageHeader } from '@/components/Common/ResourcePageHeader';
+import { CommonFilters } from '@/components/Common/CommonFilters';
+import { useSearchParams } from 'next/navigation';
 
 const PyqsClient = ({
     initialPyqs,
@@ -33,39 +33,42 @@ const PyqsClient = ({
     initialPagination: IPagination;
     collegeName: string;
 }) => {
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [pyqs, setPyqs] = useState<IPyq[]>(initialPyqs);
-    const [pagination, setPagination] = useState<IPagination | null>(
-        initialPagination,
-    );
-    const [searchTerm, setSearchTerm] = useState(
-        searchParams.get('search') || '',
-    );
-    const [searchInput, setSearchInput] = useState(
-        searchParams.get('search') || '',
-    );
-    const [courseFilter, setCourseFilter] = useState(
-        searchParams.get('course') || '',
-    );
-    const [branchFilter, setBranchFilter] = useState(
-        searchParams.get('branch') || '',
-    );
+    // PYQ-specific filters
     const [yearFilter, setYearFilter] = useState(
         searchParams.get('year') || '',
     );
     const [examTypeFilter, setExamTypeFilter] = useState(
         searchParams.get('examType') || '',
     );
-    const [semesterFilter, setSemesterFilter] = useState(
-        searchParams.get('semester') || '',
-    );
     const [isSolvedFilter, setIsSolvedFilter] = useState(
         searchParams.get('isSolved') || '',
     );
-    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+
+    // Common filters hook with additional PYQ filters
+    const filterState = useFilterState({
+        debounceMs: SEARCH_DEBOUNCE,
+        additionalFilters: {
+            year: yearFilter,
+            examType: examTypeFilter,
+            isSolved: isSolvedFilter,
+        },
+    });
+
+    // Courses and branches hook
+    const {
+        courses,
+        branches,
+        loadingCourses,
+        loadingBranches,
+        fetchBranches,
+    } = useCoursesAndBranches(filterState.courseFilter);
+
+    const [pyqs, setPyqs] = useState<IPyq[]>(initialPyqs);
+    const [pagination, setPagination] = useState<IPagination | null>(
+        initialPagination,
+    );
     const [loading, setLoading] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -83,14 +86,8 @@ const PyqsClient = ({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
-    const [showFilters, setShowFilters] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-    // Course and Branch data
-    const [courses, setCourses] = useState<ICourse[]>([]);
-    const [branches, setBranches] = useState<IBranch[]>([]);
-    const [loadingCourses, setLoadingCourses] = useState(false);
-    const [loadingBranches, setLoadingBranches] = useState(false);
+    const [showEarningModal, setShowEarningModal] = useState(false);
 
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
@@ -98,108 +95,65 @@ const PyqsClient = ({
 
     const ownerId = currentUser?._id;
 
-    // Fetch courses on component mount
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({
+        search: '',
+        course: '',
+        branch: '',
+        semester: '',
+        year: '',
+        examType: '',
+        isSolved: '',
+        page: 1,
+    });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: filterState.searchTerm,
+            course: filterState.courseFilter,
+            branch: filterState.branchFilter,
+            semester: filterState.semesterFilter,
+            year: yearFilter,
+            examType: examTypeFilter,
+            isSolved: isSolvedFilter,
+            page: filterState.page,
+        }),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+            filterState.page,
+        ]
+    );
+
+    // Mark initial mount as complete
     useEffect(() => {
-        fetchCourses();
+        setIsInitialMount(false);
     }, []);
-
-    // Fetch branches when course filter changes
-    useEffect(() => {
-        if (courseFilter) {
-            fetchBranches(courseFilter);
-        } else {
-            setBranches([]);
-        }
-    }, [courseFilter]);
-
-    const fetchCourses = async () => {
-        setLoadingCourses(true);
-        try {
-            const response = await fetch(api.resources.getCourses);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch courses');
-            }
-
-            setCourses(data.data || []);
-        } catch (error) {
-            console.error('Error fetching courses:', error);
-            toast.error('Failed to fetch courses');
-        } finally {
-            setLoadingCourses(false);
-        }
-    };
-
-    const fetchBranches = async (courseCode: string) => {
-        setLoadingBranches(true);
-        try {
-            const response = await fetch(api.resources.getBranches(courseCode));
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch branches');
-            }
-
-            setBranches(data.data || []);
-        } catch (error) {
-            console.error('Error fetching branches:', error);
-            toast.error('Failed to fetch branches');
-        } finally {
-            setLoadingBranches(false);
-        }
-    };
-
-    // Update URL when filters change
-    useEffect(() => {
-        const params = new URLSearchParams();
-        if (searchTerm) params.set('search', searchTerm);
-        if (courseFilter) params.set('course', courseFilter);
-        if (branchFilter) params.set('branch', branchFilter);
-        if (yearFilter) params.set('year', yearFilter);
-        if (examTypeFilter) params.set('examType', examTypeFilter);
-        if (semesterFilter) params.set('semester', semesterFilter);
-        if (isSolvedFilter) params.set('isSolved', isSolvedFilter);
-        if (page > 1) params.set('page', page.toString());
-
-        const newUrl = params.toString()
-            ? `${pathname}?${params.toString()}`
-            : pathname;
-        router.replace(newUrl);
-    }, [
-        searchTerm,
-        courseFilter,
-        branchFilter,
-        yearFilter,
-        examTypeFilter,
-        semesterFilter,
-        isSolvedFilter,
-        page,
-        pathname,
-        router,
-    ]);
-
-    // Debounced search effect
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearchTerm(searchInput);
-        }, SEARCH_DEBOUNCE);
-
-        return () => clearTimeout(timer);
-    }, [searchInput]);
 
     const fetchPyqs = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            params.set('page', page.toString());
+            params.set('page', filterState.page.toString());
             params.set('limit', PYQ_PAGE_SIZE.toString());
-            if (searchTerm) params.set('search', searchTerm);
-            if (courseFilter) params.set('course', courseFilter);
-            if (branchFilter) params.set('branch', branchFilter);
+            if (filterState.searchTerm)
+                params.set('search', filterState.searchTerm);
+            if (filterState.courseFilter)
+                params.set('course', filterState.courseFilter);
+            if (filterState.branchFilter)
+                params.set('branch', filterState.branchFilter);
             if (yearFilter) params.set('year', yearFilter);
             if (examTypeFilter) params.set('examType', examTypeFilter);
-            if (semesterFilter) params.set('semester', semesterFilter);
+            if (filterState.semesterFilter)
+                params.set('semester', filterState.semesterFilter);
             if (isSolvedFilter) params.set('isSolved', isSolvedFilter);
             const url = `${api.pyq.getPyqByCollegeSlug(
                 collegeName,
@@ -221,21 +175,41 @@ const PyqsClient = ({
         }
     }, [
         collegeName,
-        searchTerm,
-        courseFilter,
-        branchFilter,
+        filterState.searchTerm,
+        filterState.courseFilter,
+        filterState.branchFilter,
         yearFilter,
         examTypeFilter,
-        semesterFilter,
+        filterState.semesterFilter,
         isSolvedFilter,
-        page,
+        filterState.page,
     ]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchPyqs();
-    }, [fetchPyqs]);
+        if (isInitialMount) return;
 
-    const openAddModal = () => {
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.course !== currentFilters.course ||
+            prevFilters.branch !== currentFilters.branch ||
+            prevFilters.semester !== currentFilters.semester ||
+            prevFilters.year !== currentFilters.year ||
+            prevFilters.examType !== currentFilters.examType ||
+            prevFilters.isSolved !== currentFilters.isSolved ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchPyqs();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
+        }
+    }, [currentFilters, isInitialMount, fetchPyqs, forceRefetch]);
+
+    const openAddModal = useCallback(() => {
         if (!currentUser) {
             toast.error('Please sign in to post pyqs');
             return;
@@ -250,9 +224,9 @@ const PyqsClient = ({
             price: 0,
         });
         setAddModalOpen(true);
-    };
+    }, [currentUser]);
 
-    const closeAddModal = () => {
+    const closeAddModal = useCallback(() => {
         setAddModalOpen(false);
         setForm({
             subject: '',
@@ -263,19 +237,19 @@ const PyqsClient = ({
             isPaid: false,
             price: 0,
         });
-    };
+    }, []);
 
-    const openEditModal = (pyq: IPyq) => {
+    const openEditModal = useCallback((pyq: IPyq) => {
         setEditPyq(pyq);
         setEditModalOpen(true);
-    };
+    }, []);
 
-    const closeEditModal = () => {
+    const closeEditModal = useCallback(() => {
         setEditModalOpen(false);
         setEditPyq(null);
-    };
+    }, []);
 
-    const handleAddSubmit = async (formData: PyqFormData) => {
+    const handleAddSubmit = useCallback(async (formData: PyqFormData) => {
         setLoading(true);
         try {
             const response = await fetch(api.pyq.createPyq, {
@@ -297,8 +271,8 @@ const PyqsClient = ({
             }
             toast.success(data.message || 'PYQ created successfully!');
 
-            // Refresh the PYQs list to show updated data
-            await fetchPyqs();
+            closeAddModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error creating PYQ:', error);
             throw error;
@@ -306,9 +280,9 @@ const PyqsClient = ({
             setLoading(false);
             closeAddModal();
         }
-    };
+    }, [collegeName, closeAddModal]);
 
-    const handleEditSubmit = async (formData: {
+    const handleEditSubmit = useCallback(async (formData: {
         isPaid: boolean;
         price: number;
     }) => {
@@ -332,8 +306,8 @@ const PyqsClient = ({
             }
             toast.success(data.message || 'PYQ updated successfully!');
 
-            // Refresh the PYQs list to show updated data
-            await fetchPyqs();
+            closeEditModal();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error updating PYQ:', error);
             throw error;
@@ -341,14 +315,14 @@ const PyqsClient = ({
             setLoading(false);
             closeEditModal();
         }
-    };
+    }, [editPyq, closeEditModal]);
 
-    const handleDeleteRequest = (pyqId: string) => {
+    const handleDeleteRequest = useCallback((pyqId: string) => {
         setDeleteTargetId(pyqId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -364,7 +338,7 @@ const PyqsClient = ({
             }
 
             toast.success('PYQ deleted successfully!');
-            fetchPyqs();
+            setForceRefetch(true);
         } catch (error) {
             console.error('Error deleting PYQ:', error);
             toast.error(
@@ -375,204 +349,130 @@ const PyqsClient = ({
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
-
-    const clearFilters = () => {
-        setSearchInput('');
-        setCourseFilter('');
-        setBranchFilter('');
+    const clearAllFilters = useCallback(() => {
+        filterState.clearFilters();
         setYearFilter('');
         setExamTypeFilter('');
-        setSemesterFilter('');
         setIsSolvedFilter('');
-        setPage(1);
-    };
+    }, [filterState]);
 
-    const hasActiveFilters =
-        searchTerm ||
-        courseFilter ||
-        branchFilter ||
-        yearFilter ||
-        examTypeFilter ||
-        semesterFilter ||
-        isSolvedFilter;
+    const hasActiveFilters = useMemo(
+        () =>
+            !!(filterState.searchTerm ||
+            filterState.courseFilter ||
+            filterState.branchFilter ||
+            filterState.semesterFilter ||
+            yearFilter ||
+            examTypeFilter ||
+            isSolvedFilter),
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+        ]
+    );
+
+    const activeFilterCount = useMemo(
+        () =>
+            [
+                filterState.searchTerm,
+                filterState.courseFilter,
+                filterState.branchFilter,
+                filterState.semesterFilter,
+                yearFilter,
+                examTypeFilter,
+                isSolvedFilter,
+            ].filter(Boolean).length,
+        [
+            filterState.searchTerm,
+            filterState.courseFilter,
+            filterState.branchFilter,
+            filterState.semesterFilter,
+            yearFilter,
+            examTypeFilter,
+            isSolvedFilter,
+        ]
+    );
 
     return (
         <div className='space-y-6'>
-            {/* Header with Add Button and View Toggle */}
-            <div className='flex flex-col gap-4'>
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                    <div className='flex items-center gap-4'>
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className='flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg dark:bg-gray-500 dark:hover:bg-gray-600'
-                        >
-                            <FilterIcon className='w-4 h-4' />
-                            Filters
-                            {hasActiveFilters && (
-                                <span className='inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full'>
-                                    {
-                                        [
-                                            searchTerm,
-                                            courseFilter,
-                                            branchFilter,
-                                            yearFilter,
-                                            examTypeFilter,
-                                            semesterFilter,
-                                        ].filter(Boolean).length
-                                    }
-                                </span>
-                            )}
-                        </button>
-                        {hasActiveFilters && (
-                            <button
-                                onClick={clearFilters}
-                                className='inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400'
-                            >
-                                <XIcon className='w-4 h-4' />
-                                Clear
-                            </button>
-                        )}
-                    </div>
-
-                    <div className='relative flex-grow'>
-                        <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'>
-                            <SearchIcon className='w-5 h-5 text-gray-400' />
-                            <input
-                                type='text'
-                                placeholder='Search PYQs...'
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                className='w-full bg-transparent outline-none text-black dark:text-white'
-                            />
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={openAddModal}
-                        className='flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
-                    >
-                        <PlusIcon className='w-4 h-4' />
-                        Add PYQ
-                    </button>
-                    {/* View Mode Toggle */}
-                    <div className='flex justify-end'>
-                        <div className='flex bg-gray-100 dark:bg-gray-700 rounded-lg p-2'>
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-md transition-colors ${
-                                    viewMode === 'grid'
-                                        ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                }`}
-                            >
-                                <Grid3X3 className='w-4 h-4' />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-md transition-colors ${
-                                    viewMode === 'list'
-                                        ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                }`}
-                            >
-                                <List className='w-4 h-4' />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ResourcePageHeader
+                searchInput={filterState.searchInput}
+                setSearchInput={filterState.setSearchInput}
+                searchPlaceholder='Search PYQs...'
+                showFilters={filterState.showFilters}
+                setShowFilters={filterState.setShowFilters}
+                hasActiveFilters={hasActiveFilters}
+                activeFilterCount={activeFilterCount}
+                clearFilters={clearAllFilters}
+                onShowEarning={() => setShowEarningModal(true)}
+                onAdd={openAddModal}
+                addButtonText='Add PYQ'
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+            />
 
             {/* Filters Section */}
-            {showFilters && (
-                <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-black dark:text-white'>
+            {filterState.showFilters && (
+                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4'>
                         <select
                             value={isSolvedFilter}
                             onChange={(e) => setIsSolvedFilter(e.target.value)}
-                            className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
                         >
-                            <option value=''>All</option>
+                            <option value=''>All Status</option>
                             <option value='true'>Solved</option>
                             <option value='false'>Unsolved</option>
                         </select>
 
-                        {/* Course Filter */}
-                        <SearchableSelect
-                            value={courseFilter}
-                            onChange={setCourseFilter}
-                            options={courses.map((course) => ({
-                                value: course.courseCode,
-                                label: course.courseName,
-                            }))}
-                            placeholder='Select Course'
-                            loading={loadingCourses}
+                        <CommonFilters
+                            courseFilter={filterState.courseFilter}
+                            setCourseFilter={filterState.setCourseFilter}
+                            branchFilter={filterState.branchFilter}
+                            setBranchFilter={filterState.setBranchFilter}
+                            semesterFilter={filterState.semesterFilter}
+                            setSemesterFilter={filterState.setSemesterFilter}
+                            courses={courses}
+                            branches={branches}
+                            loadingCourses={loadingCourses}
+                            loadingBranches={loadingBranches}
                         />
 
-                        {/* Branch Filter */}
-                        <SearchableSelect
-                            value={branchFilter}
-                            onChange={setBranchFilter}
-                            options={branches.map((branch) => ({
-                                value: branch.branchCode,
-                                label: branch.branchName,
-                            }))}
-                            placeholder='Select Branch'
-                            loading={loadingBranches}
-                            disabled={!courseFilter}
-                        />
-
-                        {/* Year Filter */}
                         <select
                             value={yearFilter}
                             onChange={(e) => setYearFilter(e.target.value)}
-                            className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
                         >
                             <option value=''>All Years</option>
-                            <option value='2021-22'>2021-2022</option>
-                            <option value='2022-23'>2022-2023</option>
-                            <option value='2023-24'>2023-2024</option>
-                            <option value='2024-25'>2024-2025</option>
+                            {FILTER_ACADEMIC_YEARS.map((year) => (
+                                <option key={year.value} value={year.value}>
+                                    {year.label}
+                                </option>
+                            ))}
                         </select>
 
-                        {/* Exam Type Filter */}
                         <select
                             value={examTypeFilter}
                             onChange={(e) => setExamTypeFilter(e.target.value)}
-                            className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
                         >
                             <option value=''>All Exam Types</option>
                             <option value='midsem1'>Midsem 1</option>
                             <option value='midsem2'>Midsem 2</option>
                             <option value='endsem'>Endsem</option>
                             <option value='improvement'>Improvement</option>
-                        </select>
-
-                        {/* Semester Filter */}
-                        <select
-                            value={semesterFilter}
-                            onChange={(e) => setSemesterFilter(e.target.value)}
-                            className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
-                        >
-                            <option value=''>All Semesters</option>
-                            <option value='1'>1st Semester</option>
-                            <option value='2'>2nd Semester</option>
-                            <option value='3'>3rd Semester</option>
-                            <option value='4'>4th Semester</option>
-                            <option value='5'>5th Semester</option>
-                            <option value='6'>6th Semester</option>
-                            <option value='7'>7th Semester</option>
-                            <option value='8'>8th Semester</option>
-                            <option value='9'>9th Semester</option>
                         </select>
                     </div>
                 </div>
@@ -634,7 +534,19 @@ const PyqsClient = ({
                                     onClick={openAddModal}
                                     className='inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200'
                                 >
-                                    <PlusIcon className='w-4 h-4' />
+                                    <svg
+                                        className='w-4 h-4'
+                                        fill='none'
+                                        stroke='currentColor'
+                                        viewBox='0 0 24 24'
+                                    >
+                                        <path
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                            strokeWidth={2}
+                                            d='M12 4v16m8-8H4'
+                                        />
+                                    </svg>
                                     Add PYQ
                                 </button>
                             </div>
@@ -646,7 +558,7 @@ const PyqsClient = ({
                         <PaginationComponent
                             currentPage={pagination.currentPage}
                             totalPages={pagination.totalPages}
-                            onPageChange={goToPage}
+                            onPageChange={(p) => filterState.setPage(p)}
                         />
                     )}
                 </>
@@ -681,6 +593,12 @@ const PyqsClient = ({
                 onConfirm={handleDeleteConfirm}
                 loading={deleteLoading}
                 message='Are you sure you want to delete this PYQ? This action cannot be undone.'
+            />
+
+            <EarningFlowModal
+                isOpen={showEarningModal}
+                onClose={() => setShowEarningModal(false)}
+                triggerButton={true}
             />
         </div>
     );

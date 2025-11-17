@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, IStoreItem } from '@/utils/interface';
@@ -52,6 +58,25 @@ const StoreClient = ({
 
     const ownerId = currentUser?._id;
 
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({ search: '', page: 1 });
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: searchTerm,
+            page: page,
+        }),
+        [searchTerm, page],
+    );
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -91,38 +116,56 @@ const StoreClient = ({
         }
     }, [collegeName, page, searchTerm]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchItems();
-    }, [fetchItems]);
+        if (isInitialMount) return;
 
-    const openModal = (item?: IStoreItem) => {
-        if (!currentUser) {
-            toast.error('Please sign in to post items');
-            return;
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchItems();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
         }
-        setEditItem(item || null);
-        setForm(
-            item
-                ? {
-                      name: item.name,
-                      description: item.description,
-                      price: item.price,
-                      image: item.image,
-                      whatsapp: item.whatsapp || '',
-                      telegram: item.telegram || '',
-                  }
-                : {
-                      name: '',
-                      description: '',
-                      price: 0,
-                      image: '',
-                      whatsapp: '',
-                      telegram: '',
-                  },
-        );
-        setModalOpen(true);
-    };
-    const closeModal = () => {
+    }, [currentFilters, isInitialMount, fetchItems, forceRefetch]);
+
+    const openModal = useCallback(
+        (item?: IStoreItem) => {
+            if (!currentUser) {
+                toast.error('Please sign in to post items');
+                return;
+            }
+            setEditItem(item || null);
+            setForm(
+                item
+                    ? {
+                          name: item.name,
+                          description: item.description,
+                          price: item.price,
+                          image: item.image,
+                          whatsapp: item.whatsapp || '',
+                          telegram: item.telegram || '',
+                      }
+                    : {
+                          name: '',
+                          description: '',
+                          price: 0,
+                          image: '',
+                          whatsapp: '',
+                          telegram: '',
+                      },
+            );
+            setModalOpen(true);
+        },
+        [currentUser],
+    );
+
+    const closeModal = useCallback(() => {
         setModalOpen(false);
         setEditItem(null);
         setForm({
@@ -133,55 +176,58 @@ const StoreClient = ({
             whatsapp: '',
             telegram: '',
         });
-    };
+    }, []);
 
-    const handleSubmit = async (formData: StoreFormData) => {
-        setLoading(true);
-        try {
-            const method = editItem ? 'PUT' : 'POST';
+    const handleSubmit = useCallback(
+        async (formData: StoreFormData) => {
+            setLoading(true);
+            try {
+                const method = editItem ? 'PUT' : 'POST';
 
-            const url = editItem
-                ? api.store.editStore(editItem._id)
-                : api.store.createStore;
+                const url = editItem
+                    ? api.store.editStore(editItem._id)
+                    : api.store.createStore;
 
-            const body = {
-                ...formData,
-                ...(method === 'POST' && { college: collegeName }),
-            };
+                const body = {
+                    ...formData,
+                    ...(method === 'POST' && { college: collegeName }),
+                };
 
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-                credentials: 'include',
-            });
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to save product');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to save product');
+                }
+
+                toast.success(
+                    data.message ||
+                        (editItem ? 'Product updated!' : 'Product added!'),
+                );
+                closeModal();
+                setForceRefetch(true);
+            } catch (error: unknown) {
+                if (error instanceof Error) toast.error(error.message);
+                else toast.error('Failed to save product');
+            } finally {
+                setLoading(false);
             }
+        },
+        [editItem, collegeName, closeModal],
+    );
 
-            toast.success(
-                data.message ||
-                    (editItem ? 'Product updated!' : 'Product added!'),
-            );
-            closeModal();
-            fetchItems();
-        } catch (error: unknown) {
-            if (error instanceof Error) toast.error(error.message);
-            else toast.error('Failed to save product');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteRequest = (itemId: string) => {
+    const handleDeleteRequest = useCallback((itemId: string) => {
         setDeleteTargetId(itemId);
         setDeleteModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
 
         setDeleteLoading(true);
@@ -203,23 +249,26 @@ const StoreClient = ({
             toast.success('Product deleted successfully');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
-            fetchItems();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to delete product');
         } finally {
             setDeleteLoading(false);
         }
-    };
+    }, [deleteTargetId]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
+    const goToPage = useCallback(
+        (p: number) => {
+            if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
+        },
+        [pagination],
+    );
 
     return (
         <>
@@ -270,7 +319,7 @@ const StoreClient = ({
                             {pagination?.totalItems ?? 0} items
                         </p>
 
-                        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6'>
+                        <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6'>
                             {items.map((item) => (
                                 <StoreCard
                                     key={item._id}

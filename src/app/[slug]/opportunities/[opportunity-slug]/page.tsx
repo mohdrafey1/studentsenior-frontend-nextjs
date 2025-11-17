@@ -19,7 +19,7 @@ export async function generateMetadata({
         const res = await fetch(
             `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
             {
-                cache: 'no-store',
+                next: { revalidate: 300 },
             },
         );
         const data = await res.json();
@@ -52,9 +52,7 @@ export default async function OpportunityPage({
 
     const res = await fetch(
         `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
-        {
-            cache: 'no-store',
-        },
+        { next: { revalidate: 300 } },
     );
     const data = await res.json();
 

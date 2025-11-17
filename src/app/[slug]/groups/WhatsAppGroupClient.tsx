@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import GroupFormModal from './GroupFormModal';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
@@ -46,6 +52,17 @@ const WhatsAppGroupClient = ({
         (state: RootState) => state.user.currentUser,
     );
     const ownerId = currentUser?._id;
+
+    // Track initial mount and previous filters
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const [forceRefetch, setForceRefetch] = useState(false);
+    const prevFiltersRef = useRef({ search: '', page: 1 });
+
+    // Mark initial mount as complete
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
+
     // Debounce search
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -54,6 +71,15 @@ const WhatsAppGroupClient = ({
         }, SEARCH_DEBOUNCE);
         return () => clearTimeout(handler);
     }, [searchInput]);
+
+    // Memoize current filters
+    const currentFilters = useMemo(
+        () => ({
+            search: searchTerm,
+            page: page,
+        }),
+        [searchTerm, page],
+    );
 
     // Fetch groups from backend
     const fetchGroups = useCallback(async () => {
@@ -81,34 +107,52 @@ const WhatsAppGroupClient = ({
         }
     }, [collegeName, page, searchTerm]);
 
+    // Only fetch when filters change, not on initial mount
     useEffect(() => {
-        fetchGroups();
-    }, [fetchGroups]);
+        if (isInitialMount) return;
 
-    // Modal logic
-    const openModal = (group?: IWhatsAppGroup) => {
-        if (!currentUser) {
-            toast.error('Please sign in to add groups');
-            return;
+        const prevFilters = prevFiltersRef.current;
+        const filterChanged =
+            prevFilters.search !== currentFilters.search ||
+            prevFilters.page !== currentFilters.page;
+
+        if (filterChanged || forceRefetch) {
+            fetchGroups();
+            prevFiltersRef.current = currentFilters;
+            if (forceRefetch) {
+                setForceRefetch(false);
+            }
         }
-        setEditGroup(group || null);
-        setForm(
-            group
-                ? {
-                      title: group.title,
-                      link: group.link,
-                      info: group.info,
-                      domain: group.domain,
-                  }
-                : { title: '', link: '', info: '', domain: '' },
-        );
-        setModalOpen(true);
-    };
-    const closeModal = () => {
+    }, [currentFilters, isInitialMount, fetchGroups, forceRefetch]);
+
+    // Modal logic with useCallback
+    const openModal = useCallback(
+        (group?: IWhatsAppGroup) => {
+            if (!currentUser) {
+                toast.error('Please sign in to add groups');
+                return;
+            }
+            setEditGroup(group || null);
+            setForm(
+                group
+                    ? {
+                          title: group.title,
+                          link: group.link,
+                          info: group.info,
+                          domain: group.domain,
+                      }
+                    : { title: '', link: '', info: '', domain: '' },
+            );
+            setModalOpen(true);
+        },
+        [currentUser],
+    );
+
+    const closeModal = useCallback(() => {
         setModalOpen(false);
         setEditGroup(null);
         setForm({ title: '', link: '', info: '', domain: '' });
-    };
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -133,7 +177,7 @@ const WhatsAppGroupClient = ({
                 throw new Error(data.message || 'Failed to save group');
             toast.success(editGroup ? 'Group updated!' : 'Group added!');
             closeModal();
-            fetchGroups();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to save group');
@@ -142,11 +186,12 @@ const WhatsAppGroupClient = ({
         }
     };
 
-    const handleDeleteRequest = (groupId: string) => {
+    const handleDeleteRequest = useCallback((groupId: string) => {
         setDeleteTargetId(groupId);
         setDeleteModalOpen(true);
-    };
-    const handleDeleteConfirm = async () => {
+    }, []);
+
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deleteTargetId) return;
         setDeleteLoading(true);
         try {
@@ -160,23 +205,27 @@ const WhatsAppGroupClient = ({
             toast.success('Group deleted!');
             setDeleteModalOpen(false);
             setDeleteTargetId(null);
-            fetchGroups();
+            setForceRefetch(true);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
             else toast.error('Failed to delete group');
         } finally {
             setDeleteLoading(false);
         }
-    };
-    const handleDeleteCancel = () => {
+    }, [deleteTargetId]);
+
+    const handleDeleteCancel = useCallback(() => {
         setDeleteModalOpen(false);
         setDeleteTargetId(null);
-    };
+    }, []);
 
-    // Pagination controls
-    const goToPage = (p: number) => {
-        if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
-    };
+    // Pagination controls with useCallback
+    const goToPage = useCallback(
+        (p: number) => {
+            if (pagination && p >= 1 && p <= pagination.totalPages) setPage(p);
+        },
+        [pagination],
+    );
 
     return (
         <>

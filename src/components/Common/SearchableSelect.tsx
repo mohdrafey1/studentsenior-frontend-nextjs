@@ -72,22 +72,22 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
             <div
                 className={`relative flex items-center border ${
                     isOpen
-                        ? 'ring-2 ring-sky-400 border-transparent'
-                        : 'border-gray-300 dark:border-gray-700'
+                        ? 'ring-2 ring-sky-500 border-sky-500'
+                        : 'border-gray-300 dark:border-gray-600'
                 } 
         ${errorState ? 'border-red-500' : ''} 
         ${
             disabled
-                ? 'bg-gray-100 opacity-70 dark:bg-gray-700 dark:text-gray-100'
-                : 'bg-white dark:bg-gray-700 dark:text-gray-100'
+                ? 'bg-gray-100 opacity-70 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
+                : 'bg-white dark:bg-gray-700 dark:text-white hover:border-sky-400 dark:hover:border-sky-500'
         } 
-        rounded-lg overflow-hidden`}
+        rounded-lg shadow-sm transition-all`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
             >
-                <div className='flex-grow p-3 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap'>
+                <div className='flex-grow px-3 py-2.5 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap'>
                     {selectedOption ? selectedOption.label : placeholder}
                 </div>
-                <div className='px-3 text-gray-400 dark:text-gray-400'>
+                <div className='px-3 text-gray-400 dark:text-gray-500'>
                     <Search className='w-4 h-4' />
                 </div>
             </div>

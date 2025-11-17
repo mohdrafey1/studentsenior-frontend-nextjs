@@ -5,6 +5,7 @@ import { api } from '@/config/apiUrls';
 import { UploadIcon, DollarSign, CheckCircle, X } from 'lucide-react';
 import SearchableSelect from '@/components/Common/SearchableSelect';
 import toast from 'react-hot-toast';
+import { FORM_ACADEMIC_YEARS } from '@/constant';
 
 export interface PyqFormData {
     subject: string;
@@ -292,13 +293,6 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         { value: 'endsem', label: 'Endsem' },
     ];
 
-    const yearOptions = [
-        { value: '2025-26', label: '2025-26' },
-        { value: '2024-25', label: '2024-25' },
-        { value: '2023-24', label: '2023-24' },
-        { value: '2022-23', label: '2022-23' },
-    ];
-
     if (!isOpen) return null;
 
     return (
@@ -382,7 +376,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                                     required
                                 >
                                     <option value=''>Select Year</option>
-                                    {yearOptions.map((option) => (
+                                    {FORM_ACADEMIC_YEARS.map((option) => (
                                         <option
                                             key={option.value}
                                             value={option.value}

@@ -83,7 +83,7 @@ export default async function SeniorDetailPage({
 
     try {
         const url = `${api.seniors.getSeniorBySlug(seniorSlug)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 300 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

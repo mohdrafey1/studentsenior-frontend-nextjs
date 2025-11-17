@@ -13,7 +13,7 @@ interface SubjectItem {
 // ✅ helper to fetch subject name
 async function getSubjectName(branchCode: string, subjectCode: string) {
     const response = await fetch(api.resources.getSubjects(branchCode), {
-        cache: 'no-store',
+        next: { revalidate: 3600 },
     });
     const resp = await response.json();
     const matched = resp.data.find(
@@ -117,7 +117,7 @@ export default async function SubjectNotesPage({
 
     try {
         const url = api.resources.getNotesBySubject(subjectCode, slug);
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 300 } });
         const data = await res.json();
         notes = data?.data || [];
     } catch (e) {
