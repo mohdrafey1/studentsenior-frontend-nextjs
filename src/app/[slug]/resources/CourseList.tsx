@@ -82,6 +82,7 @@ export default function CourseList({ courses }: { courses: ICourse[] }) {
                                 {/* Action */}
                                 <div className='flex sm:flex-shrink-0'>
                                     <Link
+                                        prefetch={false}
                                         href={`resources/${course.courseCode}`}
                                         className='bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-500 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 w-full sm:min-w-[160px] text-sm sm:text-base'
                                     >

@@ -306,6 +306,7 @@ const Header: React.FC = () => {
                         {!currentUser ? (
                             <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
                                 <Link
+                                    prefetch={false}
                                     href={{
                                         pathname: '/sign-in',
                                         query: { from: pathname },
@@ -316,6 +317,7 @@ const Header: React.FC = () => {
                                     Sign In
                                 </Link>
                                 <Link
+                                    prefetch={false}
                                     href={{
                                         pathname: '/sign-up',
                                         query: { from: pathname },
@@ -329,6 +331,7 @@ const Header: React.FC = () => {
                         ) : (
                             <div className='flex flex-col space-y-1 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
                                 <Link
+                                    prefetch={false}
                                     href='/profile'
                                     onClick={() => setIsMenuOpen(false)}
                                     className={`px-8 py-2 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}
@@ -346,6 +349,7 @@ const Header: React.FC = () => {
                                     {currentUser.username}
                                 </Link>
                                 <Link
+                                    prefetch={false}
                                     href='/wallet'
                                     onClick={() => setIsMenuOpen(false)}
                                     className={`px-8 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 bg-blue-900/10 dark:hover:bg-gray-800`}

@@ -685,6 +685,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                         {/* More PYQs Button */}
                         <Link
+                            prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/pyqs/${note.subject?.subjectCode}`}
                             className='group bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border-2 border-sky-200 dark:border-sky-700 p-6 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
                         >
@@ -701,6 +702,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
                         {/* Notes Button */}
                         <Link
+                            prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/notes/${note.subject?.subjectCode}`}
                             className='group bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300'
                         >
@@ -717,6 +719,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
                         {/* Syllabus Button */}
                         <Link
+                            prefetch={false}
                             href={`/${slug}/syllabus/${note.subject?.subjectName.toLowerCase().replace(/\s+/g, '-')}-${note.subject?.subjectCode.toLowerCase()}`}
                             className='group bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 p-6 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300'
                         >
@@ -733,6 +736,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
                         {/* Videos Button */}
                         <Link
+                            prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/videos/${note.subject?.subjectCode}`}
                             className='group bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-700 p-6 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300'
                         >

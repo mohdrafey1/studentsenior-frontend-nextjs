@@ -15,7 +15,7 @@ interface SubjectPyqsClientProps {
     collegeSlug: string;
     courseCode: string;
     branchCode: string;
-    subjectName:string;
+    subjectName: string;
 }
 
 export default function SubjectPyqsClient({
@@ -24,7 +24,7 @@ export default function SubjectPyqsClient({
     collegeSlug,
     courseCode,
     branchCode,
-    subjectName
+    subjectName,
 }: SubjectPyqsClientProps) {
     const [activeExamType, setActiveExamType] = useState<string>('all');
     const [addPyq, setAddPyq] = useState(false);
@@ -110,8 +110,7 @@ export default function SubjectPyqsClient({
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
                     <div>
                         <h1 className='text-2xl font-fugaz capitalize font-bold text-gray-900 dark:text-white'>
-                            {subjectName} - Previous Year
-                            Questions
+                            {subjectName} - Previous Year Questions
                         </h1>
                         <p className='text-gray-600 dark:text-gray-400 mt-1'>
                             Browse and access previous year question papers
@@ -121,6 +120,7 @@ export default function SubjectPyqsClient({
                     {/* Quick Actions */}
                     <div className='flex flex-col sm:flex-row gap-2'>
                         <Link
+                            prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`}
                             className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                         >
@@ -128,6 +128,7 @@ export default function SubjectPyqsClient({
                             Notes
                         </Link>
                         <Link
+                            prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/videos/${subjectCode}`}
                             className='px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                         >
@@ -267,6 +268,7 @@ export default function SubjectPyqsClient({
 
                             {/* View Button */}
                             <Link
+                                prefetch={false}
                                 href={`/${collegeSlug}/pyqs/${pyq.slug}`}
                                 className={`w-full block text-center py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                                     pyq.isPaid

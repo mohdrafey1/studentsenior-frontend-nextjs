@@ -22,6 +22,7 @@ export default function SemesterTabs({
             <div className='flex overflow-x-auto scrollbar-hide'>
                 <div className='flex gap-2 p-4 min-w-full'>
                     <Link
+                        prefetch={false}
                         href={`/${slug}/syllabus/branch/${branchCode}`}
                         className={`flex-shrink-0 px-6 py-3 rounded-lg font-medium transition-all ${
                             !currentSemester
@@ -33,6 +34,7 @@ export default function SemesterTabs({
                     </Link>
                     {semesters.map((sem) => (
                         <Link
+                            prefetch={false}
                             key={sem}
                             href={`/${slug}/syllabus/branch/${branchCode}?semester=${sem}`}
                             className={`flex-shrink-0 px-6 py-3 rounded-lg font-medium transition-all ${

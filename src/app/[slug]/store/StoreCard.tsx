@@ -179,6 +179,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                     </div> */}
 
                     <Link
+                        prefetch={false}
                         href={`store/${item.slug}`}
                         className='group/cta relative inline-flex items-center justify-center w-full py-2 sm:py-3 px-3 sm:px-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/25 hover:scale-[1.02] overflow-hidden'
                     >

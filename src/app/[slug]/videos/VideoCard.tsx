@@ -144,6 +144,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             <div className='px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 z-40'>
                 <div className='flex gap-1.5 sm:gap-2'>
                     <Link
+                        prefetch={false}
                         href={`videos/${video.slug}`}
                         className='flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-emerald-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-200 group-hover:shadow-lg'
                     >

@@ -46,6 +46,7 @@ export const SyllabusListItem: React.FC<SyllabusListItemProps> = ({
 }) => {
     return (
         <Link
+            prefetch={false}
             href={`/${collegeName}/syllabus/${syllabus.slug}`}
             className='group relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200/60 dark:border-gray-700/60 hover:border-sky-300/60 dark:hover:border-sky-600/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden backdrop-blur-sm block'
         >

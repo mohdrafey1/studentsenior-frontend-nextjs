@@ -202,6 +202,7 @@ const Footer = () => {
                             {footerLinks.map((link, index) => (
                                 <li key={index}>
                                     <Link
+                                        prefetch={false}
                                         href={link.to}
                                         className='text-gray-300 hover:text-white transition-colors duration-200 flex items-center'
                                     >

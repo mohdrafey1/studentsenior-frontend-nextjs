@@ -95,6 +95,7 @@ export const LostFoundCard = ({
             <div className='flex gap-3'>
                 {/* Contact Button */}
                 <Link
+                    prefetch={false}
                     href={`lost-found/${item.slug}`}
                     className='group/contact relative flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg hover:shadow-sky-500/25 transition-all duration-300 hover:scale-[1.02] overflow-hidden'
                 >
