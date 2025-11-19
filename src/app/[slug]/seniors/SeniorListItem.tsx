@@ -123,6 +123,7 @@ export const SeniorListItem: React.FC<SeniorListItemProps> = ({
                     <div className='flex sm:flex-col items-center gap-2'>
                         {/* View Profile Link */}
                         <Link
+                            prefetch={false}
                             href={`/${collegeName}/seniors/${senior.slug}`}
                             className='flex-1 sm:flex-initial px-4 py-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
                         >

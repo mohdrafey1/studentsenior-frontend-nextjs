@@ -353,6 +353,7 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
 
                                             {/* Action Button */}
                                             <Link
+                                                prefetch={false}
                                                 href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
                                                 className='block'
                                             >
@@ -437,6 +438,7 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
 
                                             <div className='flex items-center flex-shrink-0'>
                                                 <Link
+                                                    prefetch={false}
                                                     href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
                                                 >
                                                     <button className='bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-[1.02]'>

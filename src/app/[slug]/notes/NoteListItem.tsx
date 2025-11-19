@@ -127,6 +127,7 @@ export const NoteListItem: React.FC<NoteListItemProps> = ({
                     <div className='flex sm:flex-col items-center gap-2'>
                         {/* View Note Link */}
                         <Link
+                            prefetch={false}
                             href={`/${note.college.slug}/notes/${note.slug}`}
                             className='flex-1 sm:flex-initial px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
                         >

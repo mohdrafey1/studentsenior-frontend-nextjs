@@ -144,6 +144,7 @@ export default function SubjectVideosPage() {
                             {/* Quick Actions */}
                             <div className='flex flex-col sm:flex-row gap-2'>
                                 <Link
+                                    prefetch={false}
                                     href={`/${slug}/resources/${courseCode}/${branchCode}/pyqs/${subjectCode}`}
                                     className='px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                                 >
@@ -151,6 +152,7 @@ export default function SubjectVideosPage() {
                                     PYQs
                                 </Link>
                                 <Link
+                                    prefetch={false}
                                     href={`/${slug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`}
                                     className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                                 >
@@ -245,6 +247,7 @@ export default function SubjectVideosPage() {
 
                                     <div className='border-t border-gray-100 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-750'>
                                         <Link
+                                            prefetch={false}
                                             href={`/${slug}/videos/${video?.slug}`}
                                             className='flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-emerald-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-200'
                                         >

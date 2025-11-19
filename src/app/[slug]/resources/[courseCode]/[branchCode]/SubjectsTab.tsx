@@ -229,6 +229,7 @@ export default function SubjectsList({
 
                                             return (
                                                 <Link
+                                                    prefetch={false}
                                                     key={type}
                                                     href={href}
                                                     className={`${color} text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[140px]`}

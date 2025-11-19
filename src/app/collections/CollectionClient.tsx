@@ -167,6 +167,7 @@ const CollectionClient = () => {
                     </div>
 
                     <Link
+                        prefetch={false}
                         href={pyqUrl}
                         rel='noopener noreferrer'
                         className='text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center'
@@ -317,6 +318,7 @@ const CollectionClient = () => {
                         </span>
                     </div>
                     <Link
+                        prefetch={false}
                         href={noteUrl}
                         rel='noopener noreferrer'
                         className='text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center'

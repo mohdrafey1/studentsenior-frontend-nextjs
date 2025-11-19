@@ -265,6 +265,7 @@ export default function PaymentModal({
                                     )}
                                 </div>
                                 <Link
+                                    prefetch={false}
                                     href='/wallet'
                                     className='bg-gray-200/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-600/70 text-sm px-3 py-1 rounded-lg font-medium transition-colors'
                                 >

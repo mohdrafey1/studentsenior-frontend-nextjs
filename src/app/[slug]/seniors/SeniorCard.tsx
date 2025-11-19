@@ -106,6 +106,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
                 <div className='flex justify-center flex-wrap gap-4 mt-4'>
                     {senior.socialMediaLinks?.slice(0, 5).map((link, i) => (
                         <Link
+                            prefetch={false}
                             key={i}
                             href={formatSocialMediaLink(
                                 link.platform,
@@ -122,6 +123,7 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
 
                 {/* CTA */}
                 <Link
+                    prefetch={false}
                     href={`seniors/${senior.slug}`}
                     className='mt-6 inline-block px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-xl shadow-md transition'
                 >

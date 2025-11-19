@@ -118,6 +118,7 @@ export default function SubjectNotesClient({
                     {/* Quick Actions */}
                     <div className='flex flex-col sm:flex-row gap-2'>
                         <Link
+                            prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/pyqs/${subjectCode}`}
                             className='px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                         >
@@ -125,6 +126,7 @@ export default function SubjectNotesClient({
                             PYQs
                         </Link>
                         <Link
+                            prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/videos/${subjectCode}`}
                             className='px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
                         >
@@ -222,6 +224,7 @@ export default function SubjectNotesClient({
 
                                     {/* View Button */}
                                     <Link
+                                        prefetch={false}
                                         href={`/${collegeSlug}/notes/${note.slug}`}
                                         className='px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors'
                                     >

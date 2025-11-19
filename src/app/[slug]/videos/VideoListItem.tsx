@@ -89,6 +89,7 @@ export const VideoListItem: React.FC<VideoListItemProps> = ({
                     <div className='flex sm:flex-col items-center gap-2'>
                         {/* Watch Video Link */}
                         <Link
+                            prefetch={false}
                             href={`/${video.college.slug}/videos/${video.slug}`}
                             className='flex-1 sm:flex-initial px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
                         >

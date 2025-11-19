@@ -205,6 +205,7 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                                             </div>
 
                                             <Link
+                                                prefetch={false}
                                                 href={`${product.college.slug}/store/${product.slug}`}
                                                 className='block'
                                             >
@@ -248,6 +249,7 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                                                 </div>
 
                                                 <Link
+                                                    prefetch={false}
                                                     href={`${product.college.slug}/store/${product.slug}`}
                                                 >
                                                     <button className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap'>

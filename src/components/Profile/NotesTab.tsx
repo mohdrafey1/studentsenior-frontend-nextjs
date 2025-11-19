@@ -313,6 +313,7 @@ export default function NotesTab({ notes }: NotesTabProps) {
                                             </div>
 
                                             <Link
+                                                prefetch={false}
                                                 href={`${note.college.slug}/notes/${note.slug}`}
                                                 className='block'
                                             >
@@ -384,6 +385,7 @@ export default function NotesTab({ notes }: NotesTabProps) {
 
                                             <div className='flex items-center'>
                                                 <Link
+                                                    prefetch={false}
                                                     href={`${note.college.slug}/notes/${note.slug}`}
                                                 >
                                                     <button className='bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap'>

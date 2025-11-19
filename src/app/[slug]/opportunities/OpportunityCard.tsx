@@ -37,6 +37,7 @@ export const OpportunityCard = ({
         <div className='relative p-6'>
             <div className='flex items-start justify-between'>
                 <Link
+                    prefetch={false}
                     href={`/${collegeName}/opportunities/${opportunity.slug}`}
                     className='block group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-all duration-300 flex-1 mr-3'
                 >
@@ -143,6 +144,7 @@ export const OpportunityCard = ({
                 </div>
 
                 <Link
+                    prefetch={false}
                     href={`/${collegeName}/opportunities/${opportunity.slug}`}
                     className='group/cta relative inline-flex items-center justify-center w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/25 hover:scale-[1.02] overflow-hidden'
                 >

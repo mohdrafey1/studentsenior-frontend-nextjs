@@ -123,6 +123,7 @@ export const PyqListItem: React.FC<PyqListItemProps> = ({
                     {/* Right Section - Actions */}
                     <div className='flex items-center gap-2 flex-shrink-0'>
                         <Link
+                            prefetch={false}
                             href={`pyqs/${pyq.slug}`}
                             className='inline-flex items-center gap-2 px-4 py-2.5 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200 group-hover:shadow-lg'
                         >

@@ -294,9 +294,9 @@ const SyllabusClient = ({
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
                             {syllabus.map((item) => (
                                 <Link
+                                    prefetch={false}
                                     key={item._id}
                                     href={`/${collegeName}/syllabus/${item.slug}`}
-                                    prefetch={false}
                                     className='group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300 hover:-translate-y-1'
                                 >
                                     {/* Gradient Top Border */}
