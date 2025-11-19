@@ -74,6 +74,7 @@ const SyllabusClient = ({
         branch: '',
         year: '',
         semester: '',
+        page: 1,
     });
 
     // Memoize current filters to avoid recreation
@@ -84,6 +85,7 @@ const SyllabusClient = ({
             branch: filterState.branchFilter,
             year: yearFilter,
             semester: filterState.semesterFilter,
+            page: filterState.page,
         }),
         [
             filterState.searchTerm,
@@ -91,6 +93,7 @@ const SyllabusClient = ({
             filterState.branchFilter,
             yearFilter,
             filterState.semesterFilter,
+            filterState.page,
         ],
     );
 
@@ -156,7 +159,8 @@ const SyllabusClient = ({
             prevFilters.course !== currentFilters.course ||
             prevFilters.branch !== currentFilters.branch ||
             prevFilters.year !== currentFilters.year ||
-            prevFilters.semester !== currentFilters.semester;
+            prevFilters.semester !== currentFilters.semester ||
+            prevFilters.page !== currentFilters.page;
 
         if (filterChanged || forceRefetch) {
             fetchSyllabus();

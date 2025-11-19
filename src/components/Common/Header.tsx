@@ -78,11 +78,11 @@ const Header: React.FC = () => {
             path: 'https://blog.studentsenior.com',
             isExternal: true,
         },
-        {
-            name: 'Course',
-            path: 'https://course.studentsenior.com',
-            isExternal: true,
-        },
+        // {
+        //     name: 'Course',
+        //     path: 'https://course.studentsenior.com',
+        //     isExternal: true,
+        // },
     ];
 
     return (
@@ -118,6 +118,7 @@ const Header: React.FC = () => {
                     <nav className='hidden lg:flex items-center space-x-1'>
                         {menuItems.map((item) => (
                             <Link
+                                prefetch={false}
                                 key={item.path}
                                 href={item.isExternal ? item.path : item.path}
                                 target={item.isExternal ? '_blank' : undefined}
@@ -190,6 +191,7 @@ const Header: React.FC = () => {
                                 {isProfileDropdownOpen && (
                                     <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-99999'>
                                         <Link
+                                            prefetch={false}
                                             href='/profile'
                                             className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
                                             onClick={() =>
@@ -200,6 +202,7 @@ const Header: React.FC = () => {
                                             Profile
                                         </Link>
                                         <Link
+                                            prefetch={false}
                                             href='/wallet'
                                             className='flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
                                             onClick={() =>
@@ -279,6 +282,7 @@ const Header: React.FC = () => {
                     <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
                         {menuItems.map((item) => (
                             <Link
+                                prefetch={false}
                                 key={item.path}
                                 href={item.path}
                                 onClick={() => setIsMenuOpen(false)}

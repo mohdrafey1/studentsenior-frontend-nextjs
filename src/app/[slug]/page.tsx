@@ -507,7 +507,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 { icon: BookOpen, text: 'Filter by Branch' },
                 { icon: FileText, text: 'Filter by Subject' },
             ],
-            link: `/${slug}/collections`,
+            link: `/${slug}/resources`,
         },
         {
             id: 'groups',
@@ -522,7 +522,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 { icon: Plus, text: 'Add Your Group' },
                 { icon: Users, text: 'Connect with Peers' },
             ],
-            link: `/${slug}/add-college`,
+            link: `/${slug}/groups`,
         },
         {
             id: 'opportunities',
@@ -537,7 +537,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 { icon: Plus, text: 'Post Opportunities' },
                 { icon: Users, text: 'Find Project Partners' },
             ],
-            link: `/${slug}/add-college`,
+            link: `/${slug}/opportunities`,
         },
         {
             id: 'lostfound',
@@ -552,7 +552,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 { icon: Plus, text: 'Report Found Items' },
                 { icon: Gift, text: 'Help Each Other' },
             ],
-            link: `/${slug}/add-college`,
+            link: `/${slug}/lost-found`,
         },
     ];
 
@@ -749,6 +749,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                                 </p>
                             </div>
                             <Link
+                                prefetch={false}
                                 href={`/${slug}/pyqs`}
                                 className='whitespace-nowrap inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition-all shadow-sm hover:shadow-md'
                             >

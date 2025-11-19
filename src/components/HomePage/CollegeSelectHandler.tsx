@@ -103,6 +103,7 @@ export default function CollegeSelectHandler({
             <p className='text-sm text-gray-500 mt-4 text-center'>
                 Can’t find your college?{' '}
                 <Link
+                    prefetch={false}
                     href='/add-college'
                     className='text-blue-600 hover:underline'
                 >
