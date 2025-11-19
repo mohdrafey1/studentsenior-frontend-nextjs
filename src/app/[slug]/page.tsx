@@ -663,6 +663,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
                             const IconComponent = feature.icon;
                             return (
                                 <Link
+                                    prefetch={false}
                                     key={feature.id}
                                     href={feature.link}
                                     className='group relative bg-gradient-to-br overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-opacity-50'

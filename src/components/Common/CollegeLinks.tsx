@@ -114,6 +114,7 @@ const Collegelinks = () => {
                 <div className={`space-y-1 ${isCollapsed ? 'mt-12' : 'mt-2'}`}>
                     {links.map((link, index) => (
                         <Link
+                            prefetch={false}
                             key={index}
                             href={link.href}
                             className={`group flex items-center ${
