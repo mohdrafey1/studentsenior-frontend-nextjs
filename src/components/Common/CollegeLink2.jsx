@@ -107,6 +107,7 @@ const Collegelink2 = () => {
                         <div className='flex justify-around items-center'>
                             {mainLinks.map((link, index) => (
                                 <Link
+                                    prefetch={false}
                                     key={index}
                                     href={link.href}
                                     className={`group flex-1 flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 ${
@@ -168,6 +169,7 @@ const Collegelink2 = () => {
                             <div className='grid grid-cols-3 gap-4 pb-4'>
                                 {moreLinks.map((link, index) => (
                                     <Link
+                                        prefetch={false}
                                         key={index}
                                         href={link.href}
                                         onClick={handleMore}
