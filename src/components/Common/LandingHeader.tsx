@@ -56,11 +56,11 @@ const LandingHeader: React.FC = () => {
             path: 'https://blog.studentsenior.com',
             isExternal: true,
         },
-        {
-            name: 'Course',
-            path: 'https://course.studentsenior.com',
-            isExternal: true,
-        },
+        // {
+        //     name: 'Course',
+        //     path: 'https://course.studentsenior.com',
+        //     isExternal: true,
+        // },
     ];
 
     return (
@@ -96,6 +96,7 @@ const LandingHeader: React.FC = () => {
                     <nav className='hidden lg:flex items-center space-x-1 bg-blue-100 dark:bg-gray-700 p-2 rounded-xl'>
                         {menuItems.map((item) => (
                             <Link
+                                prefetch={false}
                                 key={item.path}
                                 href={item.isExternal ? item.path : item.path}
                                 target={item.isExternal ? '_blank' : undefined}
@@ -139,6 +140,7 @@ const LandingHeader: React.FC = () => {
                             {currentUser ? (
                                 <div className='relative '>
                                     <Link
+                                        prefetch={false}
                                         href='/profile'
                                         className='flex items-center text-sm rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
                                     >
@@ -179,6 +181,7 @@ const LandingHeader: React.FC = () => {
                             ) : (
                                 <div className='flex items-center space-x-0'>
                                     <Link
+                                        prefetch={false}
                                         href={{
                                             pathname: '/sign-up',
                                             query: { from: pathname },
@@ -188,6 +191,7 @@ const LandingHeader: React.FC = () => {
                                         Sign Up
                                     </Link>
                                     <Link
+                                        prefetch={false}
                                         href={{
                                             pathname: '/sign-in',
                                             query: { from: pathname },
@@ -236,6 +240,7 @@ const LandingHeader: React.FC = () => {
                         <div className='flex flex-col space-y-1 my-auto min-w-3/4'>
                             {menuItems.map((item) => (
                                 <Link
+                                    prefetch={false}
                                     key={item.path}
                                     href={item.path}
                                     onClick={() => setIsMenuOpen(false)}
@@ -257,6 +262,7 @@ const LandingHeader: React.FC = () => {
                             {!currentUser ? (
                                 <div className='flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-2'>
                                     <Link
+                                        prefetch={false}
                                         href={{
                                             pathname: '/sign-in',
                                             query: { from: pathname },
@@ -267,6 +273,7 @@ const LandingHeader: React.FC = () => {
                                         Sign In
                                     </Link>
                                     <Link
+                                        prefetch={false}
                                         href={{
                                             pathname: '/sign-up',
                                             query: { from: pathname },
@@ -283,6 +290,7 @@ const LandingHeader: React.FC = () => {
                                 >
                                     <button className='flex items-center space-x-2 rounded-md transition-colors duration-200 group'>
                                         <Link
+                                            prefetch={false}
                                             href='/profile'
                                             className='flex items-center gap-5 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-200'
                                         >

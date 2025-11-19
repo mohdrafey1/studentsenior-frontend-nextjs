@@ -228,6 +228,7 @@ const Header: React.FC = () => {
                         ) : (
                             <div className='flex items-center space-x-2'>
                                 <Link
+                                    prefetch={false}
                                     href={{
                                         pathname: '/sign-up',
                                         query: { from: pathname },
@@ -237,6 +238,7 @@ const Header: React.FC = () => {
                                     Sign Up
                                 </Link>
                                 <Link
+                                    prefetch={false}
                                     href={{
                                         pathname: '/sign-in',
                                         query: { from: pathname },
