@@ -174,10 +174,10 @@ const EarningShowcase = () => {
                         </div>
                         <div className='text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm'>
                             <div className='text-3xl font-bold text-green-600 dark:text-green-400 mb-1'>
-                                ₹1
+                                ₹100
                             </div>
                             <div className='text-sm text-gray-600 dark:text-gray-400'>
-                                Per 5 Points
+                                Per 500 Points
                             </div>
                         </div>
                         <div className='text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm'>

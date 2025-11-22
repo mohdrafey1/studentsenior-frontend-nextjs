@@ -383,7 +383,6 @@ export default function WalletPage() {
                                 }`}
                             >
                                 <span className='flex items-center justify-center gap-2'>
-                                    <span>📊</span>
                                     <span>Transaction History</span>
                                     <span className='ml-2 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 dark:text-gray-200 text-xs font-medium'>
                                         {filtered.length}
@@ -399,7 +398,6 @@ export default function WalletPage() {
                                 }`}
                             >
                                 <span className='flex items-center justify-center gap-2'>
-                                    <span>💸</span>
                                     <span>Withdrawal Requests</span>
                                     <span className='ml-2 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 dark:text-gray-200 text-xs font-medium'>
                                         {filteredRedemptions.length}
@@ -549,9 +547,6 @@ export default function WalletPage() {
                             {/* Transaction Pagination */}
                             <div className='px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between'>
                                 <div className='flex items-center gap-2'>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        Show
-                                    </span>
                                     <select
                                         className='borde text-black border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
                                         value={pageSize}
@@ -588,7 +583,7 @@ export default function WalletPage() {
                                             setPage((p) => Math.max(1, p - 1))
                                         }
                                     >
-                                        Previous
+                                        Prev
                                     </button>
                                     <button
                                         className='px-4 text-black py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
