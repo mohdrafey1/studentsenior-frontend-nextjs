@@ -16,7 +16,11 @@ const hideExactPaths = [
 ];
 
 // Prefix paths (hide all subpages under these)
-const hidePrefixPaths = ['/integral-university/resources'];
+const hidePrefixPaths = [
+    '/integral-university/resources/',
+    '/integral-university/notes/',
+    '/integral-university/pyqs/',
+];
 
 export default function ConditionalFooter() {
     const pathname = usePathname();
