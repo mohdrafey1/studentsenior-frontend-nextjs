@@ -47,7 +47,7 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
 
     try {
         const url = `${api.pyq.getPyqBySlug(pyqSlug)}`;
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetch(url, { next: { revalidate: 10 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
