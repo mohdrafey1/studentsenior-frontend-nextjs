@@ -12,7 +12,6 @@ import {
     ShoppingCart,
     User,
     Download,
-    RefreshCw,
     Sparkles,
     Video,
     NotebookPen,
@@ -30,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import PaymentModal from '@/components/PaymentModal';
 import GoogleAd from '@/components/GoogleAd';
+import DownloadTimerModal from '@/components/Common/DownloadTimerModal';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.mjs';
 
@@ -157,10 +157,8 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [signedUrl, setSignedUrl] = useState<string | null>(null);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [isDownloadUrlValid, setIsDownloadUrlValid] = useState(false);
-    const downloadExpiryTimerRef = useRef<number | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
     // Suggested Notes state
     const [suggestedNotes, setSuggestedNotes] = useState<{
@@ -203,13 +201,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 }
 
                 setSignedUrl(data.data.signedUrl);
-                setIsDownloadUrlValid(true);
-                if (downloadExpiryTimerRef.current) {
-                    clearTimeout(downloadExpiryTimerRef.current);
-                }
-                downloadExpiryTimerRef.current = window.setTimeout(() => {
-                    setIsDownloadUrlValid(false);
-                }, 15000);
+
                 const loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
                 const pdf = await loadingTask.promise;
                 setPdfDoc(pdf);
@@ -350,44 +342,29 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const isOwner = note.owner._id === ownerId;
     const isPaidAndNotOwner =
         note.isPaid && !isOwner && !note.purchasedBy?.includes(ownerId || '');
-    const isDownloadDisabled = !isDownloadUrlValid || !signedUrl;
-    const downloadFileName = `${note.subject.subjectCode}-notes.pdf`;
+ 
+    const downloadFileName = `${note.subject.subjectCode}-notes-studentsenior.pdf`;
 
-    const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (!currentUser) {
-            e.preventDefault();
-            toast.error('Please login to download resources');
-            return;
-        }
-    };
-
-    const handleRefreshDownloadUrl = async () => {
-        if (!currentUser) {
-            toast.error('Please login to download resources');
-            return;
-        }
+    const handleSecureDownload = async () => {
         if (!note?.fileUrl) return;
         try {
-            setIsRefreshing(true);
             const response = await fetch(
                 `${api.aws.getSignedUrl}?fileUrl=${note.fileUrl}`,
             );
             const data = await response.json();
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to refresh URL.');
+                throw new Error(data.message || 'Failed to get download link.');
             }
-            setSignedUrl(data.data.signedUrl);
-            setIsDownloadUrlValid(true);
-            if (downloadExpiryTimerRef.current) {
-                clearTimeout(downloadExpiryTimerRef.current);
-            }
-            downloadExpiryTimerRef.current = window.setTimeout(() => {
-                setIsDownloadUrlValid(false);
-            }, 15000);
+
+            const link = document.createElement('a');
+            link.href = data.data.signedUrl;
+            link.download = downloadFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         } catch (err) {
-            console.error('Error refreshing signed URL:', err);
-        } finally {
-            setIsRefreshing(false);
+            console.error('Error downloading file:', err);
+            toast.error('Failed to download file. Please try again.');
         }
     };
 
@@ -616,62 +593,39 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 {!note.isPaid && note.isDownloadable && (
                     <div className='mt-8'>
                         <div className='flex flex-wrap gap-3 justify-center'>
-                            {!isDownloadDisabled && (
-                                <a
-                                    href={
-                                        !isDownloadDisabled && signedUrl
-                                            ? signedUrl
-                                            : '#'
-                                    }
-                                    download={downloadFileName}
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                    onClick={handleDownload}
+                            <button
+                                    onClick={() => {
+                                        if (!currentUser) {
+                                            toast.error('Please login to download resources');
+                                            return;
+                                        }
+                                        setIsDownloadModalOpen(true);
+                                    }}
                                     className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
-                                        !isDownloadDisabled && signedUrl
+                                        signedUrl
                                             ? 'bg-sky-600 text-white hover:bg-sky-700'
-                                            : 'bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none'
+                                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                     }`}
-                                    aria-disabled={isDownloadDisabled}
                                     title={
-                                        !isDownloadDisabled && signedUrl
+                                        signedUrl
                                             ? `Download ${downloadFileName}`
                                             : 'Link expired. Please refresh to get a new link.'
                                     }
                                 >
                                     <Download className='w-5 h-5' />
                                     Download
-                                </a>
-                            )}
-
-                            {isDownloadDisabled && (
-                                <button
-                                    onClick={handleRefreshDownloadUrl}
-                                    disabled={isRefreshing}
-                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm border ${
-                                        isRefreshing
-                                            ? 'bg-gray-100 text-gray-500 border-gray-200 cursor-wait'
-                                            : 'bg-white text-sky-700 border-sky-200 hover:bg-sky-50'
-                                    }`}
-                                    title='Refresh the download link'
-                                >
-                                    <RefreshCw
-                                        className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
-                                    />
-                                    {isRefreshing
-                                        ? 'Refreshing...'
-                                        : 'Refresh link'}
                                 </button>
-                            )}
+                            
+
+                            <DownloadTimerModal
+                                isOpen={isDownloadModalOpen}
+                                onClose={() => setIsDownloadModalOpen(false)}
+                                onDownload={handleSecureDownload}
+                             
+                            />
+
                         </div>
-                        {isDownloadDisabled && (
-                            <p className='mt-2 text-center text-sm text-gray-500 dark:text-gray-400'>
-                                Click on{' '}
-                                <span className='font-medium'>Refresh</span>{' '}
-                                then click on{' '}
-                                <span className='font-medium'>Download</span>
-                            </p>
-                        )}
+                       
                     </div>
                 )}
 
