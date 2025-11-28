@@ -103,7 +103,7 @@ export const LostFoundCard = ({
                 </Link>
 
                 {/* Owner Action Buttons */}
-                {ownerId === item.owner._id && (
+                {ownerId === item.owner?._id && (
                     <>
                         <button
                             onClick={() => openModal(item)}

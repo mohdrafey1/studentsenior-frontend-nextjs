@@ -29,7 +29,7 @@ export const NoteListItem: React.FC<NoteListItemProps> = ({
     onDelete,
     ownerId,
 }) => {
-    const isOwner = note.owner._id === ownerId;
+    const isOwner = note.owner?._id === ownerId;
     const { saveResource, unsaveResource } = useSaveResource();
     const [isSaved, setIsSaved] = useState(false);
 
@@ -38,10 +38,12 @@ export const NoteListItem: React.FC<NoteListItemProps> = ({
     );
 
     useEffect(() => {
-        const isSavedEntry = savedNotes.some((entry) =>
+        const isSavedEntry = !!savedNotes?.some((entry) =>
             typeof entry.noteId === 'string'
                 ? entry.noteId === note._id
-                : entry.noteId._id === note._id,
+                : entry.noteId && typeof entry.noteId === 'object'
+                  ? entry.noteId._id === note._id
+                  : false,
         );
         setIsSaved(isSavedEntry);
     }, [savedNotes, note._id]);

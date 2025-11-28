@@ -24,7 +24,7 @@ export const VideoListItem: React.FC<VideoListItemProps> = ({
     onDelete,
     ownerId,
 }) => {
-    const isOwner = video.owner._id === ownerId;
+    const isOwner = video.owner?._id === ownerId;
 
     return (
         <article className='group relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200/60 dark:border-gray-700/60 hover:border-purple-300/60 dark:hover:border-purple-600/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden backdrop-blur-sm'>

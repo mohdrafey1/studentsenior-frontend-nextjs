@@ -92,7 +92,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
                 )}
 
                 {/* Edit/Delete Controls for Owner - Smaller on mobile */}
-                {ownerId === item.owner._id && (
+                {ownerId === item.owner?._id && (
                     <div
                         className='absolute top-1.5 sm:top-3 right-1.5 sm:right-3 flex gap-1 sm:gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300'
                         style={{ marginTop: item.available ? '28px' : '0' }}

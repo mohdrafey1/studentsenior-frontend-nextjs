@@ -18,7 +18,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     onDelete,
     ownerId,
 }) => {
-    const isOwner = video.owner._id === ownerId;
+    const isOwner = video.owner?._id === ownerId;
     const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
     useEffect(() => {
