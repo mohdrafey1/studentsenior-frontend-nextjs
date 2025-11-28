@@ -28,7 +28,7 @@ export const PyqCard: React.FC<PyqCardProps> = ({
     onDelete,
     ownerId,
 }) => {
-    const isOwner = ownerId === pyq.owner._id;
+    const isOwner = ownerId === pyq.owner?._id;
     const { saveResource, unsaveResource } = useSaveResource();
     const [isSaved, setIsSaved] = useState(false);
 
@@ -37,10 +37,12 @@ export const PyqCard: React.FC<PyqCardProps> = ({
     );
 
     useEffect(() => {
-        const isSavedEntry = savedPYQs.some((entry) =>
+        const isSavedEntry = !!savedPYQs?.some((entry) =>
             typeof entry.pyqId === 'string'
                 ? entry.pyqId === pyq._id
-                : entry.pyqId._id === pyq._id,
+                : entry.pyqId && typeof entry.pyqId === 'object'
+                  ? entry.pyqId._id === pyq._id
+                  : false,
         );
         setIsSaved(isSavedEntry);
     }, [savedPYQs, pyq._id]);

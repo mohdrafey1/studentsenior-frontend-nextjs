@@ -225,10 +225,12 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     }, [note?.fileUrl]);
 
     useEffect(() => {
-        const isSavedEntry = savedNotes.some((entry) =>
+        const isSavedEntry = !!savedNotes?.some((entry) =>
             typeof entry.noteId === 'string'
                 ? entry.noteId === note._id
-                : entry.noteId._id === note._id,
+                : entry.noteId && typeof entry.noteId === 'object'
+                  ? entry.noteId._id === note._id
+                  : false,
         );
         setIsSaved(isSavedEntry);
     }, [savedNotes, note._id]);
