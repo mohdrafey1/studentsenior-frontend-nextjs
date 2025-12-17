@@ -134,6 +134,17 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Validate username if it's being updated
+        if (formData.username !== undefined) {
+            const usernameRegex = /^[a-zA-Z0-9_.]{3,20}$/;
+            if (!usernameRegex.test(formData.username)) {
+                toast.error(
+                    'Username can only contain letters, numbers, _ and . (3–20 chars)',
+                );
+                return;
+            }
+        }
+
         if (Object.keys(formData).length === 0) {
             toast('No changes to save.');
             setEditMode(false);
