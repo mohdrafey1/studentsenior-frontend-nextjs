@@ -72,9 +72,9 @@ export default function AttendanceCalculator() {
                     <p className='font-semibold mb-1'>How it works:</p>
                     <p>
                         Enter your total classes conducted, classes you
-                        attended, and your target attendance percentage. We'll
-                        tell you how many classes you need to attend or can
-                        safely bunk!
+                        attended, and your target attendance percentage.
+                        We&apos;ll tell you how many classes you need to attend
+                        or can safely bunk!
                     </p>
                 </div>
 
@@ -258,7 +258,7 @@ export default function AttendanceCalculator() {
                                             </>
                                         ) : (
                                             <p className='text-green-800 dark:text-green-200'>
-                                                You're exactly at{' '}
+                                                You&apos;re exactly at{' '}
                                                 {targetPercentage}% attendance.
                                                 Attend the next class to have
                                                 some buffer!

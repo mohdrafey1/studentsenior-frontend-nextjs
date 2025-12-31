@@ -43,8 +43,8 @@ const tools = [
         description:
             'Generate professional cover pages for your assignments and lab files in seconds. No design skills needed.',
         icon: FileText,
-        href: '/tools/frontpage-maker',
-        status: 'coming-soon',
+        href: '/tools/front-page-generator',
+        status: 'live',
         color: 'bg-indigo-500',
     },
     {
