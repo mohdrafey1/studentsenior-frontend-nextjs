@@ -73,6 +73,7 @@ const Header: React.FC = () => {
         { name: 'Home', path: '/' },
         { name: 'Collection', path: '/collections' },
         { name: 'Leaderboard', path: '/leaderboard' },
+        { name: 'Tools', path: '/tools' },
         {
             name: 'Blogs',
             path: 'https://blog.studentsenior.com',

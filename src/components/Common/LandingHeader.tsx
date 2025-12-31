@@ -52,6 +52,7 @@ const LandingHeader: React.FC = () => {
         { name: 'Collection', path: '/collections' },
         { name: 'Leaderboard', path: '/leaderboard' },
         { name: 'Wallet', path: '/wallet' },
+        { name: 'Tools', path: '/tools' },
         {
             name: 'Blogs',
             path: 'https://blog.studentsenior.com',
