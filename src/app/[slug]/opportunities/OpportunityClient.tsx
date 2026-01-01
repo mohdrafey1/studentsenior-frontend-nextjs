@@ -222,7 +222,7 @@ const OpportunityClient = ({
                 setLoading(false);
             }
         },
-        [editOpportunity, collegeName, closeModal],
+        [editOpportunity, collegeName, closeModal, form],
     );
 
     const handleDeleteRequest = useCallback((opportunityId: string) => {
