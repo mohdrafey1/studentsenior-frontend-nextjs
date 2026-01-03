@@ -70,13 +70,13 @@ export const rawColleges = [
         status: true,
         slug: 'integral-university',
     },
-    {
-        _id: '66cba84ce0e3a7e528642837',
-        name: 'MPEC Kanpur',
-        description:
-            '"Maharana Pratap Engineering College Kanpur: Fostering innovative minds through comprehensive education. Offering undergraduate and postgraduate programs in:\r\n\r\n- Computer Science\r\n- Mechanical\r\n- Electrical\r\n- Civil\r\n- Electronics\r\n\r\nState-of-the-art infrastructure, industry partnerships, and esteemed faculty ensure holistic development, shaping future engineers."',
-        location: 'Kanpur, Uttar Pradesh, India',
-        status: true,
-        slug: 'mpec-kanpur',
-    },
+    // {
+    //     _id: '66cba84ce0e3a7e528642837',
+    //     name: 'MPEC Kanpur',
+    //     description:
+    //         '"Maharana Pratap Engineering College Kanpur: Fostering innovative minds through comprehensive education. Offering undergraduate and postgraduate programs in:\r\n\r\n- Computer Science\r\n- Mechanical\r\n- Electrical\r\n- Civil\r\n- Electronics\r\n\r\nState-of-the-art infrastructure, industry partnerships, and esteemed faculty ensure holistic development, shaping future engineers."',
+    //     location: 'Kanpur, Uttar Pradesh, India',
+    //     status: true,
+    //     slug: 'mpec-kanpur',
+    // },
 ];
