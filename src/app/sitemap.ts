@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 const API_BASE_URL = (
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081'
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 ).replace(/\/api\/v2$/, '');
 const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL || 'https://studentsenior.com';
