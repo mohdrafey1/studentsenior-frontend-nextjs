@@ -47,9 +47,13 @@ const SignUp: React.FC = () => {
         const newErrors: FormErrors = {};
 
         // Username validation
-        if (!formData.username || formData.username.length < 3) {
-            newErrors.username = 'Username must be at least 3 characters long';
-        }
+        const usernameRegex = /^[a-zA-Z0-9_.]{3,20}$/;
+
+if (!formData.username || !usernameRegex.test(formData.username)) {
+    newErrors.username =
+        'Username can only contain letters, numbers, _ and . (3–20 chars)';
+}
+
 
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

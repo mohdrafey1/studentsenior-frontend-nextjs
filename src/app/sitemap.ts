@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 const API_BASE_URL = (
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081'
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 ).replace(/\/api\/v2$/, '');
 const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL || 'https://studentsenior.com';
@@ -91,6 +91,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: currentDate,
             changeFrequency: 'monthly',
             priority: 0.4,
+        },
+        {
+            url: `${SITE_URL}/tools`,
+            lastModified: currentDate,
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        },
+        {
+            url: `${SITE_URL}/tools/cgpa-calculator`,
+            lastModified: currentDate,
+            changeFrequency: 'monthly',
+            priority: 0.6,
         },
     ];
 

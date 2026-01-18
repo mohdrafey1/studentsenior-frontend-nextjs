@@ -66,7 +66,7 @@ export default async function LeaderboardPage() {
                         </p>
                         <div className='inline-block bg-amber-400/10 dark:bg-amber-400/20 border border-amber-500 text-amber-700 dark:text-amber-300 rounded-full px-6 py-3 font-semibold'>
                             ✨ Monthly Winner Reward:{' '}
-                            <span className='font-bold'>+500 Points</span>
+                            <span className='font-bold'>+100 Points</span>
                         </div>
                     </div>
                 </header>
