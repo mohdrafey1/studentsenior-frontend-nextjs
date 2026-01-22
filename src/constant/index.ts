@@ -9,6 +9,30 @@ export const SENIOR_PAGE_SIZE = 12;
 export const PYQ_PAGE_SIZE = 12;
 export const NOTES_PAGE_SIZE = 12;
 
+export const REVALIDATE_SECONDS = {
+    VERY_SHORT: 10,
+    REALTIME: 30,
+    SHORT: 60,
+    MEDIUM: 300,
+    HOUR: 3600,
+    DAY: 86400,
+} as const;
+
+import type { CollegeSections } from '@/utils/interface';
+
+export const DEFAULT_SECTIONS: CollegeSections = {
+    pyqs: true,
+    notes: true,
+    videos: true,
+    syllabus: true,
+    store: false,
+    seniors: false,
+    resources: true,
+    groups: false,
+    opportunities: false,
+    lostFound: false,
+} as const;
+
 export const FILTER_ACADEMIC_YEARS = [
     { value: '2022-23', label: '2022-2023' },
     { value: '2023-24', label: '2023-2024' },

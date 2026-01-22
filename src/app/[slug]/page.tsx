@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { api } from '@/config/apiUrls';
-import { College } from '@/utils/interface';
+import { College, CollegeSections } from '@/utils/interface';
 import { capitalizeWords } from '@/utils/formatting';
 import { CollegePageProps } from '@/utils/interface';
 import CollegeAbout from '@/components/College/CollegeAbout';
@@ -28,6 +28,7 @@ import {
     Gift,
     Layers,
 } from 'lucide-react';
+import { DEFAULT_SECTIONS } from '@/constant';
 
 interface CollegeDataResponse {
     success: boolean;
@@ -292,6 +293,32 @@ export default async function CollegePage({ params }: CollegePageProps) {
         },
     ];
 
+    // Merge college sections with defaults
+    const collegeSections: CollegeSections = {
+        ...DEFAULT_SECTIONS,
+        ...(data.data.sections || {}),
+    };
+
+    // Map feature id to section key
+    const featureToSectionMap: Record<string, keyof CollegeSections> = {
+        pyqs: 'pyqs',
+        notes: 'notes',
+        videos: 'videos',
+        syllabus: 'syllabus',
+        store: 'store',
+        seniors: 'seniors',
+        resources: 'resources',
+        groups: 'groups',
+        opportunities: 'opportunities',
+        lostfound: 'lostFound',
+    };
+
+    // Filter features based on enabled sections
+    const enabledFeatures = features.filter((feature) => {
+        const sectionKey = featureToSectionMap[feature.id];
+        return sectionKey ? collegeSections[sectionKey] : true;
+    });
+
     return (
         <>
             {/* Features Grid Section */}
@@ -306,7 +333,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
 
                     {/* Features Grid */}
                     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto'>
-                        {features.map((feature) => {
+                        {enabledFeatures.map((feature) => {
                             const IconComponent = feature.icon;
                             return (
                                 <Link

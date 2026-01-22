@@ -1,30 +1,41 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
 import Collegelinks from '@/components/Common/CollegeLinks';
 import Collegelink2 from '@/components/Common/CollegeLink2';
+import { getCollegeSections } from '@/utils/collegeSections';
+import CollegeLayoutClient from './CollegeLayoutClient';
 
-export default function CollegeLayout({
-    children,
-}: {
+interface CollegeLayoutProps {
     children: React.ReactNode;
-}) {
-    const pathname = usePathname();
+    params: Promise<{ slug: string }>;
+}
 
-    const hideCollegeLinks = pathname.startsWith('/integral-university/test');
+export default async function CollegeLayout({
+    children,
+    params,
+}: CollegeLayoutProps) {
+    const { slug } = await params;
+
+    // Fetch sections from backend with long cache (24 hours)
+    // This will be cached by Next.js and revalidated every 24 hours
+    const sections = await getCollegeSections(slug);
 
     return (
-        <>
-            <div className='min-h-full bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-16 lg:pb-0'>
-                {!hideCollegeLinks && (
-                    <div className='flex'>
-                        <Collegelinks />
-                        <main className='flex-1 min-w-0'>{children}</main>
-                    </div>
-                )}
-                {hideCollegeLinks && children}
-            </div>
-            <Collegelink2 />
-        </>
+        <CollegeLayoutClient
+            sections={sections}
+            slug={slug}
+            collegeLinksComponent={
+                <Collegelinks
+                    key='college-links'
+                    sections={sections ?? undefined}
+                />
+            }
+            collegeLink2Component={
+                <Collegelink2
+                    key='college-link2'
+                    sections={sections ?? undefined}
+                />
+            }
+        >
+            {children}
+        </CollegeLayoutClient>
     );
 }

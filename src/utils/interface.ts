@@ -22,6 +22,19 @@ export interface CollegeData {
     description: string;
 }
 
+export interface CollegeSections {
+    pyqs: boolean;
+    notes: boolean;
+    videos: boolean;
+    syllabus: boolean;
+    store: boolean;
+    seniors: boolean;
+    resources: boolean;
+    groups: boolean;
+    opportunities: boolean;
+    lostFound: boolean;
+}
+
 export interface College {
     _id: string;
     name: string;
@@ -29,6 +42,7 @@ export interface College {
     location: string;
     description: string;
     image?: string;
+    sections?: CollegeSections;
     createdAt: string;
     updatedAt: string;
 }

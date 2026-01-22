@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useState } from 'react';
+import type { CollegeSections } from '@/utils/interface';
+import { DEFAULT_SECTIONS } from '@/constant';
 import {
     Landmark,
     StickyNote,
@@ -17,13 +19,22 @@ import {
     ChevronLeft,
 } from 'lucide-react';
 
-const Collegelinks = () => {
+interface CollegelinksProps {
+    sections?: CollegeSections;
+}
+
+const Collegelinks = ({ sections }: CollegelinksProps) => {
     const { slug } = useParams();
     const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     // Prevent rendering if slug is not available
     if (!slug) return null;
+
+    const enabledSections: CollegeSections = {
+        ...DEFAULT_SECTIONS,
+        ...(sections || {}),
+    };
 
     const links = [
         {
@@ -35,53 +46,69 @@ const Collegelinks = () => {
             href: `/${slug}/pyqs`,
             icon: <Zap size={20} />,
             text: 'PYQs',
+            sectionKey: 'pyqs',
         },
         {
             href: `/${slug}/notes`,
             icon: <StickyNote size={20} />,
             text: 'Notes',
+            sectionKey: 'notes',
         },
         {
             href: `/${slug}/videos`,
             icon: <Video size={20} />,
             text: 'Videos',
+            sectionKey: 'videos',
         },
         {
             href: `/${slug}/syllabus`,
             icon: <BookOpen size={20} />,
             text: 'Syllabus',
+            sectionKey: 'syllabus',
         },
         {
             href: `/${slug}/store`,
             icon: <Store size={20} />,
             text: 'Store',
+            sectionKey: 'store',
         },
         {
             href: `/${slug}/seniors`,
             icon: <User size={20} />,
             text: 'Seniors',
+            sectionKey: 'seniors',
         },
         {
             href: `/${slug}/resources`,
             icon: <StickyNote size={20} />,
             text: 'Resources',
+            sectionKey: 'resources',
         },
         {
             href: `/${slug}/groups`,
             icon: <MessageCircle size={20} />,
             text: 'Groups',
+            sectionKey: 'groups',
         },
         {
             href: `/${slug}/opportunities`,
             icon: <Search size={20} />,
             text: 'Opportunity',
+            sectionKey: 'opportunities',
         },
         {
             href: `/${slug}/lost-found`,
             icon: <Compass size={20} />,
             text: 'Lost/Found',
+            sectionKey: 'lostFound',
         },
     ];
+
+    const visibleLinks = links.filter(
+        (link) =>
+            !link.sectionKey ||
+            enabledSections[link.sectionKey as keyof typeof enabledSections],
+    );
 
     return (
         <aside
@@ -112,7 +139,7 @@ const Collegelinks = () => {
                 </button>
 
                 <div className={`space-y-1 ${isCollapsed ? 'mt-12' : 'mt-2'}`}>
-                    {links.map((link, index) => (
+                    {visibleLinks.map((link, index) => (
                         <Link
                             prefetch={false}
                             key={index}
