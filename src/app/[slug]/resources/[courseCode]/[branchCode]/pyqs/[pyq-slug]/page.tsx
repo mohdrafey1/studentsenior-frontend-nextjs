@@ -18,10 +18,17 @@ interface PyqPageParams {
 }
 
 // helper to fetch subject name
-async function getSubjectName(branchCode: string, subjectCode: string) {
-    const response = await fetch(api.resources.getSubjects(branchCode), {
-        next: { revalidate: 300 },
-    });
+async function getSubjectName(
+    branchCode: string,
+    subjectCode: string,
+    collegeSlug: string,
+) {
+    const response = await fetch(
+        api.resources.getSubjects(branchCode, collegeSlug),
+        {
+            next: { revalidate: 300 },
+        },
+    );
     const resp = await response.json();
     const matched = resp.data.find(
         (item: SubjectItem) => item.subjectCode === subjectCode,
@@ -46,7 +53,7 @@ export async function generateMetadata({
         'pyq-slug': subjectCode,
     } = await params;
 
-    let subjectName = await getSubjectName(branchCode, subjectCode);
+    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
     subjectName = cleanSubjectName(subjectName);
 
     const pageTitle = `${subjectName} (${subjectCode}) PYQs – Download Free Past Papers | ${capitalizeWords(slug)}`;
@@ -115,7 +122,7 @@ export default async function SubjectPyqsPage({
     } = await params;
 
     let pyqs: IPyq[] = [];
-    let subjectName = await getSubjectName(branchCode, subjectCode);
+    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
     subjectName = cleanSubjectName(subjectName);
 
     try {

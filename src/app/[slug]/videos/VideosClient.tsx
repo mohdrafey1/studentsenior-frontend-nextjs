@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, IVideo } from '@/utils/interface';
@@ -92,7 +98,7 @@ const VideosClient = ({
             filterState.branchFilter,
             filterState.semesterFilter,
             filterState.page,
-        ]
+        ],
     );
 
     // Mark initial mount as complete
@@ -197,74 +203,83 @@ const VideosClient = ({
         setEditVideo(null);
     }, []);
 
-    const handleAddSubmit = useCallback(async (formData: typeof form) => {
-        setLoading(true);
-        try {
-            const response = await fetch(api.videos.createVideo, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    ...formData,
-                    college: collegeName,
-                }),
-            });
+    const handleAddSubmit = useCallback(
+        async (formData: typeof form) => {
+            setLoading(true);
+            try {
+                const response = await fetch(api.videos.createVideo, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        ...formData,
+                        college: collegeName,
+                    }),
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create video');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to create video');
+                }
+                toast.success(data.message || 'Video created successfully!');
+
+                closeAddModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error creating video:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeAddModal();
             }
-            toast.success(data.message || 'Video created successfully!');
+        },
+        [collegeName, closeAddModal],
+    );
 
-            closeAddModal();
-            setForceRefetch(true);
-        } catch (error) {
-            console.error('Error creating video:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeAddModal();
-        }
-    }, [collegeName, closeAddModal]);
+    const handleEditSubmit = useCallback(
+        async (formData: {
+            title?: string;
+            description?: string;
+            videoUrl?: string;
+        }) => {
+            if (!editVideo) return;
 
-    const handleEditSubmit = useCallback(async (formData: {
-        title?: string;
-        description?: string;
-        videoUrl?: string;
-    }) => {
-        if (!editVideo) return;
+            setLoading(true);
+            try {
+                const response = await fetch(
+                    api.videos.editVideo(editVideo._id),
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(formData),
+                    },
+                );
 
-        setLoading(true);
-        try {
-            const response = await fetch(api.videos.editVideo(editVideo._id), {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(formData),
-            });
+                const data = await response.json();
 
-            const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to update video');
+                }
+                toast.success(data.message || 'Video updated successfully!');
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to update video');
+                closeEditModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error updating video:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeEditModal();
             }
-            toast.success(data.message || 'Video updated successfully!');
-
-            closeEditModal();
-            setForceRefetch(true);
-        } catch (error) {
-            console.error('Error updating video:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeEditModal();
-        }
-    }, [editVideo, closeEditModal]);
+        },
+        [editVideo, closeEditModal],
+    );
 
     const handleDeleteRequest = useCallback((videoId: string) => {
         setDeleteTargetId(videoId);
@@ -312,16 +327,18 @@ const VideosClient = ({
 
     const hasActiveFilters = useMemo(
         () =>
-            !!(filterState.searchTerm ||
-            filterState.courseFilter ||
-            filterState.branchFilter ||
-            filterState.semesterFilter),
+            !!(
+                filterState.searchTerm ||
+                filterState.courseFilter ||
+                filterState.branchFilter ||
+                filterState.semesterFilter
+            ),
         [
             filterState.searchTerm,
             filterState.courseFilter,
             filterState.branchFilter,
             filterState.semesterFilter,
-        ]
+        ],
     );
 
     const activeFilterCount = useMemo(
@@ -337,7 +354,7 @@ const VideosClient = ({
             filterState.courseFilter,
             filterState.branchFilter,
             filterState.semesterFilter,
-        ]
+        ],
     );
 
     return (
@@ -474,6 +491,7 @@ const VideosClient = ({
                 loadingCourses={loadingCourses}
                 loadingBranches={loadingBranches}
                 fetchBranches={fetchBranches}
+                collegeSlug={collegeName}
             />
 
             {editVideo && (

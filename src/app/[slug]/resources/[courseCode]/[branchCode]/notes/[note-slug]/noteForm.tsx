@@ -23,6 +23,7 @@ interface NotesFormModalProps {
     // courses: ICourse[];
     branchCode: string;
     subject: string;
+    collegeSlug: string;
 }
 
 const NotesFormModal: React.FC<NotesFormModalProps> = ({
@@ -34,6 +35,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     // courses,
     branchCode,
     subject,
+    collegeSlug,
 }) => {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -103,7 +105,9 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
         try {
-            const response = await fetch(api.resources.getSubjects(branchCode));
+            const response = await fetch(
+                api.resources.getSubjects(branchCode, collegeSlug),
+            );
             const data = await response.json();
 
             if (!response.ok) {

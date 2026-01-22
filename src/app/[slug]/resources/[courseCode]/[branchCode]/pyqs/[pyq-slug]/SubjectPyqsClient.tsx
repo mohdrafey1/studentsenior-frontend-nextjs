@@ -291,6 +291,7 @@ export default function SubjectPyqsClient({
                 onSubmit={handleSubmit}
                 branchCode={branchCode}
                 subjectCode={subjectCode}
+                collegeSlug={collegeSlug}
             />
         </div>
     );

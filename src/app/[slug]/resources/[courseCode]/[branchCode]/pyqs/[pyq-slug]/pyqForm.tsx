@@ -31,6 +31,7 @@ interface PyqFormModalProps {
     setForm: React.Dispatch<React.SetStateAction<PyqFormData>>;
     branchCode: string; // Prop to fetch subjects
     subjectCode: string; // New prop to pre-select the subject
+    collegeSlug: string; // College slug for filtering subjects
 }
 
 const PyqFormModal: React.FC<PyqFormModalProps> = ({
@@ -41,6 +42,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     setForm,
     branchCode,
     subjectCode, // Destructure the new prop
+    collegeSlug,
 }) => {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -58,7 +60,9 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
         if (!bCode) return;
         setLoadingSubjects(true);
         try {
-            const response = await fetch(api.resources.getSubjects(bCode));
+            const response = await fetch(
+                api.resources.getSubjects(bCode, collegeSlug),
+            );
             const data = await response.json();
 
             if (!response.ok) {
@@ -356,73 +360,71 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
                             )}
                         </div>
                     </div>
-                        {/* Solved Option */}
+                    {/* Solved Option */}
+                    <div className='flex items-center justify-between'>
+                        <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                            Solved Paper
+                        </span>
+                        <button
+                            type='button'
+                            onClick={() =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    solved: !prev.solved,
+                                    // Reset paid status when unsolved
+                                    isPaid: !prev.solved ? false : prev.isPaid,
+                                    price: !prev.solved ? 0 : prev.price,
+                                }))
+                            }
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                form.solved
+                                    ? 'bg-violet-600'
+                                    : 'bg-gray-200 dark:bg-gray-700'
+                            }`}
+                        >
+                            <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    form.solved
+                                        ? 'translate-x-6'
+                                        : 'translate-x-1'
+                                }`}
+                            />
+                        </button>
+                    </div>
+
+                    {/* Paid Option - Only visible when solved */}
+                    {form.solved && (
                         <div className='flex items-center justify-between'>
                             <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                Solved Paper
+                                Premium Content
                             </span>
                             <button
                                 type='button'
                                 onClick={() =>
                                     setForm((prev) => ({
                                         ...prev,
-                                        solved: !prev.solved,
-                                        // Reset paid status when unsolved
-                                        isPaid: !prev.solved
-                                            ? false
-                                            : prev.isPaid,
-                                        price: !prev.solved ? 0 : prev.price,
+                                        isPaid: !prev.isPaid,
+                                        price: !prev.isPaid ? 25 : 0,
                                     }))
                                 }
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    form.solved
+                                    form.isPaid
                                         ? 'bg-violet-600'
                                         : 'bg-gray-200 dark:bg-gray-700'
                                 }`}
                             >
                                 <span
                                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        form.solved
+                                        form.isPaid
                                             ? 'translate-x-6'
                                             : 'translate-x-1'
                                     }`}
                                 />
                             </button>
                         </div>
+                    )}
 
-                        {/* Paid Option - Only visible when solved */}
-                        {form.solved && (
-                            <div className='flex items-center justify-between'>
-                                <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                                    Premium Content
-                                </span>
-                                <button
-                                    type='button'
-                                    onClick={() =>
-                                        setForm((prev) => ({
-                                            ...prev,
-                                            isPaid: !prev.isPaid,
-                                            price: !prev.isPaid ? 25 : 0,
-                                        }))
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        form.isPaid
-                                            ? 'bg-violet-600'
-                                            : 'bg-gray-200 dark:bg-gray-700'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            form.isPaid
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
-                            </div>
-                        )}
-
-                         {/* Price Input - Only visible when isPaid is true */}
+                    {/* Price Input - Only visible when isPaid is true */}
                     {form.solved && form.isPaid && (
                         <div>
                             <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>

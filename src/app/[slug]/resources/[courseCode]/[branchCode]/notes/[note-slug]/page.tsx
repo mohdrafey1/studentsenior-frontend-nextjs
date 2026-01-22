@@ -11,10 +11,17 @@ interface SubjectItem {
 }
 
 // ✅ helper to fetch subject name
-async function getSubjectName(branchCode: string, subjectCode: string) {
-    const response = await fetch(api.resources.getSubjects(branchCode), {
-        next: { revalidate: 3600 },
-    });
+async function getSubjectName(
+    branchCode: string,
+    subjectCode: string,
+    collegeSlug: string,
+) {
+    const response = await fetch(
+        api.resources.getSubjects(branchCode, collegeSlug),
+        {
+            next: { revalidate: 3600 },
+        },
+    );
     const resp = await response.json();
     const matched = resp.data.find(
         (item: SubjectItem) => item.subjectCode === subjectCode,
@@ -47,7 +54,7 @@ export async function generateMetadata({
         courseCode,
     } = await params;
 
-    let subjectName = await getSubjectName(branchCode, subjectCode);
+    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
     subjectName = cleanSubjectName(subjectName);
 
     const pageTitle = `${subjectName} (${subjectCode}) Notes – Free Study Material | ${capitalizeWords(slug)}`;
@@ -112,7 +119,7 @@ export default async function SubjectNotesPage({
     } = await params;
 
     let notes: INote[] = [];
-    let subjectName = await getSubjectName(branchCode, subjectCode);
+    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
     subjectName = cleanSubjectName(subjectName);
 
     try {

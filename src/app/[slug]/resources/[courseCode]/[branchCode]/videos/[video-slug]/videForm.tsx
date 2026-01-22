@@ -31,6 +31,7 @@ interface VideoFormModalProps {
     branchCode: string;
     subjectCode: string;
     college: string;
+    collegeSlug: string;
 }
 
 const VideoFormModal: React.FC<VideoFormModalProps> = ({
@@ -41,6 +42,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
     setForm,
     branchCode,
     subjectCode,
+    collegeSlug,
 }) => {
     const [loading, setLoading] = useState(false);
     const [subjects, setSubjects] = useState<ISubject[]>([]);
@@ -51,21 +53,26 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
         if (isOpen) setSubjects([]);
     }, [isOpen]);
 
-    const fetchSubjects = useCallback(async (bCode: string) => {
-        if (!bCode) return;
-        setLoadingSubjects(true);
-        try {
-            const response = await fetch(api.resources.getSubjects(bCode));
-            const data = await response.json();
-            if (!response.ok)
-                throw new Error(data.message || 'Failed to fetch subjects');
-            setSubjects(data.data || []);
-        } catch (error) {
-            console.error('Error fetching subjects:', error);
-        } finally {
-            setLoadingSubjects(false);
-        }
-    }, []);
+    const fetchSubjects = useCallback(
+        async (bCode: string) => {
+            if (!bCode) return;
+            setLoadingSubjects(true);
+            try {
+                const response = await fetch(
+                    api.resources.getSubjects(bCode, collegeSlug),
+                );
+                const data = await response.json();
+                if (!response.ok)
+                    throw new Error(data.message || 'Failed to fetch subjects');
+                setSubjects(data.data || []);
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+            } finally {
+                setLoadingSubjects(false);
+            }
+        },
+        [collegeSlug],
+    );
 
     useEffect(() => {
         if (isOpen && branchCode) fetchSubjects(branchCode);
