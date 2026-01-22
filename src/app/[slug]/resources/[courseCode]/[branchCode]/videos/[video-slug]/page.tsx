@@ -277,6 +277,7 @@ export default function SubjectVideosPage() {
                 branchCode={branchCode}
                 subjectCode={subjectCode}
                 college={slug}
+                collegeSlug={slug}
             />
         </>
     );

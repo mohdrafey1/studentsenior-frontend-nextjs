@@ -112,8 +112,10 @@ export const api = {
         getCourses: `${API_BASE_URL}/resource/courses`,
         getBranches: (courseId: string) =>
             `${API_BASE_URL}/resource/branches/${courseId}`,
-        getSubjects: (branchId: string) =>
-            `${API_BASE_URL}/resource/subjects/${branchId}`,
+        getSubjects: (branchCode: string, collegeSlug?: string) =>
+            collegeSlug
+                ? `${API_BASE_URL}/resource/subjects/${branchCode}/${collegeSlug}`
+                : `${API_BASE_URL}/resource/subjects/${branchCode}`,
         getPyqsBySubject: (subjectCode: string, slug: string) =>
             `${API_BASE_URL}/resource/pyqs/${subjectCode}/${slug}`,
         getNotesBySubject: (subjectCode: string, slug: string) =>

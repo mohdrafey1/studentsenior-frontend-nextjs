@@ -24,6 +24,7 @@ interface VideoFormModalProps {
     loadingCourses: boolean;
     loadingBranches: boolean;
     fetchBranches: (courseCode: string) => Promise<void>;
+    collegeSlug: string;
 }
 
 const VideoFormModal: React.FC<VideoFormModalProps> = ({
@@ -37,6 +38,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
     loadingCourses,
     loadingBranches,
     fetchBranches,
+    collegeSlug,
 }) => {
     const [loading, setLoading] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -106,7 +108,9 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
     const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
         try {
-            const response = await fetch(api.resources.getSubjects(branchCode));
+            const response = await fetch(
+                api.resources.getSubjects(branchCode, collegeSlug),
+            );
             const data = await response.json();
 
             if (!response.ok) {

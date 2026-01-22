@@ -468,6 +468,7 @@ const NotesClient = ({
                 loadingCourses={loadingCourses}
                 loadingBranches={loadingBranches}
                 fetchBranches={fetchBranches}
+                collegeSlug={collegeName}
             />
 
             {editNote && (

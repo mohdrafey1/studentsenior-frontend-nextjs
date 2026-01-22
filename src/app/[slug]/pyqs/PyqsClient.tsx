@@ -1,5 +1,11 @@
 'use client';
-import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { IPagination, IPyq } from '@/utils/interface';
@@ -130,7 +136,7 @@ const PyqsClient = ({
             examTypeFilter,
             isSolvedFilter,
             filterState.page,
-        ]
+        ],
     );
 
     // Mark initial mount as complete
@@ -249,73 +255,76 @@ const PyqsClient = ({
         setEditPyq(null);
     }, []);
 
-    const handleAddSubmit = useCallback(async (formData: PyqFormData) => {
-        setLoading(true);
-        try {
-            const response = await fetch(api.pyq.createPyq, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    ...formData,
-                    college: collegeName,
-                }),
-            });
+    const handleAddSubmit = useCallback(
+        async (formData: PyqFormData) => {
+            setLoading(true);
+            try {
+                const response = await fetch(api.pyq.createPyq, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        ...formData,
+                        college: collegeName,
+                    }),
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create PYQ');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to create PYQ');
+                }
+                toast.success(data.message || 'PYQ created successfully!');
+
+                closeAddModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error creating PYQ:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeAddModal();
             }
-            toast.success(data.message || 'PYQ created successfully!');
+        },
+        [collegeName, closeAddModal],
+    );
 
-            closeAddModal();
-            setForceRefetch(true);
-        } catch (error) {
-            console.error('Error creating PYQ:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeAddModal();
-        }
-    }, [collegeName, closeAddModal]);
+    const handleEditSubmit = useCallback(
+        async (formData: { isPaid: boolean; price: number }) => {
+            if (!editPyq) return;
 
-    const handleEditSubmit = useCallback(async (formData: {
-        isPaid: boolean;
-        price: number;
-    }) => {
-        if (!editPyq) return;
+            setLoading(true);
+            try {
+                const response = await fetch(api.pyq.editPyq(editPyq._id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(formData),
+                });
 
-        setLoading(true);
-        try {
-            const response = await fetch(api.pyq.editPyq(editPyq._id), {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(formData),
-            });
+                const data = await response.json();
 
-            const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to update PYQ');
+                }
+                toast.success(data.message || 'PYQ updated successfully!');
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to update PYQ');
+                closeEditModal();
+                setForceRefetch(true);
+            } catch (error) {
+                console.error('Error updating PYQ:', error);
+                throw error;
+            } finally {
+                setLoading(false);
+                closeEditModal();
             }
-            toast.success(data.message || 'PYQ updated successfully!');
-
-            closeEditModal();
-            setForceRefetch(true);
-        } catch (error) {
-            console.error('Error updating PYQ:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-            closeEditModal();
-        }
-    }, [editPyq, closeEditModal]);
+        },
+        [editPyq, closeEditModal],
+    );
 
     const handleDeleteRequest = useCallback((pyqId: string) => {
         setDeleteTargetId(pyqId);
@@ -365,13 +374,15 @@ const PyqsClient = ({
 
     const hasActiveFilters = useMemo(
         () =>
-            !!(filterState.searchTerm ||
-            filterState.courseFilter ||
-            filterState.branchFilter ||
-            filterState.semesterFilter ||
-            yearFilter ||
-            examTypeFilter ||
-            isSolvedFilter),
+            !!(
+                filterState.searchTerm ||
+                filterState.courseFilter ||
+                filterState.branchFilter ||
+                filterState.semesterFilter ||
+                yearFilter ||
+                examTypeFilter ||
+                isSolvedFilter
+            ),
         [
             filterState.searchTerm,
             filterState.courseFilter,
@@ -380,7 +391,7 @@ const PyqsClient = ({
             yearFilter,
             examTypeFilter,
             isSolvedFilter,
-        ]
+        ],
     );
 
     const activeFilterCount = useMemo(
@@ -402,7 +413,7 @@ const PyqsClient = ({
             yearFilter,
             examTypeFilter,
             isSolvedFilter,
-        ]
+        ],
     );
 
     return (
@@ -576,6 +587,7 @@ const PyqsClient = ({
                 loadingCourses={loadingCourses}
                 loadingBranches={loadingBranches}
                 fetchBranches={fetchBranches}
+                collegeSlug={collegeName}
             />
 
             {editPyq && (

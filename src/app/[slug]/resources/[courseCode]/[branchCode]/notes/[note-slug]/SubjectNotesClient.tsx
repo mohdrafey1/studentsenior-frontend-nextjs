@@ -285,6 +285,7 @@ export default function SubjectNotesClient({
                 setForm={setForm}
                 subject={subjectCode}
                 branchCode={branchCode}
+                collegeSlug={collegeSlug}
             />
         </div>
     );

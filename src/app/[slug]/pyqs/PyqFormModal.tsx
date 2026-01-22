@@ -28,6 +28,7 @@ interface PyqFormModalProps {
     loadingCourses: boolean;
     loadingBranches: boolean;
     fetchBranches: (courseCode: string) => void;
+    collegeSlug: string;
 }
 
 const PyqFormModal: React.FC<PyqFormModalProps> = ({
@@ -41,6 +42,7 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     loadingCourses,
     loadingBranches,
     fetchBranches,
+    collegeSlug,
 }) => {
     const [loading, setLoading] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -108,7 +110,9 @@ const PyqFormModal: React.FC<PyqFormModalProps> = ({
     const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
         try {
-            const response = await fetch(api.resources.getSubjects(branchCode));
+            const response = await fetch(
+                api.resources.getSubjects(branchCode, collegeSlug),
+            );
             const data = await response.json();
 
             if (!response.ok) {
