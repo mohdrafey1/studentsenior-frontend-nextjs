@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
+import type { CollegeSections } from '@/utils/interface';
+import { DEFAULT_SECTIONS } from '@/constant';
 import {
     Landmark,
     StickyNote,
@@ -18,7 +20,18 @@ import {
     BookOpen,
 } from 'lucide-react';
 
-const Collegelink2 = () => {
+interface CollegeLink2Props {
+    sections?: CollegeSections;
+}
+
+interface NavLink {
+    href: string;
+    icon: React.ReactNode;
+    text: string;
+    sectionKey?: keyof CollegeSections;
+}
+
+const CollegeLink2 = ({ sections }: CollegeLink2Props) => {
     const { slug } = useParams();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +45,12 @@ const Collegelink2 = () => {
         }
     };
 
-    const mainLinks = [
+    const enabledSections: CollegeSections = {
+        ...DEFAULT_SECTIONS,
+        ...(sections || {}),
+    };
+
+    const mainLinks: NavLink[] = [
         {
             href: `/${slug}`,
             icon: <Landmark size={20} />,
@@ -42,61 +60,73 @@ const Collegelink2 = () => {
             href: `/${slug}/pyqs`,
             icon: <StickyNote size={20} />,
             text: 'PYQs',
+            sectionKey: 'pyqs',
         },
         {
             href: `/${slug}/notes`,
             icon: <StickyNote size={20} />,
             text: 'Notes',
+            sectionKey: 'notes',
         },
         {
             href: `/${slug}/store`,
             icon: <Store size={20} />,
             text: 'Store',
+            sectionKey: 'store',
         },
     ];
 
-    const moreLinks = [
+    const moreLinks: NavLink[] = [
         {
             href: `/${slug}/seniors`,
             icon: <User size={20} />,
             text: 'Seniors',
+            sectionKey: 'seniors',
         },
         {
             href: `/${slug}/groups`,
             icon: <MessageCircle size={20} />,
             text: 'Groups',
+            sectionKey: 'groups',
         },
         {
             href: `/${slug}/opportunities`,
             icon: <Search size={20} />,
             text: 'Opportunity',
+            sectionKey: 'opportunities',
         },
         {
             href: `/${slug}/lost-found`,
             icon: <Compass size={20} />,
             text: 'Lost Found',
+            sectionKey: 'lostFound',
         },
-        // {
-        //     href: `/${slug}/community`,
-        //     icon: <Users size={20} />,
-        //     text: "Community",
-        // },
         {
             href: `/${slug}/videos`,
             icon: <Video size={20} />,
             text: 'Videos',
+            sectionKey: 'videos',
         },
         {
             href: `/${slug}/syllabus`,
             icon: <BookOpen size={20} />,
             text: 'Syllabus',
+            sectionKey: 'syllabus',
         },
         {
             href: `/${slug}/resources`,
             icon: <Zap size={20} />,
             text: 'Resources',
+            sectionKey: 'resources',
         },
     ];
+
+    const visibleMainLinks = mainLinks.filter(
+        (link) => !link.sectionKey || enabledSections[link.sectionKey],
+    );
+    const visibleMoreLinks = moreLinks.filter(
+        (link) => !link.sectionKey || enabledSections[link.sectionKey],
+    );
 
     return (
         <div className='lg:hidden absolute mt-15'>
@@ -105,7 +135,7 @@ const Collegelink2 = () => {
                 <div className='bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 shadow-lg'>
                     <div className='max-w-screen-xl mx-auto px-2'>
                         <div className='flex justify-around items-center'>
-                            {mainLinks.map((link, index) => (
+                            {visibleMainLinks.map((link, index) => (
                                 <Link
                                     prefetch={false}
                                     key={index}
@@ -167,7 +197,7 @@ const Collegelink2 = () => {
                         <div className='pt-2 pb-safe px-4 max-h-[70vh] overflow-y-auto'>
                             <div className='w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4' />
                             <div className='grid grid-cols-3 gap-4 pb-4'>
-                                {moreLinks.map((link, index) => (
+                                {visibleMoreLinks.map((link, index) => (
                                     <Link
                                         prefetch={false}
                                         key={index}
@@ -196,4 +226,4 @@ const Collegelink2 = () => {
     );
 };
 
-export default Collegelink2;
+export default CollegeLink2;
