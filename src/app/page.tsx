@@ -1,4 +1,5 @@
 import CollegeSelectHandler from '@/components/HomePage/CollegeSelectHandler';
+import DownloadAppButton from '@/components/HomePage/DownloadAppButton';
 import ResourceQuickStart from '@/components/HomePage/ResourceQuickStart';
 import QuickLinks from '@/components/HomePage/QuickLinks';
 import { api } from '@/config/apiUrls';
@@ -166,6 +167,9 @@ export default async function HomePage() {
                                     access trusted resources, and take your
                                     academic journey further.
                                 </p>
+
+                                {/* CTA Button */}
+                                <DownloadAppButton />
                             </div>
 
                             {/* College Selector */}

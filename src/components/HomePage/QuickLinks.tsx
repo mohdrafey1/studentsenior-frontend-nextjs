@@ -45,6 +45,7 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
     const [installPromptEvent, setInstallPromptEvent] =
         useState<BeforeInstallPromptEvent | null>(null);
     const [isInstallable, setIsInstallable] = useState(false);
+    const [isAndroid, setIsAndroid] = useState(false);
     const router = useRouter();
 
     // Capture the PWA install prompt event when available
@@ -76,6 +77,13 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
             );
             window.removeEventListener('appinstalled', handleAppInstalled);
         };
+    }, []);
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        if (/android/i.test(userAgent)) {
+            setIsAndroid(true);
+        }
     }, []);
 
     const handleInstall = useCallback(async () => {
@@ -266,18 +274,31 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={handleInstall}
-                                aria-label='Install Student Senior mobile application'
-                                className='inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed'
-                                rel='noopener noreferrer'
-                                disabled={!isInstallable}
-                            >
-                                <Download />
-                                <span>
-                                    {isInstallable ? 'Install Now' : 'Install'}
-                                </span>
-                            </button>
+                            {isAndroid ? (
+                                <a
+                                    href='intent://studentsenior.com/#Intent;scheme=https;package=com.mohdrafey1.studentsenior;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.mohdrafey1.studentsenior;end'
+                                    aria-label='Open Student Senior mobile application'
+                                    className='inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95'
+                                >
+                                    <Download />
+                                    <span>Open App</span>
+                                </a>
+                            ) : (
+                                <button
+                                    onClick={handleInstall}
+                                    aria-label='Install Student Senior mobile application'
+                                    className='inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed'
+                                    rel='noopener noreferrer'
+                                    disabled={!isInstallable}
+                                >
+                                    <Download />
+                                    <span>
+                                        {isInstallable
+                                            ? 'Install Now'
+                                            : 'Install'}
+                                    </span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </aside>
