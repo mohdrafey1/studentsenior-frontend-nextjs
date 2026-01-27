@@ -159,6 +159,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const [signedUrl, setSignedUrl] = useState<string | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+    const [isAndroid, setIsAndroid] = useState(false);
 
     // Suggested Notes state
     const [suggestedNotes, setSuggestedNotes] = useState<{
@@ -215,6 +216,13 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
         fetchSignedUrlForView();
     }, [note?.fileUrl]);
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        if (/android/i.test(userAgent)) {
+            setIsAndroid(true);
+        }
+    }, []);
 
     useEffect(() => {
         const isSavedEntry = !!savedNotes?.some((entry) =>
@@ -342,7 +350,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     const isOwner = note.owner._id === ownerId;
     const isPaidAndNotOwner =
         note.isPaid && !isOwner && !note.purchasedBy?.includes(ownerId || '');
- 
+
     const downloadFileName = `${note.subject.subjectCode}-notes-studentsenior.pdf`;
 
     const handleSecureDownload = async () => {
@@ -593,10 +601,13 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 {!note.isPaid && note.isDownloadable && (
                     <div className='mt-8'>
                         <div className='flex flex-wrap gap-3 justify-center'>
-                            <button
+                            {!isAndroid ? (
+                                <button
                                     onClick={() => {
                                         if (!currentUser) {
-                                            toast.error('Please login to download resources');
+                                            toast.error(
+                                                'Please login to download resources',
+                                            );
                                             return;
                                         }
                                         setIsDownloadModalOpen(true);
@@ -615,17 +626,22 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                     <Download className='w-5 h-5' />
                                     Download
                                 </button>
-                            
+                            ) : (
+                                <a
+                                    href={`intent://studentsenior.com${pathname}#Intent;scheme=https;package=com.mohdrafey1.studentsenior;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.mohdrafey1.studentsenior;end`}
+                                    className='inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm bg-sky-600 text-white hover:bg-sky-700'
+                                >
+                                    <Download className='w-5 h-5' />
+                                    Open in App
+                                </a>
+                            )}
 
                             <DownloadTimerModal
                                 isOpen={isDownloadModalOpen}
                                 onClose={() => setIsDownloadModalOpen(false)}
                                 onDownload={handleSecureDownload}
-                             
                             />
-
                         </div>
-                       
                     </div>
                 )}
 

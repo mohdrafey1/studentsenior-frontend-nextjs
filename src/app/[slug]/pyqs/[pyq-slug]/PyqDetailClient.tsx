@@ -159,6 +159,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const [signedUrl, setSignedUrl] = useState<string | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+    const [isAndroid, setIsAndroid] = useState(false);
 
     // Suggested PYQs state
     const [suggestedPyqs, setSuggestedPyqs] = useState<{
@@ -218,6 +219,13 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
         fetchSignedUrlForView();
     }, [pyq?.fileUrl]);
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        if (/android/i.test(userAgent)) {
+            setIsAndroid(true);
+        }
+    }, []);
 
     useEffect(() => {
         const isSavedEntry = !!savedPYQs?.some((entry) =>
@@ -349,10 +357,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const isPaidAndNotOwner =
         pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId || '');
     const downloadFileName = `${pyq.subject.subjectCode}-${pyq.examType}-${pyq.year}-studentsenior.pdf`;
-
-  
-
-    
 
     const handleSecureDownload = async () => {
         if (!pyq?.fileUrl) return;
@@ -589,11 +593,13 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                 {!pyq.solved && (
                     <div className='mt-8'>
                         <div className='flex flex-wrap gap-3 justify-center'>
-                         
+                            {!isAndroid ? (
                                 <button
                                     onClick={() => {
                                         if (!currentUser) {
-                                            toast.error('Please login to download resources');
+                                            toast.error(
+                                                'Please login to download resources',
+                                            );
                                             return;
                                         }
                                         setIsDownloadModalOpen(true);
@@ -603,7 +609,8 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                             ? 'bg-sky-600 text-white hover:bg-sky-700'
                                             : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                     }`}
-                                    title={signedUrl
+                                    title={
+                                        signedUrl
                                             ? `Download ${downloadFileName}`
                                             : 'Link expired. Please refresh to get a new link.'
                                     }
@@ -611,14 +618,21 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     <Download className='w-5 h-5' />
                                     Download
                                 </button>
-                          
+                            ) : (
+                                <a
+                                    href={`intent://studentsenior.com${pathname}#Intent;scheme=https;package=com.mohdrafey1.studentsenior;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.mohdrafey1.studentsenior;end`}
+                                    className='inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm bg-sky-600 text-white hover:bg-sky-700'
+                                >
+                                    <Download className='w-5 h-5' />
+                                    Open in App
+                                </a>
+                            )}
 
                             <DownloadTimerModal
                                 isOpen={isDownloadModalOpen}
                                 onClose={() => setIsDownloadModalOpen(false)}
                                 onDownload={handleSecureDownload}
                             />
-
                         </div>
                     </div>
                 )}
