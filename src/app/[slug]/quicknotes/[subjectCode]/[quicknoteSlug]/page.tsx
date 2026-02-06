@@ -1,14 +1,7 @@
-import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { IQuickNote } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import Link from 'next/link';
-import Image from 'next/image';
-
-interface QuickNoteDetailData {
-    success: boolean;
-    data: IQuickNote;
-}
 
 const getQuickNoteDetail = async (slug: string): Promise<IQuickNote | null> => {
     try {
