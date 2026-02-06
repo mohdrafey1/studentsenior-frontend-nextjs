@@ -339,3 +339,14 @@ export interface IVideoResponse {
     videos: IVideo[];
     pagination: IPagination;
 }
+
+export interface IQuickNote {
+    _id: string;
+    subject: ISubject | string;
+    unitNumber: number;
+    title: string;
+    slug: string;
+    content?: string;
+    lastUpdated: string;
+    clickCounts?: number;
+}

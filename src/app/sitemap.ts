@@ -18,6 +18,7 @@ interface SitemapItem {
     slug: string;
     updatedAt?: string;
     collegeSlug?: string;
+    subjectCode?: string;
 }
 
 interface SitemapData {
@@ -30,6 +31,7 @@ interface SitemapData {
     // groups: SitemapItem[];
     lostFound: SitemapItem[];
     store: SitemapItem[];
+    quickNotes: SitemapItem[];
     syllabus: SitemapItem[];
     syllabusListings: Array<{
         collegeSlug: string;
@@ -451,18 +453,69 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             });
         });
 
-        // Deduplicate dynamic routes by URL
+        // Create a set to track processed URLs
         const seen = new Set<string>();
-        const dedupedDynamic = dynamicRoutes.filter((route) => {
+
+        // Initial deduplication of routes added so far
+        const initialDeduped = dynamicRoutes.filter((route) => {
             if (seen.has(route.url)) return false;
             seen.add(route.url);
             return true;
         });
 
+        // Add Quick Notes routes
+        const quickNoteRoutes: MetadataRoute.Sitemap = [];
+        const quickNoteListings = new Set<string>();
+
+        (sitemapData.quickNotes || []).forEach((note) => {
+            if (note.collegeSlug && note.subjectCode) {
+                const collegeSlug = sanitizeSlug(note.collegeSlug);
+                const subjectCode = sanitizeSlug(note.subjectCode);
+                const noteSlug = sanitizeSlug(note.slug);
+
+                // Add Detail Page
+                quickNoteRoutes.push({
+                    url: `${SITE_URL}/${collegeSlug}/quicknotes/${subjectCode}/${noteSlug}`,
+                    lastModified: note.updatedAt
+                        ? new Date(note.updatedAt)
+                        : currentDate,
+                    changeFrequency: 'monthly',
+                    priority: 0.7,
+                });
+
+                // Collect unique listing pages
+                quickNoteListings.add(
+                    `${SITE_URL}/${collegeSlug}/quicknotes/${subjectCode}`,
+                );
+            }
+        });
+
+        // Add Quick Note Listing Pages to quickNoteRoutes
+        quickNoteListings.forEach((url) => {
+            quickNoteRoutes.push({
+                url: url,
+                lastModified: currentDate,
+                changeFrequency: 'weekly',
+                priority: 0.8,
+            });
+        });
+
+        // Filter out any quick note routes that might already exist (unlikely but safe)
+        const filteredQuickNoteRoutes = quickNoteRoutes.filter((route) => {
+            if (seen.has(route.url)) return false;
+            seen.add(route.url);
+            return true;
+        });
+
+        const finalDynamicRoutes = [
+            ...initialDeduped,
+            ...filteredQuickNoteRoutes,
+        ];
+
         console.log(
-            `[Sitemap] Generated ${staticRoutes.length} static routes and ${dedupedDynamic.length} unique dynamic routes (before dedup ${dynamicRoutes.length})`,
+            `[Sitemap] Generated ${staticRoutes.length} static routes and ${finalDynamicRoutes.length} unique dynamic routes`,
         );
-        return [...staticRoutes, ...dedupedDynamic];
+        return [...staticRoutes, ...finalDynamicRoutes];
     } catch (error) {
         console.error('[Sitemap] Error generating sitemap:', error);
         console.error('[Sitemap] Falling back to static routes only');
