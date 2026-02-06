@@ -176,4 +176,10 @@ export const api = {
         getSyllabusByBranch: (collegeSlug: string, branchCode: string) =>
             `${API_BASE_URL}/syllabus/branch/${collegeSlug}/${branchCode}`,
     },
+
+    quickNotes: {
+        getNotesBySubject: (subjectCode: string) =>
+            `${API_BASE_URL}/quicknotes/${subjectCode}`,
+        getNoteDetail: (slug: string) => `${API_BASE_URL}/quicknotes/s/${slug}`,
+    },
 };
