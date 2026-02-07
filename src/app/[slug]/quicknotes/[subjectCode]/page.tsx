@@ -3,15 +3,18 @@ import { IQuickNote, ISubject } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import Link from 'next/link';
 
-interface QuickNotesData {
+interface QuickNotesResponse {
     success: boolean;
-    data: IQuickNote[];
-    subject: ISubject;
+    message?: string;
+    data: {
+        notes: IQuickNote[];
+        subject: ISubject;
+    };
 }
 
 const getQuickNotes = async (
     subjectCode: string,
-): Promise<QuickNotesData | null> => {
+): Promise<QuickNotesResponse | null> => {
     try {
         const res = await fetch(api.quickNotes.getNotesBySubject(subjectCode), {
             next: { revalidate: 60 },
@@ -37,7 +40,7 @@ export async function generateMetadata({
     const { subjectCode } = await params;
     const data = await getQuickNotes(subjectCode);
     console.log(data);
-    const subjectName = data?.subject?.subjectName || subjectCode;
+    const subjectName = data?.data?.subject?.subjectName || subjectCode;
 
     return {
         title: `Quick Notes - ${subjectName} (${subjectCode})`,
@@ -51,8 +54,8 @@ export default async function QuickNotesListPage({
     const { slug, subjectCode } = await params;
     const response = await getQuickNotes(subjectCode);
 
-    const notes = response?.data || [];
-    const subject = response?.subject;
+    const notes = response?.data?.notes || [];
+    const subject = response?.data?.subject;
     const subjectName = subject?.subjectName || subjectCode;
 
     return (

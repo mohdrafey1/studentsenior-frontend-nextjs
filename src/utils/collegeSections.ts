@@ -12,6 +12,7 @@ export const DEFAULT_SECTIONS: CollegeSections = {
     groups: true,
     opportunities: true,
     lostFound: true,
+    quickNotes: true,
 };
 
 // Cache duration: 24 hours (in seconds)
