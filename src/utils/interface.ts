@@ -33,6 +33,7 @@ export interface CollegeSections {
     groups: boolean;
     opportunities: boolean;
     lostFound: boolean;
+    quickNotes: boolean;
 }
 
 export interface College {

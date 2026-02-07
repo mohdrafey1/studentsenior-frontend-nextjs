@@ -27,6 +27,7 @@ import {
     UserCheck,
     Gift,
     Layers,
+    Zap,
 } from 'lucide-react';
 import { DEFAULT_SECTIONS } from '@/constant';
 
@@ -172,6 +173,21 @@ export default async function CollegePage({ params }: CollegePageProps) {
             link: `/${slug}/notes`,
         },
         {
+            id: 'quicknotes',
+            title: 'Quick Notes',
+            icon: Zap,
+            gradient: 'from-violet-500 to-purple-500',
+            bgGradient:
+                'from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20',
+            description: 'Concise revision notes for last-minute exam prep',
+            benefits: [
+                { icon: Zap, text: 'Quick Last-minute Revision' },
+                { icon: BookMarked, text: 'Exam-oriented Content' },
+                { icon: TrendingUp, text: 'Save Study Time' },
+            ],
+            link: `/${slug}/quicknotes`,
+        },
+        {
             id: 'videos',
             title: 'Course Videos',
             icon: Video,
@@ -303,6 +319,7 @@ export default async function CollegePage({ params }: CollegePageProps) {
     const featureToSectionMap: Record<string, keyof CollegeSections> = {
         pyqs: 'pyqs',
         notes: 'notes',
+        quicknotes: 'quickNotes',
         videos: 'videos',
         syllabus: 'syllabus',
         store: 'store',

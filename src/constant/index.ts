@@ -31,6 +31,7 @@ export const DEFAULT_SECTIONS: CollegeSections = {
     groups: false,
     opportunities: false,
     lostFound: false,
+    quickNotes: true,
 } as const;
 
 export const FILTER_ACADEMIC_YEARS = [

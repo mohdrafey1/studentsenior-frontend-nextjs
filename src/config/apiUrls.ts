@@ -178,6 +178,8 @@ export const api = {
     },
 
     quickNotes: {
+        getQuickNotesByCollegeSlug: (slug: string) =>
+            `${API_BASE_URL}/quicknotes/college/${slug}`,
         getNotesBySubject: (subjectCode: string) =>
             `${API_BASE_URL}/quicknotes/${subjectCode}`,
         getNoteDetail: (slug: string) => `${API_BASE_URL}/quicknotes/s/${slug}`,
