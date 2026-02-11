@@ -25,10 +25,13 @@ interface ISubject {
 export default function SubjectsList({
     subjects,
     collegeSlug,
+    branchCode,
+    courseCode,
 }: {
     subjects: ISubject[];
     branchCode: string;
     collegeSlug: string;
+    courseCode: string;
 }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -264,7 +267,7 @@ export default function SubjectsList({
                                                     ? `/${collegeSlug}/syllabus/${generateSyllabusSlug(subject.subjectName, subject.subjectCode)}`
                                                     : type === 'quicknotes'
                                                       ? `/${collegeSlug}/quicknotes/${subject.subjectCode}`
-                                                      : `${type}/${subject.subjectCode}`;
+                                                      : `/${collegeSlug}/resources/${courseCode}/${branchCode}/${type}/${subject.subjectCode}`;
 
                                             return (
                                                 <Link

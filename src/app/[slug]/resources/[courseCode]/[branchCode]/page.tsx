@@ -70,6 +70,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
                     subjects={subjects}
                     branchCode={branchCode}
                     collegeSlug={slug}
+                    courseCode={courseCode}
                 />
             </main>
         </>
