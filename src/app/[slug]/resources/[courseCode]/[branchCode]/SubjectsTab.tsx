@@ -2,7 +2,16 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, FileText, PlayCircle, Users } from 'lucide-react';
+import {
+    BookOpen,
+    FileText,
+    PlayCircle,
+    Search,
+    GraduationCap,
+    Zap,
+    Eye,
+    X,
+} from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface ISubject {
@@ -15,7 +24,6 @@ interface ISubject {
 
 export default function SubjectsList({
     subjects,
-    branchCode,
     collegeSlug,
 }: {
     subjects: ISubject[];
@@ -42,7 +50,6 @@ export default function SubjectsList({
     }, [initialActiveTab]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Generate syllabus slug from subject name and code
     const generateSyllabusSlug = (
         subjectName: string,
         subjectCode: string,
@@ -53,13 +60,11 @@ export default function SubjectsList({
         return `${cleanSubjectName}-${subjectCode.toLowerCase()}`;
     };
 
-    // Get unique semesters from subjects
     const semesters = useMemo(() => {
         const semesterSet = new Set(subjects.map((s) => s.semester));
         return Array.from(semesterSet).sort((a, b) => a - b);
     }, [subjects]);
 
-    // Filtered list
     const filteredSubjects = useMemo(() => {
         return subjects.filter((subject) => {
             const matchesSemester =
@@ -78,164 +83,203 @@ export default function SubjectsList({
     const resourceLinks = [
         {
             type: 'pyqs',
-            label: 'Previous Papers',
+            label: 'Papers',
+            fullLabel: 'Previous Papers',
             icon: FileText,
-            color: 'bg-sky-500 hover:bg-sky-600',
+            gradient: 'from-sky-500 to-blue-600',
+            hoverGradient: 'hover:from-sky-600 hover:to-blue-700',
+            bgLight: 'bg-sky-50 dark:bg-sky-950/40',
+            textColor: 'text-sky-600 dark:text-sky-400',
+            borderColor: 'border-sky-200 dark:border-sky-800',
         },
         {
             type: 'notes',
-            label: 'Study Notes',
+            label: 'Notes',
+            fullLabel: 'Study Notes',
             icon: BookOpen,
-            color: 'bg-green-500 hover:bg-green-600',
+            gradient: 'from-emerald-500 to-green-600',
+            hoverGradient: 'hover:from-emerald-600 hover:to-green-700',
+            bgLight: 'bg-emerald-50 dark:bg-emerald-950/40',
+            textColor: 'text-emerald-600 dark:text-emerald-400',
+            borderColor: 'border-emerald-200 dark:border-emerald-800',
+        },
+        {
+            type: 'quicknotes',
+            label: 'Quick',
+            fullLabel: 'Quick Notes',
+            icon: Zap,
+            gradient: 'from-amber-500 to-yellow-600',
+            hoverGradient: 'hover:from-amber-600 hover:to-yellow-700',
+            bgLight: 'bg-amber-50 dark:bg-amber-950/40',
+            textColor: 'text-amber-600 dark:text-amber-400',
+            borderColor: 'border-amber-200 dark:border-amber-800',
         },
         {
             type: 'videos',
-            label: 'Video Lectures',
+            label: 'Videos',
+            fullLabel: 'Video Lectures',
             icon: PlayCircle,
-            color: 'bg-purple-500 hover:bg-purple-600',
+            gradient: 'from-purple-500 to-violet-600',
+            hoverGradient: 'hover:from-purple-600 hover:to-violet-700',
+            bgLight: 'bg-purple-50 dark:bg-purple-950/40',
+            textColor: 'text-purple-600 dark:text-purple-400',
+            borderColor: 'border-purple-200 dark:border-purple-800',
         },
         {
             type: 'syllabus',
             label: 'Syllabus',
-            icon: BookOpen,
-            color: 'bg-orange-500 hover:bg-orange-600',
+            fullLabel: 'Syllabus',
+            icon: GraduationCap,
+            gradient: 'from-orange-500 to-red-500',
+            hoverGradient: 'hover:from-orange-600 hover:to-red-600',
+            bgLight: 'bg-orange-50 dark:bg-orange-950/40',
+            textColor: 'text-orange-600 dark:text-orange-400',
+            borderColor: 'border-orange-200 dark:border-orange-800',
         },
     ];
 
+    const handleTabChange = (tab: number | 'all') => {
+        setActiveTab(tab);
+        const params = new URLSearchParams(searchParams.toString());
+        if (tab === 'all') {
+            params.delete('semester');
+        } else {
+            params.set('semester', String(tab));
+        }
+        const query = params.toString();
+        router.replace(query ? `${pathname}?${query}` : pathname, {
+            scroll: false,
+        });
+    };
+
     return (
-        <div className='max-w-7xl mx-auto space-y-6'>
-            {/* Semester Filter */}
-
-            <div className='flex flex-wrap gap-2 justify-center'>
-                {/* Header with Search */}
-
-                <div className=''>
+        <div className='max-w-6xl mx-auto space-y-5 px-1 sm:px-0'>
+            {/* Search & Filter Bar */}
+            <div className='bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700/60 p-3 sm:p-4 space-y-3 shadow-sm'>
+                {/* Search Input */}
+                <div className='relative'>
+                    <Search className='absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 pointer-events-none' />
                     <input
                         type='text'
                         placeholder='Search subjects by name or code...'
-                        className='w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all'
+                        className='w-full pl-10 pr-10 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600/60 rounded-xl bg-gray-50 dark:bg-gray-900/50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all placeholder:text-gray-400'
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className='absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+                        >
+                            <X className='w-4 h-4' />
+                        </button>
+                    )}
                 </div>
 
-                <button
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        activeTab === 'all'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                    onClick={() => {
-                        setActiveTab('all');
-                        const params = new URLSearchParams(
-                            searchParams.toString(),
-                        );
-                        params.delete('semester');
-                        const query = params.toString();
-                        router.replace(
-                            query ? `${pathname}?${query}` : pathname,
-                            {
-                                scroll: false,
-                            },
-                        );
-                    }}
-                >
-                    All Sem
-                </button>
-                {semesters.map((semester) => (
+                {/* Semester Pills */}
+                <div className='flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1'>
                     <button
-                        key={semester}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            activeTab === semester
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                            activeTab === 'all'
+                                ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                                : 'bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600/60'
                         }`}
-                        onClick={() => {
-                            setActiveTab(semester);
-                            const params = new URLSearchParams(
-                                searchParams.toString(),
-                            );
-                            params.set('semester', String(semester));
-                            const query = params.toString();
-                            router.replace(
-                                query ? `${pathname}?${query}` : pathname,
-                                {
-                                    scroll: false,
-                                },
-                            );
-                        }}
+                        onClick={() => handleTabChange('all')}
                     >
-                        Sem {semester}
+                        All
                     </button>
-                ))}
+                    {semesters.map((semester) => (
+                        <button
+                            key={semester}
+                            className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                                activeTab === semester
+                                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                                    : 'bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600/60'
+                            }`}
+                            onClick={() => handleTabChange(semester)}
+                        >
+                            Sem {semester}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Results Count */}
-            <div className='text-sm text-gray-600 dark:text-gray-400'>
-                Showing {filteredSubjects.length} subject
-                {filteredSubjects.length !== 1 ? 's' : ''}
-            </div>
+            <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium pl-1'>
+                {filteredSubjects.length} subject
+                {filteredSubjects.length !== 1 ? 's' : ''} found
+                {activeTab !== 'all' && ` in Semester ${activeTab}`}
+            </p>
 
-            {/* Subject Cards */}
-            <div className='space-y-4'>
+            {/* Subject Cards Grid */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4'>
                 {filteredSubjects.length > 0 ? (
                     filteredSubjects.map((subject) => (
                         <div
                             key={subject._id}
-                            className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow'
+                            className='group bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700/60 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700/60 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300'
                         >
-                            <div className='flex flex-col lg:flex-row lg:items-center gap-4'>
-                                {/* Subject Info */}
-                                <div className='flex-1'>
-                                    <div className='flex items-start gap-3'>
-                                        <div className='w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center flex-shrink-0'>
-                                            <BookOpen className='w-6 h-6 text-blue-600 dark:text-blue-400' />
-                                        </div>
-                                        <div className='flex-1 min-w-0'>
-                                            <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
-                                                {subject.subjectName}
-                                            </h3>
-                                            <div className='flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400'>
-                                                <span className='font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded'>
-                                                    {subject.subjectCode}
-                                                </span>
-                                                <span className='flex items-center gap-1'>
-                                                    <BookOpen className='w-4 h-4' />
-                                                    Semester {subject.semester}
-                                                </span>
-                                                <span className='flex items-center gap-1'>
-                                                    <Users className='w-4 h-4' />
-                                                    {subject.clickCounts} views
-                                                </span>
-                                            </div>
+                            {/* Card Header */}
+                            <div className='p-4 sm:p-5 pb-3 sm:pb-4'>
+                                <div className='flex items-start gap-3'>
+                                    <div className='w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300'>
+                                        <BookOpen className='w-5 h-5 sm:w-5.5 sm:h-5.5 text-white' />
+                                    </div>
+                                    <div className='flex-1 min-w-0'>
+                                        <h3 className='text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-snug line-clamp-2'>
+                                            {subject.subjectName}
+                                        </h3>
+                                        <div className='flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5'>
+                                            <span className='font-mono text-[11px] sm:text-xs bg-gray-100 dark:bg-gray-700/70 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-semibold'>
+                                                {subject.subjectCode}
+                                            </span>
+                                            <span className='flex items-center gap-1 text-[11px] sm:text-xs text-gray-500 dark:text-gray-400'>
+                                                <GraduationCap className='w-3 h-3 sm:w-3.5 sm:h-3.5' />
+                                                Sem {subject.semester}
+                                            </span>
+                                            <span className='flex items-center gap-1 text-[11px] sm:text-xs text-gray-500 dark:text-gray-400'>
+                                                <Eye className='w-3 h-3 sm:w-3.5 sm:h-3.5' />
+                                                {subject.clickCounts}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Action Buttons */}
-                                <div className='flex flex-col sm:flex-row gap-2 lg:flex-shrink-0'>
+                            {/* Resource Links Grid */}
+                            <div className='px-3 sm:px-4 pb-3 sm:pb-4'>
+                                <div className='grid grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2'>
                                     {resourceLinks.map(
                                         ({
                                             type,
                                             label,
+                                            fullLabel,
                                             icon: Icon,
-                                            color,
+                                            bgLight,
+                                            textColor,
+                                            borderColor,
                                         }) => {
-                                            // Generate proper URL based on resource type
                                             const href =
                                                 type === 'syllabus'
                                                     ? `/${collegeSlug}/syllabus/${generateSyllabusSlug(subject.subjectName, subject.subjectCode)}`
-                                                    : `${branchCode}/${type}/${subject.subjectCode}`;
+                                                    : type === 'quicknotes'
+                                                      ? `/${collegeSlug}/quicknotes/${subject.subjectCode}`
+                                                      : `${type}/${subject.subjectCode}`;
 
                                             return (
                                                 <Link
                                                     prefetch={false}
                                                     key={type}
                                                     href={href}
-                                                    className={`${color} text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[140px]`}
+                                                    className={`${bgLight} ${textColor} border ${borderColor} rounded-xl px-2 py-2 sm:py-2.5 flex flex-col items-center gap-1 sm:gap-1.5 text-center hover:scale-[1.03] active:scale-[0.97] transition-all duration-200`}
                                                 >
-                                                    <Icon className='w-4 h-4' />
-                                                    {label}
+                                                    <Icon className='w-4 h-4 sm:w-[18px] sm:h-[18px]' />
+                                                    <span className='text-[10px] sm:text-xs font-semibold leading-tight sm:hidden'>
+                                                        {label}
+                                                    </span>
+                                                    <span className='text-[10px] sm:text-xs font-semibold leading-tight hidden sm:block'>
+                                                        {fullLabel}
+                                                    </span>
                                                 </Link>
                                             );
                                         },
@@ -245,13 +289,16 @@ export default function SubjectsList({
                         </div>
                     ))
                 ) : (
-                    <div className='text-center py-12 bg-white dark:bg-gray-800 rounded-lg'>
-                        <BookOpen className='w-12 h-12 text-gray-400 mx-auto mb-4' />
-                        <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
+                    <div className='col-span-full text-center py-16 bg-white dark:bg-gray-800/80 rounded-2xl border border-gray-200 dark:border-gray-700/60'>
+                        <div className='w-16 h-16 bg-gray-100 dark:bg-gray-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4'>
+                            <Search className='w-7 h-7 text-gray-400' />
+                        </div>
+                        <h3 className='text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1.5'>
                             No subjects found
                         </h3>
-                        <p className='text-gray-600 dark:text-gray-400'>
-                            Try adjusting your search or filter criteria.
+                        <p className='text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto'>
+                            Try adjusting your search or filter to find what
+                            you&apos;re looking for.
                         </p>
                     </div>
                 )}
