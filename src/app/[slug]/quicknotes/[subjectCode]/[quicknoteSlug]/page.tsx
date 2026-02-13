@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { IQuickNote } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import Link from 'next/link';
+import GoogleAd from '@/components/GoogleAd';
 
 const getQuickNoteDetail = async (slug: string): Promise<IQuickNote | null> => {
     try {
@@ -88,6 +89,15 @@ export default async function QuickNoteDetailPage({
                 </span>
             </div>
 
+            {/* Ad Unit: Top of Detail Page */}
+            <div className='mb-6'>
+                <GoogleAd
+                    adSlot='8453205351'
+                    style={{ display: 'block', textAlign: 'center' }}
+                    label='Quick Note Detail Top'
+                />
+            </div>
+
             <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden text-center p-8 sm:p-12'>
                 <div className='w-20 h-20 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-100 dark:border-purple-800'>
                     <span className='text-2xl font-bold text-purple-600 dark:text-purple-400'>
@@ -140,6 +150,15 @@ export default async function QuickNoteDetailPage({
                 <p className='mt-8 text-xs text-gray-400 dark:text-gray-500'>
                     Compatible with Android devices. iOS coming soon.
                 </p>
+            </div>
+
+            {/* Ad Unit: Bottom of Detail Page */}
+            <div className='mt-8'>
+                <GoogleAd
+                    adSlot='8453205351'
+                    style={{ display: 'block', textAlign: 'center' }}
+                    label='Quick Note Detail Bottom'
+                />
             </div>
         </main>
     );
