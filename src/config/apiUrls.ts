@@ -184,4 +184,10 @@ export const api = {
             `${API_BASE_URL}/quicknotes/${subjectCode}`,
         getNoteDetail: (slug: string) => `${API_BASE_URL}/quicknotes/s/${slug}`,
     },
+
+    affiliateProducts: {
+        getAll: `${API_BASE_URL}/affiliate-products`,
+        trackClick: (id: string) =>
+            `${API_BASE_URL}/affiliate-products/${id}/click`,
+    },
 };
