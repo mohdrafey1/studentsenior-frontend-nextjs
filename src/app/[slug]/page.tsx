@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import GoogleAd from '@/components/GoogleAd';
 import { notFound } from 'next/navigation';
 import { api } from '@/config/apiUrls';
 import { College, CollegeSections } from '@/utils/interface';
@@ -453,9 +454,26 @@ export default async function CollegePage({ params }: CollegePageProps) {
                 </div>
             </section>
 
+            {/* Ad Unit: After Features Grid */}
+            <div className='container mx-auto px-4 mb-8'>
+                <GoogleAd
+                    adSlot='8453205351'
+                    style={{ display: 'block', textAlign: 'center' }}
+                    label='College Page Middle'
+                />
+            </div>
+
             {/* Divider */}
             <hr className='border-gray-200 dark:border-gray-700' />
 
+            {/* Ad Unit: Top of About Section */}
+            <div className='container mx-auto px-4 my-8'>
+                <GoogleAd
+                    adSlot='8453205351'
+                    style={{ display: 'block', textAlign: 'center' }}
+                    label='College Page Bottom'
+                />
+            </div>
             {/* About Section */}
             <CollegeAbout college={data.data} />
         </>

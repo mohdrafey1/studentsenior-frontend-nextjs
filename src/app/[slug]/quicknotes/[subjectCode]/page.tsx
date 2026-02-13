@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { IQuickNote, ISubject } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import Link from 'next/link';
+import GoogleAd from '@/components/GoogleAd';
+import React from 'react';
 
 interface QuickNotesResponse {
     success: boolean;
@@ -95,6 +97,15 @@ export default async function QuickNotesListPage({
                 </div>
             </header>
 
+            {/* Ad Unit: Top of List */}
+            <div className='mb-6'>
+                <GoogleAd
+                    adSlot='8453205351'
+                    style={{ display: 'block', textAlign: 'center' }}
+                    label='Quick Notes List Top'
+                />
+            </div>
+
             {notes.length === 0 ? (
                 <div className='text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700'>
                     <p className='text-lg text-gray-500 dark:text-gray-400'>
@@ -103,64 +114,78 @@ export default async function QuickNotesListPage({
                 </div>
             ) : (
                 <div className='space-y-4'>
-                    {notes.map((note) => (
-                        <Link
-                            key={note._id || note.slug}
-                            href={`/${slug}/quicknotes/${subjectCode}/${note.slug}`}
-                            className='block group'
-                        >
-                            <div className='bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all flex'>
-                                {/* Unit Indicator - simple solid color or gradient approx */}
-                                <div className='w-1 bg-gradient-to-b from-purple-500 to-indigo-600'></div>
+                    {notes.map((note, index) => (
+                        <React.Fragment key={note._id || note.slug}>
+                            <Link
+                                href={`/${slug}/quicknotes/${subjectCode}/${note.slug}`}
+                                className='block group'
+                            >
+                                <div className='bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all flex'>
+                                    {/* Unit Indicator - simple solid color or gradient approx */}
+                                    <div className='w-1 bg-gradient-to-b from-purple-500 to-indigo-600'></div>
 
-                                <div className='flex-1 p-4 flex items-center gap-4'>
-                                    {/* Unit Badge */}
-                                    <div className='flex-shrink-0 w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center border border-purple-100 dark:border-purple-800'>
-                                        <span className='text-lg font-bold text-purple-600 dark:text-purple-400'>
-                                            {note.unitNumber}
-                                        </span>
-                                    </div>
+                                    <div className='flex-1 p-4 flex items-center gap-4'>
+                                        {/* Unit Badge */}
+                                        <div className='flex-shrink-0 w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center border border-purple-100 dark:border-purple-800'>
+                                            <span className='text-lg font-bold text-purple-600 dark:text-purple-400'>
+                                                {note.unitNumber}
+                                            </span>
+                                        </div>
 
-                                    {/* Content */}
-                                    <div className='flex-1 min-w-0'>
-                                        <h3 className='text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors line-clamp-2'>
-                                            {note.title}
-                                        </h3>
-                                        <div className='flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400'>
+                                        {/* Content */}
+                                        <div className='flex-1 min-w-0'>
+                                            <h3 className='text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors line-clamp-2'>
+                                                {note.title}
+                                            </h3>
+                                            <div className='flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400'>
+                                                <svg
+                                                    className='w-3 h-3'
+                                                    fill='currentColor'
+                                                    viewBox='0 0 20 20'
+                                                >
+                                                    <path
+                                                        fillRule='evenodd'
+                                                        d='M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z'
+                                                        clipRule='evenodd'
+                                                    />
+                                                </svg>
+                                                <span>Quick Revision</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Arrow */}
+                                        <div className='flex-shrink-0 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-colors'>
                                             <svg
-                                                className='w-3 h-3'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'
+                                                className='w-5 h-5'
+                                                fill='none'
+                                                stroke='currentColor'
+                                                viewBox='0 0 24 24'
                                             >
                                                 <path
-                                                    fillRule='evenodd'
-                                                    d='M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z'
-                                                    clipRule='evenodd'
+                                                    strokeLinecap='round'
+                                                    strokeLinejoin='round'
+                                                    strokeWidth={2}
+                                                    d='M9 5l7 7-7 7'
                                                 />
                                             </svg>
-                                            <span>Quick Revision</span>
                                         </div>
                                     </div>
-
-                                    {/* Arrow */}
-                                    <div className='flex-shrink-0 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-colors'>
-                                        <svg
-                                            className='w-5 h-5'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            viewBox='0 0 24 24'
-                                        >
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M9 5l7 7-7 7'
-                                            />
-                                        </svg>
-                                    </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                            {/* Insert Ad after 3rd item */}
+                            {(index + 1) % 3 === 0 && (
+                                <div className='my-4'>
+                                    <GoogleAd
+                                        adSlot='1357924680'
+                                        style={{
+                                            display: 'block',
+                                            textAlign: 'center',
+                                        }}
+                                        label='Quick Notes List In-Feed'
+                                    />
+                                </div>
+                            )}
+                        </React.Fragment>
                     ))}
                 </div>
             )}
