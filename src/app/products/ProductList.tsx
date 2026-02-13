@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, Tag, ExternalLink, Filter, Share2, X } from 'lucide-react';
+import { Search, ExternalLink, Filter, Share2, X } from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/config/apiUrls';
 import { useSearchParams } from 'next/navigation';
@@ -148,9 +148,10 @@ export default function ProductList({
                     >
                         {/* Image */}
                         <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-900 overflow-hidden'>
-                            <img
+                            <Image
                                 src={product.image}
                                 alt={product.name}
+                                fill
                                 className='object-cover transition-transform duration-500 group-hover:scale-110'
                                 sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                             />
@@ -229,7 +230,7 @@ export default function ProductList({
                         No products found
                     </h3>
                     <p className='text-gray-500 dark:text-gray-400 max-w-sm'>
-                        We couldn't find any products matching your search
+                        We couldn&apos;t find any products matching your search
                         criteria. Try different keywords or filters.
                     </p>
                 </div>
