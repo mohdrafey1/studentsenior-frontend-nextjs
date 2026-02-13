@@ -28,26 +28,6 @@ export default function GoogleAd({
     const adRef = useRef<HTMLModElement>(null);
     const hasLoadedRef = useRef(false);
 
-    // Development mode placeholder
-    if (process.env.NODE_ENV === 'development') {
-        return (
-            <div
-                className={`flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 font-medium ${className}`}
-                style={{
-                    minWidth: '250px',
-                    minHeight: '100px',
-                    width: '100%',
-                    padding: '20px',
-                    ...style,
-                }}
-            >
-                Ad Placeholder: {label}
-                <br />
-                <span className='text-xs ml-2'>(Slot: {adSlot})</span>
-            </div>
-        );
-    }
-
     useEffect(() => {
         // Prevent double loading in development (React StrictMode)
         if (hasLoadedRef.current) return;
@@ -87,6 +67,26 @@ export default function GoogleAd({
             clearTimeout(timeoutId);
         };
     }, []);
+
+    // Development mode placeholder
+    if (process.env.NODE_ENV === 'development') {
+        return (
+            <div
+                className={`flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400 font-medium ${className}`}
+                style={{
+                    minWidth: '250px',
+                    minHeight: '100px',
+                    width: '100%',
+                    padding: '20px',
+                    ...style,
+                }}
+            >
+                Ad Placeholder: {label}
+                <br />
+                <span className='text-xs ml-2'>(Slot: {adSlot})</span>
+            </div>
+        );
+    }
 
     return (
         <div
