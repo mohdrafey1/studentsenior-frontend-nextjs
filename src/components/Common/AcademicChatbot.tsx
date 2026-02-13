@@ -12,6 +12,7 @@ import {
     Copy,
     Check,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/config/apiUrls';
 
@@ -48,6 +49,7 @@ interface ChatOption {
     subjectName?: string;
     collegeName?: string;
     collegeSlug?: string;
+    subjectCode?: string;
 }
 
 interface College {
@@ -378,6 +380,7 @@ export default function AcademicChatbot() {
                     value: subject._id,
                     action: 'select_subject',
                     subjectName: subject.subjectName,
+                    subjectCode: subject.subjectCode,
                 }));
 
                 addBotMessage('Select your subject:', options);
@@ -564,6 +567,20 @@ export default function AcademicChatbot() {
                             action: 'fetch_videos',
                             subjectName: option.subjectName,
                         },
+                        {
+                            label: '📝 Syllabus',
+                            value: option.value,
+                            action: 'redirect_syllabus',
+                            subjectName: option.subjectName,
+                            subjectCode: option.subjectCode, // Added subjectCode here
+                        },
+                        {
+                            label: '⚡ Quick Notes',
+                            value: option.value,
+                            action: 'redirect_quicknotes',
+                            subjectName: option.subjectName,
+                            subjectCode: option.subjectCode,
+                        },
                     ],
                 );
                 break;
@@ -590,6 +607,42 @@ export default function AcademicChatbot() {
                     resourceType: 'video',
                 });
                 fetchVideos(option.value, option.subjectName || '');
+                break;
+
+            case 'redirect_syllabus':
+                if (
+                    preferences.collegeSlug &&
+                    option.subjectName &&
+                    option.subjectCode
+                ) {
+                    // Create slug: subjectname-subjectcode (lowercase, spaces replaced by hyphens)
+                    const cleanSubjectName = option.subjectName
+                        .toLowerCase()
+                        .trim() // Added trim to remove leading/trailing spaces
+                        .replace(/[^a-z0-9]+/g, '-');
+                    const cleanSubjectCode = option.subjectCode
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^a-z0-9]+/g, '-');
+
+                    const syllabusSlug = `${cleanSubjectName}-${cleanSubjectCode}`;
+
+                    window.open(
+                        `/${preferences.collegeSlug}/syllabus/${syllabusSlug}`,
+                        '_blank',
+                    );
+                } else {
+                    toast.error('Missing data for syllabus redirection');
+                }
+                break;
+
+            case 'redirect_quicknotes':
+                if (preferences.collegeSlug && option.subjectCode) {
+                    window.open(
+                        `/${preferences.collegeSlug}/quicknotes/${option.subjectCode}`,
+                        '_blank',
+                    );
+                }
                 break;
 
             case 'reset':
