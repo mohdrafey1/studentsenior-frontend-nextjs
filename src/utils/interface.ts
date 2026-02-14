@@ -352,3 +352,14 @@ export interface IQuickNote {
     lastUpdated: string;
     clickCounts?: number;
 }
+
+export interface IPyqSolution {
+    _id: string;
+    pyq: string | IPyq;
+    conciseContent: string;
+    expertContent: string;
+    generatedBy?: string;
+    lastUpdated: string;
+    createdAt?: string;
+    updatedAt?: string;
+}

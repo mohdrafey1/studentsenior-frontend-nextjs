@@ -24,7 +24,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                 rehypePlugins={[rehypeKatex, rehypeHighlight]}
                 components={{
                     // Custom components if needed
-                    a: ({ node, ...props }) => (
+                    a: ({ ...props }) => (
                         <a
                             {...props}
                             target='_blank'

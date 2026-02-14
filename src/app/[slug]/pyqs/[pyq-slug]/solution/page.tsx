@@ -8,12 +8,14 @@ import toast from 'react-hot-toast';
 
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer';
 
+import { IPyq, IPyqSolution } from '@/utils/interface';
+
 export default function SolutionPage() {
     const { 'pyq-slug': pyqSlug } = useParams();
     const router = useRouter();
 
-    const [pyq, setPyq] = useState<any>(null);
-    const [solution, setSolution] = useState<any>(null);
+    const [pyq, setPyq] = useState<IPyq | null>(null);
+    const [solution, setSolution] = useState<IPyqSolution | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'concise' | 'expert'>('concise');
 
