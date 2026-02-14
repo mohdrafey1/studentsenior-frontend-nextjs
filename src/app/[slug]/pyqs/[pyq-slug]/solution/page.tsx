@@ -1,170 +1,158 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { api } from '@/config/apiUrls';
-import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
-import { Bot, Sparkles, BookOpen, Loader2 } from 'lucide-react';
-import toast from 'react-hot-toast';
-
-import MarkdownRenderer from '@/components/Common/MarkdownRenderer';
-
+import type { Metadata } from 'next';
 import { IPyq, IPyqSolution } from '@/utils/interface';
+import { api } from '@/config/apiUrls';
+import SolutionClient from './SolutionClient';
+import Link from 'next/link';
+import { capitalizeWords } from '@/utils/formatting';
 
-export default function SolutionPage() {
-    const { 'pyq-slug': pyqSlug } = useParams();
-    const router = useRouter();
+async function getPyq(slug: string): Promise<IPyq | null> {
+    try {
+        const res = await fetch(api.pyq.getPyqBySlug(slug), {
+            next: { revalidate: 60 },
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return json.data;
+    } catch (error) {
+        console.error('Error fetching PYQ:', error);
+        return null;
+    }
+}
 
-    const [pyq, setPyq] = useState<IPyq | null>(null);
-    const [solution, setSolution] = useState<IPyqSolution | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'concise' | 'expert'>('concise');
+async function getSolution(pyqId: string): Promise<IPyqSolution | null> {
+    try {
+        const res = await fetch(api.pyqSolutions.getPublicSolution(pyqId), {
+            next: { revalidate: 60 },
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return json.data;
+    } catch (error) {
+        console.error('Error fetching Solution:', error);
+        return null;
+    }
+}
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // 1. Fetch PYQ Details to get ID and Title
-                const pyqRes = await fetch(
-                    api.pyq.getPyqBySlug(pyqSlug as string),
-                );
-                const pyqData = await pyqRes.json();
+interface PageProps {
+    params: Promise<{
+        slug: string; // College slug
+        'pyq-slug': string; // PYQ slug
+    }>;
+}
 
-                if (!pyqData.success || !pyqData.data) {
-                    throw new Error('PYQ not found');
-                }
+export async function generateMetadata({
+    params,
+}: PageProps): Promise<Metadata> {
+    const { 'pyq-slug': pyqSlug, slug } = await params;
+    const pyq = await getPyq(pyqSlug);
 
-                setPyq(pyqData.data);
-
-                // 2. Fetch Solution using PYQ ID
-                const solutionRes = await fetch(
-                    api.pyqSolutions.getPublicSolution(pyqData.data._id),
-                );
-                const solutionData = await solutionRes.json();
-
-                if (solutionData.success) {
-                    setSolution(solutionData.data);
-                } else {
-                    console.log('Solution not found');
-                }
-            } catch (error) {
-                console.error('Error fetching solution:', error);
-                toast.error('Failed to load solution');
-            } finally {
-                setLoading(false);
-            }
+    if (!pyq) {
+        return {
+            title: 'Solution Not Found',
         };
-
-        if (pyqSlug) {
-            fetchData();
-        }
-    }, [pyqSlug]);
-
-    if (loading) {
-        return (
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center'>
-                <Loader2 className='w-10 h-10 text-indigo-600 animate-spin' />
-            </div>
-        );
     }
 
-    if (!pyq || !solution) {
+    const title = `${pyq.subject.subjectName} Solution - ${pyq.year} ${pyq.examType} | ${capitalizeWords(slug)} PYQ`;
+    const description = `Solution for ${pyq.subject.subjectName} (${pyq.subject.subjectCode}) ${pyq.year} ${pyq.examType} exam at ${capitalizeWords(slug)}. Step-by-step answers and explanations.`;
+    const url = `https://studentsenior.com/${slug}/pyqs/${pyqSlug}/solution`;
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            siteName: 'Student Senior',
+            type: 'article',
+            images: [
+                {
+                    url: '/icons/image512.png',
+                    width: 512,
+                    height: 512,
+                    alt: title,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ['/icons/image512.png'],
+            site: '@studentsenior',
+            creator: '@studentsenior',
+        },
+    };
+}
+
+export default async function SolutionPage({ params }: PageProps) {
+    const { 'pyq-slug': pyqSlug, slug } = await params;
+    const pyq = await getPyq(pyqSlug);
+
+    if (!pyq) {
         return (
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center p-4'>
-                <Bot className='w-16 h-16 text-gray-400 mb-4' />
-                <h1 className='text-2xl font-bold text-gray-900 dark:text-white mb-2'>
-                    Solution Not Found
+            <div className='max-w-4xl mx-auto px-4 py-12 text-center'>
+                <h1 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>
+                    PYQ Not Found
                 </h1>
-                <p className='text-gray-600 dark:text-gray-400 mb-6'>
-                    The solution you are looking for is currently unavailable.
-                </p>
-                <button
-                    onClick={() => router.back()}
-                    className='px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors'
+                <Link
+                    href={`/${slug}/pyqs`}
+                    className='text-primary mt-4 inline-block hover:underline'
                 >
-                    Go Back
-                </button>
+                    Back to List
+                </Link>
             </div>
         );
     }
 
-    const currentContent =
-        activeTab === 'concise'
-            ? solution.conciseContent
-            : solution.expertContent;
+    const solution = await getSolution(pyq._id);
+    const pageUrl = `https://studentsenior.com/${slug}/pyqs/${pyqSlug}/solution`;
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: `${pyq.subject.subjectName} Solution - ${pyq.year} ${pyq.examType}`,
+        description: `Solution for ${pyq.subject.subjectName} (${pyq.subject.subjectCode}) ${pyq.year} ${pyq.examType} exam`,
+        author: {
+            '@type': 'Organization',
+            name: 'Student Senior',
+            url: 'https://studentsenior.com',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Student Senior',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://studentsenior.com/icons/image512.png',
+            },
+        },
+        dateModified: solution?.updatedAt || pyq.updatedAt,
+        datePublished: solution?.createdAt || pyq.createdAt,
+        mainEntityOfPage: pageUrl,
+        about: {
+            '@type': 'Course',
+            name: pyq.subject.subjectName,
+            courseCode: pyq.subject.subjectCode,
+            provider: {
+                '@type': 'CollegeOrUniversity',
+                name: capitalizeWords(slug),
+                url: `https://studentsenior.com/${slug}`,
+            },
+        },
+    };
 
     return (
-        <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
-            <DetailPageNavbar path='pyqs' />
-
-            <div className='max-w-5xl mx-auto px-4 py-8'>
-                {/* Header */}
-                <div className='mb-8'>
-                    <div className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
-                        <div>
-                            <div className='flex items-center gap-2 mb-2'>
-                                <span className='text-sm text-gray-500 dark:text-gray-400'>
-                                    {pyq.subject.subjectCode}
-                                </span>
-                            </div>
-                            <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>
-                                {pyq.subject.subjectName}
-                            </h1>
-                            <p className='text-gray-600 dark:text-gray-300'>
-                                {pyq.examType} • {pyq.year}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Tabs */}
-                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6'>
-                    <div className='flex border-b border-gray-200 dark:border-gray-700'>
-                        <button
-                            onClick={() => setActiveTab('concise')}
-                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors flex items-center justify-center gap-2 ${
-                                activeTab === 'concise'
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600'
-                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                            }`}
-                        >
-                            <Sparkles className='w-4 h-4' />
-                            Concise Solution
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('expert')}
-                            className={`flex-1 py-4 text-sm font-medium text-center transition-colors flex items-center justify-center gap-2 ${
-                                activeTab === 'expert'
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600'
-                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                            }`}
-                        >
-                            <BookOpen className='w-4 h-4' />
-                            Expert Explanation
-                        </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className='p-6 md:p-8 min-h-[500px]'>
-                        <div className='prose prose-indigo dark:prose-invert max-w-none'>
-                            <MarkdownRenderer content={currentContent} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Disclaimer */}
-                <div className='bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 flex gap-3'>
-                    <Bot className='w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0' />
-                    <div>
-                        <h4 className='text-sm font-bold text-yellow-800 dark:text-yellow-300 mb-1'>
-                            AI Generated Content
-                        </h4>
-                        <p className='text-xs text-yellow-700 dark:text-yellow-400'>
-                            This solution was generated by an AI model. while we
-                            strive for accuracy, please verify with your
-                            official textbooks and notes.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <>
+            <script
+                type='application/ld+json'
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(jsonLd),
+                }}
+            />
+            <SolutionClient pyq={pyq} solution={solution} />
+        </>
     );
 }
