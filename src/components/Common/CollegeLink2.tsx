@@ -18,6 +18,7 @@ import {
     Menu,
     X,
     BookOpen,
+    Lightbulb,
 } from 'lucide-react';
 
 interface CollegeLink2Props {
@@ -77,6 +78,12 @@ const CollegeLink2 = ({ sections }: CollegeLink2Props) => {
     ];
 
     const moreLinks: NavLink[] = [
+        {
+            href: `/${slug}/quicknotes`,
+            icon: <Lightbulb size={20} />,
+            text: 'Quick Notes',
+            sectionKey: 'quickNotes',
+        },
         {
             href: `/${slug}/seniors`,
             icon: <User size={20} />,
