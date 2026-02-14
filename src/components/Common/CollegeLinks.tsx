@@ -17,6 +17,7 @@ import {
     BookOpen,
     ChevronRight,
     ChevronLeft,
+    Lightbulb,
 } from 'lucide-react';
 
 interface CollegelinksProps {
@@ -53,6 +54,12 @@ const Collegelinks = ({ sections }: CollegelinksProps) => {
             icon: <StickyNote size={20} />,
             text: 'Notes',
             sectionKey: 'notes',
+        },
+        {
+            href: `/${slug}/quicknotes`,
+            icon: <Lightbulb size={20} />,
+            text: 'Quick Notes',
+            sectionKey: 'quickNotes',
         },
         {
             href: `/${slug}/videos`,

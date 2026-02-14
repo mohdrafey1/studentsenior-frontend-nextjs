@@ -237,6 +237,7 @@ export interface IPyq {
     rewardPoints: number;
     clickCounts: number;
     solved: boolean;
+    mdSolution: boolean;
     isPaid: boolean;
     price: number;
     purchasedBy: string[];
@@ -350,4 +351,15 @@ export interface IQuickNote {
     content?: string;
     lastUpdated: string;
     clickCounts?: number;
+}
+
+export interface IPyqSolution {
+    _id: string;
+    pyq: string | IPyq;
+    conciseContent: string;
+    expertContent: string;
+    generatedBy?: string;
+    lastUpdated: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
