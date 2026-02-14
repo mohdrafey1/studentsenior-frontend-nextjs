@@ -237,6 +237,7 @@ export interface IPyq {
     rewardPoints: number;
     clickCounts: number;
     solved: boolean;
+    mdSolution: boolean;
     isPaid: boolean;
     price: number;
     purchasedBy: string[];

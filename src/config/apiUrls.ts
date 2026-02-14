@@ -34,6 +34,11 @@ export const api = {
             `${API_BASE_URL}/pyqs/${slug}/suggested`,
     },
 
+    pyqSolutions: {
+        getPublicSolution: (pyqId: string) =>
+            `${API_BASE_URL}/pyq-solutions/${pyqId}`,
+    },
+
     notes: {
         getNotesByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/notes/college/${slug}`,

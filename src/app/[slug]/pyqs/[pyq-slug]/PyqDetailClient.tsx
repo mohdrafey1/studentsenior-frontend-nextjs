@@ -16,6 +16,7 @@ import {
     Video,
     NotebookPen,
     FileStack,
+    Bot,
 } from 'lucide-react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -172,6 +173,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         sameSemester: [],
     });
     const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+    const [requestingSolution, setRequestingSolution] = useState(false);
 
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
@@ -277,6 +279,43 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     const handleUnsave = async () => {
         await unsaveResource('pyq', pyq._id);
+    };
+
+    const handleRequestSolution = async () => {
+        // Determine user details or use defaults
+        const name = currentUser?.username || 'Student';
+        const email = 'requestpyq@ss.com';
+
+        setRequestingSolution(true);
+        try {
+            const response = await fetch(api.contactus.createContactus, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    subject: `Solution Request: ${pyq?.subject.subjectName} (${pyq?.year})`,
+                    description: `Please provide the solution for PYQ: ${pyq?.subject.subjectName} - ${pyq?.examType} - ${pyq?.year} (ID: ${pyq?._id})`,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                toast.success(
+                    'Request sent successfully! Solution will be available shortly',
+                );
+            } else {
+                toast.error(data.message || 'Failed to send request');
+            }
+        } catch (error) {
+            console.error('Request solution error:', error);
+            toast.error('Something went wrong');
+        } finally {
+            setRequestingSolution(false);
+        }
     };
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
@@ -587,6 +626,33 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         adFormat='auto'
                         className='w-full'
                     />
+                </div>
+
+                {/* AI Solution Section */}
+                <div className='mt-6 mb-6 flex flex-wrap gap-4 justify-center'>
+                    {pyq.mdSolution ? (
+                        <Link
+                            prefetch={false}
+                            href={`/${slug}/pyqs/${pyq.slug}/solution`}
+                            className='inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all duration-200 shadow-md hover:shadow-lg'
+                        >
+                            <Bot className='w-5 h-5' />
+                            View Solution
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={handleRequestSolution}
+                            disabled={requestingSolution}
+                            className='inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 shadow-sm disabled:opacity-50'
+                        >
+                            {requestingSolution ? (
+                                <Loader2 className='w-5 h-5 animate-spin' />
+                            ) : (
+                                <Bot className='w-5 h-5' />
+                            )}
+                            Request Solution
+                        </button>
+                    )}
                 </div>
 
                 {/* Bottom controls: Download for Unsolved */}

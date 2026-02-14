@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -60,10 +61,12 @@ body {
 }
 
 .shine-effect {
-    background-image: linear-gradient(100deg,
-            transparent 30%,
-            rgba(255, 255, 255, 0.5) 50%,
-            transparent 70%);
+    background-image: linear-gradient(
+        100deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 70%
+    );
     background-size: 200% 100%;
     animation: shine 3.5s infinite linear;
 }
