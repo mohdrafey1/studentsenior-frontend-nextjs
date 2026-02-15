@@ -174,6 +174,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     });
     const [loadingSuggestions, setLoadingSuggestions] = useState(false);
     const [requestingSolution, setRequestingSolution] = useState(false);
+    const [hasRequested, setHasRequested] = useState(false);
 
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
@@ -240,6 +241,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         setIsSaved(isSavedEntry);
     }, [savedPYQs, pyq._id]);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined' && pyq?._id) {
+            const requested = localStorage.getItem(`requested_pyq_${pyq._id}`);
+            if (requested === 'true') {
+                setHasRequested(true);
+            }
+        }
+    }, [pyq?._id]);
+
     // Fetch suggested PYQs
     useEffect(() => {
         const fetchSuggestedPyqs = async () => {
@@ -288,22 +298,23 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
         setRequestingSolution(true);
         try {
-            const response = await fetch(api.contactus.createContactus, {
+            const response = await fetch(api.pyqSolutions.requestSolution, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name,
-                    email,
-                    subject: `Solution Request: ${pyq?.subject.subjectName} (${pyq?.year})`,
-                    description: `Please provide the solution for PYQ: ${pyq?.subject.subjectName} - ${pyq?.examType} - ${pyq?.year} (ID: ${pyq?._id})`,
+                    pyqId: pyq._id,
                 }),
             });
 
             const data = await response.json();
 
             if (data.success) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem(`requested_pyq_${pyq._id}`, 'true');
+                }
+                setHasRequested(true);
                 toast.success(
                     'Request sent successfully! Solution will be available shortly',
                 );
@@ -642,15 +653,19 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     ) : (
                         <button
                             onClick={handleRequestSolution}
-                            disabled={requestingSolution}
-                            className='inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 shadow-sm disabled:opacity-50'
+                            disabled={requestingSolution || hasRequested}
+                            className={`inline-flex items-center gap-2 px-6 py-3 border font-medium rounded-xl transition-colors duration-200 shadow-sm disabled:opacity-50 ${
+                                hasRequested
+                                    ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
+                                    : 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                            }`}
                         >
                             {requestingSolution ? (
                                 <Loader2 className='w-5 h-5 animate-spin' />
                             ) : (
                                 <Bot className='w-5 h-5' />
                             )}
-                            Request Solution
+                            {hasRequested ? 'Requested' : 'Request Solution'}
                         </button>
                     )}
                 </div>
