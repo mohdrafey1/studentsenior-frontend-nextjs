@@ -292,10 +292,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     };
 
     const handleRequestSolution = async () => {
-        // Determine user details or use defaults
-        const name = currentUser?.username || 'Student';
-        const email = 'requestpyq@ss.com';
-
         setRequestingSolution(true);
         try {
             const response = await fetch(api.pyqSolutions.requestSolution, {
