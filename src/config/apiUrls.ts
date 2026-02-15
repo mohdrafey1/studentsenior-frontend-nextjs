@@ -37,6 +37,7 @@ export const api = {
     pyqSolutions: {
         getPublicSolution: (pyqId: string) =>
             `${API_BASE_URL}/pyq-solutions/${pyqId}`,
+        requestSolution: `${API_BASE_URL}/pyq-solutions/request-solution`,
     },
 
     notes: {
