@@ -72,6 +72,7 @@ const Header: React.FC = () => {
     const menuItems: { name: string; path: string; isExternal?: boolean }[] = [
         { name: 'Home', path: '/' },
         { name: 'Collection', path: '/collections' },
+        { name: 'Products', path: '/products' },
         { name: 'Leaderboard', path: '/leaderboard' },
         { name: 'Tools', path: '/tools' },
         {

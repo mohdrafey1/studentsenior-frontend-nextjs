@@ -50,6 +50,7 @@ const LandingHeader: React.FC = () => {
     const menuItems: { name: string; path: string; isExternal?: boolean }[] = [
         { name: 'Home', path: '/' },
         { name: 'Collection', path: '/collections' },
+        { name: 'Products', path: '/products' },
         { name: 'Leaderboard', path: '/leaderboard' },
         { name: 'Wallet', path: '/wallet' },
         { name: 'Tools', path: '/tools' },
@@ -95,7 +96,7 @@ const LandingHeader: React.FC = () => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className='hidden lg:flex items-center space-x-1 bg-blue-100 dark:bg-gray-700 p-2 rounded-xl'>
+                    <nav className='hidden lg:flex items-center space-x-0.5 bg-blue-100 dark:bg-gray-700 p-2 rounded-xl'>
                         {menuItems.map((item) => (
                             <Link
                                 prefetch={false}
@@ -107,7 +108,7 @@ const LandingHeader: React.FC = () => {
                                         ? 'noopener noreferrer'
                                         : undefined
                                 }
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800/50 ${
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800/50 ${
                                     pathname === item.path
                                         ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
                                         : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
