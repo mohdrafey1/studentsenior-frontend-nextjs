@@ -8,7 +8,6 @@ import FAQPage from '@/components/HomePage/FAQ';
 import OurFeatures from '@/components/HomePage/OurFeatures';
 import { IApiResponse } from '@/utils/interface';
 import { rawColleges } from '@/constant';
-import LandingHeader from '@/components/Common/LandingHeader';
 import AcademicChatbotLazy from '@/components/Common/AcademicChatbotLazy';
 import EarningShowcase from '@/components/HomePage/EarningShowcase';
 
@@ -147,8 +146,6 @@ export default async function HomePage() {
                         <div className='absolute inset-0 bg-gradient-to-r from-transparent via-sky-100/10 to-transparent dark:via-sky-900/10'></div>
                     </div>
                     <div className='h-screen flex flex-col'>
-                        <LandingHeader />
-
                         {/* Main Content */}
                         <div className='relative my-auto z-10 flex flex-col items-center justify-center min-h-[60vh] px-4 py-16'>
                             {/* Welcome Text */}

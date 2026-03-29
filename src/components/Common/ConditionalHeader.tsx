@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/Common/Header';
 import SmartAppBanner from '@/components/Common/SmartAppBanner';
 
-const hideExactPaths = ['/', '/test'];
+const hideExactPaths = ['/test'];
 const hidePrefixPaths = ['/test/'];
 
 export default function ConditionalHeader() {
