@@ -10,7 +10,14 @@ import {
     updateUserSuccess,
     updateUserFailure,
 } from '@/redux/slices/userSlice';
-import { User, LogOut, Phone, GraduationCap, Lock, Camera } from 'lucide-react';
+import {
+    User,
+    LogOut,
+    Phone,
+    GraduationCap,
+    Camera,
+    ShieldCheck,
+} from 'lucide-react';
 
 interface User {
     _id: string;
@@ -183,12 +190,22 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
         formData.profilePicture || currentUser.profilePicture;
 
     return (
-        <div className='max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden'>
-            {/* Top Section */}
-            <div className='bg-indigo-200 dark:bg-indigo-600 h-28'></div>
+        <div
+            
+            
+            
+            className='max-w-md mx-auto bg-white/80 dark:bg-[#111827]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden relative'
+        >
+            {/* Top Glowing Gradient Section */}
+            <div className='absolute inset-x-0 top-0 h-40 bg-gradient-to-br from-blue-500/80 via-indigo-500/80 to-purple-600/80 opacity-90 dark:opacity-100 z-0' />
+
+            {/* Blur overlay for top section */}
+            <div className='absolute inset-x-0 top-0 h-40 backdrop-blur-[2px] z-0' />
+
+            <div className='h-32 relative z-10'></div>
 
             {/* Profile Picture */}
-            <div className='flex flex-col items-center -mt-12'>
+            <div className='flex flex-col items-center -mt-16 relative z-10'>
                 <input
                     type='file'
                     ref={fileRef}
@@ -225,57 +242,66 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                 </div>
 
                 {/* Upload Status */}
-                <div className='h-6 mt-2 text-sm text-center'>
+                <div className='h-6 mt-3 text-sm text-center font-medium'>
                     {imageUploadError ? (
-                        <p className='text-red-600'>{imageUploadError}</p>
+                        <p className='text-red-500 dark:text-red-400'>
+                            {imageUploadError}
+                        </p>
                     ) : imageUploadProgress !== null &&
                       imageUploadProgress < 100 ? (
-                        <p className='text-gray-600 dark:text-gray-300'>
+                        <div className='flex items-center gap-2 text-blue-600 dark:text-blue-400'>
+                            <div className='w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin' />
                             Uploading... {imageUploadProgress}%
-                        </p>
+                        </div>
                     ) : imageUploadProgress === 100 ? (
-                        <p className='text-green-600'>Upload complete!</p>
+                        <p className='text-emerald-500 dark:text-emerald-400 flex items-center justify-center gap-1'>
+                            <ShieldCheck className='w-4 h-4' /> Upload complete!
+                        </p>
                     ) : null}
                 </div>
             </div>
 
             {/* User Info */}
-            <div className='text-center mt-0'>
-                <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>
+            <div className='text-center mt-1 relative z-10'>
+                <h2 className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight'>
                     {formData.username || currentUser.username}
                 </h2>
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                <p className='text-sm text-gray-500 dark:text-gray-400 font-medium mt-1'>
                     {currentUser.email}
                 </p>
             </div>
 
             {/* Info Rows */}
-            <div className='mt-4 divide-y divide-gray-200 dark:divide-gray-700'>
-                <div className='flex items-center px-6 py-4 text-gray-700 dark:text-gray-300'>
-                    <Phone className='w-5 h-5 mr-3' />
-                    <span>
-                        {formData.phone ||
-                            currentUser.phone ||
-                            'No phone added'}
-                    </span>
-                </div>
-                <div className='flex items-center px-6 py-4 text-gray-700 dark:text-gray-300'>
-                    <GraduationCap className='w-5 h-5 mr-3' />
-                    <span>
-                        {formData.college ||
-                            currentUser.college ||
-                            'No college added'}
-                    </span>
-                </div>
-                <div className='flex items-center px-6 py-4 text-gray-700 dark:text-gray-300'>
-                    <Lock className='w-5 h-5 mr-3' />
-                    <span>••••••••</span>
+            <div className='mt-6 px-4 relative z-10'>
+                <div className='bg-gray-50/50 dark:bg-white/[0.02] rounded-2xl p-2 space-y-1 border border-gray-100 dark:border-white/5'>
+                    <div className='flex items-center p-3 text-gray-700 dark:text-gray-300 group hover:bg-white dark:hover:bg-white/5 rounded-xl transition-colors'>
+                        <div className='p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg mr-4 group-hover:scale-110 transition-transform'>
+                            <Phone className='w-4 h-4 text-blue-600 dark:text-blue-400' />
+                        </div>
+                        <span className='font-medium text-sm'>
+                            {formData.phone ||
+                                currentUser.phone ||
+                                'No phone added'}
+                        </span>
+                    </div>
+                    <div className='flex items-center p-3 text-gray-700 dark:text-gray-300 group hover:bg-white dark:hover:bg-white/5 rounded-xl transition-colors'>
+                        <div className='p-2 bg-purple-100 dark:bg-purple-900/40 rounded-lg mr-4 group-hover:scale-110 transition-transform'>
+                            <GraduationCap className='w-4 h-4 text-purple-600 dark:text-purple-400' />
+                        </div>
+                        <span className='font-medium text-sm'>
+                            {formData.college ||
+                                currentUser.college ||
+                                'No college added'}
+                        </span>
+                    </div>
                 </div>
             </div>
 
             {/* Edit Button */}
-            <div className='px-6 py-4'>
+            <div className='px-6 py-6 relative z-10'>
                 <button
+                    
+                    
                     onClick={() => {
                         setEditMode(!editMode);
                         setUpdateSuccess(false);
@@ -283,76 +309,95 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                         setImageUploadError(null);
                         setImageUploadProgress(null);
                     }}
-                    className='w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg transition'
+                    className='w-full bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-medium py-3 rounded-xl transition-colors shadow-md flex justify-center items-center gap-2'
                 >
-                    {editMode ? 'Cancel' : 'Edit Profile'}
+                    {editMode ? 'Cancel Editing' : 'Edit Profile'}
                 </button>
             </div>
 
             {/* Edit Form */}
-            {editMode && (
-                <form
-                    onSubmit={handleSubmit}
-                    className='px-6 pb-6 space-y-4 text-black dark:text-white'
-                >
-                    <input
-                        defaultValue={currentUser.username}
-                        type='text'
-                        id='username'
-                        placeholder='Username'
-                        className='w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700'
-                        onChange={handleChange}
-                    />
-                    <input
-                        defaultValue={currentUser.college}
-                        type='text'
-                        id='college'
-                        placeholder='College'
-                        className='w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700'
-                        onChange={handleChange}
-                    />
-                    <input
-                        defaultValue={currentUser.phone}
-                        type='tel'
-                        id='phone'
-                        placeholder='Phone'
-                        className='w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700'
-                        onChange={handleChange}
-                    />
-                    <input
-                        type='password'
-                        id='password'
-                        placeholder='New Password (optional)'
-                        className='w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700'
-                        onChange={handleChange}
-                    />
-
-                    <button
-                        type='submit'
-                        className='w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg disabled:opacity-50'
-                        disabled={
-                            loading ||
-                            (imageUploadProgress !== null &&
-                                imageUploadProgress < 100)
-                        }
+            
+                {editMode && (
+                    <form
+                        
+                        
+                        
+                        
+                        onSubmit={handleSubmit}
+                        className='px-6 pb-6 space-y-4 text-black dark:text-white relative z-10 overflow-hidden'
                     >
-                        {loading ? 'Saving...' : 'Save Changes'}
-                    </button>
-                </form>
-            )}
+                        <div className='space-y-3'>
+                            <input
+                                defaultValue={currentUser.username}
+                                type='text'
+                                id='username'
+                                placeholder='Username'
+                                className='w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none'
+                                onChange={handleChange}
+                            />
+                            <input
+                                defaultValue={currentUser.college}
+                                type='text'
+                                id='college'
+                                placeholder='College'
+                                className='w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none'
+                                onChange={handleChange}
+                            />
+                            <input
+                                defaultValue={currentUser.phone}
+                                type='tel'
+                                id='phone'
+                                placeholder='Phone'
+                                className='w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none'
+                                onChange={handleChange}
+                            />
+                            <input
+                                type='password'
+                                id='password'
+                                placeholder='New Password (optional)'
+                                className='w-full p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none'
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <button
+                            
+                            
+                            type='submit'
+                            className='w-full mt-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 text-white font-medium py-3.5 rounded-xl disabled:opacity-50 transition-all flex justify-center items-center'
+                            disabled={
+                                loading ||
+                                (imageUploadProgress !== null &&
+                                    imageUploadProgress < 100)
+                            }
+                        >
+                            {loading ? (
+                                <div className='flex items-center gap-2'>
+                                    <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                                    Saving...
+                                </div>
+                            ) : (
+                                'Save Changes'
+                            )}
+                        </button>
+                    </form>
+                )}
+            
 
             {/* Logout */}
             <div
                 onClick={onSignOut}
-                className='flex items-center px-6 py-4 text-red-600 dark:text-red-400 cursor-pointer border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                className='relative z-10 m-4 rounded-xl flex items-center justify-center px-6 py-3.5 text-red-600 dark:text-red-400 font-medium cursor-pointer transition-colors bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20'
             >
-                <LogOut className='w-5 h-5 mr-3' />
-                <span>Log out</span>
+                <LogOut className='w-5 h-5 mr-2' />
+                <span>Sign Out</span>
             </div>
 
             {/* Redux/Error Messages */}
             {error && !updateSuccess && (
-                <p className='text-red-600 text-center pb-4'>{error}</p>
+                <p className='text-red-500 text-sm text-center pb-6 px-6 font-medium relative z-10'>
+                    {error}
+                </p>
             )}
         </div>
     );

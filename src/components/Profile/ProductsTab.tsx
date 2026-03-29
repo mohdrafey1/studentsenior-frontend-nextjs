@@ -173,15 +173,25 @@ export default function ProductsTab({ products }: ProductsTabProps) {
 
             {/* Products Content */}
             <div className='p-4 sm:p-6'>
+                
                 {currentProducts.length > 0 ? (
-                    <>
+                    <div
+                        className="w-full"
+                    >
                         {/* Grid View */}
                         {viewMode === 'grid' && (
-                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6'>
+                            <div 
+                                
+                                
+                                
+                                className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6'
+                            >
                                 {currentProducts?.map((product) => (
                                     <div
                                         key={product.slug}
-                                        className='group bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden'
+                                        
+                                        
+                                        className='group bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden flex flex-col'
                                     >
                                         <div className='p-4 sm:p-5'>
                                             <div className='flex items-start justify-between mb-3'>
@@ -223,11 +233,18 @@ export default function ProductsTab({ products }: ProductsTabProps) {
 
                         {/* List View */}
                         {viewMode === 'list' && (
-                            <div className='space-y-3'>
+                            <div 
+                                
+                                
+                                
+                                className='space-y-3'
+                            >
                                 {currentProducts?.map((product) => (
                                     <div
                                         key={product.slug}
-                                        className='group p-4 bg-gradient-to-r from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200'
+                                        
+                                        
+                                        className='group p-4 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300'
                                     >
                                         <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
                                             <div className='flex-1 min-w-0'>
@@ -243,8 +260,7 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                                             <div className='flex items-center gap-4'>
                                                 <div className='text-right'>
                                                     <div className='text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1'>
-                                                        ₹
-                                                        {product.price.toLocaleString()}
+                                                        ₹{product.price.toLocaleString()}
                                                     </div>
                                                 </div>
 
@@ -264,16 +280,26 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                                 ))}
                             </div>
                         )}
-                    </>
+                    </div>
                 ) : (
-                    <div className='text-center py-12'>
-                        <div className='mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4'>
-                            <Package className='w-8 h-8 text-gray-400 dark:text-gray-500' />
+                    <div 
+                        
+                        
+                        
+                        className='text-center py-16'
+                    >
+                        <div className='mx-auto w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 border border-gray-100 dark:border-white/5'>
+                            <Package className='w-10 h-10 text-gray-400 dark:text-gray-500' />
                         </div>
-                        <p className='text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2'>
+                        <p className='text-gray-900 dark:text-white font-medium text-lg mb-2'>
                             {products?.length === 0
-                                ? 'No products added yet'
-                                : 'No products match your search criteria'}
+                                ? 'No products found'
+                                : 'No matching products'}
+                        </p>
+                        <p className='text-gray-500 dark:text-gray-400 text-sm mb-6'>
+                            {products?.length === 0
+                                ? 'Get started by creating your first product.'
+                                : 'Try adjusting your search or filters.'}
                         </p>
                         {searchTerm ? (
                             <button
@@ -281,13 +307,14 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                                     setSearchTerm('');
                                     setCurrentPage(1);
                                 }}
-                                className='text-blue-600 dark:text-blue-400 text-sm hover:underline'
+                                className='bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-6 py-2 rounded-full text-sm font-medium transition-colors'
                             >
                                 Clear filters
                             </button>
                         ) : null}
                     </div>
                 )}
+                
             </div>
 
             {/* Pagination */}

@@ -39,29 +39,53 @@ export default function ProfileTabs() {
     };
 
     return (
-        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md'>
+        <div 
+            
+            
+            
+            className='bg-white/80 dark:bg-[#111827]/80 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-white/20 dark:border-white/10 overflow-hidden'
+        >
             {/* Tab Navigation */}
-            <div className='border-b border-gray-200 dark:border-gray-700'>
-                <nav className='flex flex-wrap space-x-8 px-6 pt-6'>
+            <div className='border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/20'>
+                <nav className='flex overflow-x-auto hide-scrollbar space-x-2 sm:space-x-4 p-4'>
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                            className={`relative flex items-center space-x-2 px-4 py-2.5 rounded-full font-medium text-sm sm:text-base transition-colors whitespace-nowrap z-10 ${
                                 activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                                    ? 'text-white'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5'
                             }`}
                         >
-                            <span>{tab.icon}</span>
-                            <span>{tab.label}</span>
+                            {activeTab === tab.id && (
+                                <div
+                                    
+                                    className="absolute inset-0 bg-blue-600 dark:bg-blue-500 rounded-full -z-10 shadow-lg shadow-blue-500/30"
+                                    
+                                />
+                            )}
+                            <span className="relative z-10">{tab.icon}</span>
+                            <span className="relative z-10">{tab.label}</span>
                         </button>
                     ))}
                 </nav>
             </div>
 
             {/* Tab Content */}
-            <div className='p-6'>{renderTabContent()}</div>
+            <div className='p-6'>
+                
+                    <div
+                        key={activeTab}
+                        
+                        
+                        
+                        
+                    >
+                        {renderTabContent()}
+                    </div>
+                
+            </div>
         </div>
     );
 }

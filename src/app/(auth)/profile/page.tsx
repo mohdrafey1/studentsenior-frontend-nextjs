@@ -92,7 +92,7 @@ export default function Profile() {
     }
 
     return (
-        <div className='min-h-screen bg-gray-100 dark:bg-gray-900'>
+        <div className='min-h-screen bg-gray-50 dark:bg-[#0B0F19] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-gray-800/20 dark:via-[#0B0F19] dark:to-[#0B0F19]'>
             {/* Sign Out Dialog */}
             <SignOutDialog
                 showDialog={showDialog}
@@ -101,14 +101,14 @@ export default function Profile() {
                 loading={loading1}
             />
 
-            <div className='flex flex-col lg:flex-row'>
+            <div className='max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 sm:p-6 lg:p-8'>
                 {/* Profile Form Section */}
-                <div className='lg:w-1/3 p-6'>
+                <div className='lg:w-1/3'>
                     <ProfileForm onSignOut={handleSignOutClick} />
                 </div>
 
                 {/* Profile Details Section with Tabs */}
-                <div className='lg:w-2/3 p-6 overflow-auto'>
+                <div className='lg:w-2/3'>
                     <ProfileTabs />
                 </div>
             </div>
