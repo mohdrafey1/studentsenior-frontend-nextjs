@@ -26,23 +26,14 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedSubject, setSelectedSubject] = useState<string>('all');
     const [selectedYear, setSelectedYear] = useState<string>('all');
-    const [selectedCollege, setSelectedCollege] = useState<string>('all');
     const [sortBy, setSortBy] = useState<SortOption>('createdAt');
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-    // Get unique subjects, years, and colleges
-    const subjects = Array.from(
-        new Set(pyqs?.map((p) => p.subject.subjectName) || []),
-    );
     const years = Array.from(
         new Set(pyqs?.map((p) => p.year.toString()) || []),
     ).sort((a, b) => parseInt(b) - parseInt(a));
-    const colleges = Array.from(
-        new Set(pyqs?.map((p) => p.college.name) || []),
-    );
 
     // Filter and sort pyqs
     const filteredPYQs =
@@ -56,21 +47,10 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
                     pyq.college.name
                         .toLowerCase()
                         .includes(searchTerm.toLowerCase());
-                const matchesSubject =
-                    selectedSubject === 'all' ||
-                    pyq.subject.subjectName === selectedSubject;
                 const matchesYear =
                     selectedYear === 'all' ||
                     pyq.year.toString() === selectedYear;
-                const matchesCollege =
-                    selectedCollege === 'all' ||
-                    pyq.college.name === selectedCollege;
-                return (
-                    matchesSearch &&
-                    matchesSubject &&
-                    matchesYear &&
-                    matchesCollege
-                );
+                return matchesSearch && matchesYear;
             })
             .sort((a, b) => {
                 let comparison = 0;
@@ -212,26 +192,6 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
                             />
                         </div>
 
-                        {/* Subject Filter */}
-                        <div className='flex items-center gap-2'>
-                            <select
-                                value={selectedSubject}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSelectedSubject(e.target.value),
-                                    )
-                                }
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500'
-                            >
-                                <option value='all'>All Subjects</option>
-                                {subjects.map((subject) => (
-                                    <option key={subject} value={subject}>
-                                        {subject}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
                         {/* Year Filter */}
                         <div className='flex items-center gap-2'>
                             <select
@@ -247,26 +207,6 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
                                 {years.map((year) => (
                                     <option key={year} value={year}>
                                         {year}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* College Filter */}
-                        <div className='flex items-center gap-2'>
-                            <select
-                                value={selectedCollege}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSelectedCollege(e.target.value),
-                                    )
-                                }
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500'
-                            >
-                                <option value='all'>All Colleges</option>
-                                {colleges.map((college) => (
-                                    <option key={college} value={college}>
-                                        {college}
                                     </option>
                                 ))}
                             </select>
@@ -302,146 +242,77 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
 
             {/* PYQs Content */}
             <div className='p-4 sm:p-6'>
-                {currentPYQs.length > 0 ? (
-                    <>
-                        {/* Grid View */}
-                        {viewMode === 'grid' && (
-                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'>
-                                {currentPYQs.map((pyq) => (
-                                    <div
-                                        key={pyq.id}
-                                        className='group bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-xl hover:shadow-violet-100 dark:hover:shadow-violet-900/20 hover:-translate-y-1 transition-all duration-300 overflow-hidden'
-                                    >
-                                        {/* Card Body */}
-                                        <div className='px-4 py-4'>
-                                            <h4 className='font-bold text-gray-900 dark:text-white mb-3 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-base leading-tight'>
-                                                {pyq.subject.subjectName} -{' '}
-                                                {pyq.year}
-                                            </h4>
+                
+                    {currentPYQs.length > 0 ? (
+                        <div
+                            key='content'
+                            
+                            
+                            
+                            className='w-full'
+                        >
+                            {/* Grid View */}
+                            {viewMode === 'grid' && (
+                                <div
+                                    
+                                    
+                                    
+                                    className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'
+                                >
+                                    {currentPYQs.map((pyq) => (
+                                        <div
+                                            key={pyq.id}
+                                            
+                                            
+                                            className='group bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 overflow-hidden flex flex-col'
+                                        >
+                                            {/* Card Body */}
+                                            <div className='px-4 py-4'>
+                                                <h4 className='font-bold text-gray-900 dark:text-white mb-3 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-base leading-tight'>
+                                                    {pyq.subject.subjectName} -{' '}
+                                                    {pyq.year}
+                                                </h4>
 
-                                            <p className='text-gray-500 dark:text-gray-400 mb-3'>
-                                                {pyq.examType}
-                                            </p>
+                                                <p className='text-gray-500 dark:text-gray-400 mb-3'>
+                                                    {pyq.examType}
+                                                </p>
 
-                                            {/* College Info */}
-                                            <div className='flex items-center gap-2 mb-3 p-2 bg-gray-50 dark:bg-gray-600 rounded-lg'>
-                                                <div className='w-8 h-8 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm'>
-                                                    {getCollegeInitials(
-                                                        pyq.submissionStatus,
-                                                    )}
-                                                </div>
-                                                <div className='flex-1 min-w-0'>
-                                                    <span className='text-sm font-medium text-gray-700 dark:text-gray-200 truncate block'>
-                                                        {pyq.submissionStatus}
-                                                    </span>
-                                                </div>
-                                                {pyq.submissionStatus ===
-                                                    'rejected' && (
-                                                    <span className='text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full font-semibold'>
-                                                        {pyq.rejectionReason ||
-                                                            'Rejected'}
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Date */}
-                                            <div className='text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded mb-4 flex items-center gap-1'>
-                                                <Calendar className='w-3 h-3' />
-                                                Added{' '}
-                                                {formatDate(pyq.createdAt)}
-                                            </div>
-
-                                            {/* Action Button */}
-                                            <Link
-                                                prefetch={false}
-                                                href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
-                                                className='block'
-                                            >
-                                                <button className='w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
-                                                    <Eye className='w-4 h-4' />
-                                                    View PYQ
-                                                    <ExternalLink className='w-3 h-3 opacity-75' />
-                                                </button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* List View */}
-                        {viewMode === 'list' && (
-                            <div className='space-y-4'>
-                                {currentPYQs.map((pyq) => (
-                                    <div
-                                        key={pyq.id}
-                                        className='group p-5 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:shadow-violet-50 dark:hover:shadow-violet-900/10 hover:border-violet-200 dark:hover:border-violet-600 transition-all duration-200'
-                                    >
-                                        <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
-                                            <div className='flex-1 min-w-0'>
-                                                <div className='flex items-start gap-4'>
-                                                    {/* College Avatar */}
-                                                    <div className='w-12 h-12 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0'>
+                                                {/* College Info */}
+                                                <div className='flex items-center gap-2 mb-3 p-2 bg-gray-50 dark:bg-gray-600 rounded-lg'>
+                                                    <div className='w-8 h-8 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm'>
                                                         {getCollegeInitials(
-                                                            pyq.college.name,
+                                                            pyq.submissionStatus,
                                                         )}
                                                     </div>
-
                                                     <div className='flex-1 min-w-0'>
-                                                        <h4 className='font-bold text-gray-900 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-lg'>
+                                                        <span className='text-sm font-medium text-gray-700 dark:text-gray-200 truncate block'>
                                                             {
-                                                                pyq.subject
-                                                                    .subjectName
-                                                            }{' '}
-                                                            - {pyq.year}
-                                                        </h4>
-                                                        <div className='flex flex-wrap items-center gap-3'>
-                                                            <span
-                                                                className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${getSubjectColor(
-                                                                    pyq.subject
-                                                                        .subjectName,
-                                                                )}`}
-                                                            >
-                                                                {
-                                                                    pyq.subject
-                                                                        .subjectName
-                                                                }
-                                                            </span>
-                                                            <span
-                                                                className={`px-2 py-1 text-xs font-bold rounded-md ${getYearColor(
-                                                                    parseInt(
-                                                                        pyq.year,
-                                                                    ),
-                                                                )}`}
-                                                            >
-                                                                {pyq.year}
-                                                            </span>
-                                                            <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
-                                                                <span className='font-medium'>
-                                                                    {
-                                                                        pyq
-                                                                            .college
-                                                                            .name
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                            <span className='flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded'>
-                                                                <Calendar className='w-3 h-3' />
-                                                                {formatDate(
-                                                                    pyq.createdAt,
-                                                                )}
-                                                            </span>
-                                                        </div>
+                                                                pyq.submissionStatus
+                                                            }
+                                                        </span>
                                                     </div>
+                                                    {pyq.submissionStatus ===
+                                                        'rejected' && (
+                                                        <span className='text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full font-semibold'>
+                                                            {pyq.rejectionReason ||
+                                                                'Rejected'}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                            </div>
 
-                                            <div className='flex items-center flex-shrink-0'>
+                                                {/* Date */}
+                                                <div className='text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded mb-4 flex items-center gap-1'>
+                                                    <Calendar className='w-3 h-3' />
+                                                    Added{' '}
+                                                    {formatDate(pyq.createdAt)}
+                                                </div>
+
                                                 <Link
                                                     prefetch={false}
                                                     href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
+                                                    className='block mt-auto'
                                                 >
-                                                    <button className='bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
+                                                    <button className='w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
                                                         <Eye className='w-4 h-4' />
                                                         View PYQ
                                                         <ExternalLink className='w-3 h-3 opacity-75' />
@@ -449,40 +320,140 @@ export default function PYQTab({ pyqs }: PYQTabProps) {
                                                 </Link>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className='text-center py-12'>
-                        <div className='mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4'>
-                            <FileQuestion className='w-8 h-8 text-gray-400 dark:text-gray-500' />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* List View */}
+                            {viewMode === 'list' && (
+                                <div
+                                    
+                                    
+                                    
+                                    className='space-y-4'
+                                >
+                                    {currentPYQs.map((pyq) => (
+                                        <div
+                                            key={pyq.id}
+                                            
+                                            
+                                            className='group p-5 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300'
+                                        >
+                                            <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
+                                                <div className='flex-1 min-w-0'>
+                                                    <div className='flex items-start gap-4'>
+                                                        {/* College Avatar */}
+                                                        <div className='w-12 h-12 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0'>
+                                                            {getCollegeInitials(
+                                                                pyq.college
+                                                                    .name,
+                                                            )}
+                                                        </div>
+
+                                                        <div className='flex-1 min-w-0'>
+                                                            <h4 className='font-bold text-gray-900 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-lg'>
+                                                                {
+                                                                    pyq.subject
+                                                                        .subjectName
+                                                                }{' '}
+                                                                - {pyq.year}
+                                                            </h4>
+                                                            <div className='flex flex-wrap items-center gap-3'>
+                                                                <span
+                                                                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${getSubjectColor(
+                                                                        pyq
+                                                                            .subject
+                                                                            .subjectName,
+                                                                    )}`}
+                                                                >
+                                                                    {
+                                                                        pyq
+                                                                            .subject
+                                                                            .subjectName
+                                                                    }
+                                                                </span>
+                                                                <span
+                                                                    className={`px-2 py-1 text-xs font-bold rounded-md ${getYearColor(
+                                                                        parseInt(
+                                                                            pyq.year,
+                                                                        ),
+                                                                    )}`}
+                                                                >
+                                                                    {pyq.year}
+                                                                </span>
+                                                                <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
+                                                                    <span className='font-medium'>
+                                                                        {
+                                                                            pyq
+                                                                                .college
+                                                                                .name
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                <span className='flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded'>
+                                                                    <Calendar className='w-3 h-3' />
+                                                                    {formatDate(
+                                                                        pyq.createdAt,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className='flex items-center flex-shrink-0'>
+                                                    <Link
+                                                        prefetch={false}
+                                                        href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
+                                                    >
+                                                        <button className='bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
+                                                            <Eye className='w-4 h-4' />
+                                                            View PYQ
+                                                            <ExternalLink className='w-3 h-3 opacity-75' />
+                                                        </button>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <p className='text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2'>
-                            {pyqs?.length === 0
-                                ? 'No PYQs added yet'
-                                : 'No PYQs match your search criteria'}
-                        </p>
-                        {searchTerm ||
-                        selectedSubject !== 'all' ||
-                        selectedYear !== 'all' ||
-                        selectedCollege !== 'all' ? (
-                            <button
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedSubject('all');
-                                    setSelectedYear('all');
-                                    setSelectedCollege('all');
-                                    setCurrentPage(1);
-                                }}
-                                className='text-violet-600 dark:text-violet-400 text-sm hover:underline'
-                            >
-                                Clear filters
-                            </button>
-                        ) : null}
-                    </div>
-                )}
+                    ) : (
+                        <div
+                            
+                            
+                            
+                            className='text-center py-16'
+                        >
+                            <div className='mx-auto w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 border border-gray-100 dark:border-white/5'>
+                                <FileQuestion className='w-10 h-10 text-gray-400 dark:text-gray-500' />
+                            </div>
+                            <p className='text-gray-900 dark:text-white font-medium text-lg mb-2'>
+                                {pyqs?.length === 0
+                                    ? 'No PYQs added yet'
+                                    : 'No matching PYQs'}
+                            </p>
+                            <p className='text-gray-500 dark:text-gray-400 text-sm mb-6'>
+                                {pyqs?.length === 0
+                                    ? 'Get started by creating your first PYQ.'
+                                    : 'Try adjusting your search or filters.'}
+                            </p>
+                            {searchTerm || selectedYear !== 'all' ? (
+                                <button
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setSelectedYear('all');
+                                        setCurrentPage(1);
+                                    }}
+                                    className='bg-violet-50 hover:bg-violet-100 dark:bg-violet-900/20 dark:hover:bg-violet-900/40 text-violet-600 dark:text-violet-400 px-6 py-2 rounded-full text-sm font-medium transition-colors'
+                                >
+                                    Clear filters
+                                </button>
+                            ) : null}
+                        </div>
+                    )}
+                
             </div>
 
             {/* Pagination */}

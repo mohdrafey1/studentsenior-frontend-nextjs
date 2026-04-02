@@ -26,19 +26,9 @@ export default function NotesTab({ notes }: NotesTabProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedSubject, setSelectedSubject] = useState<string>('all');
-    const [selectedCollege, setSelectedCollege] = useState<string>('all');
     const [sortBy, setSortBy] = useState<SortOption>('createdAt');
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
-
-    // Get unique subjects and colleges
-    const subjects = Array.from(
-        new Set(notes?.map((n) => n.subject.subjectName) || []),
-    );
-    const colleges = Array.from(
-        new Set(notes?.map((n) => n.college.name) || []),
-    );
 
     // Filter and sort notes
     const filteredNotes =
@@ -54,13 +44,7 @@ export default function NotesTab({ notes }: NotesTabProps) {
                     note.college.name
                         .toLowerCase()
                         .includes(searchTerm.toLowerCase());
-                const matchesSubject =
-                    selectedSubject === 'all' ||
-                    note.subject.subjectName === selectedSubject;
-                const matchesCollege =
-                    selectedCollege === 'all' ||
-                    note.college.name === selectedCollege;
-                return matchesSearch && matchesSubject && matchesCollege;
+                return matchesSearch;
             })
             .sort((a, b) => {
                 let comparison = 0;
@@ -189,46 +173,6 @@ export default function NotesTab({ notes }: NotesTabProps) {
                             />
                         </div>
 
-                        {/* Subject Filter */}
-                        <div className='flex items-center gap-2'>
-                            <select
-                                value={selectedSubject}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSelectedSubject(e.target.value),
-                                    )
-                                }
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'
-                            >
-                                <option value='all'>All Subjects</option>
-                                {subjects.map((subject) => (
-                                    <option key={subject} value={subject}>
-                                        {subject}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* College Filter */}
-                        <div className='flex items-center gap-2'>
-                            <select
-                                value={selectedCollege}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSelectedCollege(e.target.value),
-                                    )
-                                }
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'
-                            >
-                                <option value='all'>All Colleges</option>
-                                {colleges.map((college) => (
-                                    <option key={college} value={college}>
-                                        {college}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
                         {/* Sort */}
                         <div className='flex items-center gap-2'>
                             <select
@@ -259,136 +203,82 @@ export default function NotesTab({ notes }: NotesTabProps) {
 
             {/* Notes Content */}
             <div className='p-4 sm:p-6'>
-                {currentNotes.length > 0 ? (
-                    <>
-                        {/* Grid View */}
-                        {viewMode === 'grid' && (
-                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'>
-                                {currentNotes.map((note) => (
-                                    <div
-                                        key={note.id}
-                                        className='group bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden'
-                                    >
-                                        <div className='p-4 sm:p-5'>
-                                            <div className='flex items-start justify-between mb-3'>
-                                                <span
-                                                    className={`px-2 py-1 text-xs font-medium rounded-full truncate ${getSubjectColor(
-                                                        note.subject
-                                                            .subjectName,
-                                                    )}`}
-                                                >
-                                                    {note.subject.subjectName}
-                                                </span>
-                                                {/* <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                
+                    {currentNotes.length > 0 ? (
+                        <div
+                            key='content'
+                            
+                            
+                            
+                            className='w-full'
+                        >
+                            {/* Grid View */}
+                            {viewMode === 'grid' && (
+                                <div
+                                    
+                                    
+                                    
+                                    className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'
+                                >
+                                    {currentNotes.map((note) => (
+                                        <div
+                                            key={note.id}
+                                            
+                                            
+                                            className='group bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 overflow-hidden flex flex-col'
+                                        >
+                                            <div className='p-4 sm:p-5 flex-1 flex flex-col'>
+                                                <div className='flex items-start justify-between mb-3'>
+                                                    <span
+                                                        className={`px-2 py-1 text-xs font-medium rounded-full truncate ${getSubjectColor(
+                                                            note.subject
+                                                                .subjectName,
+                                                        )}`}
+                                                    >
+                                                        {
+                                                            note.subject
+                                                                .subjectName
+                                                        }
+                                                    </span>
+                                                    {/* <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                                                     <Calendar className="w-3 h-3" />
                                                     {formatDate(note.createdAt)}
                                                 </div> */}
-                                            </div>
+                                                </div>
 
-                                            <h4 className='font-semibold truncate text-gray-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors text-sm sm:text-base'>
-                                                {note.title}
-                                            </h4>
+                                                <h4 className='font-semibold truncate text-gray-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors text-sm sm:text-base'>
+                                                    {note.title}
+                                                </h4>
 
-                                            <div className='flex items-center gap-2 mb-4'>
-                                                <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
-                                                    <div className='w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold'>
-                                                        {getCollegeInitials(
-                                                            note.submissionStatus,
+                                                <div className='flex items-center gap-2 mb-4'>
+                                                    <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
+                                                        <div className='w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold'>
+                                                            {getCollegeInitials(
+                                                                note.submissionStatus,
+                                                            )}
+                                                        </div>
+                                                        <span className='truncate'>
+                                                            {note.submissionStatus ||
+                                                                'Unknown'}
+                                                        </span>
+                                                        {note.rejectionReason && (
+                                                            <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                                (
+                                                                {
+                                                                    note.rejectionReason
+                                                                }
+                                                                )
+                                                            </span>
                                                         )}
                                                     </div>
-                                                    <span className='truncate'>
-                                                        {note.submissionStatus ||
-                                                            'Unknown'}
-                                                    </span>
-                                                    {note.rejectionReason && (
-                                                        <span className='text-xs text-gray-500 dark:text-gray-400'>
-                                                            (
-                                                            {
-                                                                note.rejectionReason
-                                                            }
-                                                            )
-                                                        </span>
-                                                    )}
                                                 </div>
-                                            </div>
 
-                                            <Link
-                                                prefetch={false}
-                                                href={`${note.college.slug}/notes/${note.slug}`}
-                                                className='block'
-                                            >
-                                                <button className='w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md'>
-                                                    <Eye className='w-4 h-4' />
-                                                    View Note
-                                                    <ExternalLink className='w-3 h-3' />
-                                                </button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* List View */}
-                        {viewMode === 'list' && (
-                            <div className='space-y-3'>
-                                {currentNotes.map((note) => (
-                                    <div
-                                        key={note.id}
-                                        className='group p-4 bg-gradient-to-r from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200'
-                                    >
-                                        <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
-                                            <div className='flex-1 min-w-0'>
-                                                <div className='flex items-start gap-3'>
-                                                    <div className='flex-1 min-w-0'>
-                                                        <h4 className='font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
-                                                            {note.title}
-                                                        </h4>
-                                                        <div className='flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400'>
-                                                            <span
-                                                                className={`px-2 py-1 text-xs font-medium rounded-full ${getSubjectColor(
-                                                                    note.subject
-                                                                        .subjectName,
-                                                                )}`}
-                                                            >
-                                                                {
-                                                                    note.subject
-                                                                        .subjectName
-                                                                }
-                                                            </span>
-                                                            <div className='flex items-center gap-2'>
-                                                                <div className='w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold'>
-                                                                    {getCollegeInitials(
-                                                                        note
-                                                                            .college
-                                                                            .name,
-                                                                    )}
-                                                                </div>
-                                                                <span className='truncate'>
-                                                                    {
-                                                                        note
-                                                                            .college
-                                                                            .name
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                            <span className='flex items-center gap-1'>
-                                                                <Calendar className='w-3 h-3' />
-                                                                {formatDate(
-                                                                    note.createdAt,
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className='flex items-center'>
                                                 <Link
                                                     prefetch={false}
                                                     href={`${note.college.slug}/notes/${note.slug}`}
+                                                    className='block'
                                                 >
-                                                    <button className='bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap'>
+                                                    <button className='w-full mt-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md'>
                                                         <Eye className='w-4 h-4' />
                                                         View Note
                                                         <ExternalLink className='w-3 h-3' />
@@ -396,38 +286,125 @@ export default function NotesTab({ notes }: NotesTabProps) {
                                                 </Link>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className='text-center py-12'>
-                        <div className='mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4'>
-                            <FileText className='w-8 h-8 text-gray-400 dark:text-gray-500' />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* List View */}
+                            {viewMode === 'list' && (
+                                <div
+                                    
+                                    
+                                    
+                                    className='space-y-3'
+                                >
+                                    {currentNotes.map((note) => (
+                                        <div
+                                            key={note.id}
+                                            
+                                            
+                                            className='group p-4 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300'
+                                        >
+                                            <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
+                                                <div className='flex-1 min-w-0'>
+                                                    <div className='flex items-start gap-3'>
+                                                        <div className='flex-1 min-w-0'>
+                                                            <h4 className='font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
+                                                                {note.title}
+                                                            </h4>
+                                                            <div className='flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400'>
+                                                                <span
+                                                                    className={`px-2 py-1 text-xs font-medium rounded-full ${getSubjectColor(
+                                                                        note
+                                                                            .subject
+                                                                            .subjectName,
+                                                                    )}`}
+                                                                >
+                                                                    {
+                                                                        note
+                                                                            .subject
+                                                                            .subjectName
+                                                                    }
+                                                                </span>
+                                                                <div className='flex items-center gap-2'>
+                                                                    <div className='w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold'>
+                                                                        {getCollegeInitials(
+                                                                            note
+                                                                                .college
+                                                                                .name,
+                                                                        )}
+                                                                    </div>
+                                                                    <span className='truncate'>
+                                                                        {
+                                                                            note
+                                                                                .college
+                                                                                .name
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                <span className='flex items-center gap-1'>
+                                                                    <Calendar className='w-3 h-3' />
+                                                                    {formatDate(
+                                                                        note.createdAt,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className='flex items-center'>
+                                                    <Link
+                                                        prefetch={false}
+                                                        href={`${note.college.slug}/notes/${note.slug}`}
+                                                    >
+                                                        <button className='bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap'>
+                                                            <Eye className='w-4 h-4' />
+                                                            View Note
+                                                            <ExternalLink className='w-3 h-3' />
+                                                        </button>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <p className='text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2'>
-                            {notes?.length === 0
-                                ? 'No notes added yet'
-                                : 'No notes match your search criteria'}
-                        </p>
-                        {searchTerm ||
-                        selectedSubject !== 'all' ||
-                        selectedCollege !== 'all' ? (
-                            <button
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedSubject('all');
-                                    setSelectedCollege('all');
-                                    setCurrentPage(1);
-                                }}
-                                className='text-emerald-600 dark:text-emerald-400 text-sm hover:underline'
-                            >
-                                Clear filters
-                            </button>
-                        ) : null}
-                    </div>
-                )}
+                    ) : (
+                        <div
+                            
+                            
+                            
+                            className='text-center py-16'
+                        >
+                            <div className='mx-auto w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 border border-gray-100 dark:border-white/5'>
+                                <FileText className='w-10 h-10 text-gray-400 dark:text-gray-500' />
+                            </div>
+                            <p className='text-gray-900 dark:text-white font-medium text-lg mb-2'>
+                                {notes?.length === 0
+                                    ? 'No notes added yet'
+                                    : 'No matching notes'}
+                            </p>
+                            <p className='text-gray-500 dark:text-gray-400 text-sm mb-6'>
+                                {notes?.length === 0
+                                    ? 'Get started by creating your first note.'
+                                    : 'Try adjusting your search or filters.'}
+                            </p>
+                            {searchTerm ? (
+                                <button
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setCurrentPage(1);
+                                    }}
+                                    className='bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 px-6 py-2 rounded-full text-sm font-medium transition-colors'
+                                >
+                                    Clear filters
+                                </button>
+                            ) : null}
+                        </div>
+                    )}
+                
             </div>
 
             {/* Pagination */}
