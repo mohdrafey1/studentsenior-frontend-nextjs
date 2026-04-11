@@ -635,40 +635,43 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     />
                 </div>
 
-                {/* AI Solution Section */}
-                <div className='mt-6 mb-6 flex flex-wrap gap-4 justify-center'>
-                    {pyq.mdSolution ? (
-                        <Link
-                            prefetch={false}
-                            href={`/${slug}/pyqs/${pyq.slug}/solution`}
-                            className='inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all duration-200 shadow-md hover:shadow-lg'
-                        >
-                            <Bot className='w-5 h-5' />
-                            View Solution
-                        </Link>
-                    ) : (
-                        <button
-                            onClick={handleRequestSolution}
-                            disabled={requestingSolution || hasRequested}
-                            className={`inline-flex items-center gap-2 px-6 py-3 border font-medium rounded-xl transition-colors duration-200 shadow-sm disabled:opacity-50 ${
-                                hasRequested
-                                    ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
-                                    : 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
-                            }`}
-                        >
-                            {requestingSolution ? (
-                                <Loader2 className='w-5 h-5 animate-spin' />
-                            ) : (
-                                <Bot className='w-5 h-5' />
-                            )}
-                            {hasRequested ? 'Requested' : 'Request Solution'}
-                        </button>
-                    )}
-                </div>
-
                 {/* Bottom controls: Download for Unsolved */}
                 {!pyq.solved && (
                     <div className='mt-8'>
+                        {/* AI Solution Section */}
+                        <div className='mt-6 mb-6 flex flex-wrap gap-4 justify-center'>
+                            {pyq.mdSolution ? (
+                                <Link
+                                    prefetch={false}
+                                    href={`/${slug}/pyqs/${pyq.slug}/solution`}
+                                    className='inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all duration-200 shadow-md hover:shadow-lg'
+                                >
+                                    <Bot className='w-5 h-5' />
+                                    View Solution
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={handleRequestSolution}
+                                    disabled={
+                                        requestingSolution || hasRequested
+                                    }
+                                    className={`inline-flex items-center gap-2 px-6 py-3 border font-medium rounded-xl transition-colors duration-200 shadow-sm disabled:opacity-50 ${
+                                        hasRequested
+                                            ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
+                                            : 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                    }`}
+                                >
+                                    {requestingSolution ? (
+                                        <Loader2 className='w-5 h-5 animate-spin' />
+                                    ) : (
+                                        <Bot className='w-5 h-5' />
+                                    )}
+                                    {hasRequested
+                                        ? 'Requested'
+                                        : 'Request Solution'}
+                                </button>
+                            )}
+                        </div>
                         <div className='flex flex-wrap gap-3 justify-center'>
                             {!isAndroid ? (
                                 <button
