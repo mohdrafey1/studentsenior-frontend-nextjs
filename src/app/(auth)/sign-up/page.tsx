@@ -640,7 +640,7 @@ const SignUp: React.FC = () => {
                                     <Mail className='w-8 h-8 text-blue-600 dark:text-blue-400' />
                                 </div>
                                 <p className='text-sm text-gray-600 dark:text-gray-400 leading-relaxed'>
-                                    We've sent a{' '}
+                                    We&apos;ve sent a{' '}
                                     <strong className='text-gray-900 dark:text-white'>
                                         6-digit OTP
                                     </strong>{' '}
