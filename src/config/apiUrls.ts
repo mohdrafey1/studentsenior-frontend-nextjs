@@ -5,6 +5,8 @@ export const api = {
     auth: {
         login: `${API_BASE_URL}/auth/signin`,
         signup: `${API_BASE_URL}/auth/signup`,
+        sendOtp: `${API_BASE_URL}/auth/send-otp`,
+        verifyOtpSignup: `${API_BASE_URL}/auth/verify-otp-signup`,
         google: `${API_BASE_URL}/auth/google`,
         signout: `${API_BASE_URL}/auth/signout`,
         userDetail: `${API_BASE_URL}/auth/user`,
