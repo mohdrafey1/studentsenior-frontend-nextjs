@@ -27,13 +27,16 @@ export const api = {
 
     pyq: {
         getPyqByCollegeSlug: (slug: string) =>
-            `${API_BASE_URL}/pyqs/college/${slug}`,
+            `${API_BASE_URL}/pyqs/college/${encodeURIComponent(slug)}`,
         createPyq: `${API_BASE_URL}/pyqs`,
-        editPyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
-        deletePyq: (id: string) => `${API_BASE_URL}/pyqs/${id}`,
-        getPyqBySlug: (slug: string) => `${API_BASE_URL}/pyqs/${slug}`,
+        editPyq: (id: string) =>
+            `${API_BASE_URL}/pyqs/${encodeURIComponent(id)}`,
+        deletePyq: (id: string) =>
+            `${API_BASE_URL}/pyqs/${encodeURIComponent(id)}`,
+        getPyqBySlug: (slug: string) =>
+            `${API_BASE_URL}/pyqs/${encodeURIComponent(slug)}`,
         getSuggestedPyqs: (slug: string) =>
-            `${API_BASE_URL}/pyqs/${slug}/suggested`,
+            `${API_BASE_URL}/pyqs/${encodeURIComponent(slug)}/suggested`,
     },
 
     pyqSolutions: {
@@ -44,31 +47,31 @@ export const api = {
 
     notes: {
         getNotesByCollegeSlug: (slug: string) =>
-            `${API_BASE_URL}/notes/college/${slug}`,
+            `${API_BASE_URL}/notes/college/${encodeURIComponent(slug)}`,
         createNote: `${API_BASE_URL}/notes`,
-        editNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
-        deleteNote: (id: string) => `${API_BASE_URL}/notes/${id}`,
-        getNoteBySlug: (slug: string) => `${API_BASE_URL}/notes/${slug}`,
+        editNote: (id: string) => `${API_BASE_URL}/notes/${encodeURIComponent(id)}`,
+        deleteNote: (id: string) => `${API_BASE_URL}/notes/${encodeURIComponent(id)}`,
+        getNoteBySlug: (slug: string) => `${API_BASE_URL}/notes/${encodeURIComponent(slug)}`,
         getSuggestedNotes: (slug: string) =>
-            `${API_BASE_URL}/notes/${slug}/suggested`,
+            `${API_BASE_URL}/notes/${encodeURIComponent(slug)}/suggested`,
     },
 
     videos: {
         getVideosByCollegeSlug: (slug: string) =>
-            `${API_BASE_URL}/videos/college/${slug}`,
+            `${API_BASE_URL}/videos/college/${encodeURIComponent(slug)}`,
         createVideo: `${API_BASE_URL}/videos`,
-        editVideo: (id: string) => `${API_BASE_URL}/videos/${id}`,
-        deleteVideo: (id: string) => `${API_BASE_URL}/videos/${id}`,
-        getVideoBySlug: (slug: string) => `${API_BASE_URL}/videos/${slug}`,
+        editVideo: (id: string) => `${API_BASE_URL}/videos/${encodeURIComponent(id)}`,
+        deleteVideo: (id: string) => `${API_BASE_URL}/videos/${encodeURIComponent(id)}`,
+        getVideoBySlug: (slug: string) => `${API_BASE_URL}/videos/${encodeURIComponent(slug)}`,
     },
 
     seniors: {
         getSeniorsByCollegeSlug: (slug: string) =>
-            `${API_BASE_URL}/seniors/college/${slug}`,
+            `${API_BASE_URL}/seniors/college/${encodeURIComponent(slug)}`,
         createSenior: `${API_BASE_URL}/seniors`,
-        editSenior: (id: string) => `${API_BASE_URL}/seniors/${id}`,
-        deleteSenior: (id: string) => `${API_BASE_URL}/seniors/${id}`,
-        getSeniorBySlug: (slug: string) => `${API_BASE_URL}/seniors/${slug}`,
+        editSenior: (id: string) => `${API_BASE_URL}/seniors/${encodeURIComponent(id)}`,
+        deleteSenior: (id: string) => `${API_BASE_URL}/seniors/${encodeURIComponent(id)}`,
+        getSeniorBySlug: (slug: string) => `${API_BASE_URL}/seniors/${encodeURIComponent(slug)}`,
     },
 
     products: {
@@ -177,21 +180,21 @@ export const api = {
 
     syllabus: {
         getSyllabusByCollege: (collegeSlug: string) =>
-            `${API_BASE_URL}/syllabus/college/${collegeSlug}`,
+            `${API_BASE_URL}/syllabus/college/${encodeURIComponent(collegeSlug)}`,
 
         getSyllabusBySlug: (slug: string) =>
-            `${API_BASE_URL}/syllabus/slug/${slug}`,
+            `${API_BASE_URL}/syllabus/slug/${encodeURIComponent(slug)}`,
 
         getSyllabusByBranch: (collegeSlug: string, branchCode: string) =>
-            `${API_BASE_URL}/syllabus/branch/${collegeSlug}/${branchCode}`,
+            `${API_BASE_URL}/syllabus/branch/${encodeURIComponent(collegeSlug)}/${encodeURIComponent(branchCode)}`,
     },
 
     quickNotes: {
         getQuickNotesByCollegeSlug: (slug: string) =>
-            `${API_BASE_URL}/quicknotes/college/${slug}`,
+            `${API_BASE_URL}/quicknotes/college/${encodeURIComponent(slug)}`,
         getNotesBySubject: (subjectCode: string) =>
-            `${API_BASE_URL}/quicknotes/${subjectCode}`,
-        getNoteDetail: (slug: string) => `${API_BASE_URL}/quicknotes/s/${slug}`,
+            `${API_BASE_URL}/quicknotes/${encodeURIComponent(subjectCode)}`,
+        getNoteDetail: (slug: string) => `${API_BASE_URL}/quicknotes/s/${encodeURIComponent(slug)}`,
     },
 
     affiliateProducts: {
