@@ -47,7 +47,7 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
 
     try {
         const url = `${api.notes.getNoteBySlug(noteSlug)}`;
-        const res = await fetch(url, { next: { revalidate: 10 } });
+        const res = await fetch(url, { cache: 'no-store' });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
