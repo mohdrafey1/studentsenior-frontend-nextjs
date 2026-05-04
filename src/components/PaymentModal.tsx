@@ -5,6 +5,13 @@ import { X, Wallet, CreditCard, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '@/config/apiUrls';
 import Link from 'next/link';
 
+declare global {
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Razorpay: any;
+    }
+}
+
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -21,6 +28,23 @@ interface PaymentModalProps {
         year?: string;
     };
     onSuccess?: () => void;
+}
+
+/**
+ * Load the Razorpay checkout script dynamically
+ */
+function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+        if (window.Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
 }
 
 export default function PaymentModal({
@@ -136,7 +160,13 @@ export default function PaymentModal({
                     window.location.reload();
                 }
             } else {
-                // Pay online - redirect to payment gateway
+                // Pay online — open Razorpay checkout popup
+                const scriptLoaded = await loadRazorpayScript();
+                if (!scriptLoaded) {
+                    throw new Error('Failed to load Razorpay. Please check your internet connection.');
+                }
+
+                // Initiate payment to get Razorpay order details
                 const paymentResponse = await fetch(api.payment.payOnline, {
                     method: 'POST',
                     headers: {
@@ -145,8 +175,8 @@ export default function PaymentModal({
                     credentials: 'include',
                     body: JSON.stringify({
                         orderId,
-                        gateway: 'phonepe',
-                        returnUrl: `${window.location.origin}/payment/callback?orderId=${orderId}`,
+                        gateway: 'razorpay',
+                        returnUrl: window.location.href,
                     }),
                 });
 
@@ -158,9 +188,85 @@ export default function PaymentModal({
                 }
 
                 const paymentData = await paymentResponse.json();
+                const {
+                    razorpayOrderId,
+                    razorpayKeyId,
+                    amount: amountInPaise,
+                    currency,
+                } = paymentData.data;
 
-                // Redirect to PhonePe
-                window.location.href = paymentData.data.paymentUrl;
+                // Open Razorpay checkout popup
+                const razorpayOptions = {
+                    key: razorpayKeyId,
+                    amount: amountInPaise,
+                    currency: currency || 'INR',
+                    name: 'StudentSenior',
+                    description: `Purchase ${resourceType === 'pyq' ? 'PYQ' : 'Notes'}: ${title}`,
+                    order_id: razorpayOrderId,
+                    handler: async (response: {
+                        razorpay_payment_id: string;
+                        razorpay_order_id: string;
+                        razorpay_signature: string;
+                    }) => {
+                        try {
+                            // Verify payment on backend
+                            const verifyResponse = await fetch(
+                                api.payment.verifyPayment,
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    credentials: 'include',
+                                    body: JSON.stringify({
+                                        razorpay_payment_id:
+                                            response.razorpay_payment_id,
+                                        razorpay_order_id:
+                                            response.razorpay_order_id,
+                                        razorpay_signature:
+                                            response.razorpay_signature,
+                                    }),
+                                },
+                            );
+
+                            if (!verifyResponse.ok) {
+                                throw new Error('Payment verification failed');
+                            }
+
+                            // Success!
+                            if (onSuccess) {
+                                onSuccess();
+                            } else {
+                                window.location.reload();
+                            }
+                        } catch (err) {
+                            console.error('Verification error:', err);
+                            setError(
+                                'Payment completed but verification failed. Please contact support.',
+                            );
+                            setIsLoading(false);
+                        }
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            setIsLoading(false);
+                        },
+                    },
+                    theme: {
+                        color: '#0284c7', // sky-600
+                    },
+                };
+
+                const rzp = new window.Razorpay(razorpayOptions);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                rzp.on('payment.failed', (response: any) => {
+                    setError(
+                        response.error?.description ||
+                            'Payment failed. Please try again.',
+                    );
+                    setIsLoading(false);
+                });
+                rzp.open();
             }
         } catch (error) {
             console.error('Purchase error:', error);
@@ -299,10 +405,10 @@ export default function PaymentModal({
                                 <CreditCard className='w-5 h-5 text-sky-600 dark:text-sky-400' />
                                 <div className='flex-1 text-left'>
                                     <p className='font-medium text-gray-900 dark:text-white'>
-                                        Pay Online (PhonePe)
+                                        Pay Online (Razorpay)
                                     </p>
                                     <p className='text-sm text-gray-500'>
-                                        Pay ₹{Math.ceil(price / 5)} via PhonePe
+                                        Pay ₹{Math.ceil(price / 5)} via Razorpay
                                     </p>
                                 </div>
                             </div>

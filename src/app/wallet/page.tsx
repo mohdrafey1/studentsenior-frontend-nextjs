@@ -4,7 +4,31 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 
+declare global {
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Razorpay: any;
+    }
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+/**
+ * Load the Razorpay checkout script dynamically
+ */
+function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+        if (window.Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+}
 
 type ObjId = { _id: string };
 type Txn = {
@@ -165,6 +189,12 @@ export default function WalletPage() {
         }
         setSubmitting(true);
         try {
+            // Load Razorpay script
+            const scriptLoaded = await loadRazorpayScript();
+            if (!scriptLoaded) {
+                throw new Error('Failed to load Razorpay. Please check your internet connection.');
+            }
+
             const returnUrl = `${window.location.origin}/wallet`;
             const createRes = await fetch(`${API_BASE}/payment/orders`, {
                 method: 'POST',
@@ -194,8 +224,8 @@ export default function WalletPage() {
                 credentials: 'include',
                 body: JSON.stringify({
                     orderId,
-                    gateway: 'phonepe',
-                    returnUrl: `${window.location.origin}/payment/callback?orderId=${orderId}`,
+                    gateway: 'razorpay',
+                    returnUrl,
                 }),
             });
             if (!payRes.ok) {
@@ -205,16 +235,88 @@ export default function WalletPage() {
                 throw new Error(msg);
             }
             const payData = await payRes.json();
-            const paymentUrl = payData?.data?.paymentUrl || payData?.paymentUrl;
-            if (!paymentUrl) throw new Error('Payment URL not received');
+            const {
+                razorpayOrderId,
+                razorpayKeyId,
+                amount: amountInPaise,
+                currency,
+            } = payData.data;
 
             setShowAddModal(false);
-            window.location.href = paymentUrl as string;
+
+            // Open Razorpay checkout popup
+            const razorpayOptions = {
+                key: razorpayKeyId,
+                amount: amountInPaise,
+                currency: currency || 'INR',
+                name: 'StudentSenior',
+                description: `Add ${addPoints} points to wallet`,
+                order_id: razorpayOrderId,
+                handler: async (response: {
+                    razorpay_payment_id: string;
+                    razorpay_order_id: string;
+                    razorpay_signature: string;
+                }) => {
+                    try {
+                        // Verify payment on backend
+                        const verifyRes = await fetch(
+                            `${API_BASE}/payment/pay/verify`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    razorpay_payment_id:
+                                        response.razorpay_payment_id,
+                                    razorpay_order_id:
+                                        response.razorpay_order_id,
+                                    razorpay_signature:
+                                        response.razorpay_signature,
+                                }),
+                            },
+                        );
+
+                        if (!verifyRes.ok) {
+                            throw new Error('Payment verification failed');
+                        }
+
+                        setMessage(
+                            `Successfully added ${addPoints} points to your wallet!`,
+                        );
+                        fetchAll(); // Refresh wallet data
+                    } catch (err) {
+                        console.error('Verification error:', err);
+                        setError(
+                            'Payment completed but verification failed. Please contact support.',
+                        );
+                    } finally {
+                        setSubmitting(false);
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        setSubmitting(false);
+                    },
+                },
+                theme: {
+                    color: '#2563eb', // blue-600
+                },
+            };
+
+            const rzp = new window.Razorpay(razorpayOptions);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            rzp.on('payment.failed', (response: any) => {
+                setError(
+                    response.error?.description ||
+                        'Payment failed. Please try again.',
+                );
+                setSubmitting(false);
+            });
+            rzp.open();
         } catch (err) {
             const msg =
                 err instanceof Error ? err.message : 'Something went wrong';
             setError(msg);
-        } finally {
             setSubmitting(false);
         }
     };
@@ -826,7 +928,7 @@ export default function WalletPage() {
                                         Add Points
                                     </h3>
                                     <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                                        Purchase points using PhonePe
+                                        Purchase points using Razorpay
                                     </p>
                                 </div>
                                 <button

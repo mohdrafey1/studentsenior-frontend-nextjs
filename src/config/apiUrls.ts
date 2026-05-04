@@ -163,6 +163,7 @@ export const api = {
         payWithPoints: (orderId: string) =>
             `${API_BASE_URL}/payment/orders/${orderId}/pay/points`,
         payOnline: `${API_BASE_URL}/payment/pay/online`,
+        verifyPayment: `${API_BASE_URL}/payment/pay/verify`,
 
         // Wallet endpoints
         getBalance: `${API_BASE_URL}/payment/wallet/balance`,
