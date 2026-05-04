@@ -6,6 +6,7 @@ import { RootState } from '@/redux/store';
 
 declare global {
     interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Razorpay: any;
     }
 }
@@ -303,6 +304,7 @@ export default function WalletPage() {
             };
 
             const rzp = new window.Razorpay(razorpayOptions);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             rzp.on('payment.failed', (response: any) => {
                 setError(
                     response.error?.description ||
