@@ -144,6 +144,13 @@ export const api = {
         getSignedUrl: `${API_BASE_URL}/aws/signed-url`,
     },
 
+    contributors: {
+        getTopContributors: (limit?: number) =>
+            limit
+                ? `${API_BASE_URL}/contributors?limit=${limit}`
+                : `${API_BASE_URL}/contributors`,
+    },
+
     savedData: {
         saveNote: `${API_BASE_URL}/saved-data/save-note`,
         unsaveNote: `${API_BASE_URL}/saved-data/unsave-note`,
