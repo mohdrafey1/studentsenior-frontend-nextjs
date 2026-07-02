@@ -17,6 +17,13 @@ export const api = {
         userData: `${API_BASE_URL}/users/data`,
     },
 
+    community: {
+        listByCollege: (slug: string) =>
+            `${API_BASE_URL}/community/college/${encodeURIComponent(slug)}`,
+        getMessages: (groupId: string) =>
+            `${API_BASE_URL}/community/${encodeURIComponent(groupId)}/messages`,
+    },
+
     college: {
         getColleges: `${API_BASE_URL}/colleges`,
         getCollegeBySlug: (slug: string) => `${API_BASE_URL}/colleges/${slug}`,
