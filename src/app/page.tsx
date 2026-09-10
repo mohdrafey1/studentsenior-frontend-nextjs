@@ -80,7 +80,7 @@ export const metadata: Metadata = {
             'Access mentorship, PYQs, study materials, and connect with seniors. Boost your academic journey with our comprehensive student platform.',
         images: [
             {
-                url: 'https://studentsenior.com/image192edge.png',
+                url: 'https://studentsenior.com/og-image.png',
                 width: 1200,
                 height: 630,
                 alt: 'Student Senior - Academic Platform for College Students',
@@ -92,11 +92,14 @@ export const metadata: Metadata = {
         title: 'Student Senior - Academic Mentorship Platform',
         description:
             'Get mentorship, PYQs, notes, and connect with college seniors for academic success.',
-        images: ['https://studentsenior.com/image192edge.png'],
+        images: ['https://studentsenior.com/og-image.png'],
         creator: '@studentsenior',
     },
     alternates: {
         canonical: 'https://studentsenior.com',
+        types: {
+            'text/plain': 'https://studentsenior.com/llms.txt',
+        },
     },
     category: 'Education',
 };
