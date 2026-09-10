@@ -39,12 +39,16 @@ export const FILTER_ACADEMIC_YEARS = [
     { value: '2023-24', label: '2023-2024' },
     { value: '2024-25', label: '2024-2025' },
     { value: '2025-26', label: '2025-2026' },
+    { value: '2026-27', label: '2026-2027' },
+    // { value: '2027-28', label: '2027-2028' },
 ];
 
 export const FORM_ACADEMIC_YEARS = [
     { value: '2023-24', label: '2023-2024' },
     { value: '2024-25', label: '2024-2025' },
     { value: '2025-26', label: '2025-2026' },
+    { value: '2026-27', label: '2026-2027' },
+    // { value: '2027-28', label: '2027-2028' },
 ];
 
 export const faqs: FAQ[] = [
