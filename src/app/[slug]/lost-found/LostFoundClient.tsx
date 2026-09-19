@@ -16,7 +16,7 @@ import PaginationComponent from '@/components/Common/Pagination';
 import { LostFoundCard } from './LostFoundCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { PlusIcon, SearchIcon } from 'lucide-react';
+import { PlusIcon, SearchIcon, X, Loader2, PackageSearch } from 'lucide-react';
 import LostFoundFormModal, { LostFoundFormData } from './LostFoundFormModal';
 
 const LostFoundClient = ({
@@ -283,62 +283,102 @@ const LostFoundClient = ({
     );
 
     return (
-        <>
-            <section className='mb-8' aria-label='Search and Add Item'>
-                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                    <div className='flex flex-col sm:flex-row gap-4 items-center w-full sm:w-2/3'>
-                        <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white text-black transition-all'>
-                            <SearchIcon className='w-5 h-5 text-gray-400' />
-                            <input
-                                type='text'
-                                placeholder='Search items...'
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                className='w-full bg-transparent outline-none'
-                                aria-label='Search items'
-                            />
+        <div className='space-y-6'>
+            {/* Search and Filter Controls */}
+            <section aria-label='Search and Add Item'>
+                <div className='flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3'>
+                    {/* Search & Filters group */}
+                    <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1'>
+                        {/* Search Bar */}
+                        <div className='relative flex-1 min-w-[240px]'>
+                            <div className='flex items-center gap-2.5 w-full px-3.5 py-2.5 bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl shadow-xs focus-within:ring-2 focus-within:ring-[#0075de]/15 focus-within:border-[#0075de] transition-all'>
+                                <SearchIcon className='w-4 h-4 text-[#8c8883] dark:text-[#787672] shrink-0' />
+                                <input
+                                    type='text'
+                                    placeholder='Search by item name or description...'
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    className='w-full bg-transparent outline-none text-xs sm:text-sm text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965]'
+                                    aria-label='Search items'
+                                />
+                                {searchInput && (
+                                    <button
+                                        onClick={() => setSearchInput('')}
+                                        className='p-1 text-[#8c8883] hover:text-[#101828] dark:hover:text-white rounded-md'
+                                        aria-label='Clear search'
+                                    >
+                                        <X className='w-3.5 h-3.5' />
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <select
-                            value={typeFilter}
-                            onChange={(e) => setTypeFilter(e.target.value)}
-                            className='w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white text-black transition-all'
-                        >
-                            <option value=''>All Types</option>
-                            <option value='lost'>Lost</option>
-                            <option value='found'>Found</option>
-                        </select>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className='w-full p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white text-black transition-all'
-                        >
-                            <option value=''>All Status</option>
-                            <option value='open'>Open</option>
-                            <option value='closed'>Closed</option>
-                        </select>
+
+                        {/* Type Filter Select */}
+                        <div className='w-full sm:w-36 shrink-0'>
+                            <select
+                                value={typeFilter}
+                                onChange={(e) => {
+                                    setTypeFilter(e.target.value);
+                                    setPage(1);
+                                }}
+                                className='w-full px-3 py-2.5 bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] text-xs sm:text-sm text-[#101828] dark:text-[#ededed] rounded-xl shadow-xs focus:ring-2 focus:ring-[#0075de]/15 focus:border-[#0075de] outline-none transition-all cursor-pointer'
+                                aria-label='Filter by item type'
+                            >
+                                <option value=''>All Types</option>
+                                <option value='lost'>Lost Items</option>
+                                <option value='found'>Found Items</option>
+                            </select>
+                        </div>
+
+                        {/* Status Filter Select */}
+                        <div className='w-full sm:w-36 shrink-0'>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => {
+                                    setStatusFilter(e.target.value);
+                                    setPage(1);
+                                }}
+                                className='w-full px-3 py-2.5 bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] text-xs sm:text-sm text-[#101828] dark:text-[#ededed] rounded-xl shadow-xs focus:ring-2 focus:ring-[#0075de]/15 focus:border-[#0075de] outline-none transition-all cursor-pointer'
+                                aria-label='Filter by status'
+                            >
+                                <option value=''>All Status</option>
+                                <option value='open'>Open (Active)</option>
+                                <option value='closed'>Closed (Resolved)</option>
+                            </select>
+                        </div>
                     </div>
+
+                    {/* Post Item Action Button */}
                     <button
                         onClick={() => openModal()}
-                        className='flex gap-3 w-full sm:w-1/3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
+                        className='inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98] shrink-0'
+                        aria-label='Report or Post Item'
                     >
-                        <PlusIcon className='w-5 h-5' />
-                        <span>Add Item</span>
+                        <PlusIcon className='w-4 h-4' />
+                        <span>Post Item</span>
                     </button>
                 </div>
             </section>
 
+            {/* Item Grid & Results */}
             <section aria-label='Lost & Found Items List'>
                 {loading ? (
-                    <div className='flex justify-center min-h-screen py-12'>
-                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
+                    <div className='flex flex-col items-center justify-center py-20 min-h-[300px]'>
+                        <Loader2 className='w-10 h-10 border-3 text-[#0075de] animate-spin mb-3' />
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a]'>
+                            Loading lost & found items...
+                        </p>
                     </div>
                 ) : items.length > 0 ? (
                     <>
-                        <p className='text-gray-600 dark:text-gray-300 mb-4 text-sm'>
-                            Showing {items.length} of{' '}
-                            {pagination?.totalItems ?? 0} items
-                        </p>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6'>
+                        <div className='flex items-center justify-between mb-4'>
+                            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] font-medium'>
+                                Showing {items.length} of{' '}
+                                {pagination?.totalItems ?? items.length} items
+                            </p>
+                        </div>
+
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
                             {items.map((item) => (
                                 <LostFoundCard
                                     key={item._id}
@@ -346,36 +386,49 @@ const LostFoundClient = ({
                                     openModal={openModal}
                                     handleDeleteRequest={handleDeleteRequest}
                                     ownerId={ownerId || ''}
+                                    collegeName={collegeName}
                                 />
                             ))}
                         </div>
-                        <PaginationComponent
-                            currentPage={page}
-                            totalPages={pagination?.totalPages || 1}
-                            onPageChange={goToPage}
-                        />
+
+                        {/* Pagination */}
+                        {pagination && pagination.totalPages > 1 && (
+                            <div className='mt-8'>
+                                <PaginationComponent
+                                    currentPage={page}
+                                    totalPages={pagination.totalPages}
+                                    onPageChange={goToPage}
+                                />
+                            </div>
+                        )}
                     </>
                 ) : (
-                    <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
-                        <i className='fas fa-search text-5xl text-gray-400 mb-4'></i>
-                        <h3 className='text-xl font-medium text-gray-700 dark:text-gray-200 mb-2'>
+                    /* Notion-Styled Empty State */
+                    <div className='text-center py-16 sm:py-20 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 max-w-lg mx-auto shadow-xs'>
+                        <div className='w-14 h-14 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#8c8883] dark:text-[#787672]'>
+                            <PackageSearch className='w-7 h-7' />
+                        </div>
+                        <h3 className='text-base sm:text-lg font-bold text-[#101828] dark:text-white mb-1.5'>
                             No Items Found
                         </h3>
-                        <p className='text-gray-500 dark:text-gray-400 mb-6'>
-                            Be the first to post a lost or found item in{' '}
-                            {capitalizeWords(collegeName)}
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-6 max-w-sm mx-auto'>
+                            {searchTerm || typeFilter || statusFilter
+                                ? 'No lost or found items match your filter criteria. Try resetting filters.'
+                                : `Be the first to post a lost or found item for ${capitalizeWords(collegeName)}.`}
                         </p>
                         <button
                             onClick={() => openModal()}
-                            className='px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600'
-                            aria-label='Add New Item'
+                            className='inline-flex items-center gap-2 px-4 py-2.5 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
+                            aria-label='Post New Item'
                         >
-                            Add New Item
+                            <PlusIcon className='w-4 h-4' />
+                            <span>Post Item</span>
                         </button>
                     </div>
                 )}
             </section>
 
+            {/* Form Modal */}
             <LostFoundFormModal
                 open={modalOpen}
                 onClose={closeModal}
@@ -386,15 +439,17 @@ const LostFoundClient = ({
                 editItem={editItem}
             />
 
+            {/* Delete Modal */}
             <DeleteConfirmationModal
                 open={deleteModalOpen}
                 onConfirm={handleDeleteConfirm}
                 onCancel={handleDeleteCancel}
                 loading={deleteLoading}
-                message='Are you sure you want to delete this item? This action cannot be undone.'
+                message='Are you sure you want to delete this lost & found item? This action cannot be undone.'
             />
-        </>
+        </div>
     );
 };
 
 export default LostFoundClient;
+

@@ -160,6 +160,7 @@ export interface ILostFoundItem {
         _id: string;
         username: string;
     };
+    college?: string | { _id: string; name?: string; slug?: string };
     slug: string;
 }
 
