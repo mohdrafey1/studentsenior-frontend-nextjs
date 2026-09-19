@@ -403,17 +403,17 @@ const SeniorClient = ({
                 {/* Loading State */}
                 {loading ? (
                     <div className='flex justify-center min-h-screen py-12'>
-                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
+                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-[#0075de] dark:border-[#62aef0]'></div>
                     </div>
                 ) : seniors.length > 0 ? (
                     <>
-                        <p className='text-gray-600 dark:text-gray-300 mb-4 text-sm'>
+                        <p className='text-[#475467] dark:text-[#9ea3ae] mb-4 text-sm font-medium'>
                             Showing {seniors.length} of{' '}
                             {pagination?.totalItems ?? 0} seniors
                         </p>
 
                         {viewMode === 'grid' ? (
-                            <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6'>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
                                 {seniors.map((senior) => (
                                     <SeniorCard
                                         key={senior._id}
@@ -445,20 +445,21 @@ const SeniorClient = ({
                         />
                     </>
                 ) : (
-                    <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
-                        <i className='fas fa-users text-5xl text-gray-400 mb-4'></i>
-                        <h3 className='text-xl font-medium text-gray-700 dark:text-gray-200 mb-2'>
+                    <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 text-center shadow-sm'>
+                        <i className='fas fa-users text-4xl text-[#8c8883] dark:text-[#787672] mb-3'></i>
+                        <h3 className='text-lg font-bold text-[#101828] dark:text-white mb-2'>
                             No Seniors Found
                         </h3>
-                        <p className='text-gray-500 dark:text-gray-400 mb-6'>
+                        <p className='text-sm text-[#475467] dark:text-[#9ea3ae] mb-6 max-w-md mx-auto'>
                             Be the first to add your senior profile in{' '}
                             {capitalizeWords(collegeName)}
                         </p>
                         <button
                             onClick={() => openModal()}
-                            className='px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600'
+                            className='inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-lg transition-all shadow-xs active:scale-[0.98]'
                             aria-label='Add New Senior'
                         >
+                            <i className='fas fa-plus'></i>
                             Add New Senior
                         </button>
                     </div>

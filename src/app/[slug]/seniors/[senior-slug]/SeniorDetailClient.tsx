@@ -68,132 +68,151 @@ const SeniorDetailClient: React.FC<SeniorDetailClientProps> = ({
                 path='seniors'
                 fullPath={`/${collegeName}/seniors`}
             />
-            <div className='max-w-7xl mx-auto px-3 sm:px-6 lg:px-10 py-6'>
-                {/* Main Card */}
-                <div className='relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-gray-200/60 dark:border-gray-700/60'>
-                    <div className='relative flex flex-col md:flex-row gap-6 p-6 sm:p-8'>
-                        {/* LEFT: Profile Image */}
-                        <div className='w-full md:w-1/3 flex justify-center items-start'>
-                            <div className='relative w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden shadow-lg'>
+            <div className='max-w-6xl mx-auto px-4 py-8'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-xl sm:rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-4 sm:p-8 mb-6 sm:mb-8'>
+                    <div className='flex flex-col lg:flex-row gap-6 sm:gap-8'>
+                        {/* Image Section */}
+                        <div className='w-full lg:w-1/3 flex-shrink-0'>
+                            <div className='aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#f6f5f4] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                                 {senior.profilePicture ? (
                                     <Image
                                         src={senior.profilePicture}
                                         alt={senior.name}
-                                        fill
-                                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                                        className='object-cover'
+                                        className='object-cover w-full h-full'
+                                        width={600}
+                                        height={600}
                                         priority
                                     />
                                 ) : (
-                                    <div className='flex items-center justify-center h-full w-full bg-gradient-to-br from-sky-600 to-cyan-500'>
-                                        <User className='w-12 h-12 sm:w-16 sm:h-16 text-white opacity-80' />
+                                    <div className='w-full h-full flex flex-col items-center justify-center text-[#8c8883] dark:text-[#787672] bg-[#eaf3fd] dark:bg-[#183153]'>
+                                        <span className='text-6xl font-bold text-[#0075de] dark:text-[#62aef0]'>
+                                            {senior.name.charAt(0).toUpperCase()}
+                                        </span>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Profile Info Section */}
+                        <div className='flex-1 flex flex-col'>
+                            <div className='flex justify-between items-start mb-2'>
+                                <p className='text-sm font-medium text-[#0075de] dark:text-[#62aef0]'>
+                                    {senior.domain || 'Tech Enthusiast'}
+                                </p>
                                 {senior.submissionStatus !== 'approved' && (
                                     <span
-                                        className={`absolute top-3 left-3 text-xs sm:text-sm font-semibold px-3 py-1 rounded-full backdrop-blur-md shadow-md ${
-                                            senior.submissionStatus ===
-                                            'pending'
-                                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/80 dark:text-amber-200'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900/80 dark:text-red-200'
+                                        className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${
+                                            senior.submissionStatus === 'pending'
+                                                ? 'bg-[#fffbeb] text-[#d97706] dark:bg-[#382606] dark:text-[#fbbf24]'
+                                                : 'bg-[#fff1f2] text-[#e11d48] dark:bg-[#3b1118] dark:text-[#fb7185]'
                                         }`}
                                     >
-                                        {capitalizeWords(
-                                            senior.submissionStatus,
-                                        )}
+                                        {capitalizeWords(senior.submissionStatus)}
                                     </span>
                                 )}
                             </div>
-                        </div>
 
-                        {/* RIGHT: Name + Info + Socials */}
-                        <div className='w-full md:w-2/3 flex flex-col justify-between gap-4'>
-                            <div className='flex flex-col gap-2'>
-                                <h1 className='text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white'>
-                                    {senior.name}
-                                </h1>
-                                <div className='flex flex-col gap-2 text-gray-700 dark:text-gray-300'>
-                                    <div className='flex items-center gap-2'>
-                                        <GraduationCap className='w-4 h-4 text-sky-500' />
-                                        <span>
-                                            {senior.branch?.branchName ||
-                                                'Not specified'}
-                                        </span>
+                            <h1 className='text-2xl sm:text-3xl lg:text-4xl font-fugaz font-bold text-[#101828] dark:text-white mb-6 leading-tight'>
+                                {senior.name}
+                            </h1>
+
+                            {/* Details Grid */}
+                            <div className='grid grid-cols-2 gap-4 sm:gap-6 mb-8'>
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#eaf7ec] dark:bg-[#163821] rounded-lg flex items-center justify-center shrink-0'>
+                                        <GraduationCap className='w-5 h-5 text-[#1aae39] dark:text-[#4ade80]' />
                                     </div>
-                                    <div className='flex items-center gap-2'>
-                                        <Calendar className='w-4 h-4 text-emerald-500' />
-                                        <span>{senior.year}</span>
+                                    <div>
+                                        <p className='text-xs sm:text-sm text-[#475467] dark:text-[#9ea3ae]'>
+                                            Branch
+                                        </p>
+                                        <p className='font-bold text-sm sm:text-base text-[#101828] dark:text-white'>
+                                            {senior.branch?.branchName || 'Not specified'}
+                                        </p>
                                     </div>
-                                    {senior.domain && (
-                                        <div className='flex items-center gap-2'>
-                                            <Globe className='w-4 h-4 text-purple-500' />
-                                            <span>{senior.domain}</span>
-                                        </div>
-                                    )}
                                 </div>
 
-                                {/* Social Links */}
-                                {senior.socialMediaLinks &&
-                                    senior.socialMediaLinks.length > 0 && (
-                                        <div className='mt-3 flex flex-wrap gap-3'>
-                                            {senior.socialMediaLinks.map(
-                                                (link, index) => (
-                                                    <a
-                                                        key={index}
-                                                        href={getSocialMediaUrl(
-                                                            link.platform,
-                                                            link.url,
-                                                        )}
-                                                        target='_blank'
-                                                        rel='noopener noreferrer'
-                                                        title={capitalizeWords(
-                                                            link.platform,
-                                                        )}
-                                                        className={`p-2 sm:p-2.5 rounded-lg transition-all duration-300 hover:scale-110 ${getSocialMediaColor(
-                                                            link.platform,
-                                                        )}`}
-                                                    >
-                                                        {getSocialMediaIcon(
-                                                            link.platform,
-                                                        )}
-                                                    </a>
-                                                ),
-                                            )}
-                                        </div>
-                                    )}
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#eaf3fd] dark:bg-[#183153] rounded-lg flex items-center justify-center shrink-0'>
+                                        <Calendar className='w-5 h-5 text-[#0075de] dark:text-[#62aef0]' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs sm:text-sm text-[#475467] dark:text-[#9ea3ae]'>
+                                            Year
+                                        </p>
+                                        <p className='font-medium text-sm sm:text-base text-[#101828] dark:text-white'>
+                                            {senior.year}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#fffbeb] dark:bg-[#382606] rounded-lg flex items-center justify-center shrink-0'>
+                                        <Eye className='w-5 h-5 text-[#d97706] dark:text-[#fbbf24]' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs sm:text-sm text-[#475467] dark:text-[#9ea3ae]'>
+                                            Views
+                                        </p>
+                                        <p className='font-medium text-sm sm:text-base text-[#101828] dark:text-white'>
+                                            {senior.clickCount || 0}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#f4f3ff] dark:bg-[#2e264f] rounded-lg flex items-center justify-center shrink-0'>
+                                        <MapPin className='w-5 h-5 text-[#6941c6] dark:text-[#a58ced]' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs sm:text-sm text-[#475467] dark:text-[#9ea3ae]'>
+                                            College
+                                        </p>
+                                        <p className='font-medium text-sm sm:text-base text-[#101828] dark:text-white truncate' title={senior.college?.name || collegeName}>
+                                            {senior.college?.name || collegeName}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* BELOW: About / Description */}
-                    {senior.description && (
-                        <div className='border-t border-gray-200 dark:border-gray-700 mt-6 p-6 sm:p-8'>
-                            <h2 className='text-xl font-bold text-gray-900 dark:text-white mb-3'>
-                                About
-                            </h2>
-                            <p className='text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-wrap'>
-                                {senior.description}
-                            </p>
-                        </div>
-                    )}
+                            {/* Description */}
+                            <div className='mb-8 flex-grow'>
+                                <h2 className='text-lg font-bold text-[#101828] dark:text-white mb-3'>
+                                    About
+                                </h2>
+                                <p className='text-[#475467] dark:text-[#9ea3ae] leading-relaxed text-sm sm:text-base whitespace-pre-wrap'>
+                                    {senior.description || 'No description provided.'}
+                                </p>
+                            </div>
 
-                    {/* Footer */}
-                    <div className='border-t border-gray-200 dark:border-gray-700 mt-6 p-6 sm:p-8 flex flex-col sm:flex-row justify-between text-sm text-gray-500 dark:text-gray-400 gap-2 sm:gap-0'>
-                        <div className='flex items-center gap-2'>
-                            <MapPin className='w-4 h-4' />
-                            <span>{senior.college?.name || collegeName}</span>
-                        </div>
-                        <div className='flex items-center gap-3'>
-                            <span className='flex items-center bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full'>
-                                <Eye className='w-3 h-3 mr-1' />{' '}
-                                {senior.clickCount || 0} views
-                            </span>
-                            <span className='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full'>
-                                Joined:{' '}
-                                {new Date(
-                                    senior.createdAt,
-                                ).toLocaleDateString()}
-                            </span>
+                            {/* Social Links / Contact Section */}
+                            <div className='pt-6 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                <h2 className='text-lg font-bold text-[#101828] dark:text-white mb-4'>
+                                    Connect with {senior.name.split(' ')[0]}
+                                </h2>
+                                {senior.socialMediaLinks && senior.socialMediaLinks.length > 0 ? (
+                                    <div className='flex flex-wrap gap-3'>
+                                        {senior.socialMediaLinks.map((link, index) => (
+                                            <a
+                                                key={index}
+                                                href={getSocialMediaUrl(link.platform, link.url)}
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                                className={`inline-flex items-center justify-center gap-2 px-4 py-2 font-medium rounded-xl transition-colors duration-200 ${getSocialMediaColor(link.platform)}`}
+                                            >
+                                                {getSocialMediaIcon(link.platform)}
+                                                <span className='capitalize'>{link.platform}</span>
+                                            </a>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className='w-full p-4 bg-[#f6f5f4] dark:bg-[#191919] rounded-xl text-center border border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                        <p className='text-sm text-[#475467] dark:text-[#9ea3ae]'>
+                                            No contact information provided.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

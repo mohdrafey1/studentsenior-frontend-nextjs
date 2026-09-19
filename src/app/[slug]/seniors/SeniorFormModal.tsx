@@ -319,32 +319,33 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
     }));
 
     return (
-        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
+        <div className='fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6'>
+            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col'>
                 {/* Header */}
-                <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
+                <div className='flex items-center justify-between px-6 py-4 border-b border-[#e6e6e6] dark:border-[#2f2f2f] sticky top-0 bg-white dark:bg-[#1c1c1c] z-10'>
+                    <h2 className='text-lg font-bold text-[#101828] dark:text-white'>
                         {editSenior
                             ? 'Edit Senior Profile'
                             : 'Add New Senior Profile'}
                     </h2>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors'
+                        className='p-2 rounded-lg text-[#8c8883] dark:text-[#787672] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors'
+                        aria-label='Close'
                     >
-                        <X className='w-6 h-6' />
+                        <X className='w-5 h-5' />
                     </button>
                 </div>
 
                 {/* Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className='p-6 space-y-4 bg-white dark:bg-gray-800'
+                    className='p-6 space-y-5'
                 >
                     {/* Name */}
-                    <div>
-                        <label className='block font-semibold text-sky-500 mb-2'>
-                            Full Name *
+                    <div className='space-y-1.5'>
+                        <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
+                            Full Name <span className='text-[#e11d48]'>*</span>
                         </label>
                         <input
                             type='text'
@@ -352,14 +353,14 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                             value={form.name}
                             onChange={handleChange}
                             required
-                            className='w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-100'
+                            className='w-full px-4 py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm'
                             placeholder='Enter your full name'
                         />
                     </div>
 
                     {/* Domain */}
-                    <div>
-                        <label className='block font-semibold text-sky-500 mb-2'>
+                    <div className='space-y-1.5'>
+                        <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
                             Domain/Expertise
                         </label>
                         <input
@@ -367,7 +368,7 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                             name='domain'
                             value={form.domain}
                             onChange={handleChange}
-                            className='w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-100'
+                            className='w-full px-4 py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm'
                             placeholder='e.g., Web Development, Machine Learning'
                         />
                     </div>
@@ -399,16 +400,16 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                     )}
 
                     {/* Year */}
-                    <div>
-                        <label className='block font-semibold text-sky-500 mb-2'>
-                            Year *
+                    <div className='space-y-1.5'>
+                        <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
+                            Year <span className='text-[#e11d48]'>*</span>
                         </label>
                         <select
                             name='year'
                             value={form.year}
                             onChange={handleChange}
                             required
-                            className='w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent appearance-none bg-white dark:bg-gray-700 dark:text-gray-100'
+                            className='w-full px-4 py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm appearance-none'
                         >
                             <option value=''>Select Year</option>
                             <option value='1st Year'>1st Year</option>
@@ -421,12 +422,12 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                     </div>
 
                     {/* Profile Picture Upload */}
-                    <div>
-                        <label className='block font-semibold text-sky-500 mb-2'>
-                            Profile Picture *
+                    <div className='space-y-1.5'>
+                        <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
+                            Profile Picture <span className='text-[#e11d48]'>*</span>
                         </label>
                         <div className='flex items-center gap-4'>
-                            <label className='flex-1 border border-gray-300 dark:border-gray-700 rounded-lg p-3 cursor-pointer hover:border-sky-400 transition-colors dark:bg-gray-700 dark:text-gray-100'>
+                            <label className='flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-[#d0ceca] dark:border-[#404040] hover:border-[#0075de] dark:hover:border-[#62aef0] bg-[#f6f5f4] dark:bg-[#191919] cursor-pointer transition-colors text-sm text-[#475467] dark:text-[#9ea3ae]'>
                                 <input
                                     type='file'
                                     accept='image/*'
@@ -435,32 +436,30 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                                     disabled={imageLoading}
                                     required={!form.profilePicture}
                                 />
-                                <div className='flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400'>
-                                    {imageLoading ? (
-                                        <>
-                                            <Loader2 className='w-5 h-5 animate-spin text-sky-500' />
-                                            <span>Uploading...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className='w-5 h-5' />
-                                            <span>
-                                                {selectedImage
-                                                    ? selectedImage.name
-                                                    : 'Choose image (Max 5MB)'}
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
+                                {imageLoading ? (
+                                    <>
+                                        <Loader2 className='w-4 h-4 animate-spin text-[#0075de] dark:text-[#62aef0]' />
+                                        <span>Uploading...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className='w-4 h-4' />
+                                        <span className='truncate max-w-[200px]'>
+                                            {selectedImage
+                                                ? selectedImage.name
+                                                : 'Choose image (Max 5MB)'}
+                                        </span>
+                                    </>
+                                )}
                             </label>
                             {form.profilePicture && (
-                                <div className='w-16 h-16 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700'>
+                                <div className='w-14 h-14 shrink-0 rounded-xl overflow-hidden border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                                     <Image
                                         src={form.profilePicture}
                                         alt='Preview'
                                         className='object-cover w-full h-full'
-                                        width={64}
-                                        height={64}
+                                        width={56}
+                                        height={56}
                                     />
                                 </div>
                             )}
@@ -468,23 +467,23 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                     </div>
 
                     {/* Social Media Links */}
-                    <div>
-                        <div className='flex items-center justify-between mb-3'>
-                            <label className='block font-semibold text-sky-500'>
+                    <div className='space-y-3 pt-2 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                        <div className='flex items-center justify-between'>
+                            <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
                                 Social Media Links
                             </label>
                             <button
                                 type='button'
                                 onClick={addSocialMediaLink}
-                                className='flex items-center gap-1 text-sky-500 hover:text-sky-600 font-medium transition-colors dark:text-sky-400 dark:hover:text-sky-500'
+                                className='inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#0075de] dark:text-[#62aef0] bg-[#eaf3fd] dark:bg-[#183153] hover:bg-[#d2e4f9] dark:hover:bg-[#224474] rounded-lg transition-colors'
                             >
-                                <Plus className='w-4 h-4' />
+                                <Plus className='w-3.5 h-3.5' />
                                 Add Link
                             </button>
                         </div>
-                        <div className='space-y-3'>
+                        <div className='space-y-2.5'>
                             {form.socialMediaLinks.map((link, index) => (
-                                <div key={index} className='flex gap-2'>
+                                <div key={index} className='flex gap-2 items-start'>
                                     <select
                                         value={link.platform}
                                         onChange={(e) =>
@@ -494,23 +493,13 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                                                 e.target.value,
                                             )
                                         }
-                                        className='w-1/3 border border-gray-300 dark:border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent appearance-none bg-white dark:bg-gray-700 dark:text-gray-100        '
+                                        className='w-[110px] sm:w-[130px] shrink-0 px-3 py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#f6f5f4] dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm appearance-none'
                                     >
-                                        <option value='whatsapp'>
-                                            WhatsApp
-                                        </option>
-                                        <option value='telegram'>
-                                            Telegram
-                                        </option>
-                                        <option value='instagram'>
-                                            Instagram
-                                        </option>
-                                        <option value='linkedin'>
-                                            LinkedIn
-                                        </option>
-                                        <option value='facebook'>
-                                            Facebook
-                                        </option>
+                                        <option value='whatsapp'>WhatsApp</option>
+                                        <option value='telegram'>Telegram</option>
+                                        <option value='instagram'>Instagram</option>
+                                        <option value='linkedin'>LinkedIn</option>
+                                        <option value='facebook'>Facebook</option>
                                         <option value='twitter'>Twitter</option>
                                         <option value='youtube'>YouTube</option>
                                         <option value='github'>GitHub</option>
@@ -526,15 +515,14 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                                                 e.target.value,
                                             )
                                         }
-                                        placeholder='Enter URL...'
-                                        className='flex-1 border border-gray-300 dark:border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-100'
+                                        placeholder='Enter URL or Username'
+                                        className='flex-1 min-w-0 px-3 py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm'
                                     />
                                     <button
                                         type='button'
-                                        onClick={() =>
-                                            removeSocialMediaLink(index)
-                                        }
-                                        className='p-2 text-red-500 hover:text-red-600 transition-colors dark:text-red-400 dark:hover:text-red-500'
+                                        onClick={() => removeSocialMediaLink(index)}
+                                        className='p-2.5 shrink-0 text-[#8c8883] dark:text-[#787672] hover:text-[#e11d48] dark:hover:text-[#fb7185] hover:bg-[#fff1f2] dark:hover:bg-[#3b1118] rounded-lg transition-colors'
+                                        aria-label='Remove Link'
                                     >
                                         <Trash2 className='w-4 h-4' />
                                     </button>
@@ -544,49 +532,47 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
                     </div>
 
                     {/* Description */}
-                    <div>
-                        <label className='block font-semibold text-sky-500 mb-2'>
-                            Description
+                    <div className='space-y-1.5 pt-2 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                        <label className='block text-sm font-medium text-[#475467] dark:text-[#9ea3ae]'>
+                            About You
                         </label>
                         <textarea
                             name='description'
                             value={form.description}
                             onChange={handleChange}
                             rows={4}
-                            className='w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none dark:bg-gray-700 dark:text-gray-100'
+                            className='w-full px-4 py-3 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] transition-all text-sm resize-none'
                             placeholder='Tell us about yourself, your expertise, and how you can help others...'
                             maxLength={1000}
                         />
-                        <div className='text-right text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                        <div className='flex justify-end text-xs font-medium text-[#8c8883] dark:text-[#787672]'>
                             {form.description.length}/1000
                         </div>
                     </div>
 
                     {/* Submit Buttons */}
-                    <div className='flex gap-3 pt-4'>
+                    <div className='flex gap-3 pt-4 pb-2 sticky bottom-0 bg-white dark:bg-[#1c1c1c] z-10 border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
                         <button
                             type='button'
                             onClick={onClose}
-                            className='flex-1 bg-gray-100 text-gray-700 font-semibold py-3 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600'
+                            className='flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#475467] dark:text-[#9ea3ae] bg-[#f6f5f4] dark:bg-[#282828] hover:bg-[#eae8e4] dark:hover:bg-[#333] transition-colors border border-transparent dark:border-[#383838]'
                         >
                             Cancel
                         </button>
                         <button
                             type='submit'
                             disabled={loading || imageLoading}
-                            className={`flex-1 bg-sky-400 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-sky-500 transition-colors duration-200 ${
+                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-[#0075de] hover:bg-[#0062bd] transition-all shadow-xs active:scale-[0.98] ${
                                 loading || imageLoading
                                     ? 'opacity-70 cursor-not-allowed'
                                     : ''
                             }`}
                         >
                             {loading || imageLoading ? (
-                                <span className='flex items-center justify-center'>
-                                    <Loader2 className='w-5 h-5 animate-spin mr-2' />
-                                    {imageLoading
-                                        ? 'Uploading...'
-                                        : 'Submitting...'}
-                                </span>
+                                <>
+                                    <Loader2 className='w-4 h-4 animate-spin' />
+                                    {imageLoading ? 'Uploading...' : 'Submitting...'}
+                                </>
                             ) : editSenior ? (
                                 'Update Profile'
                             ) : (

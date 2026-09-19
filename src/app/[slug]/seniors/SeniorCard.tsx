@@ -67,69 +67,82 @@ export const SeniorCard: React.FC<SeniorCardProps> = ({
     };
 
     return (
-        <div className='max-w-sm min-w-xs lg:min-w-sm mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
-            {/* Top Header */}
-            <div className='bg-sky-600 h-24'></div>
-
-            {/* Profile Image */}
-            <div className='flex justify-center -mt-12'>
-                {senior.profilePicture ? (
-                    <Image
-                        src={senior.profilePicture}
-                        alt={senior.name}
-                        width={100}
-                        height={100}
-                        className='w-24 h-24 rounded-full border-4 border-white dark:border-gray-900 shadow-md object-cover'
-                    />
-                ) : (
-                    <div className='w-24 h-24 rounded-full bg-gray-300 border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-md'>
-                        <span className='text-gray-600 text-sm'>No Photo</span>
+        <article className='group relative bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all duration-200 overflow-hidden h-full flex flex-col justify-between'>
+            <div className='flex flex-col flex-grow'>
+                {/* Profile Cover and Image */}
+                <div className='relative h-24 bg-[#f6f5f4] dark:bg-[#191919] border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                    <div className='absolute -bottom-10 left-4'>
+                        {senior.profilePicture ? (
+                            <Image
+                                src={senior.profilePicture}
+                                alt={senior.name}
+                                width={80}
+                                height={80}
+                                className='w-20 h-20 rounded-xl border-4 border-white dark:border-[#202020] object-cover bg-white dark:bg-gray-800'
+                            />
+                        ) : (
+                            <div className='w-20 h-20 rounded-xl border-4 border-white dark:border-[#202020] bg-[#eaf3fd] dark:bg-[#183153] flex items-center justify-center'>
+                                <span className='text-2xl font-bold text-[#0075de] dark:text-[#62aef0]'>
+                                    {senior.name.charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
+
+                {/* Content Section */}
+                <div className='p-4 pt-12 space-y-3 flex-grow flex flex-col'>
+                    {/* Header Info */}
+                    <div className='space-y-1'>
+                        <h3 className='text-lg font-bold text-[#101828] dark:text-white group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors line-clamp-1'>
+                            {senior.name}
+                        </h3>
+                        {senior.domain && (
+                            <p className='text-sm text-[#475467] dark:text-[#9ea3ae] line-clamp-1'>
+                                {senior.domain}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Tags */}
+                    <div className='flex flex-wrap gap-1.5 pt-2 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                        <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#eaf3fd] text-[#0075de] dark:bg-[#183153] dark:text-[#62aef0] border border-[#d2e4f9] dark:border-[#224474]'>
+                            {senior.year}
+                        </span>
+                        <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#f6f5f4] text-[#475467] dark:bg-[#2b2b2b] dark:text-[#9ea3ae] border border-[#e6e6e6] dark:border-[#3b3b3b] max-w-[150px] truncate'>
+                            {senior.branch?.branchCode || 'Tech'}
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            {/* Content */}
-            <div className='p-5 text-center'>
-                {/* Name + Domain */}
-                <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
-                    {senior.name}
-                </h3>
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
-                    {senior.domain || 'Tech Enthusiast'}
-                </p>
-                <p className='text-xs mt-2 text-gray-500 dark:text-gray-400'>
-                    {senior.year} -{' '}
-                    {senior.branch?.branchCode || 'Tech Enthusiast'}
-                </p>
+            {/* Action Buttons */}
+            <div className='p-4 pt-0'>
+                <div className='flex gap-2 pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                    <Link
+                        prefetch={false}
+                        href={`seniors/${senior.slug}`}
+                        className='flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-lg transition-all shadow-xs active:scale-[0.98]'
+                    >
+                        <span>View Profile</span>
+                    </Link>
 
-                {/* Social Links */}
-                <div className='flex justify-center flex-wrap gap-4 mt-4'>
-                    {senior.socialMediaLinks?.slice(0, 5).map((link, i) => (
-                        <Link
-                            prefetch={false}
-                            key={i}
+                    {senior.socialMediaLinks && senior.socialMediaLinks.length > 0 && (
+                        <a
                             href={formatSocialMediaLink(
-                                link.platform,
-                                link.url,
+                                senior.socialMediaLinks[0].platform,
+                                senior.socialMediaLinks[0].url
                             )}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-sky-100 dark:hover:bg-sky-800 transition'
+                            className='w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium bg-[#f6f5f4] dark:bg-[#2b2b2b] text-[#475467] dark:text-[#9ea3ae] hover:bg-[#eae9e8] dark:hover:bg-[#3b3b3b] border border-[#e6e6e6] dark:border-[#3b3b3b] transition-colors shadow-xs'
+                            title={`Connect on ${senior.socialMediaLinks[0].platform}`}
                         >
-                            {renderSocialIcon(link.platform)}
-                        </Link>
-                    ))}
+                            {renderSocialIcon(senior.socialMediaLinks[0].platform)}
+                        </a>
+                    )}
                 </div>
-
-                {/* CTA */}
-                <Link
-                    prefetch={false}
-                    href={`seniors/${senior.slug}`}
-                    className='mt-6 inline-block px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-xl shadow-md transition'
-                >
-                    View Profile
-                </Link>
             </div>
-        </div>
+        </article>
     );
 };
