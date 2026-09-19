@@ -17,12 +17,12 @@ const EarningShowcase = () => {
 
     return (
         <>
-            <section className='py-14 sm:py-18 bg-white dark:bg-[#191919] border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+            <section className='py-10 sm:py-18 bg-white dark:bg-[#191919]'>
                 <div className='container mx-auto px-4 sm:px-6 max-w-6xl'>
                     <div className='text-center mb-12'>
-                        <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf7ec] dark:bg-[#112d1b] text-[#1aae39] dark:text-[#4ade80] border border-[#d2f0d9] dark:border-[#1e482b] mb-3'>
+                        {/* <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf7ec] dark:bg-[#112d1b] text-[#1aae39] dark:text-[#4ade80] border border-[#d2f0d9] dark:border-[#1e482b] mb-3'>
                             <span>Monetization & Rewards</span>
-                        </div>
+                        </div> */}
                         <h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#000000] dark:text-white tracking-[-0.025em] mb-2.5'>
                             Start Earning with Student Senior 💰
                         </h2>

@@ -259,9 +259,9 @@ const QuickLinks: React.FC<{ colleges: College[] }> = ({ colleges }) => {
         >
             <div className='container mx-auto px-4 sm:px-6 max-w-6xl'>
                 <header className='text-center mb-10'>
-                    <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] mb-3'>
+                    {/* <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] mb-3'>
                         <span>Directory</span>
-                    </div>
+                    </div> */}
                     <h2
                         id='quick-access-heading'
                         className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#000000] dark:text-white tracking-[-0.025em] mb-2.5'

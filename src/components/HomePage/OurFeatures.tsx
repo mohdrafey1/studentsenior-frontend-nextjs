@@ -58,7 +58,7 @@ const OurFeatures: React.FC = () => {
             id: 1,
             title: 'PYQs Available',
             icon: <BookOpen className='w-5 h-5 text-[#0075de]' strokeWidth={2.2} />,
-            count: 1500,
+            count: 3000,
             color: 'bg-[#eaf3fd] dark:bg-[#10243e]',
             suffix: '+',
         },
@@ -89,14 +89,14 @@ const OurFeatures: React.FC = () => {
     ];
 
     return (
-        <div className='bg-[#f6f5f4] dark:bg-[#191919] border-t border-[#e6e6e6] dark:border-[#2f2f2f] transition-colors duration-200'>
+        <div className='bg-[#f6f5f4] dark:bg-[#191919] transition-colors duration-200'>
             {/* Achievements Section */}
-            <section className='py-14 sm:py-18 px-4 sm:px-6'>
+            <section className='py-10 sm:py-18 px-4 sm:px-6'>
                 <div className='max-w-6xl mx-auto'>
                     <div className='text-center mb-10'>
-                        <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] mb-3'>
+                        {/* <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] mb-3'>
                             <span>Community Impact</span>
-                        </div>
+                        </div> */}
                         <h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#000000] dark:text-white tracking-[-0.025em] mb-2.5'>
                             Trusted by Thousands
                         </h2>
