@@ -44,13 +44,13 @@ const LostFoundDetailClient: React.FC<LostFoundDetailClientProps> = ({
         setTimeout(() => setCopiedPhone(false), 2000);
     };
 
+    const collegeRaw = lostFoundItem.college;
     const collegeDisplayName =
-        typeof lostFoundItem.college === 'string'
-            ? lostFoundItem.college
-            : (lostFoundItem.college as any)?.name ||
-              (lostFoundItem.college as any)?.slug ||
-              slug ||
-              '';
+        typeof collegeRaw === 'string'
+            ? collegeRaw
+            : typeof collegeRaw === 'object' && collegeRaw !== null
+              ? collegeRaw.name || collegeRaw.slug || slug || ''
+              : slug || '';
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] text-[#101828] dark:text-[#ededed]'>
