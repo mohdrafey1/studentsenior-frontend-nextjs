@@ -231,7 +231,7 @@ const SyllabusClient = ({
 
             {/* Filters Section */}
             {filterState.showFilters && (
-                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
+                <div className='bg-white dark:bg-[#202020] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-[#e6e6e6] dark:border-[#2f2f2f] p-6'>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                         <CommonFilters
                             courseFilter={filterState.courseFilter}
@@ -249,7 +249,7 @@ const SyllabusClient = ({
                         <select
                             value={yearFilter}
                             onChange={(e) => setYearFilter(e.target.value)}
-                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                            className='w-full px-3 py-2.5 border border-[#e6e6e6] dark:border-[#383838] rounded-xl bg-white dark:bg-[#202020] text-[#101828] dark:text-[#ededed] focus:ring-2 focus:ring-[#0075de] focus:border-[#0075de] transition-all shadow-sm outline-none text-sm'
                         >
                             <option value=''>All Years</option>
                             {[1, 2, 3, 4, 5, 6].map((year) => (
@@ -264,19 +264,19 @@ const SyllabusClient = ({
 
             {/* Error State */}
             {error && (
-                <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3'>
-                    <AlertCircle className='w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0' />
+                <div className='bg-[#fff5f5] dark:bg-[#3d1a1a] border border-[#ffcccc] dark:border-[#5c2626] rounded-xl p-4 flex items-center gap-3'>
+                    <AlertCircle className='w-5 h-5 text-[#cc0000] dark:text-[#ff9999] flex-shrink-0' />
                     <div>
-                        <p className='text-sm font-medium text-red-800 dark:text-red-200'>
+                        <p className='text-sm font-semibold text-[#cc0000] dark:text-[#ff9999]'>
                             Failed to load syllabus
                         </p>
-                        <p className='text-xs text-red-600 dark:text-red-400 mt-1'>
+                        <p className='text-xs text-[#b30000] dark:text-[#ffb3b3] mt-1'>
                             {error}
                         </p>
                     </div>
                     <button
                         onClick={fetchSyllabus}
-                        className='ml-auto px-3 py-1 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-md transition-colors'
+                        className='ml-auto px-4 py-2 bg-white dark:bg-[#4d2020] text-[#cc0000] dark:text-[#ff9999] text-sm font-medium rounded-xl border border-[#ffcccc] dark:border-[#7a3333] hover:bg-[#fff0f0] dark:hover:bg-[#5c2626] transition-all shadow-sm'
                     >
                         Retry
                     </button>
@@ -285,8 +285,8 @@ const SyllabusClient = ({
 
             {/* Syllabus Grid/List */}
             {loading ? (
-                <div className='flex items-center justify-center py-12'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600'></div>
+                <div className='flex items-center justify-center py-20'>
+                    <div className='animate-spin rounded-full h-10 w-10 border-b-2 border-[#0075de]'></div>
                 </div>
             ) : syllabus.length > 0 ? (
                 <>
@@ -297,29 +297,26 @@ const SyllabusClient = ({
                                     prefetch={false}
                                     key={item._id}
                                     href={`/${collegeName}/syllabus/${item.slug}`}
-                                    className='group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300 hover:-translate-y-1'
+                                    className='group bg-white dark:bg-[#202020] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#d2d2d2] dark:hover:border-[#383838] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] transition-all duration-300 block'
                                 >
-                                    {/* Gradient Top Border */}
-                                    <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-600'></div>
-
                                     <div className='p-6'>
                                         {/* Header with Icon and Code */}
                                         <div className='flex items-start gap-4 mb-4'>
                                             <div className='flex-shrink-0'>
-                                                <div className='h-14 w-14 rounded-xl bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/40 dark:to-blue-900/40 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300'>
-                                                    <GraduationCap className='h-7 w-7 text-sky-600 dark:text-sky-400' />
+                                                <div className='h-12 w-12 rounded-xl bg-[#f6f5f4] dark:bg-[#191919] flex items-center justify-center border border-[#e6e6e6] dark:border-[#2f2f2f] transition-transform duration-300 group-hover:scale-105'>
+                                                    <GraduationCap className='h-5 w-5 text-[#101828] dark:text-[#ededed]' />
                                                 </div>
                                             </div>
                                             <div className='flex-1 min-w-0'>
-                                                <div className='flex items-center gap-2 mb-1'>
-                                                    <h3 className='text-lg font-bold text-gray-900 dark:text-white'>
+                                                <div className='flex items-center gap-2 mb-1.5'>
+                                                    <h3 className='text-lg font-bold text-[#101828] dark:text-[#ededed] leading-tight tracking-tight'>
                                                         {item.subject
                                                             ?.subjectCode ||
                                                             'N/A'}
                                                     </h3>
                                                     {item.subject?.branch
                                                         ?.branchCode && (
-                                                        <span className='text-xs font-medium px-2 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded-md'>
+                                                        <span className='text-xs font-semibold px-2.5 py-0.5 bg-[#fcfbf9] dark:bg-[#2a2a2a] text-[#615d59] dark:text-[#a09e9a] border border-[#e6e6e6] dark:border-[#383838] rounded-full'>
                                                             {
                                                                 item.subject
                                                                     .branch
@@ -328,7 +325,7 @@ const SyllabusClient = ({
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed'>
+                                                <p className='text-sm font-medium text-[#615d59] dark:text-[#a09e9a] line-clamp-2 leading-snug'>
                                                     {item.subject
                                                         ?.subjectName ||
                                                         'Subject name not available'}
@@ -338,52 +335,50 @@ const SyllabusClient = ({
 
                                         {/* Description */}
                                         {item.description && (
-                                            <div className='mb-4 pb-4 border-b border-gray-100 dark:border-gray-700'>
-                                                <p className='text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed'>
+                                            <div className='mb-4 pb-4 border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                                <p className='text-[13px] text-[#615d59] dark:text-[#a09e9a] line-clamp-2 leading-relaxed'>
                                                     {item.description}
                                                 </p>
                                             </div>
                                         )}
 
                                         {/* Info Grid */}
-                                        <div className='grid grid-cols-2 gap-3 mb-4'>
-                                            <div className='flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg'>
-                                                <Calendar className='w-4 h-4 text-sky-600 dark:text-sky-400' />
+                                        <div className='grid grid-cols-2 gap-3 mb-5'>
+                                            <div className='flex items-center gap-3 px-3 py-2 bg-[#fcfbf9] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl'>
+                                                <Calendar className='w-4 h-4 text-[#8c8883] dark:text-[#787672]' />
                                                 <div className='flex flex-col'>
-                                                    <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                    <span className='text-[11px] font-bold text-[#8c8883] dark:text-[#787672] uppercase tracking-wider mb-0.5'>
                                                         Year / Sem
                                                     </span>
-                                                    <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                                                    <span className='text-xs font-semibold text-[#101828] dark:text-[#ededed]'>
                                                         {item.year} /{' '}
                                                         {item.semester}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className='flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg'>
-                                                <BookOpen className='w-4 h-4 text-sky-600 dark:text-sky-400' />
+                                            <div className='flex items-center gap-3 px-3 py-2 bg-[#fcfbf9] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl'>
+                                                <BookOpen className='w-4 h-4 text-[#8c8883] dark:text-[#787672]' />
                                                 <div className='flex flex-col'>
-                                                    <span className='text-xs text-gray-500 dark:text-gray-400'>
+                                                    <span className='text-[11px] font-bold text-[#8c8883] dark:text-[#787672] uppercase tracking-wider mb-0.5'>
                                                         Units
                                                     </span>
-                                                    <span className='text-sm font-semibold text-gray-900 dark:text-white'>
-                                                        {item.units?.length ||
-                                                            0}
+                                                    <span className='text-xs font-semibold text-[#101828] dark:text-[#ededed]'>
+                                                        {item.units?.length || 0}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Footer */}
-                                        <div className='flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700'>
-                                            <div className='flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700/50 rounded-md'>
-                                                <Eye className='w-4 h-4 text-gray-500 dark:text-gray-400' />
-                                                <span className='text-xs font-medium text-gray-600 dark:text-gray-400'>
+                                        <div className='flex items-center justify-between pt-4 border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                            <div className='flex items-center gap-1.5 text-[#615d59] dark:text-[#a09e9a]'>
+                                                <Eye className='w-4 h-4' />
+                                                <span className='text-xs font-medium'>
                                                     {item.viewCount || 0} views
                                                 </span>
                                             </div>
-                                            <div className='flex items-center gap-1 text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:gap-2 transition-all duration-300'>
-                                                View Details
-                                                <ArrowRight className='w-4 h-4' />
+                                            <div className='flex items-center justify-center px-4 py-2 bg-[#0075de] hover:bg-[#005bab] text-white text-sm font-semibold rounded-xl transition-colors'>
+                                                View Syllabus
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +386,7 @@ const SyllabusClient = ({
                             ))}
                         </div>
                     ) : (
-                        <div className='space-y-3'>
+                        <div className='space-y-4'>
                             {syllabus.map((item) => (
                                 <SyllabusListItem
                                     key={item._id}
@@ -403,15 +398,20 @@ const SyllabusClient = ({
                     )}
                 </>
             ) : (
-                <div className='text-center py-12'>
-                    <BookOpenCheck className='w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4' />
-                    <p className='text-gray-500 dark:text-gray-400 text-lg'>
-                        No syllabus found
+                <div className='flex flex-col items-center justify-center py-20 px-4 border-2 border-dashed border-[#e6e6e6] dark:border-[#2f2f2f] rounded-2xl bg-[#fcfbf9] dark:bg-[#191919]'>
+                    <div className='w-16 h-16 bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center mb-6 shadow-sm'>
+                        <BookOpenCheck className='w-8 h-8 text-[#a39e98] dark:text-[#787672]' />
+                    </div>
+                    <p className='text-lg font-semibold text-[#101828] dark:text-[#ededed] mb-2'>
+                        No Syllabus Found
+                    </p>
+                    <p className='text-sm text-[#615d59] dark:text-[#a09e9a] max-w-md text-center'>
+                        We couldn't find any syllabus matching your current filters. Try adjusting your search criteria.
                     </p>
                     {hasActiveFilters && (
                         <button
                             onClick={clearAllFilters}
-                            className='mt-4 text-sky-600 dark:text-sky-400 hover:underline'
+                            className='mt-6 px-4 py-2 bg-white dark:bg-[#202020] text-[#101828] dark:text-[#ededed] text-sm font-medium rounded-xl border border-[#e6e6e6] dark:border-[#383838] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-all shadow-sm'
                         >
                             Clear all filters
                         </button>
@@ -421,7 +421,7 @@ const SyllabusClient = ({
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-                <div className='mt-8'>
+                <div className='mt-8 flex justify-center'>
                     <PaginationComponent
                         currentPage={pagination.currentPage}
                         totalPages={pagination.totalPages}

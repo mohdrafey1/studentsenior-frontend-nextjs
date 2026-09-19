@@ -109,23 +109,23 @@ export default async function BranchSyllabusPage({
         !filteredSyllabus || filteredSyllabus.length === 0;
 
     return (
-        <main className='min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8'>
+        <main className='min-h-screen bg-[#f6f5f4] dark:bg-[#191919] py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-6xl mx-auto'>
                 {/* Header Section */}
-                <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-t-2xl p-4 sm:p-8 mb-0'>
+                <div className='flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-[#e6e6e6] dark:border-[#2f2f2f] pb-6 mb-6 gap-4'>
                     <div>
-                        <div className='flex items-center gap-3 mb-2'>
-                            <GraduationCap className='w-6 h-6' />
-                            <h1 className='text-2xl sm:text-3xl font-bold'>
+                        <div className='flex items-center gap-3 mb-3'>
+                            <GraduationCap className='w-7 h-7 text-[#101828] dark:text-[#ededed]' />
+                            <h1 className='text-3xl sm:text-4xl font-bold text-[#101828] dark:text-[#ededed] tracking-tight'>
                                 {branchName} Branch
                             </h1>
                         </div>
-                        <p className='text-blue-50 text-sm sm:text-base'>
-                            Total {subjectCount} subject
+                        <p className='text-sm sm:text-base font-medium text-[#615d59] dark:text-[#a09e9a]'>
+                            Total {subjectCount} subject{subjectCount !== 1 ? 's' : ''}
                         </p>
                     </div>
 
-                    <div className='text-white mt-4 sm:mt-0 flex items-center gap-2'>
+                    <div className='text-[#615d59] dark:text-[#a09e9a] mt-4 sm:mt-0 flex items-center gap-2 bg-white dark:bg-[#202020] px-4 py-2 rounded-xl border border-[#e6e6e6] dark:border-[#383838] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] shrink-0'>
                         <Eye className='w-4 h-4' />
                         <span className='text-sm font-medium'>
                             {filteredSyllabus.reduce(
@@ -138,10 +138,10 @@ export default async function BranchSyllabusPage({
                 </div>
 
                 {/* Main Content Card */}
-                <div className='bg-white dark:bg-gray-800 rounded-b-2xl overflow-hidden'>
+                <div className='bg-white dark:bg-[#202020] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-[#e6e6e6] dark:border-[#2f2f2f] overflow-hidden'>
                     {/* Semester Tabs */}
                     {syllabusList.length > 0 && (
-                        <div className='border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6'>
+                        <div className='border-b border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-6 bg-[#fcfbf9] dark:bg-[#191919]'>
                             <SemesterTabs
                                 semesters={allSemesters}
                                 slug={slug}
@@ -151,77 +151,57 @@ export default async function BranchSyllabusPage({
                     )}
 
                     {noSyllabusAvailable ? (
-                        <div className='flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-gray-800 p-8'>
-                            <div className='w-20 h-20 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center mb-6'>
-                                <BookMarked className='w-10 h-10 text-sky-600 dark:text-sky-400' />
+                        <div className='flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-[#202020] p-8 border-2 border-dashed border-[#e6e6e6] dark:border-[#383838] m-6 rounded-2xl'>
+                            <div className='w-16 h-16 bg-[#fcfbf9] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center mb-6 shadow-sm'>
+                                <BookMarked className='w-8 h-8 text-[#a39e98] dark:text-[#787672]' />
                             </div>
-                            <h3 className='text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3'>
+                            <h3 className='text-xl sm:text-2xl font-bold text-[#101828] dark:text-[#ededed] mb-2 text-center'>
                                 {selectedSemester
                                     ? `No Syllabus for Semester ${selectedSemester}`
                                     : 'No Syllabus Available'}
                             </h3>
-                            <p className='text-gray-600 dark:text-gray-400 text-center max-w-md mb-4'>
+                            <p className='text-[#615d59] dark:text-[#a09e9a] text-center max-w-md'>
                                 {selectedSemester
                                     ? `Syllabus for Semester ${selectedSemester} is not available right now.`
                                     : 'Syllabus documents for this branch are not available at the moment.'}
                             </p>
                         </div>
                     ) : (
-                        <div className='p-6 sm:p-8 space-y-8'>
+                        <div className='p-6 sm:p-8 space-y-12'>
                             {sortedSemesters.map((semester) => (
                                 <section
                                     id={`semester-${semester}`}
                                     key={semester}
-                                    className='rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden '
+                                    className='rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] overflow-hidden'
                                 >
-                                    <div className='bg-gradient-to-r from-sky-500 to-blue-600 p-4 sm:p-6'>
-                                        <h2 className='text-xl sm:text-2xl font-bold text-white flex items-center gap-2'>
-                                            <FileText className='w-5 h-5' />
+                                    <div className='bg-[#f6f5f4] dark:bg-[#191919] p-5 sm:p-6 border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                        <h2 className='text-xl sm:text-2xl font-bold text-[#101828] dark:text-[#ededed] flex items-center gap-3'>
+                                            <FileText className='w-6 h-6 text-[#0075de]' />
                                             Semester {semester}
                                         </h2>
-                                        <p className='text-blue-100 text-sm mt-1'>
-                                            {groupedBySemester[semester].length}{' '}
-                                            subject
-                                            {groupedBySemester[semester]
-                                                .length > 1
-                                                ? 's'
-                                                : ''}{' '}
+                                        <p className='text-[#615d59] dark:text-[#a09e9a] text-sm font-medium mt-1.5 ml-9'>
+                                            {groupedBySemester[semester].length} subject{groupedBySemester[semester].length > 1 ? 's' : ''}
                                         </p>
                                     </div>
 
-                                    <div className='divide-y divide-gray-200 dark:divide-gray-700'>
+                                    <div className='divide-y divide-[#e6e6e6] dark:divide-[#2f2f2f]'>
                                         {groupedBySemester[semester].map(
                                             (syllabus, index) => (
                                                 <div
                                                     key={syllabus._id}
-                                                    className='p-6 sm:p-8 bg-white dark:bg-gray-800'
+                                                    className='p-6 sm:p-8 bg-white dark:bg-[#202020]'
                                                 >
                                                     <div className='flex items-start gap-4 mb-6'>
-                                                        <div className='h-12 w-12 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center'>
-                                                            <BookOpen className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                                                        <div className='h-12 w-12 rounded-xl bg-[#fcfbf9] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#383838] flex items-center justify-center shrink-0 shadow-sm'>
+                                                            <BookOpen className='w-6 h-6 text-[#101828] dark:text-[#ededed]' />
                                                         </div>
                                                         <div className='flex-1'>
-                                                            <h3 className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
-                                                                {
-                                                                    syllabus
-                                                                        .subject
-                                                                        ?.subjectCode
-                                                                }{' '}
-                                                                —{' '}
-                                                                {
-                                                                    syllabus
-                                                                        .subject
-                                                                        ?.subjectName
-                                                                }
+                                                            <h3 className='text-xl sm:text-2xl font-bold text-[#101828] dark:text-[#ededed] leading-tight mb-2'>
+                                                                {syllabus.subject?.subjectCode} — {syllabus.subject?.subjectName}
                                                             </h3>
                                                             <div className='flex flex-wrap gap-2 mt-2'>
-                                                                <span className='px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium'>
-                                                                    {
-                                                                        syllabus
-                                                                            .units
-                                                                            ?.length
-                                                                    }{' '}
-                                                                    Units
+                                                                <span className='px-3 py-1 bg-[#f6f5f4] dark:bg-[#2a2a2a] text-[#615d59] dark:text-[#a09e9a] border border-[#e6e6e6] dark:border-[#383838] rounded-full text-xs font-semibold'>
+                                                                    {syllabus.units?.length} Units
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -229,77 +209,50 @@ export default async function BranchSyllabusPage({
 
                                                     {/* Description */}
                                                     {syllabus.description && (
-                                                        <div className='mb-6 p-4 bg-sky-50 dark:bg-gray-700/50 rounded-lg'>
-                                                            <h4 className='text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2'>
-                                                                Course
-                                                                Description
+                                                        <div className='mb-6'>
+                                                            <h4 className='text-sm font-bold text-[#101828] dark:text-[#ededed] mb-2 uppercase tracking-wider'>
+                                                                Course Description
                                                             </h4>
-                                                            <p className='text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap'>
-                                                                {
-                                                                    syllabus.description
-                                                                }
+                                                            <p className='text-[#31302e] dark:text-[#d1d0ce] text-[15px] leading-relaxed whitespace-pre-wrap'>
+                                                                {syllabus.description}
                                                             </p>
                                                         </div>
                                                     )}
 
                                                     {/* Units */}
-                                                    {syllabus.units?.length >
-                                                        0 && (
+                                                    {syllabus.units?.length > 0 && (
                                                         <div className='space-y-4'>
                                                             {/* Desktop Table */}
-                                                            <div className='hidden lg:block overflow-x-auto'>
-                                                                <table className='w-full border-collapse border border-gray-300 dark:border-gray-600'>
+                                                            <div className='hidden lg:block overflow-x-auto rounded-xl border border-[#e6e6e6] dark:border-[#383838] mt-6'>
+                                                                <table className='w-full border-collapse'>
                                                                     <thead>
-                                                                        <tr className='bg-gradient-to-r from-sky-600 to-blue-600 text-white'>
-                                                                            <th className='border border-gray-300 dark:border-gray-600 px-4 py-3 text-left font-semibold w-24'>
-                                                                                Unit
-                                                                                No.
+                                                                        <tr className='bg-[#f6f5f4] dark:bg-[#2a2a2a]'>
+                                                                            <th className='border-b border-[#e6e6e6] dark:border-[#383838] px-5 py-3 text-left text-xs font-semibold text-[#615d59] dark:text-[#a09e9a] uppercase tracking-wider w-24'>
+                                                                                Unit No.
                                                                             </th>
-                                                                            <th className='border border-gray-300 dark:border-gray-600 px-4 py-3 text-left font-semibold w-1/3'>
-                                                                                Title
-                                                                                of
-                                                                                the
-                                                                                Unit
+                                                                            <th className='border-b border-[#e6e6e6] dark:border-[#383838] px-5 py-3 text-left text-xs font-semibold text-[#615d59] dark:text-[#a09e9a] uppercase tracking-wider w-1/3 border-l'>
+                                                                                Title of the Unit
                                                                             </th>
-                                                                            <th className='border border-gray-300 dark:border-gray-600 px-4 py-3 text-left font-semibold'>
-                                                                                Content
-                                                                                of
-                                                                                Unit
+                                                                            <th className='border-b border-[#e6e6e6] dark:border-[#383838] px-5 py-3 text-left text-xs font-semibold text-[#615d59] dark:text-[#a09e9a] uppercase tracking-wider border-l'>
+                                                                                Content of Unit
                                                                             </th>
                                                                         </tr>
                                                                     </thead>
-                                                                    <tbody>
+                                                                    <tbody className='divide-y divide-[#e6e6e6] dark:divide-[#383838]'>
                                                                         {syllabus.units.map(
-                                                                            (
-                                                                                unit,
-                                                                                i,
-                                                                            ) => (
+                                                                            (unit) => (
                                                                                 <tr
-                                                                                    key={
-                                                                                        unit.unitNumber
-                                                                                    }
-                                                                                    className={
-                                                                                        i %
-                                                                                            2 ===
-                                                                                        0
-                                                                                            ? 'bg-white dark:bg-gray-800'
-                                                                                            : 'bg-sky-50 dark:bg-gray-700/50'
-                                                                                    }
+                                                                                    key={unit.unitNumber}
+                                                                                    className='bg-white dark:bg-[#202020]'
                                                                                 >
-                                                                                    <td className='border border-gray-300 dark:border-gray-600 px-4 py-3 font-semibold text-sky-700 dark:text-sky-400 align-top'>
-                                                                                        {
-                                                                                            unit.unitNumber
-                                                                                        }
+                                                                                    <td className='px-5 py-4 text-[15px] font-semibold text-[#101828] dark:text-[#ededed] align-top'>
+                                                                                        {unit.unitNumber}
                                                                                     </td>
-                                                                                    <td className='border border-gray-300 dark:border-gray-600 px-4 py-3 font-medium text-gray-900 dark:text-white align-top'>
-                                                                                        {
-                                                                                            unit.title
-                                                                                        }
+                                                                                    <td className='px-5 py-4 text-[15px] font-medium text-[#101828] dark:text-[#ededed] align-top border-l border-[#e6e6e6] dark:border-[#383838]'>
+                                                                                        {unit.title}
                                                                                     </td>
-                                                                                    <td className='border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-700 dark:text-gray-300 align-top leading-relaxed'>
-                                                                                        {
-                                                                                            unit.content
-                                                                                        }
+                                                                                    <td className='px-5 py-4 text-[15px] text-[#31302e] dark:text-[#d1d0ce] align-top leading-relaxed border-l border-[#e6e6e6] dark:border-[#383838]'>
+                                                                                        {unit.content}
                                                                                     </td>
                                                                                 </tr>
                                                                             ),
@@ -309,49 +262,24 @@ export default async function BranchSyllabusPage({
                                                             </div>
 
                                                             {/* Mobile Cards */}
-                                                            <div className='lg:hidden space-y-4'>
+                                                            <div className='lg:hidden space-y-4 mt-6'>
                                                                 {syllabus.units.map(
-                                                                    (
-                                                                        unit,
-                                                                        i,
-                                                                    ) => (
+                                                                    (unit) => (
                                                                         <div
-                                                                            key={
-                                                                                unit.unitNumber
-                                                                            }
-                                                                            className={`rounded-lg border-2 overflow-hidden ${
-                                                                                i %
-                                                                                    2 ===
-                                                                                0
-                                                                                    ? 'border-sky-200 dark:border-gray-600'
-                                                                                    : 'border-blue-200 dark:border-gray-600'
-                                                                            }`}
+                                                                            key={unit.unitNumber}
+                                                                            className='rounded-xl border border-[#e6e6e6] dark:border-[#383838] bg-white dark:bg-[#202020] overflow-hidden'
                                                                         >
-                                                                            <div
-                                                                                className={`px-4 py-3 font-semibold flex items-center gap-3 ${
-                                                                                    i %
-                                                                                        2 ===
-                                                                                    0
-                                                                                        ? 'bg-sky-100 dark:bg-gray-700 text-sky-700 dark:text-sky-400'
-                                                                                        : 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-400'
-                                                                                }`}
-                                                                            >
-                                                                                <span className='flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-gray-800 text-sm'>
-                                                                                    {
-                                                                                        unit.unitNumber
-                                                                                    }
+                                                                            <div className='px-4 py-3 border-b border-[#e6e6e6] dark:border-[#383838] bg-[#fcfbf9] dark:bg-[#191919] flex items-center gap-3'>
+                                                                                <span className='flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-[#2a2a2a] border border-[#e6e6e6] dark:border-[#383838] text-sm font-semibold text-[#101828] dark:text-[#ededed] shadow-sm'>
+                                                                                    {unit.unitNumber}
                                                                                 </span>
-                                                                                <span className='flex-1 text-gray-900 dark:text-white'>
-                                                                                    {
-                                                                                        unit.title
-                                                                                    }
+                                                                                <span className='flex-1 font-semibold text-[#101828] dark:text-[#ededed]'>
+                                                                                    {unit.title}
                                                                                 </span>
                                                                             </div>
-                                                                            <div className='p-4 bg-white dark:bg-gray-800'>
-                                                                                <p className='text-gray-700 dark:text-gray-300 leading-relaxed text-sm'>
-                                                                                    {
-                                                                                        unit.content
-                                                                                    }
+                                                                            <div className='p-4'>
+                                                                                <p className='text-[#31302e] dark:text-[#d1d0ce] leading-relaxed text-[15px]'>
+                                                                                    {unit.content}
                                                                                 </p>
                                                                             </div>
                                                                         </div>
@@ -363,26 +291,15 @@ export default async function BranchSyllabusPage({
 
                                                     {/* Reference Books */}
                                                     {syllabus.referenceBooks && (
-                                                        <div className='mt-6 p-4 bg-sky-50 dark:bg-gray-700/50 rounded-lg'>
-                                                            <h4 className='text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2'>
-                                                                <FileText className='w-4 h-4 text-sky-600' />
+                                                        <div className='mt-8 pt-8 border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                                            <h4 className='text-sm font-bold text-[#101828] dark:text-[#ededed] mb-3 flex items-center gap-2 uppercase tracking-wider'>
+                                                                <FileText className='w-4 h-4 text-[#8c8883]' />
                                                                 Reference Books
                                                             </h4>
-                                                            <p className='text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap'>
-                                                                {
-                                                                    syllabus.referenceBooks
-                                                                }
+                                                            <p className='text-[15px] text-[#31302e] dark:text-[#d1d0ce] leading-relaxed whitespace-pre-wrap'>
+                                                                {syllabus.referenceBooks}
                                                             </p>
                                                         </div>
-                                                    )}
-
-                                                    {/* Divider */}
-                                                    {index <
-                                                        groupedBySemester[
-                                                            semester
-                                                        ].length -
-                                                            1 && (
-                                                        <div className='mt-8 pt-8 border-t border-gray-300 dark:border-gray-600'></div>
                                                     )}
                                                 </div>
                                             ),
@@ -392,10 +309,20 @@ export default async function BranchSyllabusPage({
                             ))}
                         </div>
                     )}
+
+                    {/* Footer */}
+                    <div className='bg-[#f6f5f4] dark:bg-[#191919] px-6 py-5 text-center border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                        <p className='text-sm text-[#615d59] dark:text-[#a09e9a]'>
+                            Powered by{' '}
+                            <span className='font-semibold text-[#0075de] dark:text-[#62aef0]'>
+                                Student Senior
+                            </span>
+                        </p>
+                    </div>
                 </div>
 
                 {/* Download Section */}
-                <div className='mt-6 pt-6 w-fit border-t border-sky-200 dark:border-gray-600 text-center mx-auto'>
+                <div className='mt-8 text-center'>
                     {selectedSemester ? (
                         <DownloadSemesterPdfButton
                             syllabusList={filteredSyllabus}
@@ -408,16 +335,6 @@ export default async function BranchSyllabusPage({
                             branchName={branchName}
                         />
                     )}
-                </div>
-
-                {/* Footer */}
-                <div className='bg-gradient-to-r from-sky-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 px-6 py-4 text-center border-t border-sky-200 dark:border-gray-600 rounded-b-2xl mt-6'>
-                    <p className='text-sm text-gray-600 dark:text-gray-400'>
-                        Powered by{' '}
-                        <span className='font-semibold text-sky-600 dark:text-sky-400'>
-                            Student Senior
-                        </span>
-                    </p>
                 </div>
             </div>
         </main>

@@ -18,32 +18,32 @@ export default function SemesterTabs({
     const currentSemester = searchParams.get('semester');
 
     return (
-        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden'>
-            <div className='flex overflow-x-auto scrollbar-hide'>
-                <div className='flex gap-2 p-4 min-w-full'>
+        <div className='mb-6'>
+            <div className='flex overflow-x-auto scrollbar-hide pb-2'>
+                <div className='flex gap-2 min-w-full'>
                     <Link
                         prefetch={false}
                         href={`/${slug}/syllabus/branch/${branchCode}`}
-                        className={`flex-shrink-0 px-6 py-3 rounded-lg font-medium transition-all ${
+                        className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                             !currentSemester
-                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                ? 'bg-[#0075de] text-white border-[#0075de] shadow-[0_2px_8px_rgb(0,117,222,0.25)]'
+                                : 'bg-white dark:bg-[#202020] text-[#615d59] dark:text-[#a09e9a] border-[#e6e6e6] dark:border-[#383838] hover:bg-[#fcfbf9] dark:hover:bg-[#2a2a2a] shadow-sm'
                         }`}
                     >
-                        All Sem
+                        All Semesters
                     </Link>
                     {semesters.map((sem) => (
                         <Link
                             prefetch={false}
                             key={sem}
                             href={`/${slug}/syllabus/branch/${branchCode}?semester=${sem}`}
-                            className={`flex-shrink-0 px-6 py-3 rounded-lg font-medium transition-all ${
+                            className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                                 currentSemester === String(sem)
-                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    ? 'bg-[#0075de] text-white border-[#0075de] shadow-[0_2px_8px_rgb(0,117,222,0.25)]'
+                                    : 'bg-white dark:bg-[#202020] text-[#615d59] dark:text-[#a09e9a] border-[#e6e6e6] dark:border-[#383838] hover:bg-[#fcfbf9] dark:hover:bg-[#2a2a2a] shadow-sm'
                             }`}
                         >
-                            Sem {sem}
+                            Semester {sem}
                         </Link>
                     ))}
                 </div>

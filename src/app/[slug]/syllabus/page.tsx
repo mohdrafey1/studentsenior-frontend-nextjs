@@ -46,30 +46,46 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
     }
 
     return (
-        <main className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
-            <header className='text-center mb-8'>
-                <h1 className='text-2xl sm:text-4xl font-fugaz font-bold text-gray-800 dark:text-white mb-3'>
-                    Course Syllabus - {capitalizeWords(collegeName)}
-                </h1>
-                <p className='text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl mx-auto'>
-                    &quot;Complete curriculum structure, objectives, and course
-                    details for all subjects&quot;
-                </p>
-            </header>
-            <SyllabusClient
-                initialSyllabus={syllabus}
-                initialPagination={
-                    pagination || {
-                        currentPage: 1,
-                        totalPages: 1,
-                        totalItems: 0,
-                        hasNextPage: false,
-                        hasPrevPage: false,
+        <main className='min-h-screen bg-white dark:bg-[#191919]'>
+            {/* Hero Section */}
+            <div className='relative bg-[#f6f5f4] dark:bg-[#202020] border-b border-[#e6e6e6] dark:border-[#2f2f2f] overflow-hidden'>
+                {/* Mesh/Grid Background Pattern */}
+                <div 
+                    className="absolute inset-0 opacity-[0.4] dark:opacity-[0.1]"
+                    style={{
+                        backgroundImage: `radial-gradient(#d2d2d2 1px, transparent 1px)`,
+                        backgroundSize: '24px 24px'
+                    }}
+                />
+                
+                <div className='relative max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-16'>
+                    <div className='text-center max-w-3xl mx-auto'>
+                        <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold text-[#101828] dark:text-[#ededed] tracking-tight mb-4'>
+                            Course Syllabus
+                        </h1>
+                        <p className='text-lg sm:text-xl text-[#615d59] dark:text-[#a09e9a] leading-relaxed'>
+                            Complete curriculum structure, objectives, and course details for {capitalizeWords(collegeName)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 -mt-6'>
+                <SyllabusClient
+                    initialSyllabus={syllabus}
+                    initialPagination={
+                        pagination || {
+                            currentPage: 1,
+                            totalPages: 1,
+                            totalItems: 0,
+                            hasNextPage: false,
+                            hasPrevPage: false,
+                        }
                     }
-                }
-                collegeName={collegeName}
-                initialError={error}
-            />
+                    collegeName={collegeName}
+                    initialError={error}
+                />
+            </div>
         </main>
     );
 }
