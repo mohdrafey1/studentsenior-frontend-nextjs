@@ -20,7 +20,6 @@ interface NotesFormModalProps {
     onSubmit: (data: NotesFormData) => Promise<void>;
     form: NotesFormData;
     setForm: React.Dispatch<React.SetStateAction<NotesFormData>>;
-    // courses: ICourse[];
     branchCode: string;
     subject: string;
     collegeSlug: string;
@@ -32,7 +31,6 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     onSubmit,
     form,
     setForm,
-    // courses,
     branchCode,
     subject,
     collegeSlug,
@@ -60,47 +58,6 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
             fetchSubjects(branchCode);
         }
     }, [isOpen, branchCode]);
-
-    // Apply saved preference: set course by courseCode when modal opens
-    // useEffect(() => {
-    //     if (!isOpen || courses.length === 0 || selectedCourse) return;
-    //     try {
-    //         const saved = localStorage.getItem('ss:resourcePref');
-    //         if (!saved) return;
-    //         const pref = JSON.parse(saved) as { courseCode?: string };
-    //         if (!pref.courseCode) return;
-    //         const match = courses.find((c) => c.courseCode === pref.courseCode);
-    //         if (match) {
-    //             setSelectedCourse(match._id);
-    //             // Trigger branches load
-    //             // fetchBranches(match.courseCode);
-    //         }
-    //     } catch {
-    //         // ignore
-    //     }
-    // }, [isOpen, courses, selectedCourse]);
-
-    // After branches load, apply saved branch by branchCode (once per open)
-    // useEffect(() => {
-    //     if (!isOpen || appliedPrefRef.current || branches.length === 0) return;
-    //     try {
-    //         const saved = localStorage.getItem('ss:resourcePref');
-    //         if (!saved) return;
-    //         const pref = JSON.parse(saved) as { branchCode?: string };
-    //         if (!pref.branchCode) return;
-    //         const match = branches.find(
-    //             (b) => b.branchCode === pref.branchCode,
-    //         );
-    //         if (match) {
-    //             setSelectedBranch(match._id);
-    //             // Also prefetch subjects list for convenience
-    //             fetchSubjects(match.branchCode);
-    //             appliedPrefRef.current = true;
-    //         }
-    //     } catch {
-    //         // ignore
-    //     }
-    // }, [isOpen, branches]);
 
     const fetchSubjects = async (branchCode: string) => {
         setLoadingSubjects(true);
@@ -254,17 +211,6 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
         }
     };
 
-    // Format data for searchable selects
-    // const courseOptions = courses.map((course) => ({
-    //     value: course._id,
-    //     label: `${course.courseName} (${course.courseCode})`,
-    // }));
-
-    // const branchOptions = branches.map((branch) => ({
-    //     value: branch._id,
-    //     label: `${branch.branchName} (${branch.branchCode})`,
-    // }));
-
     const subjectOptions = subjects.map((subject) => ({
         value: subject.subjectCode,
         label: `${subject.subjectName} (${subject.subjectCode})`,
@@ -273,29 +219,26 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
+        <div className='fixed inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-50 p-4'>
+            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col'>
                 {/* Header */}
-                <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
+                <div className='flex items-center justify-between px-6 py-4 border-b border-[#e6e6e6] dark:border-[#2f2f2f] sticky top-0 bg-white dark:bg-[#1c1c1c] z-10'>
+                    <h2 className='text-lg font-bold text-[#101828] dark:text-white'>
                         Add New Note
                     </h2>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors'
+                        className='p-2 rounded-full text-[#8c8883] dark:text-[#787672] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors'
                     >
-                        <X className='w-6 h-6' />
+                        <X className='w-5 h-5' />
                     </button>
                 </div>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className='p-6 space-y-4 bg-white dark:bg-gray-800'
-                >
+                <form onSubmit={handleSubmit} className='p-6 space-y-6'>
                     {/* Title */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            Title *
+                        <label className='block text-sm font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Title <span className='text-red-500'>*</span>
                         </label>
                         <input
                             type='text'
@@ -306,7 +249,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                                     title: e.target.value,
                                 }))
                             }
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3.5 py-2.5 border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] outline-none transition-all shadow-sm'
                             placeholder='Enter note title'
                             required
                         />
@@ -314,8 +257,8 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
 
                     {/* Description */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            Description *
+                        <label className='block text-sm font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Description <span className='text-red-500'>*</span>
                         </label>
                         <textarea
                             value={form.description}
@@ -326,41 +269,19 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                                 }))
                             }
                             rows={3}
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3.5 py-2.5 border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl bg-white dark:bg-[#191919] text-[#101828] dark:text-white focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] outline-none transition-all shadow-sm resize-y'
                             placeholder='Enter note description'
                             required
                         />
                     </div>
 
-                    {/* Course Selection */}
-                    {/* <div>
-                        <SearchableSelect
-                            label='Course *'
-                            value={selectedCourse}
-                            onChange={handleCourseChange}
-                            options={courseOptions}
-                            placeholder='Select Course'
-                            loading={loadingCourses}
-                        />
-                    </div> */}
-
-                    {/* Branch Selection */}
-                    {/* <div>
-                        <SearchableSelect
-                            label='Branch *'
-                            value={selectedBranch}
-                            onChange={handleBranchChange}
-                            options={branchOptions}
-                            placeholder='Select Branch'
-                            loading={loadingBranches}
-                            disabled={!selectedCourse}
-                        />
-                    </div> */}
-
                     {/* Subject Selection */}
                     <div>
+                        <label className='block text-sm font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Subject <span className='text-red-500'>*</span>
+                        </label>
                         <SearchableSelect
-                            label='Subject *'
+                            label=''
                             value={form.subjectCode}
                             onChange={(subjectCode) =>
                                 setForm((prev) => ({
@@ -377,43 +298,53 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
 
                     {/* File Upload */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            Upload PDF (Max 10MB) *
+                        <label className='block text-sm font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Upload PDF (Max 10MB) <span className='text-red-500'>*</span>
                         </label>
 
-                        <div className='flex items-center gap-4'>
-                            <label className='flex-1 flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-sky-500 dark:hover:border-sky-400 transition-colors duration-200 cursor-pointer'>
+                        <div className='flex flex-col sm:flex-row items-center gap-4'>
+                            <label className='w-full sm:flex-1 flex flex-col items-center justify-center px-4 py-6 border-2 border-dashed border-[#e6e6e6] dark:border-[#383838] rounded-xl bg-[#fbfbfb] dark:bg-[#191919] hover:bg-white dark:hover:bg-[#202020] hover:border-[#0075de] dark:hover:border-[#62aef0] transition-colors cursor-pointer group'>
                                 <input
                                     id='file-upload'
                                     type='file'
-                                    className='w-full border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-500 file:text-white hover:file:bg-sky-600'
+                                    className='hidden'
                                     accept='.pdf'
                                     onChange={handleFileChange}
-                                    required
+                                    required={!form.fileUrl}
                                 />
-                                <div className='text-center'>
-                                    <UploadIcon className='w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2' />
-                                    <span className='text-sm text-gray-600 dark:text-gray-400'>
-                                        {form.fileUrl
-                                            ? 'File uploaded'
-                                            : 'Click to upload file'}
+                                <div className='flex flex-col items-center text-center'>
+                                    <div className='w-10 h-10 rounded-full bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform'>
+                                        <UploadIcon className='w-5 h-5' />
+                                    </div>
+                                    <span className='text-sm font-medium text-[#101828] dark:text-white'>
+                                        {file ? file.name : (form.fileUrl ? 'Change file' : 'Click to upload')}
                                     </span>
+                                    {!file && !form.fileUrl && (
+                                        <span className='text-xs text-[#615d59] dark:text-[#787672] mt-1'>
+                                            PDF up to 10MB
+                                        </span>
+                                    )}
                                 </div>
                             </label>
-                            {form.fileUrl && (
-                                <div className='flex items-center gap-2 text-sm text-green-600 dark:text-green-400'>
+                            {form.fileUrl && !file && (
+                                <div className='flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg'>
                                     <CheckCircle className='w-4 h-4' />
-                                    Uploaded
+                                    Existing File Selected
                                 </div>
                             )}
                         </div>
                     </div>
 
                     {/* Paid Option */}
-                    <div className='flex items-center justify-between'>
-                        <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                            Premium Content
-                        </span>
+                    <div className='flex items-center justify-between pt-2 border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                        <div>
+                            <span className='text-sm font-bold text-[#101828] dark:text-white block'>
+                                Premium Content
+                            </span>
+                            <span className='text-xs text-[#615d59] dark:text-[#9ea3ae]'>
+                                Sell this note for points
+                            </span>
+                        </div>
                         <button
                             type='button'
                             onClick={() =>
@@ -423,10 +354,10 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                                     price: !prev.isPaid ? 25 : 0,
                                 }))
                             }
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0075de] focus:ring-offset-2 dark:focus:ring-offset-[#1c1c1c] ${
                                 form.isPaid
-                                    ? 'bg-violet-600'
-                                    : 'bg-gray-200 dark:bg-gray-700'
+                                    ? 'bg-[#0075de]'
+                                    : 'bg-[#e6e6e6] dark:bg-[#383838]'
                             }`}
                         >
                             <span
@@ -441,12 +372,12 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
 
                     {/* Price Input - Only visible when isPaid is true */}
                     {form.isPaid && (
-                        <div>
-                            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                                Price (in Points - 5 points = 1 INR)
+                        <div className='bg-[#fbfbfb] dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl p-4'>
+                            <label className='block text-sm font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                                Price <span className='font-normal text-[#615d59] dark:text-[#9ea3ae]'>(in Points - 5 points = 1 INR)</span>
                             </label>
                             <div className='relative'>
-                                <DollarSign className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
+                                <DollarSign className='absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#8c8883] dark:text-[#787672]' />
                                 <input
                                     type='number'
                                     value={form.price}
@@ -456,7 +387,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                                             price: Number(e.target.value),
                                         }))
                                     }
-                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                                    className='w-full pl-10 pr-3.5 py-2.5 border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl bg-white dark:bg-[#1c1c1c] text-[#101828] dark:text-white focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:ring-[#62aef0]/20 dark:focus:border-[#62aef0] outline-none transition-all shadow-sm'
                                     placeholder='25'
                                     min='25'
                                 />
@@ -465,11 +396,11 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                     )}
 
                     {/* Submit Button */}
-                    <div className='flex justify-end gap-3 pt-4'>
+                    <div className='flex justify-end gap-3 pt-4 border-t border-[#e6e6e6] dark:border-[#2f2f2f] mt-2'>
                         <button
                             type='button'
                             onClick={onClose}
-                            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200'
+                            className='px-4 py-2.5 text-sm font-semibold text-[#101828] dark:text-white bg-white dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl hover:bg-[#eae8e4] dark:hover:bg-[#333] transition-all active:scale-[0.98]'
                         >
                             Cancel
                         </button>
@@ -480,12 +411,15 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                                 !form.title ||
                                 !form.description ||
                                 !form.subjectCode ||
-                                (form.isPaid &&
-                                    (!form.price || form.price < 25))
+                                (form.isPaid && (!form.price || form.price < 25))
                             }
-                            className='px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
+                            className='px-4 py-2.5 text-sm font-semibold text-white bg-[#0075de] hover:bg-[#0062bd] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] shadow-sm flex items-center justify-center min-w-[100px]'
                         >
-                            {loading ? 'Saving...' : 'Add Note'}
+                            {loading ? (
+                                <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                            ) : (
+                                'Add Note'
+                            )}
                         </button>
                     </div>
                 </form>

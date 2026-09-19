@@ -308,20 +308,20 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     if (error) {
         return (
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center p-4'>
-                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-8 text-center max-w-md w-full'>
-                    <div className='w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
-                        <FileText className='w-10 h-10 text-red-500' />
+            <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-8 text-center max-w-md w-full'>
+                    <div className='w-16 h-16 bg-[#fef2f2] dark:bg-[#3d1c1c] border border-[#fee2e2] dark:border-[#3d1c1c] rounded-2xl flex items-center justify-center mx-auto mb-6'>
+                        <FileText className='w-8 h-8 text-[#dc2626] dark:text-[#f87171]' />
                     </div>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-3'>
+                    <h2 className='text-xl font-bold text-[#101828] dark:text-white tracking-tight mb-3'>
                         Failed to Load Document
                     </h2>
-                    <p className='text-gray-600 dark:text-gray-400 mb-6'>
+                    <p className='text-[#475467] dark:text-[#a09e9a] text-sm mb-6'>
                         {error}
                     </p>
                     <button
                         onClick={handleGoBack}
-                        className='inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200'
+                        className='inline-flex items-center gap-2 px-5 py-2.5 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-white hover:bg-[#eae8e4] dark:hover:bg-[#333] font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
                     >
                         <ArrowLeft className='w-4 h-4' />
                         Go Back
@@ -333,13 +333,13 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     if (isLoading && !pdfDoc) {
         return (
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex justify-center items-center p-4'>
+            <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
                 <div className='text-center'>
-                    <div className='w-20 h-20 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6'></div>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
+                    <div className='w-16 h-16 border-4 border-[#0075de] border-t-transparent rounded-full animate-spin mx-auto mb-6'></div>
+                    <h2 className='text-xl font-bold text-[#101828] dark:text-white tracking-tight mb-2'>
                         Loading Document
                     </h2>
-                    <p className='text-gray-600 dark:text-gray-400'>
+                    <p className='text-[#475467] dark:text-[#a09e9a] text-sm'>
                         Please wait while we prepare your notes...
                     </p>
                 </div>
@@ -377,81 +377,25 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     };
 
     return (
-        <div className='min-h-screen bg-sky-50 dark:bg-gray-900'>
+        <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
             <DetailPageNavbar path='notes' fullPath={`/${slug}/notes`} />
 
             {/* Document Info Section */}
             <div className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
-                <div className='bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-8 mb-8'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 sm:p-8 mb-8'>
                     <div className='flex flex-col lg:flex-row lg:items-start gap-6'>
                         {/* Main Info */}
                         <div className='flex-1'>
-                            <h1 className='sm:text-3xl font-fugaz font-bold text-gray-900 dark:text-white mb-3'>
-                                {note.title}
-                            </h1>
-                            <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-lg mb-6'>
-                                {note.description}
-                            </p>
-
-                            {/* Details Grid */}
-                            <div className='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6'>
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center'>
-                                        <FileText className='w-5 h-5 text-emerald-600 dark:text-emerald-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-sm text-gray-500 dark:text-gray-400'>
-                                            Subject
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {note.subject.subjectName}
-                                        </p>
-                                    </div>
+                            <div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6'>
+                                <div>
+                                    <h1 className='text-3xl font-bold text-[#101828] dark:text-white tracking-tight mb-3'>
+                                        {note.title}
+                                    </h1>
+                                    <p className='text-[#475467] dark:text-[#a09e9a] text-sm sm:text-base max-w-3xl'>
+                                        {note.description}
+                                    </p>
                                 </div>
-
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center'>
-                                        <BookOpen className='w-5 h-5 text-blue-600 dark:text-blue-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-sm text-gray-500 dark:text-gray-400'>
-                                            Semester
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {note.subject.semester}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                        <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Created
-                                        </p>
-                                        <p className="font-medium text-gray-900 dark:text-white">
-                                            {new Date(
-                                                note.createdAt
-                                            ).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div> */}
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center'>
-                                        <User className='w-5 h-5 text-orange-600 dark:text-orange-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-sm text-gray-500 dark:text-gray-400'>
-                                            Uploaded By
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {note.owner.username}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className='flex items-center'>
+                                <div className='flex-shrink-0'>
                                     <button
                                         onClick={() => {
                                             if (isSaved) {
@@ -460,7 +404,11 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                                 handleSave();
                                             }
                                         }}
-                                        className='inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition-colors'
+                                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-[0.98] ${
+                                            isSaved
+                                                ? 'bg-[#e6f4ea] dark:bg-[#1e3a29] border-[#ceead6] dark:border-[#1e3a29] text-[#137333] dark:text-[#34a853]'
+                                                : 'bg-[#f6f5f4] dark:bg-[#282828] border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-white hover:bg-[#eae8e4] dark:hover:bg-[#333]'
+                                        }`}
                                         title={
                                             isSaved
                                                 ? 'Unsave this Note'
@@ -473,7 +421,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         }
                                     >
                                         <svg
-                                            className='w-4 h-4 sm:w-5 sm:h-5'
+                                            className='w-4 h-4'
                                             fill={
                                                 isSaved
                                                     ? 'currentColor'
@@ -482,11 +430,6 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                             stroke='currentColor'
                                             viewBox='0 0 24 24'
                                             xmlns='http://www.w3.org/2000/svg'
-                                            style={{
-                                                color: isSaved
-                                                    ? '#10B981'
-                                                    : '#10B981',
-                                            }}
                                         >
                                             <path
                                                 strokeLinecap='round'
@@ -497,6 +440,53 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         </svg>
                                         {isSaved ? 'Saved' : 'Save'}
                                     </button>
+                                </div>
+                            </div>
+
+                            <hr className='border-[#f0eee9] dark:border-[#2a2a2a] mb-6' />
+
+                            {/* Details Grid */}
+                            <div className='flex flex-wrap gap-4 sm:gap-8'>
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
+                                        <FileText className='w-5 h-5' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
+                                            Subject
+                                        </p>
+                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
+                                            {note.subject.subjectName}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
+                                        <BookOpen className='w-5 h-5' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
+                                            Semester
+                                        </p>
+                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
+                                            {note.subject.semester}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
+                                        <User className='w-5 h-5' />
+                                    </div>
+                                    <div>
+                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
+                                            Uploaded By
+                                        </p>
+                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
+                                            {note.owner.username}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -530,14 +520,14 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                 ))}
 
                                 {/* Purchase CTA */}
-                                <div className='bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-sky-200 dark:border-sky-700 p-8 text-center'>
-                                    <div className='w-20 h-20 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
-                                        <Lock className='w-10 h-10 text-sky-600 dark:text-sky-400' />
+                                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-8 text-center'>
+                                    <div className='w-16 h-16 bg-[#fef7e0] dark:bg-[#3d3119] border border-[#fce8b2] dark:border-[#3d3119] rounded-2xl flex items-center justify-center mx-auto mb-6'>
+                                        <Lock className='w-8 h-8 text-[#b06000] dark:text-[#fbbc04]' />
                                     </div>
-                                    <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-4'>
+                                    <h3 className='text-2xl font-bold text-[#101828] dark:text-white mb-2 tracking-tight'>
                                         Unlock Full Content
                                     </h3>
-                                    <p className='text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto'>
+                                    <p className='text-[#475467] dark:text-[#a09e9a] mb-8 max-w-md mx-auto'>
                                         You&apos;ve seen a preview of this
                                         document. Purchase to access all{' '}
                                         {pdfDoc.numPages} pages and download the
@@ -554,9 +544,9 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                                     setIsPaymentModalOpen(true);
                                                 }
                                             }}
-                                            className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                            className='inline-flex items-center gap-2 px-6 py-3 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
                                         >
-                                            <ShoppingCart className='w-5 h-5' />
+                                            <ShoppingCart className='w-4 h-4' />
                                             Purchase for {note.price} points
                                         </button>
                                     </div>
@@ -577,10 +567,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                             </>
                         )
                     ) : (
-                        <div className='flex justify-center items-center min-h-[400px] bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60'>
+                        <div className='flex justify-center items-center min-h-[400px] bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                             <div className='text-center'>
-                                <Loader2 className='w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4' />
-                                <p className='text-gray-600 dark:text-gray-400'>
+                                <Loader2 className='w-10 h-10 text-[#0075de] dark:text-[#62aef0] animate-spin mx-auto mb-4' />
+                                <p className='text-[#475467] dark:text-[#a09e9a] font-medium'>
                                     Preparing document...
                                 </p>
                             </div>
@@ -612,10 +602,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                         }
                                         setIsDownloadModalOpen(true);
                                     }}
-                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm ${
+                                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-xs active:scale-[0.98] ${
                                         signedUrl
-                                            ? 'bg-sky-600 text-white hover:bg-sky-700'
-                                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                            ? 'bg-[#0075de] hover:bg-[#0062bd] text-white'
+                                            : 'bg-[#e6e6e6] dark:bg-[#2f2f2f] text-[#8c8883] dark:text-[#787672] cursor-not-allowed'
                                     }`}
                                     title={
                                         signedUrl
@@ -623,15 +613,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                             : 'Link expired. Please refresh to get a new link.'
                                     }
                                 >
-                                    <Download className='w-5 h-5' />
-                                    Download
+                                    <Download className='w-4 h-4' />
+                                    Download Note
                                 </button>
                             ) : (
                                 <a
                                     href={`intent://studentsenior.com${pathname}#Intent;scheme=https;package=com.mohdrafey1.studentsenior;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.mohdrafey1.studentsenior;end`}
-                                    className='inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-sm bg-sky-600 text-white hover:bg-sky-700'
+                                    className='inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-xs active:scale-[0.98] bg-[#0075de] hover:bg-[#0062bd] text-white'
                                 >
-                                    <Download className='w-5 h-5' />
+                                    <Download className='w-4 h-4' />
                                     Open in App
                                 </a>
                             )}
@@ -648,8 +638,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 {/* Related Resources Section */}
                 <div className='mt-12 mb-8'>
                     <div className='flex items-center gap-3 mb-6'>
-                        <BookOpen className='w-6 h-6 text-sky-600 dark:text-sky-400' />
-                        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                        <div className='w-10 h-10 rounded-xl bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center'>
+                             <BookOpen className='w-5 h-5' />
+                        </div>
+                        <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                             Explore More Resources
                         </h2>
                     </div>
@@ -659,16 +651,16 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/pyqs/${note.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border-2 border-sky-200 dark:border-sky-700 p-6 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <FileStack className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[#eaf3fd] dark:group-hover:bg-[#183153] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <FileStack className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
                                 View PYQs
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
-                                View all {note.subject.subjectName} papers
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
+                                All {note.subject.subjectName} papers
                             </p>
                         </Link>
 
@@ -676,15 +668,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/notes/${note.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <NotebookPen className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <NotebookPen className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
                                 Notes
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Study notes for {note.subject.subjectName}
                             </p>
                         </Link>
@@ -693,15 +685,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/syllabus/${note.subject?.subjectName.toLowerCase().replace(/\s+/g, '-')}-${note.subject?.subjectCode.toLowerCase()}`}
-                            className='group bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 p-6 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-purple-500 dark:hover:border-purple-400 hover:shadow-[0_4px_12px_rgba(168,85,247,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <BookOpen className='w-6 h-6 text-purple-600 dark:text-purple-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-purple-50 dark:group-hover:bg-purple-500/10 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <BookOpen className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors'>
                                 Syllabus
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Syllabus of {note.subject.subjectName}
                             </p>
                         </Link>
@@ -710,15 +702,15 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${note.subject?.branch?.course?.courseCode}/${note.subject?.branch?.branchCode}/videos/${note.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-700 p-6 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-orange-500 dark:hover:border-orange-400 hover:shadow-[0_4px_12px_rgba(249,115,22,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <Video className='w-6 h-6 text-orange-600 dark:text-orange-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-orange-50 dark:group-hover:bg-orange-500/10 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <Video className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors'>
                                 Videos
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Videos for {note.subject.subjectName}
                             </p>
                         </Link>
@@ -731,8 +723,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 suggestedNotes.sameSubjectNotes.length > 0 && (
                     <div className='max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8'>
                         <div className='flex items-center gap-3 mb-6'>
-                            <Sparkles className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
-                            <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                            <div className='w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center'>
+                                <Sparkles className='w-5 h-5' />
+                            </div>
+                            <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                                 More {note.subject.subjectName} Notes
                             </h2>
                         </div>
@@ -740,40 +734,39 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                             {suggestedNotes.sameSubjectNotes.map(
                                 (suggestedNote: INote) => (
-                                    <div
+                                    <Link
                                         key={suggestedNote._id}
-                                        onClick={() =>
-                                            router.push(
-                                                `/${slug}/notes/${suggestedNote.slug}`,
-                                            )
-                                        }
-                                        className='bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group'
+                                        prefetch={false}
+                                        href={`/${slug}/notes/${suggestedNote.slug}`}
+                                        className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)] transition-all duration-200 overflow-hidden cursor-pointer'
                                     >
-                                        <div className='flex items-start gap-3 mb-3'>
-                                            <div className='w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center flex-shrink-0'>
-                                                <FileText className='w-5 h-5 text-emerald-600 dark:text-emerald-400' />
+                                        <div className='p-4 flex flex-col h-full'>
+                                            <div className='flex items-start gap-3 mb-4'>
+                                                <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors text-[#615d59] dark:text-[#a09e9a]'>
+                                                    <FileText className='w-5 h-5' />
+                                                </div>
+                                                <div className='flex-1 min-w-0'>
+                                                    <h3 className='font-bold text-[#101828] dark:text-white text-sm line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
+                                                        {suggestedNote.title}
+                                                    </h3>
+                                                </div>
                                             </div>
-                                            <div className='flex-1 min-w-0'>
-                                                <h3 className='font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
-                                                    {suggestedNote.title}
-                                                </h3>
+                                            
+                                            <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                                <div className='flex items-center gap-2'>
+                                                    <User className='w-3.5 h-3.5 text-[#8c8883] dark:text-[#787672]' />
+                                                    <span className='text-xs font-medium text-[#615d59] dark:text-[#a09e9a] truncate max-w-[120px]'>
+                                                        {suggestedNote.owner.username}
+                                                    </span>
+                                                </div>
+                                                {suggestedNote.isPaid && (
+                                                    <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#fef7e0] dark:bg-[#3d3119] text-[#b06000] dark:text-[#fbbc04] border border-[#fce8b2] dark:border-[#3d3119] leading-none'>
+                                                        {suggestedNote.price} pts
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
-                                        <p className='text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-3'>
-                                            {suggestedNote.description}
-                                        </p>
-                                        <div className='flex items-center justify-between text-xs text-gray-500 dark:text-gray-400'>
-                                            <span className='flex items-center gap-1'>
-                                                <User className='w-3 h-3' />
-                                                {suggestedNote.owner.username}
-                                            </span>
-                                            {suggestedNote.isPaid && (
-                                                <span className='bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-full font-medium'>
-                                                    {suggestedNote.price} pts
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
+                                    </Link>
                                 ),
                             )}
                         </div>

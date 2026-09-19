@@ -2,7 +2,7 @@ import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import { IPyq } from '@/utils/interface';
 import SubjectPyqsClient from './SubjectPyqsClient';
-import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
 interface SubjectItem {
@@ -136,11 +136,63 @@ export default async function SubjectPyqsPage({
 
     return (
         <>
-            <DetailPageNavbar
-                path='subjects'
-                fullPath={`/${slug}/resources/${courseCode}/${branchCode}`}
-            />
-            <main className='min-h-screen'>
+            {/* Minimal Inline Header */}
+            <section className='relative w-full bg-[#f6f5f4] dark:bg-[#1f1f1f] border-b border-[#e6e6e6] dark:border-[#2f2f2f] pt-12 pb-6 px-4 overflow-hidden z-0'>
+                <div className='absolute inset-0 z-0 bg-[radial-gradient(#d0ceca_1px,transparent_1px)] dark:bg-[radial-gradient(#333_1px,transparent_1px)] [background-size:24px_24px] opacity-50'></div>
+
+                <div className='relative z-10 max-w-7xl mx-auto'>
+                    {/* Breadcrumbs */}
+                    <div className='flex items-center gap-2 text-sm text-[#615d59] dark:text-[#a09e9a] mb-3 font-medium overflow-x-auto whitespace-nowrap pb-1 scrollbar-none'>
+                        <Link
+                            href={`/${slug}`}
+                            className='hover:text-[#101828] dark:hover:text-[#ededed] transition-colors'
+                        >
+                            Home
+                        </Link>
+                        <span>/</span>
+                        <Link
+                            href={`/${slug}/resources`}
+                            className='hover:text-[#101828] dark:hover:text-[#ededed] transition-colors'
+                        >
+                            Resources
+                        </Link>
+                        <span>/</span>
+                        <Link
+                            href={`/${slug}/resources/${courseCode}`}
+                            className='hover:text-[#101828] dark:hover:text-[#ededed] transition-colors uppercase'
+                        >
+                            {courseCode}
+                        </Link>
+                        <span>/</span>
+                        <Link
+                            href={`/${slug}/resources/${courseCode}/${branchCode}`}
+                            className='hover:text-[#101828] dark:hover:text-[#ededed] transition-colors uppercase'
+                        >
+                            {branchCode}
+                        </Link>
+                        <span>/</span>
+                        <span className='text-[#101828] dark:text-[#ededed] uppercase'>
+                            PYQs
+                        </span>
+                    </div>
+
+                    <div className='flex items-center justify-between'>
+                        <div>
+                            <h1 className='text-3xl font-bold text-[#101828] dark:text-[#ededed] tracking-tight flex items-center gap-3'>
+                                {subjectName}
+                                <span className='font-mono text-sm bg-white dark:bg-[#282828] text-[#0075de] dark:text-[#62aef0] px-2.5 py-1 rounded-lg border border-[#e6e6e6] dark:border-[#383838] shadow-sm'>
+                                    {subjectCode}
+                                </span>
+                            </h1>
+                            <p className='text-[#615d59] dark:text-[#a09e9a] mt-2 max-w-2xl text-sm'>
+                                Previous year question papers to help you prepare for exams.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <main className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
                 <SubjectPyqsClient
                     initialPyqs={pyqs}
                     subjectCode={subjectCode}

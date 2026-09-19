@@ -52,6 +52,7 @@ export default function SubjectPyqsClient({
     const handleAddPyq = () => {
         setAddPyq(!addPyq);
     };
+    
     const handleSubmit = async (formData: PyqFormData) => {
         try {
             const response = await fetch(api.pyq.createPyq, {
@@ -72,6 +73,8 @@ export default function SubjectPyqsClient({
                 throw new Error(data.message || 'Failed to create PYQ');
             }
             toast.success(data.message || 'PYQ created successfully!');
+            setAddPyq(false);
+            setForm(initialFormState);
         } catch (error) {
             console.error('Error creating PYQ:', error);
             throw error;
@@ -104,25 +107,25 @@ export default function SubjectPyqsClient({
     }, [initialPyqs, activeExamType]);
 
     return (
-        <div className='max-w-7xl mx-auto p-4 space-y-6'>
+        <div className='max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6'>
             {/* Header Section */}
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6'>
+            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 shadow-sm'>
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
                     <div>
-                        <h1 className='text-2xl font-fugaz capitalize font-bold text-gray-900 dark:text-white'>
-                            {subjectName} - Previous Year Questions
+                        <h1 className='text-2xl font-bold text-[#101828] dark:text-white'>
+                            {subjectName} - PYQs
                         </h1>
-                        <p className='text-gray-600 dark:text-gray-400 mt-1'>
+                        <p className='text-sm text-[#475467] dark:text-[#9ea3ae] mt-1'>
                             Browse and access previous year question papers
                         </p>
                     </div>
 
                     {/* Quick Actions */}
-                    <div className='flex flex-col sm:flex-row gap-2'>
+                    <div className='flex flex-col sm:flex-row gap-2.5'>
                         <Link
                             prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`}
-                            className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
+                            className='px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
                         >
                             <BookOpen className='w-4 h-4' />
                             Notes
@@ -130,14 +133,14 @@ export default function SubjectPyqsClient({
                         <Link
                             prefetch={false}
                             href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/videos/${subjectCode}`}
-                            className='px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
+                            className='px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
                         >
                             <Video className='w-4 h-4' />
                             Videos
                         </Link>
                         <button
                             onClick={handleAddPyq}
-                            className='px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2'
+                            className='px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
                         >
                             <Plus className='w-4 h-4' />
                             Add PYQ
@@ -146,26 +149,26 @@ export default function SubjectPyqsClient({
                 </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4'>
-                <div className='flex flex-wrap gap-2'>
+            {/* Filter Section */}
+            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 shadow-sm'>
+                <div className='flex flex-wrap gap-2.5'>
                     {examTypesWithAll.map((type) => (
                         <button
                             key={type}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm capitalize transition-colors flex items-center gap-2 ${
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 ${
                                 activeExamType === type
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    ? 'bg-[#101828] dark:bg-[#ededed] text-white dark:text-[#101828]'
+                                    : 'bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a09e9a] hover:bg-[#eae8e4] dark:hover:bg-[#333]'
                             }`}
                             onClick={() => setActiveExamType(type)}
                             aria-pressed={activeExamType === type}
                         >
-                            {type === 'all' ? 'All PYQs' : type}
+                            {type === 'all' ? 'All Papers' : type.toUpperCase()}
                             <span
-                                className={`px-2 py-0.5 text-xs rounded-full ${
+                                className={`px-2 py-0.5 text-xs rounded-full font-bold ${
                                     activeExamType === type
-                                        ? 'bg-blue-600 text-blue-100'
-                                        : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                                        ? 'bg-white/20 dark:bg-black/20 text-white dark:text-black'
+                                        : 'bg-[#e6e6e6] dark:bg-[#383838] text-[#475467] dark:text-[#a09e9a]'
                                 }`}
                             >
                                 {examTypeCounts[type] ?? 0}
@@ -176,112 +179,102 @@ export default function SubjectPyqsClient({
             </div>
 
             {/* Results Info */}
-            <div className='text-sm text-gray-600 dark:text-gray-400'>
-                Showing {filtered.length} paper
-                {filtered.length === 1 ? '' : 's'}
-                {activeExamType !== 'all' && ` for ${activeExamType}`}
+            <div className='text-xs sm:text-sm text-[#615d59] dark:text-[#9ea3ae] font-medium px-2'>
+                Showing {filtered.length} paper{filtered.length === 1 ? '' : 's'}
+                {activeExamType !== 'all' && ` for ${activeExamType.toUpperCase()}`}
             </div>
 
             {/* PYQ Grid or Empty State */}
             {filtered.length === 0 ? (
-                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12'>
-                    <div className='text-center'>
-                        <FileText className='w-16 h-16 text-gray-400 mx-auto mb-4' />
-                        <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
-                            {activeExamType === 'all'
-                                ? 'No PYQs available yet'
-                                : `No ${activeExamType} PYQs available yet`}
-                        </h3>
-                        <p className='text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto'>
-                            {activeExamType === 'all'
-                                ? 'Be the first to contribute by adding a previous year question paper.'
-                                : `Be the first to contribute by adding a ${activeExamType} question paper.`}
-                        </p>
-                        <button className='bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto transition-colors'>
-                            <Plus className='w-4 h-4' />
-                            Add First PYQ
-                        </button>
-                    </div>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-12 text-center shadow-sm max-w-2xl mx-auto w-full'>
+                    <FileText className='w-14 h-14 text-[#8c8883] dark:text-[#787672] mx-auto mb-4' />
+                    <h3 className='text-lg font-bold text-[#101828] dark:text-white mb-2'>
+                        {activeExamType === 'all'
+                            ? 'No PYQs available yet'
+                            : `No ${activeExamType.toUpperCase()} PYQs available`}
+                    </h3>
+                    <p className='text-sm text-[#475467] dark:text-[#9ea3ae] mb-6 max-w-md mx-auto'>
+                        {activeExamType === 'all'
+                            ? 'Be the first to contribute by adding a previous year question paper.'
+                            : `Be the first to contribute by adding a ${activeExamType.toUpperCase()} question paper.`}
+                    </p>
+                    <button
+                        onClick={handleAddPyq}
+                        className='bg-[#0075de] hover:bg-[#0062bd] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 mx-auto transition-all shadow-xs active:scale-[0.98]'
+                    >
+                        <Plus className='w-4 h-4' />
+                        Add First PYQ
+                    </button>
                 </div>
             ) : (
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                     {filtered.map((pyq) => (
-                        <div
+                        <Link
                             key={pyq._id}
-                            className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-md transition-shadow'
+                            prefetch={false}
+                            href={`/${collegeSlug}/pyqs/${pyq.slug}`}
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200 overflow-hidden cursor-pointer'
                         >
-                            {/* Card Header */}
-                            <div className='flex items-center gap-2 mb-4'>
-                                {pyq.owner?.profilePicture ? (
-                                    <Image
-                                        src={pyq.owner.profilePicture}
-                                        alt={`${pyq.owner?.username}'s Profile`}
-                                        className='w-8 h-8 rounded-full object-cover'
-                                        loading='lazy'
-                                        width={32}
-                                        height={32}
-                                    />
-                                ) : (
-                                    <div className='w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-white font-medium text-sm'>
-                                        {pyq.owner?.username?.charAt(0) || 'A'}
+                            <div className='p-4 flex flex-col h-full'>
+                                {/* Top Row: Year and Badges */}
+                                <div className='flex items-start justify-between mb-4'>
+                                    <div>
+                                        <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                            {pyq.year}
+                                        </h3>
+                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
+                                            {pyq.examType}
+                                        </p>
                                     </div>
-                                )}
-                                <div className='flex-1 min-w-0'>
-                                    <p className='text-sm font-medium text-gray-900 dark:text-white truncate'>
-                                        {pyq.owner?.username || 'Anonymous'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* PYQ Info */}
-                            <div className='mb-4'>
-                                <div className='flex items-center justify-between mb-2'>
-                                    <h3 className='text-xl font-bold text-gray-900 dark:text-white'>
-                                        {pyq.year}
-                                    </h3>
-                                    <div className='flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400'>
-                                        <Eye className='w-4 h-4' />
-                                        <span>{pyq.clickCounts}</span>
+                                    <div className='flex flex-col gap-1.5 items-end'>
+                                        {pyq.solved && (
+                                            <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#e6f4ea] dark:bg-[#1e3a29] text-[#137333] dark:text-[#34a853] border border-[#ceead6] dark:border-[#1e3a29] leading-none'>
+                                                <Award className='w-3 h-3 mr-1' />
+                                                SOLVED
+                                            </span>
+                                        )}
+                                        {pyq.isPaid && (
+                                            <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#fef7e0] dark:bg-[#3d3119] text-[#b06000] dark:text-[#fbbc04] border border-[#fce8b2] dark:border-[#3d3119] leading-none'>
+                                                <Award className='w-3 h-3 mr-1' />
+                                                PREMIUM
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
 
-                                <p className='text-sm text-gray-600 dark:text-gray-400 mb-3 capitalize'>
-                                    {pyq.examType}
-                                </p>
-
-                                {/* Badges */}
-                                <div className='flex flex-wrap gap-2 mb-4'>
-                                    {pyq.solved && (
-                                        <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'>
-                                            <Award className='w-3 h-3 mr-1' />
-                                            Solved
-                                        </span>
-                                    )}
-                                    {pyq.isPaid && (
-                                        <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200'>
-                                            <Award className='w-3 h-3 mr-1' />
-                                            Premium
-                                        </span>
-                                    )}
+                                {/* Author Info (Small) */}
+                                <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                    <div className='flex items-center gap-2'>
+                                        {pyq.owner?.profilePicture ? (
+                                            <Image
+                                                src={pyq.owner.profilePicture}
+                                                alt='Author'
+                                                className='w-6 h-6 rounded-full object-cover border border-[#e6e6e6] dark:border-[#2f2f2f]'
+                                                loading='lazy'
+                                                width={24}
+                                                height={24}
+                                            />
+                                        ) : (
+                                            <div className='w-6 h-6 rounded-full bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] flex items-center justify-center text-[#475467] dark:text-[#a09e9a] font-bold text-[10px]'>
+                                                {pyq.owner?.username?.charAt(0) || 'A'}
+                                            </div>
+                                        )}
+                                        <p className='text-xs font-medium text-[#615d59] dark:text-[#a09e9a] truncate max-w-[120px]'>
+                                            {pyq.owner?.username || 'Anonymous'}
+                                        </p>
+                                    </div>
+                                    <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
+                                        <Eye className='w-3.5 h-3.5' />
+                                        <span>{pyq.clickCounts} views</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* View Button */}
-                            <Link
-                                prefetch={false}
-                                href={`/${collegeSlug}/pyqs/${pyq.slug}`}
-                                className={`w-full block text-center py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                                    pyq.isPaid
-                                        ? 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white'
-                                        : 'bg-blue-500 hover:bg-blue-600 text-white'
-                                }`}
-                            >
-                                View Paper
-                            </Link>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
+            
+            
 
             <PyqFormModal
                 isOpen={addPyq}

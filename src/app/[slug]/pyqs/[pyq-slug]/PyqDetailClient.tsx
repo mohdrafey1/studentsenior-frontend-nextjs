@@ -186,6 +186,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         (state: RootState) => state.savedCollection,
     );
     const [isSaved, setIsSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleGoBack = () => {
         router.back();
@@ -284,11 +285,21 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     }, [pyq]);
 
     const handleSave = async () => {
-        await saveResource('pyq', pyq._id);
+        setIsSaving(true);
+        try {
+            await saveResource('pyq', pyq._id);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleUnsave = async () => {
-        await unsaveResource('pyq', pyq._id);
+        setIsSaving(true);
+        try {
+            await unsaveResource('pyq', pyq._id);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleRequestSolution = async () => {
@@ -359,20 +370,20 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     if (error) {
         return (
-            <div className='min-h-screen bg-sky-50 dark:bg-gray-900 flex justify-center items-center p-4'>
-                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-8 text-center max-w-md w-full'>
-                    <div className='w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
-                        <FileText className='w-10 h-10 text-red-500' />
+            <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 text-center max-w-md w-full'>
+                    <div className='w-20 h-20 bg-[#fef3f2] dark:bg-[#381a1a] rounded-full flex items-center justify-center mx-auto mb-6'>
+                        <FileText className='w-10 h-10 text-[#d92d20]' />
                     </div>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-3'>
+                    <h2 className='text-xl font-bold text-[#101828] dark:text-white mb-3'>
                         Failed to Load Document
                     </h2>
-                    <p className='text-gray-600 dark:text-gray-400 mb-6'>
+                    <p className='text-[#475467] dark:text-[#a09e9a] mb-6 text-sm'>
                         {error}
                     </p>
                     <button
                         onClick={handleGoBack}
-                        className='inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-xl hover:bg-sky-700 transition-colors duration-200'
+                        className='inline-flex items-center gap-2 px-6 py-2.5 bg-[#0075de] text-white font-semibold rounded-xl hover:bg-[#0062bd] transition-colors'
                     >
                         <ArrowLeft className='w-4 h-4' />
                         Go Back
@@ -384,13 +395,13 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     if (isLoading && !pdfDoc) {
         return (
-            <div className='min-h-screen bg-sky-50 dark:bg-gray-900 flex justify-center items-center p-4'>
+            <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
                 <div className='text-center'>
-                    <div className='w-20 h-20 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-6'></div>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
+                    <div className='w-14 h-14 border-3 border-[#0075de] border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
+                    <h2 className='text-xl font-bold text-[#101828] dark:text-white mb-2'>
                         Loading PYQ
                     </h2>
-                    <p className='text-gray-600 dark:text-gray-400'>
+                    <p className='text-[#475467] dark:text-[#a09e9a] text-sm'>
                         Please wait while we prepare your previous year question
                         paper...
                     </p>
@@ -428,88 +439,74 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     };
 
     return (
-        <div className='min-h-screen bg-sky-50 dark:bg-gray-900'>
-            <DetailPageNavbar path='pyqs' />
-            {/* Document Info Section */}
-            <div className='max-w-6xl mx-auto px-4 py-8'>
-                <div className='bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 sm:p-8 mb-6 sm:mb-8'>
-                    <div className='flex flex-col lg:flex-row lg:items-start gap-4 sm:gap-6'>
-                        {/* Main Info */}
-                        <div className='flex-1'>
-                            <h1 className='text-xl sm:text-3xl font-fugaz font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight'>
+        <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
+            <DetailPageNavbar path='pyqs' fullPath={`/${slug}/pyqs`} />
+            {/* Document Info Section (Compact Design) */}
+            <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-5 mb-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'>
+                    <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4'>
+                        {/* Title & Metadata Badges */}
+                        <div className='flex-1 min-w-0'>
+                            <h1 className='text-lg sm:text-xl font-bold text-[#101828] dark:text-white tracking-tight mb-2 sm:mb-2.5'>
                                 {pyq.subject.subjectName}
                             </h1>
-                            <p className='text-gray-600 dark:text-gray-400 text-base sm:text-lg mb-4 sm:mb-6'>
-                                {pyq.examType} - {pyq.year}
-                            </p>
+                            <div className='flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs'>
+                                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#eaf3fd] dark:bg-[#183153]/70 text-[#0075de] dark:text-[#62aef0] font-semibold border border-[#d2e4f9]/60 dark:border-[#224474]/60'>
+                                    <BookOpen className='w-3.5 h-3.5' />
+                                    <span>Sem {pyq.subject.semester}</span>
+                                </span>
+                                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a39e98] font-medium border border-[#e6e6e6] dark:border-[#383838]'>
+                                    <FileText className='w-3.5 h-3.5 text-[#1aae39]' />
+                                    <span>{pyq.examType}</span>
+                                </span>
+                                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a39e98] font-medium border border-[#e6e6e6] dark:border-[#383838]'>
+                                    <Calendar className='w-3.5 h-3.5 text-[#8a3fd6]' />
+                                    <span>{pyq.year}</span>
+                                </span>
+                                <span className='inline-flex items-center gap-1 px-2 py-0.5 text-[#8c8883] dark:text-[#787672] font-medium'>
+                                    <Eye className='w-3.5 h-3.5 text-[#e58b00]' />
+                                    <span>{pyq.clickCounts} views</span>
+                                </span>
+                            </div>
+                        </div>
 
-                            {/* Details Grid - Compact on Mobile */}
-                            <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6'>
-                                <div className='flex items-center gap-2 sm:gap-3'>
-                                    <div className='w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-md sm:rounded-lg flex items-center justify-center'>
-                                        <BookOpen className='w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400'>
-                                            Semester
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {pyq.subject.semester}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex items-center gap-2 sm:gap-3'>
-                                    <div className='w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 dark:bg-purple-900/30 rounded-md sm:rounded-lg flex items-center justify-center'>
-                                        <Calendar className='w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400'>
-                                            Year
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {pyq.year}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex items-center gap-2 sm:gap-3'>
-                                    <div className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 dark:bg-orange-900/30 rounded-md sm:rounded-lg flex items-center justify-center'>
-                                        <Eye className='w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400'>
-                                            Views
-                                        </p>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-white'>
-                                            {pyq.clickCounts}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex items-center gap-3'>
-                                    <button
-                                        onClick={() => {
-                                            if (isSaved) {
-                                                handleUnsave();
-                                            } else {
-                                                handleSave();
-                                            }
-                                        }}
-                                        className='inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-sky-200 text-sky-700 hover:bg-sky-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center'
-                                        title={
-                                            isSaved
-                                                ? 'Unsave this PYQ'
-                                                : 'Save this PYQ'
-                                        }
-                                        aria-label={
-                                            isSaved
-                                                ? 'Unsave this PYQ'
-                                                : 'Save this PYQ'
-                                        }
-                                    >
+                        {/* Save Button with Loading State */}
+                        <div className='flex items-center sm:self-center shrink-0'>
+                            <button
+                                onClick={() => {
+                                    if (isSaving) return;
+                                    if (isSaved) {
+                                        handleUnsave();
+                                    } else {
+                                        handleSave();
+                                    }
+                                }}
+                                disabled={isSaving}
+                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed ${
+                                    isSaved
+                                        ? 'bg-[#e6f4ea] dark:bg-[#1e3a29] border-[#ceead6] dark:border-[#2b5238] text-[#137333] dark:text-[#34a853]'
+                                        : 'bg-[#f6f5f4] dark:bg-[#282828] border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-[#ededed] hover:bg-[#eae8e4] dark:hover:bg-[#333]'
+                                }`}
+                                title={
+                                    isSaved
+                                        ? 'Unsave this PYQ'
+                                        : 'Save this PYQ'
+                                }
+                                aria-label={
+                                    isSaved
+                                        ? 'Unsave this PYQ'
+                                        : 'Save this PYQ'
+                                }
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 className='w-3.5 h-3.5 animate-spin text-[#0075de]' />
+                                        <span>Saving...</span>
+                                    </>
+                                ) : (
+                                    <>
                                         <svg
-                                            className='w-4 h-4 sm:w-5 sm:h-5'
+                                            className='w-3.5 h-3.5'
                                             fill={
                                                 isSaved
                                                     ? 'currentColor'
@@ -518,11 +515,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                             stroke='currentColor'
                                             viewBox='0 0 24 24'
                                             xmlns='http://www.w3.org/2000/svg'
-                                            style={{
-                                                color: isSaved
-                                                    ? '#0EA5E9'
-                                                    : '#0EA5E9',
-                                            }}
                                         >
                                             <path
                                                 strokeLinecap='round'
@@ -531,12 +523,10 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                 d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
                                             ></path>
                                         </svg>
-                                        <span className='inline'>
-                                            {isSaved ? 'Saved' : 'Save'}
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
+                                        <span>{isSaved ? 'Saved' : 'Save'}</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -720,8 +710,10 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                 {/* Related Resources Section */}
                 <div className='mt-12 mb-8'>
                     <div className='flex items-center gap-3 mb-6'>
-                        <BookOpen className='w-6 h-6 text-sky-600 dark:text-sky-400' />
-                        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                        <div className='w-10 h-10 rounded-xl bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center'>
+                             <BookOpen className='w-5 h-5' />
+                        </div>
+                        <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                             Explore More Resources
                         </h2>
                     </div>
@@ -731,16 +723,16 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${pyq.subject?.branch?.course?.courseCode}/${pyq.subject?.branch?.branchCode}/pyqs/${pyq.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl border-2 border-sky-200 dark:border-sky-700 p-6 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <FileStack className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[#eaf3fd] dark:group-hover:bg-[#183153] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <FileStack className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
                                 More PYQs
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
-                                View all {pyq.subject.subjectName} papers
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
+                                All {pyq.subject.subjectName} papers
                             </p>
                         </Link>
 
@@ -748,15 +740,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${pyq.subject?.branch?.course?.courseCode}/${pyq.subject?.branch?.branchCode}/notes/${pyq.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <NotebookPen className='w-6 h-6 text-emerald-600 dark:text-emerald-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <NotebookPen className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'>
                                 Notes
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Study notes for {pyq.subject.subjectName}
                             </p>
                         </Link>
@@ -765,15 +757,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/syllabus/${pyq.subject?.subjectName.toLowerCase().replace(/\s+/g, '-')}-${pyq.subject?.subjectCode.toLowerCase()}`}
-                            className='group bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 p-6 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-purple-500 dark:hover:border-purple-400 hover:shadow-[0_4px_12px_rgba(168,85,247,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <BookOpen className='w-6 h-6 text-purple-600 dark:text-purple-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-purple-50 dark:group-hover:bg-purple-500/10 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <BookOpen className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors'>
                                 Syllabus
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Syllabus of {pyq.subject.subjectName}
                             </p>
                         </Link>
@@ -782,15 +774,15 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         <Link
                             prefetch={false}
                             href={`/${slug}/resources/${pyq.subject?.branch?.course?.courseCode}/${pyq.subject?.branch?.branchCode}/videos/${pyq.subject?.subjectCode}`}
-                            className='group bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl border-2 border-orange-200 dark:border-orange-700 p-6 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300'
+                            className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-5 flex flex-col hover:border-orange-500 dark:hover:border-orange-400 hover:shadow-[0_4px_12px_rgba(249,115,22,0.1)] transition-all duration-200'
                         >
-                            <div className='flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300'>
-                                <Video className='w-6 h-6 text-orange-600 dark:text-orange-400' />
+                            <div className='w-10 h-10 rounded-lg bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-orange-50 dark:group-hover:bg-orange-500/10 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-all text-[#615d59] dark:text-[#a09e9a]'>
+                                <Video className='w-5 h-5' />
                             </div>
-                            <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                            <h3 className='font-bold text-[#101828] dark:text-white mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors'>
                                 Videos
                             </h3>
-                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            <p className='text-xs font-medium text-[#615d59] dark:text-[#9ea3ae] line-clamp-1'>
                                 Videos for {pyq.subject.subjectName}
                             </p>
                         </Link>
@@ -804,8 +796,10 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                         suggestedPyqs.sameSemester.length > 0) && (
                         <div className='mt-12 mb-8'>
                             <div className='flex items-center gap-3 mb-6'>
-                                <Sparkles className='w-6 h-6 text-sky-600 dark:text-sky-400' />
-                                <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                                <div className='w-10 h-10 rounded-xl bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center'>
+                                    <Sparkles className='w-5 h-5' />
+                                </div>
+                                <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                                     Suggested PYQs
                                 </h2>
                             </div>
@@ -813,41 +807,36 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             {/* Same Subject Same Exam Type */}
                             {suggestedPyqs.sameSubjectExamType.length > 0 && (
                                 <div className='mb-8'>
-                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                    <h3 className='text-lg font-bold text-[#101828] dark:text-white mb-4'>
                                         More {pyq.subject.subjectName} -{' '}
                                         {pyq.examType} Papers
                                     </h3>
-                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                                         {suggestedPyqs.sameSubjectExamType.map(
                                             (suggestedPyq) => (
                                                 <Link
-                                                    prefetch={false}
                                                     key={suggestedPyq._id}
+                                                    prefetch={false}
                                                     href={`/${slug}/pyqs/${suggestedPyq.slug}`}
-                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                    className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200 overflow-hidden cursor-pointer'
                                                 >
-                                                    <div className='flex items-center gap-2 mb-2'>
-                                                        <FileText className='w-5 h-5 text-sky-600 dark:text-sky-400' />
-                                                        <span className='text-xs font-medium px-2 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded-md'>
-                                                            {
-                                                                suggestedPyq.examType
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
-                                                        {
-                                                            suggestedPyq.subject
-                                                                .subjectName
-                                                        }
-                                                    </h4>
-                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
-                                                        {suggestedPyq.year}
-                                                    </p>
-                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
-                                                        <Eye className='w-3 h-3' />
-                                                        {
-                                                            suggestedPyq.clickCounts
-                                                        }
+                                                    <div className='p-4 flex flex-col h-full'>
+                                                        <div className='flex items-start justify-between mb-4'>
+                                                            <div>
+                                                                <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                                    {suggestedPyq.year}
+                                                                </h3>
+                                                                <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
+                                                                    {suggestedPyq.examType}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                                            <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
+                                                                <Eye className='w-3.5 h-3.5' />
+                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </Link>
                                             ),
@@ -859,40 +848,35 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             {/* Same Subject (All Exam Types) */}
                             {suggestedPyqs.sameSubject.length > 0 && (
                                 <div className='mb-8'>
-                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                    <h3 className='text-lg font-bold text-[#101828] dark:text-white mb-4'>
                                         More {pyq.subject.subjectName} Papers
                                     </h3>
-                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                                         {suggestedPyqs.sameSubject.map(
                                             (suggestedPyq: IPyq) => (
                                                 <Link
-                                                    prefetch={false}
                                                     key={suggestedPyq._id}
+                                                    prefetch={false}
                                                     href={`/${slug}/pyqs/${suggestedPyq.slug}`}
-                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                    className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200 overflow-hidden cursor-pointer'
                                                 >
-                                                    <div className='flex items-center gap-2 mb-2'>
-                                                        <FileText className='w-5 h-5 text-purple-600 dark:text-purple-400' />
-                                                        <span className='text-xs font-medium px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md'>
-                                                            {
-                                                                suggestedPyq.examType
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
-                                                        {
-                                                            suggestedPyq.subject
-                                                                .subjectName
-                                                        }
-                                                    </h4>
-                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
-                                                        {suggestedPyq.year}
-                                                    </p>
-                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
-                                                        <Eye className='w-3 h-3' />
-                                                        {
-                                                            suggestedPyq.clickCounts
-                                                        }
+                                                    <div className='p-4 flex flex-col h-full'>
+                                                        <div className='flex items-start justify-between mb-4'>
+                                                            <div>
+                                                                <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                                    {suggestedPyq.year}
+                                                                </h3>
+                                                                <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
+                                                                    {suggestedPyq.examType}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                                            <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
+                                                                <Eye className='w-3.5 h-3.5' />
+                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </Link>
                                             ),
@@ -904,40 +888,40 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                             {/* Same Semester (All Subjects) */}
                             {suggestedPyqs.sameSemester.length > 0 && (
                                 <div className='mb-8'>
-                                    <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+                                    <h3 className='text-lg font-bold text-[#101828] dark:text-white mb-4'>
                                         Semester {pyq.subject.semester} Papers
                                     </h3>
-                                    <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                                         {suggestedPyqs.sameSemester.map(
                                             (suggestedPyq: IPyq) => (
                                                 <Link
-                                                    prefetch={false}
                                                     key={suggestedPyq._id}
+                                                    prefetch={false}
                                                     href={`/${slug}/pyqs/${suggestedPyq.slug}`}
-                                                    className='group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-sky-300 dark:hover:border-sky-600 transition-all duration-300'
+                                                    className='group relative bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col hover:border-[#0075de] dark:hover:border-[#62aef0] hover:shadow-[0_4px_12px_rgba(0,117,222,0.1)] transition-all duration-200 overflow-hidden cursor-pointer'
                                                 >
-                                                    <div className='flex items-center gap-2 mb-2'>
-                                                        <FileText className='w-5 h-5 text-blue-600 dark:text-blue-400' />
-                                                        <span className='text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md'>
-                                                            {
-                                                                suggestedPyq.examType
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <h4 className='font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 text-sm'>
-                                                        {
-                                                            suggestedPyq.subject
-                                                                .subjectName
-                                                        }
-                                                    </h4>
-                                                    <p className='text-xs text-gray-500 dark:text-gray-400'>
-                                                        {suggestedPyq.year}
-                                                    </p>
-                                                    <div className='flex items-center gap-1 mt-2 text-xs text-gray-400'>
-                                                        <Eye className='w-3 h-3' />
-                                                        {
-                                                            suggestedPyq.clickCounts
-                                                        }
+                                                    <div className='p-4 flex flex-col h-full'>
+                                                        <div className='flex items-start justify-between mb-4'>
+                                                            <div>
+                                                                <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                                    {suggestedPyq.year}
+                                                                </h3>
+                                                                <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
+                                                                    {suggestedPyq.examType}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mb-3'>
+                                                            <h4 className='font-semibold text-[#101828] dark:text-white text-sm line-clamp-2'>
+                                                                {suggestedPyq.subject.subjectName}
+                                                            </h4>
+                                                        </div>
+                                                        <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                                            <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
+                                                                <Eye className='w-3.5 h-3.5' />
+                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </Link>
                                             ),
