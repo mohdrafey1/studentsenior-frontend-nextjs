@@ -1,12 +1,14 @@
+import React from 'react';
 import { formatDate } from '@/utils/formatting';
 import { IOpportunity } from '@/utils/interface';
 import {
     Mail,
     Phone,
     Link as LinkIcon,
-    Edit2,
+    Pencil,
     Trash2,
-    ExternalLink,
+    ArrowRight,
+    Briefcase,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,141 +24,128 @@ export const OpportunityCard = ({
     handleDeleteRequest: (opportunityId: string) => void;
     ownerId: string;
     collegeName: string;
-}) => (
-    <article
-        className='group relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 hover:border-sky-300/60 dark:hover:border-sky-600/60 shadow-sm hover:shadow-2xl transition-all duration-500 p-0 flex flex-col h-full overflow-hidden backdrop-blur-sm'
-        aria-label={opportunity.name}
-    >
-        {/* Animated Background Gradient */}
-        <div className='absolute inset-0 bg-gradient-to-br from-sky-500/5 via-cyan-500/5 to-blue-500/5 dark:from-sky-400/10 dark:via-cyan-400/10 dark:to-blue-400/10 opacity-0 group-hover:opacity-100 transition-all duration-700' />
+}) => {
+    const isOwner = ownerId === opportunity.owner?._id;
+    const detailUrl = `/${collegeName}/opportunities/${opportunity.slug}`;
 
-        {/* Floating Orb Effect */}
-        <div className='absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-sky-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110' />
-
-        {/* Header Section */}
-        <div className='relative p-6'>
-            <div className='flex items-start justify-between'>
-                <Link
-                    prefetch={false}
-                    href={`/${collegeName}/opportunities/${opportunity.slug}`}
-                    className='block group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-all duration-300 flex-1 mr-3'
-                >
-                    <h2 className='text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-sky-600 group-hover:to-cyan-600 dark:group-hover:from-sky-400 dark:group-hover:to-cyan-400 transition-all duration-300'>
-                        {opportunity.name}
-                    </h2>
-                </Link>
-                {ownerId === opportunity.owner?._id && (
-                    <div className='flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300'>
-                        <button
-                            onClick={() => openModal(opportunity)}
-                            className='p-2 rounded-full bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md'
-                            aria-label={`Edit opportunity: ${opportunity.name}`}
-                        >
-                            <Edit2 className='w-4 h-4' />
-                        </button>
-                        <button
-                            onClick={() => handleDeleteRequest(opportunity._id)}
-                            className='p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md'
-                            aria-label={`Delete opportunity: ${opportunity.name}`}
-                        >
-                            <Trash2 className='w-4 h-4' />
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            <p className='text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed'>
-                {opportunity.description}
-            </p>
-        </div>
-
-        {/* Contact Information Section */}
-        <div className='relative px-6 flex-grow'>
-            <div className='space-y-3'>
-                {opportunity.email && (
-                    <a
-                        href={`mailto:${opportunity.email}`}
-                        className='flex items-center group/contact p-3 rounded-xl bg-gray-50/50 hover:bg-sky-50 dark:bg-gray-800/50 dark:hover:bg-sky-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
+    return (
+        <article
+            className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#d0ceca] dark:hover:border-[#383838] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition-all duration-200 p-5 sm:p-6 flex flex-col justify-between h-full group'
+            aria-label={opportunity.name}
+        >
+            {/* Top Content */}
+            <div>
+                {/* Header with Title and Owner Controls */}
+                <div className='flex items-start justify-between gap-3 mb-2.5'>
+                    <Link
+                        prefetch={false}
+                        href={detailUrl}
+                        className='flex-1 block group/link'
                     >
-                        <div className='p-2 rounded-lg bg-sky-100 dark:bg-sky-900/40 group-hover/contact:bg-sky-200 dark:group-hover/contact:bg-sky-800/60 transition-colors duration-200'>
-                            <Mail className='w-4 h-4 text-sky-600 dark:text-sky-400' />
+                        <div className='inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold text-[#0075de] dark:text-[#62aef0] bg-[#eaf3fd] dark:bg-[#183153]/70 border border-[#d2e4f9]/60 dark:border-[#224474]/60 rounded-md mb-2'>
+                            <Briefcase className='w-3 h-3' />
+                            <span>Opportunity</span>
                         </div>
-                        <span className='ml-3 text-gray-700 dark:text-gray-300 group-hover/contact:text-sky-700 dark:group-hover/contact:text-sky-300 transition-colors duration-200 truncate font-medium'>
-                            {opportunity.email}
-                        </span>
-                    </a>
-                )}
-                {opportunity.whatsapp && (
-                    <a
-                        href={`https://wa.me/${opportunity.whatsapp}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center group/contact p-3 rounded-xl bg-gray-50/50 hover:bg-green-50 dark:bg-gray-800/50 dark:hover:bg-green-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
-                    >
-                        <div className='p-2 rounded-lg bg-green-100 dark:bg-green-900/40 group-hover/contact:bg-green-200 dark:group-hover/contact:bg-green-800/60 transition-colors duration-200'>
-                            <Phone className='w-4 h-4 text-green-600 dark:text-green-400' />
-                        </div>
-                        <span className='ml-3 text-gray-700 dark:text-gray-300 group-hover/contact:text-green-700 dark:group-hover/contact:text-green-300 transition-colors duration-200 truncate font-medium'>
-                            {opportunity.whatsapp}
-                        </span>
-                    </a>
-                )}
-                {opportunity.link && (
-                    <a
-                        href={opportunity.link}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center group/contact p-3 rounded-xl bg-gray-50/50 hover:bg-blue-50 dark:bg-gray-800/50 dark:hover:bg-blue-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-md'
-                    >
-                        <div className='p-2 rounded-lg bg-blue-100 dark:bg-blue-900/40 group-hover/contact:bg-blue-200 dark:group-hover/contact:bg-blue-800/60 transition-colors duration-200'>
-                            <LinkIcon className='w-4 h-4 text-blue-600 dark:text-blue-400' />
-                        </div>
-                        <span className='ml-3 text-gray-700 dark:text-gray-300 group-hover/contact:text-blue-700 dark:group-hover/contact:text-blue-300 transition-colors duration-200 truncate font-medium'>
-                            View External Link
-                        </span>
-                    </a>
-                )}
-            </div>
-        </div>
+                        <h2 className='text-base sm:text-lg font-bold text-[#101828] dark:text-white group-hover/link:text-[#0075de] dark:group-hover/link:text-[#62aef0] transition-colors line-clamp-2'>
+                            {opportunity.name}
+                        </h2>
+                    </Link>
 
-        {/* Footer Section */}
-        <div className='relative mt-auto'>
-            {/* Gradient Separator */}
-            <div className='h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent mb-4' />
-
-            <div className='px-6 pb-6'>
-                <div className='flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4'>
-                    <div className='flex items-center space-x-2'>
-                        <div className='w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white text-xs font-semibold'>
-                            {(opportunity.owner?.username ||
-                                'A')[0].toUpperCase()}
+                    {isOwner && (
+                        <div className='flex items-center gap-1 shrink-0'>
+                            <button
+                                onClick={() => openModal(opportunity)}
+                                className='p-2 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#f6f5f4] dark:bg-[#282828] hover:bg-[#eae8e4] dark:hover:bg-[#333] text-[#615d59] dark:text-[#a09e9a] hover:text-[#101828] dark:hover:text-white transition-all shadow-xs active:scale-[0.95]'
+                                title='Edit opportunity'
+                                aria-label={`Edit opportunity: ${opportunity.name}`}
+                            >
+                                <Pencil className='w-3.5 h-3.5' />
+                            </button>
+                            <button
+                                onClick={() => handleDeleteRequest(opportunity._id)}
+                                className='p-2 rounded-lg border border-[#fecdd3] dark:border-[#5c2328] bg-[#fff1f2] dark:bg-[#3b1118] hover:bg-[#ffe4e6] dark:hover:bg-[#4c0519] text-[#e11d48] dark:text-[#fb7185] transition-all shadow-xs active:scale-[0.95]'
+                                title='Delete opportunity'
+                                aria-label={`Delete opportunity: ${opportunity.name}`}
+                            >
+                                <Trash2 className='w-3.5 h-3.5' />
+                            </button>
                         </div>
-                        <span className='text-xs text-gray-500 dark:text-gray-400'>
-                            Posted By
-                        </span>
-                        <span className='font-medium'>
-                            {opportunity.owner?.username || 'Anonymous'}
-                        </span>
-                    </div>
-                    <time className='text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full'>
-                        {formatDate(opportunity.createdAt)}
-                    </time>
+                    )}
                 </div>
 
-                <Link
-                    prefetch={false}
-                    href={`/${collegeName}/opportunities/${opportunity.slug}`}
-                    className='group/cta relative inline-flex items-center justify-center w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/25 hover:scale-[1.02] overflow-hidden'
-                >
-                    {/* Button Background Animation */}
-                    <div className='absolute inset-0 bg-gradient-to-r from-cyan-500 to-sky-500 opacity-0 group-hover/cta:opacity-100 transition-opacity duration-300' />
+                {/* Description */}
+                <p className='text-xs sm:text-sm text-[#475467] dark:text-[#a09e9a] line-clamp-3 leading-relaxed mb-4'>
+                    {opportunity.description}
+                </p>
 
-                    <span className='relative flex items-center'>
-                        View Details
-                        <ExternalLink className='w-4 h-4 ml-2 group-hover/cta:translate-x-1 transition-transform duration-300' />
-                    </span>
-                </Link>
+                {/* Contact Chips */}
+                <div className='flex flex-wrap gap-1.5 mb-4'>
+                    {opportunity.email && (
+                        <a
+                            href={`mailto:${opportunity.email}`}
+                            className='inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a09e9a] hover:text-[#0075de] dark:hover:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] transition-colors truncate max-w-[200px]'
+                            title={opportunity.email}
+                        >
+                            <Mail className='w-3 h-3 text-[#0075de]' />
+                            <span className='truncate'>{opportunity.email}</span>
+                        </a>
+                    )}
+                    {opportunity.whatsapp && (
+                        <a
+                            href={`https://wa.me/${opportunity.whatsapp}`}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-md bg-[#eaf7ec] dark:bg-[#163821] text-[#1aae39] dark:text-[#4ade80] hover:bg-[#d8f2dc] dark:hover:bg-[#1c472a] border border-[#d2f0d9] dark:border-[#205130] transition-colors'
+                            title='Chat on WhatsApp'
+                        >
+                            <Phone className='w-3 h-3' />
+                            <span>WhatsApp</span>
+                        </a>
+                    )}
+                    {opportunity.link && (
+                        <a
+                            href={opportunity.link}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a09e9a] hover:text-[#0075de] dark:hover:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] transition-colors'
+                            title='External Link'
+                        >
+                            <LinkIcon className='w-3 h-3 text-[#8a3fd6]' />
+                            <span>Link</span>
+                        </a>
+                    )}
+                </div>
             </div>
-        </div>
-    </article>
-);
+
+            {/* Bottom Footer */}
+            <div className='border-t border-[#f0eee9] dark:border-[#2a2a2a] pt-4 mt-auto'>
+                <div className='flex items-center justify-between gap-2'>
+                    {/* Poster Info */}
+                    <div className='flex items-center gap-2 min-w-0'>
+                        <div className='w-7 h-7 rounded-lg bg-[#eaf3fd] dark:bg-[#183153] border border-[#d2e4f9] dark:border-[#224474] text-[#0075de] dark:text-[#62aef0] text-xs font-bold flex items-center justify-center shrink-0'>
+                            {(opportunity.owner?.username || 'A')[0].toUpperCase()}
+                        </div>
+                        <div className='min-w-0'>
+                            <p className='text-xs font-semibold text-[#101828] dark:text-[#ededed] truncate'>
+                                {opportunity.owner?.username || 'Anonymous'}
+                            </p>
+                            <p className='text-[11px] text-[#8c8883] dark:text-[#787672]'>
+                                {formatDate(opportunity.createdAt)}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* View Details Link */}
+                    <Link
+                        prefetch={false}
+                        href={detailUrl}
+                        className='inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#f6f5f4] dark:bg-[#282828] hover:bg-[#eae8e4] dark:hover:bg-[#333] text-[#101828] dark:text-[#ededed] border border-[#e6e6e6] dark:border-[#383838] rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-[0.98] shrink-0 group/btn'
+                    >
+                        <span>Details</span>
+                        <ArrowRight className='w-3.5 h-3.5 text-[#8c8883] dark:text-[#787672] group-hover/btn:translate-x-0.5 transition-transform' />
+                    </Link>
+                </div>
+            </div>
+        </article>
+    );
+};

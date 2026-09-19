@@ -1,7 +1,6 @@
 'use client';
-
-import React from 'react';
-import { X } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Briefcase, Loader2 } from 'lucide-react';
 import { IOpportunity } from '@/utils/interface';
 
 interface OpportunityFormModalProps {
@@ -35,6 +34,17 @@ const OpportunityFormModal: React.FC<OpportunityFormModalProps> = ({
     setForm,
     editOpportunity,
 }) => {
+    // Close on Escape key press
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && open && !loading) {
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [open, loading, onClose]);
+
     if (!open) return null;
 
     const handleChange = (
@@ -44,140 +54,178 @@ const OpportunityFormModal: React.FC<OpportunityFormModalProps> = ({
     };
 
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gray-800 bg-opacity-50'>
-            <div className='bg-white dark:bg-gray-800 rounded-xl p-8 w-full max-w-lg shadow-xl relative'>
-                <button
-                    onClick={onClose}
-                    className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 transition-colors'
-                    aria-label='Close modal'
-                >
-                    <X className='w-6 h-6' />
-                </button>
+        <div
+            className='fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200'
+            onClick={() => {
+                if (!loading) onClose();
+            }}
+        >
+            <div
+                className='bg-white dark:bg-[#1f1f1f] text-[#101828] dark:text-[#ededed] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-150'
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Modal Header */}
+                <div className='flex items-start justify-between p-5 sm:p-6 border-b border-[#f0eee6] dark:border-[#2a2a2a] bg-[#faf9f8] dark:bg-[#242424]'>
+                    <div className='flex items-center gap-3'>
+                        <div className='w-9 h-9 rounded-xl bg-[#eaf3fd] dark:bg-[#183153]/70 border border-[#d2e4f9]/60 dark:border-[#224474]/60 flex items-center justify-center text-[#0075de] dark:text-[#62aef0] shrink-0'>
+                            <Briefcase className='w-5 h-5' />
+                        </div>
+                        <div>
+                            <h2 className='text-base sm:text-lg font-bold text-[#101828] dark:text-white leading-tight'>
+                                {editOpportunity
+                                    ? 'Edit Opportunity'
+                                    : 'Post Career Opportunity'}
+                            </h2>
+                            <p className='text-xs text-[#615d59] dark:text-[#a39e98] mt-0.5'>
+                                Share job or internship openings with fellow students
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        disabled={loading}
+                        aria-label='Close modal'
+                        className='p-1.5 rounded-lg text-[#8c8883] dark:text-[#787672] hover:text-[#101828] dark:hover:text-white hover:bg-[#ededeb] dark:hover:bg-[#333333] transition-colors disabled:opacity-50'
+                    >
+                        <X className='w-4 h-4' />
+                    </button>
+                </div>
 
-                <h2 className='text-2xl font-bold mb-6 text-gray-900 dark:text-white'>
-                    {editOpportunity
-                        ? 'Edit Opportunity'
-                        : 'Post New Opportunity'}
-                </h2>
+                {/* Modal Form */}
+                <form onSubmit={onSubmit}>
+                    <div className='p-5 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto'>
+                        {/* Title */}
+                        <div>
+                            <label
+                                htmlFor='opp-name'
+                                className='block text-xs font-semibold text-[#615d59] dark:text-[#a39e98] uppercase tracking-wider mb-1.5'
+                            >
+                                Opportunity Title <span className='text-[#e11d48]'>*</span>
+                            </label>
+                            <input
+                                type='text'
+                                id='opp-name'
+                                name='name'
+                                value={form.name}
+                                onChange={handleChange}
+                                placeholder='e.g., Software Engineering Intern, Product Design'
+                                className='w-full p-2.5 sm:p-3 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965] rounded-xl focus:outline-none focus:border-[#0075de] dark:focus:border-[#62aef0] focus:ring-2 focus:ring-[#0075de]/15 transition-all'
+                                required
+                                minLength={2}
+                                maxLength={200}
+                            />
+                        </div>
 
-                <form onSubmit={onSubmit} className='space-y-4'>
-                    <div>
-                        <label
-                            htmlFor='name'
-                            className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-                        >
-                            Title
-                        </label>
-                        <input
-                            type='text'
-                            id='name'
-                            name='name'
-                            value={form.name}
-                            onChange={handleChange}
-                            placeholder='e.g., Software Developer Internship'
-                            className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            required
-                            minLength={2}
-                            maxLength={200}
-                        />
+                        {/* Description */}
+                        <div>
+                            <label
+                                htmlFor='opp-description'
+                                className='block text-xs font-semibold text-[#615d59] dark:text-[#a39e98] uppercase tracking-wider mb-1.5'
+                            >
+                                Description & Requirements <span className='text-[#e11d48]'>*</span>
+                            </label>
+                            <textarea
+                                id='opp-description'
+                                name='description'
+                                value={form.description}
+                                onChange={handleChange}
+                                placeholder='Describe the role, responsibilities, eligibility, stipend, and how to apply...'
+                                rows={4}
+                                className='w-full p-2.5 sm:p-3 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965] rounded-xl focus:outline-none focus:border-[#0075de] dark:focus:border-[#62aef0] focus:ring-2 focus:ring-[#0075de]/15 transition-all resize-none'
+                                required
+                                minLength={10}
+                                maxLength={2000}
+                            />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                            <label
+                                htmlFor='opp-email'
+                                className='block text-xs font-semibold text-[#615d59] dark:text-[#a39e98] uppercase tracking-wider mb-1.5'
+                            >
+                                Contact Email <span className='text-[#e11d48]'>*</span>
+                            </label>
+                            <input
+                                type='email'
+                                id='opp-email'
+                                name='email'
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder='hr@company.com or your email'
+                                className='w-full p-2.5 sm:p-3 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965] rounded-xl focus:outline-none focus:border-[#0075de] dark:focus:border-[#62aef0] focus:ring-2 focus:ring-[#0075de]/15 transition-all'
+                                required
+                            />
+                        </div>
+
+                        {/* Two Columns: WhatsApp & Link */}
+                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                            <div>
+                                <label
+                                    htmlFor='opp-whatsapp'
+                                    className='block text-xs font-semibold text-[#615d59] dark:text-[#a39e98] uppercase tracking-wider mb-1.5'
+                                >
+                                    WhatsApp Number (Optional)
+                                </label>
+                                <input
+                                    type='tel'
+                                    id='opp-whatsapp'
+                                    name='whatsapp'
+                                    value={form.whatsapp}
+                                    onChange={handleChange}
+                                    placeholder='10-digit number'
+                                    pattern='[0-9]{10}'
+                                    className='w-full p-2.5 sm:p-3 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965] rounded-xl focus:outline-none focus:border-[#0075de] dark:focus:border-[#62aef0] focus:ring-2 focus:ring-[#0075de]/15 transition-all'
+                                />
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor='opp-link'
+                                    className='block text-xs font-semibold text-[#615d59] dark:text-[#a39e98] uppercase tracking-wider mb-1.5'
+                                >
+                                    Apply Link (Optional)
+                                </label>
+                                <input
+                                    type='url'
+                                    id='opp-link'
+                                    name='link'
+                                    value={form.link}
+                                    onChange={handleChange}
+                                    placeholder='https://...'
+                                    className='w-full p-2.5 sm:p-3 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965] rounded-xl focus:outline-none focus:border-[#0075de] dark:focus:border-[#62aef0] focus:ring-2 focus:ring-[#0075de]/15 transition-all'
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label
-                            htmlFor='description'
-                            className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-                        >
-                            Description
-                        </label>
-                        <textarea
-                            id='description'
-                            name='description'
-                            value={form.description}
-                            onChange={handleChange}
-                            placeholder='Describe the opportunity, requirements, and how to apply...'
-                            rows={4}
-                            className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            required
-                            minLength={10}
-                            maxLength={1000}
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor='email'
-                            className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-                        >
-                            Contact Email
-                        </label>
-                        <input
-                            type='email'
-                            id='email'
-                            name='email'
-                            value={form.email}
-                            onChange={handleChange}
-                            placeholder='contact@example.com'
-                            className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor='whatsapp'
-                            className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-                        >
-                            WhatsApp Number (10 digits)
-                        </label>
-                        <input
-                            type='tel'
-                            id='whatsapp'
-                            name='whatsapp'
-                            value={form.whatsapp}
-                            onChange={handleChange}
-                            placeholder='9876543210'
-                            pattern='[0-9]{10}'
-                            className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor='link'
-                            className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-                        >
-                            External Link (Optional)
-                        </label>
-                        <input
-                            type='url'
-                            id='link'
-                            name='link'
-                            value={form.link}
-                            onChange={handleChange}
-                            placeholder='https://example.com/apply'
-                            className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                        />
-                    </div>
-
-                    <div className='flex justify-end gap-4 mt-6'>
+                    {/* Modal Footer */}
+                    <div className='flex items-center justify-end gap-2.5 p-4 sm:p-5 border-t border-[#f0eee6] dark:border-[#2a2a2a] bg-[#faf9f8] dark:bg-[#242424]'>
                         <button
                             type='button'
                             onClick={onClose}
-                            className='px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
                             disabled={loading}
+                            className='px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#615d59] dark:text-[#a39e98] hover:text-[#101828] dark:hover:text-white bg-white dark:bg-[#202020] hover:bg-[#f0eee6] dark:hover:bg-[#2b2b2b] border border-[#e6e6e6] dark:border-[#2f2f2f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                         >
                             Cancel
                         </button>
                         <button
                             type='submit'
                             disabled={loading}
-                            className='px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed dark:bg-sky-500 dark:hover:bg-sky-600'
+                            className='inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-[#0075de] hover:bg-[#0062bd] disabled:opacity-50 shadow-xs active:scale-[0.98] transition-all disabled:cursor-not-allowed'
                         >
-                            {loading
-                                ? 'Saving...'
-                                : editOpportunity
-                                  ? 'Update Opportunity'
-                                  : 'Post Opportunity'}
+                            {loading ? (
+                                <>
+                                    <Loader2 className='w-3.5 h-3.5 animate-spin' />
+                                    <span>Saving...</span>
+                                </>
+                            ) : (
+                                <span>
+                                    {editOpportunity
+                                        ? 'Update Opportunity'
+                                        : 'Post Opportunity'}
+                                </span>
+                            )}
                         </button>
                     </div>
                 </form>

@@ -17,7 +17,7 @@ import PaginationComponent from '@/components/Common/Pagination';
 import { OpportunityCard } from './OpportunityCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { PlusIcon, SearchIcon } from 'lucide-react';
+import { PlusIcon, SearchIcon, Briefcase, X, Loader2 } from 'lucide-react';
 import OpportunityFormModal from './OpportunityFormModal';
 
 interface OpportunityClientProps {
@@ -210,7 +210,7 @@ const OpportunityClient = ({
                         (editOpportunity
                             ? 'Opportunity updated!'
                             : 'Opportunity added!'),
-                    { duration: 10000 },
+                    { duration: 5000 },
                 );
 
                 closeModal();
@@ -271,42 +271,66 @@ const OpportunityClient = ({
     );
 
     return (
-        <>
-            <section className='mb-8' aria-label='Search and Add Opportunity'>
-                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                    <div className='flex gap-3 w-full sm:w-2/3 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'>
-                        <SearchIcon className='w-5 h-5 text-gray-400' />
-                        <input
-                            type='text'
-                            placeholder='Search opportunities...'
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            className='w-full bg-transparent outline-none'
-                            aria-label='Search opportunities'
-                        />
+        <div className='space-y-6'>
+            {/* Search and Action Bar */}
+            <section aria-label='Search and Add Opportunity'>
+                <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3'>
+                    {/* Search Bar */}
+                    <div className='relative flex-1'>
+                        <div className='flex items-center gap-2.5 w-full px-3.5 py-2.5 bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-xl shadow-xs focus-within:ring-2 focus-within:ring-[#0075de]/15 focus-within:border-[#0075de] transition-all'>
+                            <SearchIcon className='w-4 h-4 text-[#8c8883] dark:text-[#787672] shrink-0' />
+                            <input
+                                type='text'
+                                placeholder='Search opportunities by title or description...'
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                className='w-full bg-transparent outline-none text-xs sm:text-sm text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965]'
+                                aria-label='Search opportunities'
+                            />
+                            {searchInput && (
+                                <button
+                                    onClick={() => setSearchInput('')}
+                                    className='p-1 text-[#8c8883] hover:text-[#101828] dark:hover:text-white rounded-md'
+                                    aria-label='Clear search'
+                                >
+                                    <X className='w-3.5 h-3.5' />
+                                </button>
+                            )}
+                        </div>
                     </div>
+
+                    {/* Post Opportunity Button */}
                     <button
                         onClick={() => openModal()}
-                        className='flex gap-3 w-full sm:w-1/3 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
+                        className='inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98] shrink-0'
+                        aria-label='Post Career Opportunity'
                     >
-                        <PlusIcon className='w-5 h-5' />
+                        <PlusIcon className='w-4 h-4' />
                         <span>Post Opportunity</span>
                     </button>
                 </div>
             </section>
 
+            {/* Opportunities List Section */}
             <section aria-label='Opportunities List'>
                 {loading ? (
-                    <div className='flex justify-center min-h-screen py-12'>
-                        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
+                    <div className='flex flex-col items-center justify-center py-20 min-h-[300px]'>
+                        <Loader2 className='w-10 h-10 border-3 text-[#0075de] animate-spin mb-3' />
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a]'>
+                            Loading opportunities...
+                        </p>
                     </div>
                 ) : opportunities.length > 0 ? (
                     <>
-                        <p className='text-gray-600 dark:text-gray-300 mb-4 text-sm'>
-                            Showing {opportunities.length} of{' '}
-                            {pagination?.totalItems ?? 0} opportunities
-                        </p>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                        <div className='flex items-center justify-between mb-4'>
+                            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] font-medium'>
+                                Showing {opportunities.length} of{' '}
+                                {pagination?.totalItems ?? opportunities.length}{' '}
+                                opportunities
+                            </p>
+                        </div>
+
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
                             {opportunities.map((opportunity) => (
                                 <OpportunityCard
                                     key={opportunity._id}
@@ -318,33 +342,45 @@ const OpportunityClient = ({
                                 />
                             ))}
                         </div>
-                        <PaginationComponent
-                            currentPage={page}
-                            totalPages={pagination?.totalPages || 1}
-                            onPageChange={goToPage}
-                        />
+
+                        {/* Pagination Controls */}
+                        {pagination && pagination.totalPages > 1 && (
+                            <div className='mt-8'>
+                                <PaginationComponent
+                                    currentPage={page}
+                                    totalPages={pagination.totalPages}
+                                    onPageChange={goToPage}
+                                />
+                            </div>
+                        )}
                     </>
                 ) : (
-                    <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
-                        <i className='fas fa-briefcase text-5xl text-gray-400 mb-4'></i>
-                        <h3 className='text-xl font-medium text-gray-700 dark:text-gray-200 mb-2'>
+                    /* Notion-Styled Empty State */
+                    <div className='text-center py-16 sm:py-20 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 max-w-lg mx-auto shadow-xs'>
+                        <div className='w-14 h-14 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#8c8883] dark:text-[#787672]'>
+                            <Briefcase className='w-7 h-7' />
+                        </div>
+                        <h3 className='text-base sm:text-lg font-bold text-[#101828] dark:text-white mb-1.5'>
                             No Opportunities Found
                         </h3>
-                        <p className='text-gray-500 dark:text-gray-400 mb-6'>
-                            Be the first to post an opportunity for{' '}
-                            {capitalizeWords(collegeName)}
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-6 max-w-sm mx-auto'>
+                            {searchTerm
+                                ? 'No opportunities match your search criteria. Try a different query.'
+                                : `Be the first to post an internship or career opportunity for ${capitalizeWords(collegeName)}.`}
                         </p>
                         <button
                             onClick={() => openModal()}
-                            className='px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600'
+                            className='inline-flex items-center gap-2 px-4 py-2.5 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
                             aria-label='Post New Opportunity'
                         >
-                            Post New Opportunity
+                            <PlusIcon className='w-4 h-4' />
+                            <span>Post Opportunity</span>
                         </button>
                     </div>
                 )}
             </section>
 
+            {/* Modals */}
             <OpportunityFormModal
                 open={modalOpen}
                 onClose={closeModal}
@@ -362,7 +398,7 @@ const OpportunityClient = ({
                 loading={deleteLoading}
                 message='Are you sure you want to delete this opportunity? This action cannot be undone.'
             />
-        </>
+        </div>
     );
 };
 
