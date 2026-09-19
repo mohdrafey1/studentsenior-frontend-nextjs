@@ -18,6 +18,7 @@ import { RootState } from '@/redux/store';
 import { PlusIcon, SearchIcon } from 'lucide-react';
 import StoreFormModal, { StoreFormData } from './StoreFormModal';
 import { capitalizeWords } from '@/utils/formatting';
+import { ResourcePageHeader } from '@/components/Common/ResourcePageHeader';
 
 const StoreClient = ({
     initialItems,
@@ -51,6 +52,7 @@ const StoreClient = ({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     const currentUser = useSelector(
         (state: RootState) => state.user.currentUser,
@@ -272,39 +274,20 @@ const StoreClient = ({
 
     return (
         <>
-            {/* Header with Add Button */}
-            <section className='mb-8' aria-label='Search and Add Item'>
-                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                    <div className='flex flex-col sm:flex-row gap-4 items-center w-full'>
-                        <div className='flex gap-3 w-full sm:w-4/5 p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'>
-                            <SearchIcon className='w-5 h-5 text-gray-400' />
-                            <input
-                                type='text'
-                                placeholder='Search products...'
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                className='w-full bg-transparent outline-none text-black dark:text-white'
-                            />
-                        </div>
-                        {/* <select
-                            value={availableFilter}
-                            onChange={(e) => setAvailableFilter(e.target.value)}
-                            className="w-full sm:w-1/5 p-3 bg-transparent outline-none border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-800 dark:text-white transition-all"
-                        >
-                            <option value="">All Status</option>
-                            <option value="true">Available</option>
-                            <option value="false">Sold</option>
-                        </select> */}
-                        <button
-                            onClick={() => openModal()}
-                            className='flex gap-3 w-full sm:w-1/5 p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
-                        >
-                            <PlusIcon className='w-4 h-4' />
-                            Add Product
-                        </button>
-                    </div>
-                </div>
-            </section>
+            <ResourcePageHeader
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+                searchPlaceholder='Search products...'
+                showFilters={false}
+                setShowFilters={() => {}}
+                hasActiveFilters={!!searchTerm}
+                activeFilterCount={searchTerm ? 1 : 0}
+                clearFilters={() => setSearchInput('')}
+                onAdd={openModal}
+                addButtonText='Add Product'
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+            />
 
             <section aria-label='Store Items List'>
                 {/* Loading State */}
@@ -314,12 +297,14 @@ const StoreClient = ({
                     </div>
                 ) : items.length > 0 ? (
                     <>
-                        <p className='text-gray-600 dark:text-gray-300 mb-4 text-sm'>
-                            Showing {items.length} of{' '}
-                            {pagination?.totalItems ?? 0} items
-                        </p>
+                        <div className='mb-4'>
+                            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a]'>
+                                Showing {items.length} of{' '}
+                                {pagination?.totalItems ?? 0} items
+                            </p>
+                        </div>
 
-                        <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6'>
+                        <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4'>
                             {items.map((item) => (
                                 <StoreCard
                                     key={item._id}
@@ -337,22 +322,28 @@ const StoreClient = ({
                         />
                     </>
                 ) : (
-                    <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
-                        <i className='fas fa-search text-5xl text-gray-400 mb-4'></i>
-                        <h3 className='text-xl font-medium text-gray-700 dark:text-gray-200 mb-2'>
-                            No Items Found
-                        </h3>
-                        <p className='text-gray-500 dark:text-gray-400 mb-6'>
-                            Be the first to post a lost or found item in{' '}
-                            {capitalizeWords(collegeName)}
-                        </p>
-                        <button
-                            onClick={() => openModal()}
-                            className='px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md dark:bg-sky-500 dark:hover:bg-sky-600'
-                            aria-label='Add New Item'
-                        >
-                            Add New Item
-                        </button>
+                    <div className='text-center py-12'>
+                        <div className='bg-[#fcfbf9] dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 max-w-md mx-auto shadow-xs'>
+                            <div className='w-12 h-12 mx-auto mb-3 bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] rounded-full flex items-center justify-center'>
+                                <SearchIcon className='w-6 h-6' />
+                            </div>
+                            <h3 className='text-base font-bold text-[#101828] dark:text-white mb-1'>
+                                No Products Found
+                            </h3>
+                            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-5 leading-relaxed'>
+                                {searchTerm
+                                    ? 'Try adjusting or clearing your filters to discover more items.'
+                                    : `Be the first to post a product in ${capitalizeWords(collegeName)}`}
+                            </p>
+                            <button
+                                onClick={() => openModal()}
+                                className='inline-flex items-center gap-1.5 px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs active:scale-[0.98]'
+                                aria-label='Add New Item'
+                            >
+                                <PlusIcon className='w-4 h-4' />
+                                Add Product
+                            </button>
+                        </div>
                     </div>
                 )}
             </section>
