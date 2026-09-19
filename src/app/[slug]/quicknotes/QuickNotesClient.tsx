@@ -55,45 +55,40 @@ const QuickNoteCard = ({
     return (
         <Link
             href={`/${collegeName}/quicknotes/${note.subject.subjectCode}/${note.slug}`}
-            className='block group'
+            className='group relative bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all duration-200 overflow-hidden h-full flex flex-col justify-between'
         >
-            <div className='bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all'>
-                {/* Accent Strip */}
-                <div className='h-0.5 bg-gradient-to-r from-purple-500 to-indigo-600' />
-
-                <div className='p-4'>
-                    {/* Header */}
-                    <div className='flex items-center gap-3 mb-3'>
-                        <div className='flex-shrink-0 w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center border border-purple-100 dark:border-purple-800'>
-                            <span className='text-lg font-bold text-purple-600 dark:text-purple-400'>
-                                {note.unitNumber}
-                            </span>
-                        </div>
-                        <div className='flex-1 min-w-0'>
-                            <div className='flex items-center gap-2 mb-0.5'>
-                                <span className='text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase'>
-                                    {note.subject?.subjectCode}
-                                </span>
-                                <span className='text-[10px] text-gray-400'>
-                                    Sem {note.subject?.semester}
-                                </span>
-                            </div>
-                            <h3 className='text-sm font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-2'>
-                                {note.title}
-                            </h3>
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className='flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700'>
-                        <div className='flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400'>
-                            <Zap className='w-3 h-3' />
-                            <span>Quick Revision</span>
-                        </div>
-                        <span className='text-xs text-gray-400 truncate max-w-[120px]'>
-                            {note.subject?.subjectName}
+            <div className='p-3 sm:p-4'>
+                {/* Header with Unit Number */}
+                <div className='flex items-start gap-3 mb-3'>
+                    <div className='flex-shrink-0 w-10 h-10 rounded-xl bg-[#f6f5f4] dark:bg-[#282828] flex items-center justify-center border border-[#e6e6e6] dark:border-[#383838] group-hover:border-[#0075de] dark:group-hover:border-[#0075de] transition-colors'>
+                        <span className='text-sm font-bold text-[#101828] dark:text-[#ededed]'>
+                            U{note.unitNumber}
                         </span>
                     </div>
+                    <div className='flex-1 min-w-0'>
+                        <div className='flex items-center gap-2 mb-1'>
+                            <span className='text-[10px] font-bold text-[#0075de] dark:text-[#62aef0] uppercase tracking-wider bg-[#eaf3fd] dark:bg-[#183153] px-1.5 py-0.5 rounded'>
+                                {note.subject?.subjectCode}
+                            </span>
+                            <span className='text-[10px] font-medium text-[#8c8883] dark:text-[#787672]'>
+                                Sem {note.subject?.semester}
+                            </span>
+                        </div>
+                        <h3 className='text-sm font-bold text-[#101828] dark:text-white group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors line-clamp-2 leading-snug'>
+                            {note.title}
+                        </h3>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className='flex items-center justify-between pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
+                    <div className='flex items-center gap-1.5 text-[11px] font-semibold text-[#d97706] dark:text-[#fbbf24] bg-[#fffbeb] dark:bg-[#382606] border border-[#fef08a] dark:border-[#524419] px-2 py-0.5 rounded-md'>
+                        <Zap className='w-3 h-3' />
+                        <span>Quick Review</span>
+                    </div>
+                    <span className='text-[11px] font-medium text-[#615d59] dark:text-[#a09e9a] truncate max-w-[100px]'>
+                        {note.subject?.subjectName}
+                    </span>
                 </div>
             </div>
         </Link>
@@ -235,8 +230,8 @@ const QuickNotesClient = ({
             />
 
             {filterState.showFilters && (
-                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div className='bg-white dark:bg-[#191919] rounded-xl shadow-sm border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 transition-all duration-300'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
                         <CommonFilters
                             courseFilter={filterState.courseFilter}
                             setCourseFilter={filterState.setCourseFilter}
@@ -255,8 +250,8 @@ const QuickNotesClient = ({
 
             {/* Loading State */}
             {loading && (
-                <div className='flex justify-center min-h-screen py-12'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600'></div>
+                <div className='flex justify-center min-h-[40vh] items-center'>
+                    <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-[#0075de]'></div>
                 </div>
             )}
 
@@ -264,7 +259,7 @@ const QuickNotesClient = ({
             {!loading && (
                 <>
                     {quicknotes.length > 0 ? (
-                        <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4'>
+                        <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5'>
                             {quicknotes.map((note) => (
                                 <QuickNoteCard
                                     key={note._id}
@@ -274,18 +269,18 @@ const QuickNotesClient = ({
                             ))}
                         </div>
                     ) : (
-                        <div className='text-center py-12'>
-                            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto'>
-                                <div className='w-16 h-16 mx-auto mb-4 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center'>
-                                    <Zap className='w-8 h-8 text-purple-500' />
+                        <div className='text-center py-16 px-4'>
+                            <div className='bg-white dark:bg-[#191919] border border-dashed border-[#e6e6e6] dark:border-[#383838] rounded-2xl p-10 max-w-md mx-auto shadow-sm'>
+                                <div className='w-16 h-16 mx-auto mb-5 bg-[#fcfbf9] dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center rotate-3'>
+                                    <Zap className='w-8 h-8 text-[#8c8883] dark:text-[#787672] -rotate-3' />
                                 </div>
-                                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+                                <h3 className='text-lg font-bold text-[#101828] dark:text-[#ededed] mb-2'>
                                     No Quick Notes Found
                                 </h3>
-                                <p className='text-gray-600 dark:text-gray-400'>
+                                <p className='text-sm text-[#615d59] dark:text-[#a09e9a] leading-relaxed'>
                                     {filterState.hasActiveFilters
-                                        ? 'Try adjusting your filters.'
-                                        : 'Quick notes for this college are coming soon!'}
+                                        ? "We couldn't find any quick notes matching your filters. Try adjusting them."
+                                        : "Quick notes for this college are coming soon!"}
                                 </p>
                             </div>
                         </div>
