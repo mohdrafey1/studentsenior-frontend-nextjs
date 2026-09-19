@@ -31,7 +31,7 @@ const Header: React.FC = () => {
     const dispatch = useDispatch();
     const { currentUser } = useSelector((state: RootState) => state.user);
 
-    // Scroll detection for shadow
+    // Scroll detection for subtle elevation
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 8);
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -124,37 +124,40 @@ const Header: React.FC = () => {
 
     return (
         <>
-            {/* ── Header bar ── */}
+            {/* ── Notion Header Bar ── */}
             <header
-                className={`sticky top-0 left-0 w-full z-50 transition-all duration-300
-                    bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl
-                    border-b border-gray-200/60 dark:border-white/[0.06]
-                    ${scrolled ? 'shadow-lg shadow-black/5 dark:shadow-black/30' : ''}
+                className={`sticky top-0 left-0 w-full z-50 transition-all duration-200
+                    bg-white/95 dark:bg-[#191919]/95 backdrop-blur-md
+                    border-b border-[#e6e6e6] dark:border-[#2f2f2f]
+                    ${
+                        scrolled
+                            ? 'shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.04)] dark:shadow-none'
+                            : ''
+                    }
                 `}
             >
-                <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-                    <div className='flex items-center justify-between h-[64px]'>
+                <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+                    <div className='flex items-center justify-between h-[60px] sm:h-[64px]'>
                         {/* ── Logo ── */}
                         <Link
                             href='/'
                             className='flex items-center gap-2.5 group shrink-0'
                         >
                             <div className='relative'>
-                                <div className='absolute inset-0 rounded-full bg-blue-500/20 blur-md scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                                 <Image
                                     src='/assets/cropped_circle_image.png'
                                     alt='StudentSenior logo'
-                                    width={38}
-                                    height={38}
-                                    className='relative rounded-full ring-2 ring-blue-500/20 group-hover:ring-blue-500/50 transition-all duration-300 group-hover:scale-105'
+                                    width={34}
+                                    height={34}
+                                    className='rounded-full ring-1 ring-[#e6e6e6] dark:ring-[#383838] transition-transform duration-200 group-hover:scale-105'
                                     priority
                                 />
                             </div>
                             <span className='text-[17px] font-bold tracking-tight'>
-                                <span className='bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent'>
+                                <span className='text-[#000000] dark:text-white'>
                                     Student
                                 </span>
-                                <span className='text-gray-800 dark:text-gray-100'>
+                                <span className='text-[#0075de] dark:text-[#62aef0]'>
                                     Senior
                                 </span>
                             </span>
@@ -162,40 +165,37 @@ const Header: React.FC = () => {
 
                         {/* ── Desktop Nav ── */}
                         <nav className='hidden lg:flex items-center gap-1'>
-                            {menuItems.map((item) => (
-                                <Link
-                                    prefetch={false}
-                                    key={item.path}
-                                    href={item.path}
-                                    target={
-                                        item.isExternal ? '_blank' : undefined
-                                    }
-                                    rel={
-                                        item.isExternal
-                                            ? 'noopener noreferrer'
-                                            : undefined
-                                    }
-                                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group
-                                        ${
-                                            isActive(item.path)
-                                                ? 'text-blue-600 dark:text-blue-400'
-                                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/[0.06]'
-                                        }`}
-                                >
-                                    {item.name}
-                                    {item.isExternal && (
-                                        <span className='ml-1 text-[10px]'>
-                                            ↗
-                                        </span>
-                                    )}
-                                    {/* Active underline */}
-                                    <span
-                                        className={`absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-300
-                                        ${isActive(item.path) ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-50 group-hover:scale-x-100'}
-                                    `}
-                                    />
-                                </Link>
-                            ))}
+                            {menuItems.map((item) => {
+                                const active = isActive(item.path);
+                                return (
+                                    <Link
+                                        prefetch={false}
+                                        key={item.path}
+                                        href={item.path}
+                                        target={
+                                            item.isExternal ? '_blank' : undefined
+                                        }
+                                        rel={
+                                            item.isExternal
+                                                ? 'noopener noreferrer'
+                                                : undefined
+                                        }
+                                        className={`relative px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-1
+                                            ${
+                                                active
+                                                    ? 'text-[#0075de] dark:text-[#62aef0] font-semibold bg-[#eaf3fd] dark:bg-[#183153]/70 border border-[#d2e4f9]/60 dark:border-[#224474]/60'
+                                                    : 'text-[#615d59] dark:text-[#a39e98] hover:text-[#000000] dark:hover:text-white hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b]'
+                                            }`}
+                                    >
+                                        <span>{item.name}</span>
+                                        {item.isExternal && (
+                                            <span className='text-[10px] text-[#a39e98]'>
+                                                ↗
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
                         </nav>
 
                         {/* ── Right actions ── */}
@@ -204,10 +204,11 @@ const Header: React.FC = () => {
                             <button
                                 onClick={toggleTheme}
                                 aria-label='Toggle theme'
-                                className='p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-all duration-200'
+                                className='p-2 rounded-lg text-[#615d59] dark:text-[#a39e98] hover:text-[#000000] dark:hover:text-white hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] transition-colors duration-150'
+                                title={isDarkMode ? 'Light mode' : 'Dark mode'}
                             >
                                 {isDarkMode ? (
-                                    <Sun className='w-[18px] h-[18px] text-amber-400' />
+                                    <Sun className='w-[18px] h-[18px] text-[#e58b00]' />
                                 ) : (
                                     <Moon className='w-[18px] h-[18px]' />
                                 )}
@@ -223,7 +224,7 @@ const Header: React.FC = () => {
                                         onClick={() =>
                                             setIsProfileDropdownOpen((p) => !p)
                                         }
-                                        className='flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-xl hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-all duration-200 group'
+                                        className='flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-xl hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] border border-transparent hover:border-[#e6e6e6] dark:hover:border-[#383838] transition-all duration-150 group'
                                     >
                                         <div className='relative'>
                                             <Image
@@ -232,36 +233,36 @@ const Header: React.FC = () => {
                                                     '/default-avatar.png'
                                                 }
                                                 alt='Profile'
-                                                width={34}
-                                                height={34}
-                                                className='rounded-full object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500/60 transition-all duration-200'
+                                                width={32}
+                                                height={32}
+                                                className='rounded-full object-cover ring-1 ring-[#e6e6e6] dark:ring-[#383838]'
                                             />
-                                            <span className='absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-white dark:border-gray-950 rounded-full' />
+                                            <span className='absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#1aae39] border-2 border-white dark:border-[#202020] rounded-full' />
                                         </div>
-                                        <span className='text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[90px] truncate'>
+                                        <span className='text-sm font-semibold text-[#000000] dark:text-[#f0f0f0] max-w-[100px] truncate'>
                                             {currentUser.username}
                                         </span>
                                         <ChevronDown
-                                            className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`}
+                                            className={`w-3.5 h-3.5 text-[#a39e98] transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`}
                                         />
                                     </button>
 
                                     {/* Profile dropdown */}
                                     <div
-                                        className={`absolute right-0 mt-2 w-52 transition-all duration-200 origin-top-right
+                                        className={`absolute right-0 mt-2 w-56 transition-all duration-150 origin-top-right z-50
                                         ${
                                             isProfileDropdownOpen
                                                 ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
-                                                : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                                                : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'
                                         }`}
                                     >
-                                        <div className='rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-gray-900 shadow-xl shadow-black/10 dark:shadow-black/40 overflow-hidden'>
+                                        <div className='rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden'>
                                             {/* User info header */}
-                                            <div className='px-4 py-3 bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950/40 dark:to-violet-950/40 border-b border-gray-100 dark:border-white/[0.06]'>
-                                                <p className='text-xs text-gray-500 dark:text-gray-400'>
+                                            <div className='px-4 py-3 bg-[#faf9f8] dark:bg-[#262626] border-b border-[#f0eee6] dark:border-[#2f2f2f]'>
+                                                <p className='text-[11px] font-medium text-[#615d59] dark:text-[#a39e98]'>
                                                     Signed in as
                                                 </p>
-                                                <p className='text-sm font-semibold text-gray-900 dark:text-white truncate'>
+                                                <p className='text-sm font-bold text-[#000000] dark:text-white truncate'>
                                                     {currentUser.username}
                                                 </p>
                                             </div>
@@ -274,9 +275,9 @@ const Header: React.FC = () => {
                                                             false,
                                                         )
                                                     }
-                                                    className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors duration-150'
+                                                    className='flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
                                                 >
-                                                    <User className='w-4 h-4 text-blue-500' />
+                                                    <User className='w-4 h-4 text-[#0075de]' />
                                                     Profile
                                                 </Link>
                                                 <Link
@@ -287,12 +288,12 @@ const Header: React.FC = () => {
                                                             false,
                                                         )
                                                     }
-                                                    className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors duration-150'
+                                                    className='flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
                                                 >
-                                                    <Wallet className='w-4 h-4 text-violet-500' />
+                                                    <Wallet className='w-4 h-4 text-[#8a3fd6]' />
                                                     Wallet
                                                 </Link>
-                                                <div className='my-1 h-px bg-gray-100 dark:bg-white/[0.06]' />
+                                                <div className='my-1 h-px bg-[#f0eee6] dark:border-[#2f2f2f]' />
                                                 <button
                                                     onClick={() => {
                                                         handleSignOut();
@@ -300,7 +301,7 @@ const Header: React.FC = () => {
                                                             false,
                                                         );
                                                     }}
-                                                    className='flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-150'
+                                                    className='flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#e03e3e] hover:bg-[#ffebe6] dark:hover:bg-[#3d1818] transition-colors duration-150'
                                                 >
                                                     <LogOut className='w-4 h-4' />
                                                     Sign Out
@@ -314,23 +315,23 @@ const Header: React.FC = () => {
                                     <Link
                                         prefetch={false}
                                         href={{
-                                            pathname: '/sign-up',
+                                            pathname: '/sign-in',
                                             query: { from: pathname },
                                         }}
-                                        className='px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-all duration-200'
+                                        className='px-3.5 py-1.5 text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:text-[#000000] dark:hover:text-white bg-white dark:bg-[#202020] hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] border border-[#e6e6e6] dark:border-[#383838] rounded-lg transition-all duration-150'
                                     >
-                                        Sign Up
+                                        Sign In
                                     </Link>
                                     <Link
                                         prefetch={false}
                                         href={{
-                                            pathname: '/sign-in',
+                                            pathname: '/sign-up',
                                             query: { from: pathname },
                                         }}
-                                        className='flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-md shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200'
+                                        className='inline-flex items-center gap-1.5 px-4 py-1.5 text-xs sm:text-sm font-medium text-white bg-[#0075de] hover:bg-[#005bab] active:scale-[0.98] rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,117,222,0.2)] transition-all duration-150'
                                     >
                                         <Sparkles className='w-3.5 h-3.5' />
-                                        Sign In
+                                        Sign Up
                                     </Link>
                                 </div>
                             )}
@@ -339,7 +340,7 @@ const Header: React.FC = () => {
                             <button
                                 onClick={() => setIsMenuOpen((p) => !p)}
                                 aria-label='Toggle menu'
-                                className='lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-all duration-200'
+                                className='lg:hidden p-2 rounded-lg text-[#615d59] dark:text-[#a39e98] hover:text-[#000000] dark:hover:text-white hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] transition-all duration-150'
                             >
                                 {isMenuOpen ? (
                                     <X className='w-5 h-5' />
@@ -357,7 +358,7 @@ const Header: React.FC = () => {
                 className={`fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => setIsMenuOpen(false)}
                 style={{
-                    background: 'rgba(0,0,0,0.45)',
+                    background: 'rgba(0,0,0,0.4)',
                     backdropFilter: 'blur(4px)',
                 }}
             />
@@ -365,15 +366,15 @@ const Header: React.FC = () => {
             {/* ── Mobile drawer panel ── */}
             <div
                 className={`fixed top-0 right-0 bottom-0 z-50 w-72 lg:hidden flex flex-col
-                    bg-white dark:bg-gray-950
-                    border-l border-gray-200 dark:border-white/[0.07]
-                    shadow-2xl shadow-black/20
+                    bg-white dark:bg-[#202020]
+                    border-l border-[#e6e6e6] dark:border-[#2f2f2f]
+                    shadow-2xl
                     transition-transform duration-300 ease-in-out
                     ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}
                 `}
             >
                 {/* Drawer header */}
-                <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/[0.06]'>
+                <div className='flex items-center justify-between px-5 py-4 border-b border-[#f0eee6] dark:border-[#2f2f2f]'>
                     <Link
                         href='/'
                         onClick={() => setIsMenuOpen(false)}
@@ -382,22 +383,22 @@ const Header: React.FC = () => {
                         <Image
                             src='/assets/cropped_circle_image.png'
                             alt='logo'
-                            width={30}
-                            height={30}
+                            width={28}
+                            height={28}
                             className='rounded-full'
                         />
-                        <span className='text-sm font-bold'>
-                            <span className='bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent'>
+                        <span className='text-sm font-bold tracking-tight'>
+                            <span className='text-[#000000] dark:text-white'>
                                 Student
                             </span>
-                            <span className='text-gray-800 dark:text-gray-100'>
+                            <span className='text-[#0075de] dark:text-[#62aef0]'>
                                 Senior
                             </span>
                         </span>
                     </Link>
                     <button
                         onClick={() => setIsMenuOpen(false)}
-                        className='p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors duration-150'
+                        className='p-1.5 rounded-lg text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] transition-colors duration-150'
                     >
                         <X className='w-5 h-5' />
                     </button>
@@ -405,54 +406,58 @@ const Header: React.FC = () => {
 
                 {/* Nav links */}
                 <nav className='flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1'>
-                    {menuItems.map((item) => (
-                        <Link
-                            prefetch={false}
-                            key={item.path}
-                            href={item.path}
-                            onClick={() => setIsMenuOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                                ${
-                                    isActive(item.path)
-                                        ? 'bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950/40 dark:to-violet-950/40 text-blue-600 dark:text-blue-400'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
-                                }`}
-                        >
-                            {isActive(item.path) && (
-                                <span className='w-1.5 h-1.5 rounded-full bg-blue-500' />
-                            )}
-                            {item.name}
-                            {item.isExternal && (
-                                <span className='ml-auto text-xs opacity-50'>
-                                    ↗
-                                </span>
-                            )}
-                        </Link>
-                    ))}
+                    {menuItems.map((item) => {
+                        const active = isActive(item.path);
+                        return (
+                            <Link
+                                prefetch={false}
+                                key={item.path}
+                                href={item.path}
+                                onClick={() => setIsMenuOpen(false)}
+                                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                                    ${
+                                        active
+                                            ? 'bg-[#eaf3fd] dark:bg-[#183153]/70 text-[#0075de] dark:text-[#62aef0] font-semibold border border-[#d2e4f9]/60 dark:border-[#224474]/60'
+                                            : 'text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a]'
+                                    }`}
+                            >
+                                {active && (
+                                    <span className='w-1.5 h-1.5 rounded-full bg-[#0075de]' />
+                                )}
+                                <span>{item.name}</span>
+                                {item.isExternal && (
+                                    <span className='ml-auto text-xs text-[#a39e98]'>
+                                        ↗
+                                    </span>
+                                )}
+                            </Link>
+                        );
+                    })}
 
                     {/* Divider */}
-                    <div className='my-2 h-px bg-gray-100 dark:bg-white/[0.06]' />
+                    <div className='my-2 h-px bg-[#f0eee6] dark:bg-[#2f2f2f]' />
 
                     {currentUser ? (
                         <>
                             {/* Profile info */}
-                            <div className='flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/[0.03]'>
+                            <div className='flex items-center gap-3 px-3.5 py-3 rounded-xl bg-[#f6f5f4] dark:bg-[#262626] border border-[#e6e6e6] dark:border-[#333333]'>
                                 <Image
                                     src={
                                         currentUser.profilePicture ||
                                         '/default-avatar.png'
                                     }
                                     alt='Profile'
-                                    width={38}
-                                    height={38}
-                                    className='rounded-full object-cover ring-2 ring-blue-500/30'
+                                    width={36}
+                                    height={36}
+                                    className='rounded-full object-cover ring-1 ring-[#e6e6e6] dark:ring-[#383838]'
                                 />
                                 <div className='min-w-0'>
-                                    <p className='text-sm font-semibold text-gray-900 dark:text-white truncate'>
+                                    <p className='text-sm font-bold text-[#000000] dark:text-white truncate'>
                                         {currentUser.username}
                                     </p>
-                                    <p className='text-xs text-emerald-500 font-medium'>
-                                        ● Online
+                                    <p className='text-xs text-[#1aae39] font-medium flex items-center gap-1'>
+                                        <span className='w-1.5 h-1.5 rounded-full bg-[#1aae39]' />
+                                        Online
                                     </p>
                                 </div>
                             </div>
@@ -460,18 +465,18 @@ const Header: React.FC = () => {
                                 prefetch={false}
                                 href='/profile'
                                 onClick={() => setIsMenuOpen(false)}
-                                className='flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors duration-150'
+                                className='flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
                             >
-                                <User className='w-4 h-4 text-blue-500' />
+                                <User className='w-4 h-4 text-[#0075de]' />
                                 My Profile
                             </Link>
                             <Link
                                 prefetch={false}
                                 href='/wallet'
                                 onClick={() => setIsMenuOpen(false)}
-                                className='flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors duration-150'
+                                className='flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
                             >
-                                <Wallet className='w-4 h-4 text-violet-500' />
+                                <Wallet className='w-4 h-4 text-[#8a3fd6]' />
                                 Wallet
                             </Link>
                             <button
@@ -479,7 +484,7 @@ const Header: React.FC = () => {
                                     handleSignOut();
                                     setIsMenuOpen(false);
                                 }}
-                                className='flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-150'
+                                className='flex items-center gap-2.5 w-full px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#e03e3e] hover:bg-[#ffebe6] dark:hover:bg-[#3d1818] transition-colors duration-150'
                             >
                                 <LogOut className='w-4 h-4' />
                                 Sign Out
@@ -490,44 +495,45 @@ const Header: React.FC = () => {
                             <Link
                                 prefetch={false}
                                 href={{
-                                    pathname: '/sign-in',
-                                    query: { from: pathname },
-                                }}
-                                onClick={() => setIsMenuOpen(false)}
-                                className='flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 shadow-md shadow-blue-500/20 transition-all duration-200'
-                            >
-                                <Sparkles className='w-4 h-4' />
-                                Sign In
-                            </Link>
-                            <Link
-                                prefetch={false}
-                                href={{
                                     pathname: '/sign-up',
                                     query: { from: pathname },
                                 }}
                                 onClick={() => setIsMenuOpen(false)}
-                                className='flex items-center justify-center px-4 py-3 rounded-xl text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors duration-150'
+                                className='flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium text-white bg-[#0075de] hover:bg-[#005bab] active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,117,222,0.2)] transition-all duration-150'
                             >
-                                Create Account
+                                <Sparkles className='w-4 h-4' />
+                                Sign Up
+                            </Link>
+                            <Link
+                                prefetch={false}
+                                href={{
+                                    pathname: '/sign-in',
+                                    query: { from: pathname },
+                                }}
+                                onClick={() => setIsMenuOpen(false)}
+                                className='flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] transition-colors duration-150'
+                            >
+                                Sign In
                             </Link>
                         </div>
                     )}
                 </nav>
 
                 {/* Theme toggle at bottom */}
-                <div className='px-5 py-4 border-t border-gray-100 dark:border-white/[0.06]'>
+                <div className='px-5 py-4 border-t border-[#f0eee6] dark:border-[#2f2f2f]'>
                     <button
                         onClick={toggleTheme}
-                        className='flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors duration-150'
+                        className='flex items-center gap-2.5 w-full px-3.5 py-2 rounded-xl text-sm font-medium text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[#2b2b2b] transition-colors duration-150'
                     >
                         {isDarkMode ? (
                             <>
-                                <Sun className='w-4 h-4 text-amber-400' /> Light
-                                Mode
+                                <Sun className='w-4 h-4 text-[#e58b00]' />
+                                <span>Light Mode</span>
                             </>
                         ) : (
                             <>
-                                <Moon className='w-4 h-4' /> Dark Mode
+                                <Moon className='w-4 h-4' />
+                                <span>Dark Mode</span>
                             </>
                         )}
                     </button>
