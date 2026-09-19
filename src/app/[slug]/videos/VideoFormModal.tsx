@@ -311,37 +311,37 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
+        <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300'>
+            <div className='bg-white dark:bg-[#191919] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-[#e6e6e6] dark:border-[#2f2f2f] max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-hidden'>
                 {/* Header */}
-                <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
+                <div className='flex items-center justify-between p-5 sm:p-6 border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                    <h2 className='text-lg sm:text-xl font-bold text-[#101828] dark:text-[#ededed]'>
                         Add New Video
                     </h2>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors'
+                        className='text-[#8c8883] hover:text-[#101828] dark:text-[#787672] dark:hover:text-white transition-colors bg-[#fcfbf9] hover:bg-[#f0eee9] dark:bg-[#202020] dark:hover:bg-[#2a2a2a] p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#383838]'
                     >
-                        <X className='w-6 h-6' />
+                        <X className='w-5 h-5' />
                     </button>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className='p-6 space-y-4 bg-white dark:bg-gray-800'
+                    className='p-5 sm:p-6 space-y-5'
                 >
                     {/* Video URL */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            YouTube Video or Playlist URL*
+                        <label className='block text-xs font-bold text-[#101828] dark:text-[#ededed] uppercase tracking-wide mb-2'>
+                            YouTube Video or Playlist URL *
                         </label>
                         <div className='relative'>
-                            <Youtube className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400' />
+                            <Youtube className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8c8883] dark:text-[#787672]' />
                             <input
                                 type='url'
                                 value={form.videoUrl}
                                 onChange={handleVideoUrlChange}
-                                className='w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                                className='w-full pl-10 pr-4 py-2.5 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-xl bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#787672] focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:border-[#62aef0] outline-none transition-all duration-200 shadow-sm'
                                 placeholder='https://www.youtube.com/watch?v=...'
                                 required
                             />
@@ -365,7 +365,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
 
                     {/* Title */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
+                        <label className='block text-xs font-bold text-[#101828] dark:text-[#ededed] uppercase tracking-wide mb-2'>
                             Title *
                         </label>
                         <input
@@ -377,7 +377,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                                     title: e.target.value,
                                 }))
                             }
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-4 py-2.5 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-xl bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#787672] focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:border-[#62aef0] outline-none transition-all duration-200 shadow-sm'
                             placeholder='Enter video title'
                             required
                         />
@@ -385,7 +385,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
 
                     {/* Description */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
+                        <label className='block text-xs font-bold text-[#101828] dark:text-[#ededed] uppercase tracking-wide mb-2'>
                             Description
                         </label>
                         <textarea
@@ -397,7 +397,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                                 }))
                             }
                             rows={3}
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-4 py-2.5 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-xl bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#787672] focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] dark:focus:border-[#62aef0] outline-none transition-all duration-200 shadow-sm resize-y'
                             placeholder='Enter video description (optional)'
                         />
                     </div>
@@ -448,19 +448,19 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                     {/* Loading State for Video Data */}
                     {loadingVideoData && (
                         <div className='flex items-center justify-center py-4'>
-                            <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-sky-600'></div>
-                            <span className='ml-2 text-sm text-gray-600 dark:text-gray-400'>
+                            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-[#0075de]'></div>
+                            <span className='ml-2 text-sm text-[#8c8883] dark:text-[#787672] font-medium'>
                                 Extracting video information...
                             </span>
                         </div>
                     )}
 
                     {/* Submit Button */}
-                    <div className='flex justify-end gap-3 pt-4'>
+                    <div className='flex justify-end gap-3 pt-4 border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
                         <button
                             type='button'
                             onClick={onClose}
-                            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200'
+                            className='px-5 py-2 text-sm font-semibold text-[#615d59] dark:text-[#a09e9a] bg-[#fcfbf9] dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] rounded-xl hover:bg-[#f0eee9] dark:hover:bg-[#2a2a2a] transition-all duration-200'
                         >
                             Cancel
                         </button>
@@ -473,7 +473,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
                                 !form.subjectCode ||
                                 loadingVideoData
                             }
-                            className='px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
+                            className='px-5 py-2 text-sm font-semibold text-white bg-[#0075de] rounded-xl hover:bg-[#0062bd] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm active:scale-[0.98]'
                         >
                             {loading ? 'Saving...' : 'Add Video'}
                         </button>

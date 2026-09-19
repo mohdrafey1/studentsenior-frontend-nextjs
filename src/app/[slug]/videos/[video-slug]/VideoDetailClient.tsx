@@ -46,11 +46,35 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
     const embedUrl = getYouTubeEmbedUrl(video.videoUrl);
 
     return (
-        <>
+        <div className='min-h-screen bg-white dark:bg-[#191919]'>
             <DetailPageNavbar path='videos' />
-            <div className='max-w-7xl mx-auto px-2 sm:px-4 lg:px-8'>
+            <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8'>
+                
+                {/* Title and Share Header */}
+                <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4'>
+                    <div className='flex-1'>
+                        <h1 className='text-2xl sm:text-4xl font-bold text-[#101828] dark:text-[#ededed] mb-3 tracking-tight'>
+                            {video.title}
+                        </h1>
+                        {video.description && (
+                            <p className='text-base sm:text-lg text-[#615d59] dark:text-[#a09e9a] leading-relaxed max-w-4xl'>
+                                {video.description}
+                            </p>
+                        )}
+                    </div>
+                    <div className='flex items-center gap-3 shrink-0'>
+                        <button
+                            onClick={handleShare}
+                            className='inline-flex items-center gap-2 px-4 py-2.5 bg-[#fcfbf9] hover:bg-[#f0eee9] dark:bg-[#202020] dark:hover:bg-[#2a2a2a] text-[#101828] dark:text-[#ededed] text-sm font-semibold rounded-xl border border-[#e6e6e6] dark:border-[#383838] transition-all shadow-sm active:scale-[0.98]'
+                        >
+                            <Share2 className='w-4 h-4' />
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+
                 {/* Video Player */}
-                <div className='bg-white mt-5 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden'>
+                <div className='w-full max-w-5xl mx-auto bg-black dark:bg-[#0a0a0a] rounded-2xl shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.3)] overflow-hidden border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                     {embedUrl ? (
                         <div className='aspect-video w-full'>
                             <iframe
@@ -62,10 +86,10 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
                             />
                         </div>
                     ) : (
-                        <div className='aspect-video w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center'>
+                        <div className='aspect-video w-full bg-[#fcfbf9] dark:bg-[#191919] flex items-center justify-center'>
                             <div className='text-center'>
-                                <Play className='w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4' />
-                                <p className='text-gray-600 dark:text-gray-400'>
+                                <Play className='w-16 h-16 text-[#8c8883] dark:text-[#787672] mx-auto mb-4' />
+                                <p className='text-[#615d59] dark:text-[#a09e9a] font-medium'>
                                     Video not available
                                 </p>
                             </div>
@@ -73,99 +97,75 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
                     )}
                 </div>
 
-                {/* Video Information */}
-                <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6'>
-                    {/* Title and Actions */}
-                    <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6'>
-                        <div className='flex-1'>
-                            <h1 className='text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2'>
-                                {video.title}
-                            </h1>
-                            {video.description && (
-                                <p className='text-gray-600 dark:text-gray-400 text-lg'>
-                                    {video.description}
-                                </p>
-                            )}
-                        </div>
-                        <div className='flex items-center gap-3'>
-                            <button
-                                onClick={handleShare}
-                                className='flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-600 hover:bg-sky-200 dark:bg-sky-900/40 dark:text-sky-400 dark:hover:bg-sky-900/60 rounded-lg transition-colors'
-                            >
-                                <Share2 className='w-5 h-5' />
-                                <span className='hidden sm:inline'>Share</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Video Details Grid */}
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
-                        <div className='flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg'>
-                            <BookOpen className='w-5 h-5 text-sky-600 dark:text-sky-400' />
-                            <div>
-                                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                {/* Video Details Grid */}
+                <div className='bg-white dark:bg-[#202020] rounded-2xl shadow-sm border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 sm:p-8'>
+                    <div className='grid grid-cols-2 md:grid-cols-4 gap-6 mb-8'>
+                        <div>
+                            <div className='flex items-center gap-2 text-[#8c8883] dark:text-[#787672] mb-1'>
+                                <BookOpen className='w-4 h-4' />
+                                <p className='text-xs font-bold uppercase tracking-wider'>
                                     Subject
                                 </p>
-                                <p className='font-medium text-gray-900 dark:text-white'>
-                                    {video.subject.subjectName}
-                                </p>
                             </div>
+                            <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
+                                {video.subject.subjectName}
+                            </p>
                         </div>
 
-                        <div className='flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg'>
-                            <BookOpen className='w-5 h-5 text-sky-600 dark:text-sky-400' />
-                            <div>
-                                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                        <div>
+                            <div className='flex items-center gap-2 text-[#8c8883] dark:text-[#787672] mb-1'>
+                                <BookOpen className='w-4 h-4' />
+                                <p className='text-xs font-bold uppercase tracking-wider'>
                                     Semester
                                 </p>
-                                <p className='font-medium text-gray-900 dark:text-white'>
-                                    {video.subject.semester}
-                                </p>
                             </div>
+                            <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
+                                {video.subject.semester}
+                            </p>
                         </div>
 
-                        <div className='flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg'>
-                            <Calendar className='w-5 h-5 text-sky-600 dark:text-sky-400' />
-                            <div>
-                                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                        <div>
+                            <div className='flex items-center gap-2 text-[#8c8883] dark:text-[#787672] mb-1'>
+                                <Calendar className='w-4 h-4' />
+                                <p className='text-xs font-bold uppercase tracking-wider'>
                                     Posted
                                 </p>
-                                <p className='font-medium text-gray-900 dark:text-white'>
-                                    {new Date(
-                                        video.createdAt,
-                                    ).toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
-                                </p>
                             </div>
+                            <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
+                                {new Date(
+                                    video.createdAt,
+                                ).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                })}
+                            </p>
                         </div>
 
-                        <div className='flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg'>
-                            <Play className='w-5 h-5 text-sky-600 dark:text-sky-400' />
-                            <div>
-                                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                        <div>
+                            <div className='flex items-center gap-2 text-[#8c8883] dark:text-[#787672] mb-1'>
+                                <Play className='w-4 h-4' />
+                                <p className='text-xs font-bold uppercase tracking-wider'>
                                     Views
                                 </p>
-                                <p className='font-medium text-gray-900 dark:text-white'>
-                                    {video.clickCounts || 0}
-                                </p>
                             </div>
+                            <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
+                                {video.clickCounts || 0}
+                            </p>
                         </div>
                     </div>
 
                     {/* Owner Information */}
-                    <div className='border-t border-gray-200 dark:border-gray-700 pt-6'>
+                    <div className='border-t border-[#f0eee9] dark:border-[#2a2a2a] pt-6'>
                         <div className='flex items-center gap-4'>
-                            <div className='w-12 h-12 bg-sky-100 dark:bg-sky-900/40 rounded-full flex items-center justify-center'>
-                                <User className='w-6 h-6 text-sky-600 dark:text-sky-400' />
+                            <div className='w-12 h-12 bg-[#eaf3fd] dark:bg-[#183153] border border-[#d2e4f9] dark:border-[#224474] rounded-full flex items-center justify-center'>
+                                <User className='w-5 h-5 text-[#0075de] dark:text-[#62aef0]' />
                             </div>
                             <div>
-                                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                                <p className='text-xs font-bold uppercase tracking-wider text-[#8c8883] dark:text-[#787672] mb-0.5'>
                                     Shared by
                                 </p>
-                                <p className='font-medium text-gray-900 dark:text-white'>
+                                <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
                                     {video.owner.username}
                                 </p>
                             </div>
@@ -173,7 +173,7 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

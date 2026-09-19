@@ -375,8 +375,8 @@ const VideosClient = ({
             />
 
             {filterState.showFilters && (
-                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div className='bg-white dark:bg-[#191919] rounded-xl shadow-sm border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 transition-all duration-300'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
                         <CommonFilters
                             courseFilter={filterState.courseFilter}
                             setCourseFilter={filterState.setCourseFilter}
@@ -395,8 +395,8 @@ const VideosClient = ({
 
             {/* Loading State */}
             {loading && (
-                <div className='flex justify-center min-h-screen py-12'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
+                <div className='flex justify-center min-h-[40vh] items-center'>
+                    <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-[#0075de]'></div>
                 </div>
             )}
 
@@ -432,22 +432,22 @@ const VideosClient = ({
                             )}
                         </>
                     ) : (
-                        <div className='text-center py-12'>
-                            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto'>
-                                <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center'>
-                                    <Video className='w-8 h-8 text-gray-400 dark:text-gray-500' />
+                        <div className='text-center py-16 px-4'>
+                            <div className='bg-white dark:bg-[#191919] border border-dashed border-[#e6e6e6] dark:border-[#383838] rounded-2xl p-10 max-w-md mx-auto shadow-sm'>
+                                <div className='w-16 h-16 mx-auto mb-5 bg-[#fcfbf9] dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] rounded-2xl flex items-center justify-center rotate-3'>
+                                    <Video className='w-8 h-8 text-[#8c8883] dark:text-[#787672] -rotate-3' />
                                 </div>
-                                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+                                <h3 className='text-lg font-bold text-[#101828] dark:text-[#ededed] mb-2'>
                                     No Videos Found
                                 </h3>
-                                <p className='text-gray-600 dark:text-gray-400 mb-4'>
+                                <p className='text-sm text-[#615d59] dark:text-[#a09e9a] mb-6 leading-relaxed'>
                                     {hasActiveFilters
-                                        ? 'Try adjusting your filters or add a new video.'
-                                        : 'Be the first to add a video for this college!'}
+                                        ? "We couldn't find any videos matching your filters. Try adjusting them."
+                                        : "Be the first to share your knowledge and add a video for this college!"}
                                 </p>
                                 <button
                                     onClick={openAddModal}
-                                    className='inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200'
+                                    className='inline-flex items-center gap-2 px-5 py-2.5 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
                                 >
                                     <svg
                                         className='w-4 h-4'
@@ -458,7 +458,7 @@ const VideosClient = ({
                                         <path
                                             strokeLinecap='round'
                                             strokeLinejoin='round'
-                                            strokeWidth={2}
+                                            strokeWidth={2.5}
                                             d='M12 4v16m8-8H4'
                                         />
                                     </svg>
