@@ -11,6 +11,10 @@ import {
     Video,
     Copy,
     Check,
+    Sparkles,
+    Bot,
+    ExternalLink,
+    Zap,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -194,7 +198,7 @@ export default function AcademicChatbot() {
         if (preferences.semester && preferences.branchId) {
             // User has semester set, show reset option and ask for subject
             addBotMessage(
-                `Welcome back to ${preferences.collegeName}!\n\nYou're in Semester ${preferences.semester} of ${preferences.branchName}.\n\nLet me help you find resources.`,
+                `Welcome back to ${preferences.collegeName || 'Student Senior'}!\n\nYou're viewing Semester ${preferences.semester} of ${preferences.branchName || 'your branch'}.\n\nHow can I assist your study session today?`,
                 [
                     {
                         label: '🔄 Reset Preferences',
@@ -209,7 +213,7 @@ export default function AcademicChatbot() {
         } else {
             // First time user
             addBotMessage(
-                "Hi! 👋 I'm your academic assistant. I can help you find PYQs, notes, and videos.\n\nLet's start by selecting your college:",
+                "Hi there! 👋 I'm your Student Senior Academic Assistant.\n\nI can help you find PYQs, study notes, videos, syllabus, and quick notes.\n\nLet's get started by choosing your college:",
             );
             fetchColleges();
         }
@@ -350,7 +354,7 @@ export default function AcademicChatbot() {
                     action: 'select_semester',
                 }));
 
-                addBotMessage('Which semester are you in?', options);
+                addBotMessage('Which semester are you currently in?', options);
             } else {
                 addBotMessage(
                     'Sorry, no semester information available for this branch.',
@@ -572,7 +576,7 @@ export default function AcademicChatbot() {
                             value: option.value,
                             action: 'redirect_syllabus',
                             subjectName: option.subjectName,
-                            subjectCode: option.subjectCode, // Added subjectCode here
+                            subjectCode: option.subjectCode,
                         },
                         {
                             label: '⚡ Quick Notes',
@@ -615,10 +619,9 @@ export default function AcademicChatbot() {
                     option.subjectName &&
                     option.subjectCode
                 ) {
-                    // Create slug: subjectname-subjectcode (lowercase, spaces replaced by hyphens)
                     const cleanSubjectName = option.subjectName
                         .toLowerCase()
-                        .trim() // Added trim to remove leading/trailing spaces
+                        .trim()
                         .replace(/[^a-z0-9]+/g, '-');
                     const cleanSubjectCode = option.subjectCode
                         .toLowerCase()
@@ -663,19 +666,26 @@ export default function AcademicChatbot() {
 
     return (
         <>
-            {/* Floating Button */}
+            {/* Floating Trigger Button */}
             <AnimatePresence>
                 {!isOpen && (
                     <motion.button
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
+                        initial={{ scale: 0, opacity: 0, y: 10 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0, opacity: 0, y: 10 }}
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.96 }}
                         onClick={() => setIsOpen(true)}
-                        className='fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-110 group'
+                        className='fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3.5 bg-[#0075de] hover:bg-[#0066c4] text-white rounded-full shadow-lg shadow-[#0075de]/30 hover:shadow-xl hover:shadow-[#0075de]/40 border border-white/20 transition-all group'
+                        aria-label='Open Academic Assistant'
                     >
-                        <MessageCircle className='w-6 h-6' />
-                        <span className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping'></span>
-                        <span className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full'></span>
+                        <div className='relative flex items-center justify-center'>
+                            <Sparkles className='w-5 h-5 group-hover:rotate-12 transition-transform duration-300' />
+                            <span className='absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0075de] animate-pulse'></span>
+                        </div>
+                        <span className='text-xs font-semibold tracking-wide pr-1 hidden sm:inline-block'>
+                            AI Assistant
+                        </span>
                     </motion.button>
                 )}
             </AnimatePresence>
@@ -684,66 +694,88 @@ export default function AcademicChatbot() {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 24, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className='fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700'
+                        exit={{ opacity: 0, y: 24, scale: 0.95 }}
+                        transition={{ duration: 0.22, ease: 'easeOut' }}
+                        className='fixed bottom-6 right-6 z-50 w-[380px] sm:w-[400px] max-w-[calc(100vw-2rem)] h-[620px] max-h-[calc(100vh-3rem)] bg-white dark:bg-[#1c1c1c] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-[#e6e6e6] dark:border-[#2f2f2f]'
                     >
                         {/* Header */}
-                        <div className='bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 flex items-center justify-between'>
+                        <div className='px-5 py-4 bg-white dark:bg-[#202020] border-b border-[#e6e6e6] dark:border-[#2f2f2f] flex items-center justify-between'>
                             <div className='flex items-center gap-3'>
-                                <div className='w-10 h-10 bg-white/20 rounded-full flex items-center justify-center'>
-                                    <BookOpen className='w-5 h-5' />
+                                <div className='w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#0075de] to-[#00a6ff] text-white flex items-center justify-center shadow-xs'>
+                                    <Bot className='w-5 h-5' />
                                 </div>
                                 <div>
-                                    <h3 className='font-semibold text-lg'>
-                                        Academic Assistant
-                                    </h3>
-                                    <p className='text-xs text-blue-100'>
-                                        Always here to help
+                                    <div className='flex items-center gap-2'>
+                                        <h3 className='font-bold text-sm text-[#191919] dark:text-[#ececec]'>
+                                            Academic Assistant
+                                        </h3>
+                                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60'>
+                                            <span className='w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse' />
+                                            Online
+                                        </span>
+                                    </div>
+                                    <p className='text-[11px] text-[#787774] dark:text-[#9b9a97] truncate max-w-[200px]'>
+                                        {preferences.collegeName
+                                            ? preferences.collegeName
+                                            : 'Student Senior Smart AI'}
                                     </p>
                                 </div>
                             </div>
-                            <div className='flex gap-2'>
+
+                            <div className='flex items-center gap-1'>
                                 {Object.keys(preferences).length > 0 && (
                                     <button
                                         onClick={handleReset}
-                                        className='p-2 hover:bg-white/20 rounded-lg transition-colors'
+                                        className='p-2 rounded-xl text-[#787774] dark:text-[#9b9a97] hover:text-[#0075de] dark:hover:text-[#0075de] hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-colors'
                                         title='Reset preferences'
+                                        aria-label='Reset preferences'
                                     >
                                         <RotateCcw className='w-4 h-4' />
                                     </button>
                                 )}
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className='p-2 hover:bg-white/20 rounded-lg transition-colors'
+                                    className='p-2 rounded-xl text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-white hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-colors'
+                                    aria-label='Close Chat'
                                 >
                                     <X className='w-4 h-4' />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Messages */}
-                        <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+                        {/* Messages Area */}
+                        <div className='flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-[#faf9f8] dark:bg-[#161616]'>
                             {messages.map((message) => (
                                 <div
                                     key={message.id}
-                                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                                    className={`flex items-start gap-2.5 ${
+                                        message.type === 'user'
+                                            ? 'justify-end'
+                                            : 'justify-start'
+                                    }`}
                                 >
+                                    {message.type === 'bot' && (
+                                        <div className='w-7 h-7 rounded-xl bg-[#0075de]/10 text-[#0075de] border border-[#0075de]/20 flex items-center justify-center shrink-0 mt-0.5'>
+                                            <Sparkles className='w-3.5 h-3.5' />
+                                        </div>
+                                    )}
+
                                     <div
-                                        className={`max-w-[80%] ${
+                                        className={`max-w-[85%] ${
                                             message.type === 'user'
-                                                ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm'
-                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-2xl rounded-tl-sm'
-                                        } px-4 py-2.5`}
+                                                ? 'bg-[#0075de] text-white rounded-2xl rounded-tr-xs shadow-xs font-medium'
+                                                : 'bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] rounded-2xl rounded-tl-xs border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-2xs'
+                                        } px-4 py-3`}
                                     >
-                                        <p className='text-sm whitespace-pre-line'>
+                                        <p className='text-xs sm:text-sm whitespace-pre-line leading-relaxed'>
                                             {message.text}
                                         </p>
 
-                                        {/* Options */}
+                                        {/* Options Grid */}
                                         {message.options && (
-                                            <div className='mt-3 space-y-2'>
+                                            <div className='mt-3 space-y-1.5'>
                                                 {message.options.map(
                                                     (option, idx) => (
                                                         <button
@@ -753,19 +785,19 @@ export default function AcademicChatbot() {
                                                                     option,
                                                                 )
                                                             }
-                                                            className='w-full text-left px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-between group text-sm'
+                                                            className='w-full text-left px-3.5 py-2.5 bg-[#faf9f8] dark:bg-[#252525] hover:bg-[#0075de]/5 dark:hover:bg-[#0075de]/15 hover:border-[#0075de]/40 text-[#191919] dark:text-[#ececec] rounded-xl border border-[#e6e6e6] dark:border-[#333333] transition-all flex items-center justify-between group text-xs font-medium active:scale-[0.99]'
                                                         >
-                                                            <span>
+                                                            <span className='truncate pr-2'>
                                                                 {option.label}
                                                             </span>
-                                                            <ChevronRight className='w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity' />
+                                                            <ChevronRight className='w-3.5 h-3.5 text-[#787774] dark:text-[#9b9a97] group-hover:text-[#0075de] group-hover:translate-x-0.5 transition-all shrink-0' />
                                                         </button>
                                                     ),
                                                 )}
                                             </div>
                                         )}
 
-                                        {/* Links */}
+                                        {/* Links Resource Cards */}
                                         {message.links && (
                                             <div className='mt-3 space-y-2'>
                                                 {message.links.map(
@@ -775,7 +807,7 @@ export default function AcademicChatbot() {
                                                         return (
                                                             <div
                                                                 key={idx}
-                                                                className='flex items-center gap-2'
+                                                                className='flex items-center gap-1.5'
                                                             >
                                                                 <a
                                                                     href={
@@ -784,7 +816,6 @@ export default function AcademicChatbot() {
                                                                     target='_blank'
                                                                     rel='noopener noreferrer'
                                                                     onClick={() => {
-                                                                        // Track resource view
                                                                         trackUsage(
                                                                             link.type,
                                                                             {
@@ -798,29 +829,36 @@ export default function AcademicChatbot() {
                                                                             },
                                                                         );
                                                                     }}
-                                                                    className='flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg border border-gray-200 dark:border-gray-600 transition-colors group text-sm'
+                                                                    className='flex-1 px-3.5 py-2.5 bg-[#faf9f8] dark:bg-[#252525] hover:bg-[#0075de]/5 dark:hover:bg-[#0075de]/15 hover:border-[#0075de]/40 text-[#191919] dark:text-[#ececec] rounded-xl border border-[#e6e6e6] dark:border-[#333333] transition-all group text-xs font-medium flex items-center justify-between overflow-hidden'
                                                                 >
-                                                                    <div className='flex items-center gap-2'>
+                                                                    <div className='flex items-center gap-2.5 truncate'>
                                                                         {link.type ===
                                                                             'pyq' && (
-                                                                            <FileText className='w-4 h-4 text-blue-600' />
+                                                                            <div className='w-6 h-6 rounded-lg bg-[#0075de]/10 text-[#0075de] flex items-center justify-center shrink-0'>
+                                                                                <FileText className='w-3.5 h-3.5' />
+                                                                            </div>
                                                                         )}
                                                                         {link.type ===
                                                                             'notes' && (
-                                                                            <BookOpen className='w-4 h-4 text-green-600' />
+                                                                            <div className='w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0'>
+                                                                                <BookOpen className='w-3.5 h-3.5' />
+                                                                            </div>
                                                                         )}
                                                                         {link.type ===
                                                                             'video' && (
-                                                                            <Video className='w-4 h-4 text-red-600' />
+                                                                            <div className='w-6 h-6 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0'>
+                                                                                <Video className='w-3.5 h-3.5' />
+                                                                            </div>
                                                                         )}
-                                                                        <span className='flex-1'>
+                                                                        <span className='truncate'>
                                                                             {
                                                                                 link.title
                                                                             }
                                                                         </span>
-                                                                        <ChevronRight className='w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity' />
                                                                     </div>
+                                                                    <ExternalLink className='w-3.5 h-3.5 text-[#787774] dark:text-[#9b9a97] group-hover:text-[#0075de] opacity-70 group-hover:opacity-100 transition-all shrink-0 ml-1.5' />
                                                                 </a>
+
                                                                 <button
                                                                     onClick={() => {
                                                                         navigator.clipboard.writeText(
@@ -828,6 +866,9 @@ export default function AcademicChatbot() {
                                                                         );
                                                                         setCopiedLink(
                                                                             linkId,
+                                                                        );
+                                                                        toast.success(
+                                                                            'Link copied!',
                                                                         );
                                                                         setTimeout(
                                                                             () =>
@@ -837,14 +878,15 @@ export default function AcademicChatbot() {
                                                                             2000,
                                                                         );
                                                                     }}
-                                                                    className='p-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors'
+                                                                    className='p-2.5 bg-[#faf9f8] dark:bg-[#252525] hover:bg-gray-200 dark:hover:bg-[#333333] text-[#787774] dark:text-[#9b9a97] rounded-xl border border-[#e6e6e6] dark:border-[#333333] transition-colors shrink-0'
                                                                     title='Copy link'
+                                                                    aria-label='Copy link'
                                                                 >
                                                                     {copiedLink ===
                                                                     linkId ? (
-                                                                        <Check className='w-4 h-4 text-green-600' />
+                                                                        <Check className='w-3.5 h-3.5 text-emerald-600' />
                                                                     ) : (
-                                                                        <Copy className='w-4 h-4' />
+                                                                        <Copy className='w-3.5 h-3.5' />
                                                                     )}
                                                                 </button>
                                                             </div>
@@ -857,21 +899,25 @@ export default function AcademicChatbot() {
                                 </div>
                             ))}
 
+                            {/* Typing Indicator */}
                             {loading && (
-                                <div className='flex justify-start'>
-                                    <div className='bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3'>
-                                        <div className='flex gap-2'>
-                                            <div className='w-2 h-2 bg-gray-400 rounded-full animate-bounce'></div>
+                                <div className='flex items-start gap-2.5 justify-start'>
+                                    <div className='w-7 h-7 rounded-xl bg-[#0075de]/10 text-[#0075de] border border-[#0075de]/20 flex items-center justify-center shrink-0'>
+                                        <Sparkles className='w-3.5 h-3.5' />
+                                    </div>
+                                    <div className='bg-white dark:bg-[#202020] rounded-2xl rounded-tl-xs px-4 py-3 border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-2xs'>
+                                        <div className='flex items-center gap-1.5'>
+                                            <div className='w-2 h-2 bg-[#0075de] rounded-full animate-bounce'></div>
                                             <div
-                                                className='w-2 h-2 bg-gray-400 rounded-full animate-bounce'
+                                                className='w-2 h-2 bg-[#0075de] rounded-full animate-bounce'
                                                 style={{
-                                                    animationDelay: '0.2s',
+                                                    animationDelay: '0.15s',
                                                 }}
                                             ></div>
                                             <div
-                                                className='w-2 h-2 bg-gray-400 rounded-full animate-bounce'
+                                                className='w-2 h-2 bg-[#0075de] rounded-full animate-bounce'
                                                 style={{
-                                                    animationDelay: '0.4s',
+                                                    animationDelay: '0.3s',
                                                 }}
                                             ></div>
                                         </div>
@@ -883,10 +929,14 @@ export default function AcademicChatbot() {
                         </div>
 
                         {/* Footer */}
-                        <div className='p-4 border-t border-gray-200 dark:border-gray-700'>
-                            <div className='text-xs text-center text-gray-500 dark:text-gray-400'>
-                                Powered by Student Senior AI 🤖
-                            </div>
+                        <div className='px-4 py-3 bg-white dark:bg-[#202020] border-t border-[#e6e6e6] dark:border-[#2f2f2f] flex items-center justify-between'>
+                            {/* <div className='inline-flex items-center gap-1.5 text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                <Zap className='w-3.5 h-3.5 text-[#0075de]' />
+                                <span>Student Senior AI</span>
+                            </div> */}
+                            <span className='text-[10px] font-mono text-[#787774] dark:text-[#9b9a97] opacity-60'>
+                                v2.0
+                            </span>
                         </div>
                     </motion.div>
                 )}
