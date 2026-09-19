@@ -53,13 +53,13 @@ const OpportunityDetailClient: React.FC<OpportunityDetailClientProps> = ({
         setTimeout(() => setCopiedPhone(false), 2000);
     };
 
+    const collegeRaw = opportunity.college;
     const collegeDisplayName =
-        typeof opportunity.college === 'string'
-            ? opportunity.college
-            : (opportunity.college as any)?.name ||
-              (opportunity.college as any)?.slug ||
-              slug ||
-              '';
+        typeof collegeRaw === 'string'
+            ? collegeRaw
+            : typeof collegeRaw === 'object' && collegeRaw !== null
+              ? collegeRaw.name || collegeRaw.slug || slug || ''
+              : slug || '';
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] text-[#101828] dark:text-[#ededed]'>

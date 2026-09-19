@@ -135,7 +135,7 @@ export interface IOpportunity {
     email: string;
     whatsapp?: string;
     link?: string;
-    college: string;
+    college: string | { _id: string; name?: string; slug?: string };
     owner?: {
         _id: string;
         username: string;
