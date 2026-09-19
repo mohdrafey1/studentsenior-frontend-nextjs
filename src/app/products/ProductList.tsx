@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, ExternalLink, Filter, Share2, X } from 'lucide-react';
+import { Search, ExternalLink, Filter, Share2, X, ShoppingCart, Tag as TagIcon } from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/config/apiUrls';
 import { useSearchParams } from 'next/navigation';
@@ -33,17 +33,18 @@ export default function ProductList({
     // Extract unique categories
     const categories = [
         'All',
-        ...new Set(initialProducts.map((p) => p.category)),
+        ...new Set(initialProducts.map((p) => p.category).filter(Boolean)),
     ];
 
     const filteredProducts = useMemo(() => {
         return initialProducts.filter((product) => {
             const matchesSearch =
+                !searchTerm.trim() ||
                 product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 product.description
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                product.tags.some((tag) =>
+                product.tags?.some((tag) =>
                     tag.toLowerCase().includes(searchTerm.toLowerCase()),
                 );
             const matchesCategory =
@@ -70,7 +71,7 @@ export default function ProductList({
         )}`;
         const shareData = {
             title: `Check out ${product.name} on Student Senior`,
-            text: `I found this amazing product: ${product.name}`,
+            text: `I found this on Student Senior: ${product.name}`,
             url: shareUrl,
         };
 
@@ -83,7 +84,7 @@ export default function ProductList({
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                toast.success('Link copied to clipboard!');
+                toast.success('Product link copied to clipboard!');
             } catch (error) {
                 console.error('Error copying to clipboard:', error);
                 toast.error('Failed to copy link');
@@ -92,44 +93,48 @@ export default function ProductList({
     };
 
     return (
-        <div>
-            {/* Filters */}
-            <div className='bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-8'>
-                <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
-                    <div className='relative w-full md:max-w-md'>
+        <div className='w-full'>
+            {/* Search & Category Filter Bar */}
+            <div className='bg-white dark:bg-[#202020] p-3 sm:p-4 rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_1px_3px_rgba(0,0,0,0.04)] mb-8'>
+                <div className='flex flex-col lg:flex-row gap-3 sm:gap-4 items-stretch lg:items-center justify-between'>
+                    {/* Search Input */}
+                    <div className='relative flex-1 max-w-full lg:max-w-md'>
                         <Search
-                            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
-                            size={20}
+                            className='absolute left-3.5 top-1/2 -translate-y-1/2 text-[#999] dark:text-[#777]'
+                            size={18}
                         />
                         <input
                             type='text'
-                            placeholder='Search books, gadgets...'
+                            placeholder='Search textbooks, scientific calculators, stationery...'
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className='w-full pl-10 pr-10 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+                            className='w-full pl-10 pr-10 py-2 sm:py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#383838] bg-[#fbfbfa] dark:bg-[#191919] text-[#101828] dark:text-white placeholder-[#999] dark:placeholder-[#666] text-sm focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] transition-colors'
                         />
                         {searchTerm && (
                             <button
                                 onClick={() => setSearchTerm('')}
-                                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+                                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1'
+                                aria-label='Clear search'
                             >
-                                <X size={16} />
+                                <X size={15} />
                             </button>
                         )}
                     </div>
-                    <div className='flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0'>
-                        <Filter
-                            size={18}
-                            className='text-gray-500 hidden md:block'
-                        />
+
+                    {/* Category Filter Pills */}
+                    <div className='flex items-center gap-1.5 overflow-x-auto pb-1.5 lg:pb-0 scrollbar-none'>
+                        <div className='hidden sm:flex items-center gap-1.5 text-xs font-semibold text-[#888] dark:text-[#777] mr-1 uppercase tracking-wider'>
+                            <Filter size={14} />
+                            <span>Category:</span>
+                        </div>
                         {categories.map((cat) => (
                             <button
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${
                                     selectedCategory === cat
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                        ? 'bg-[#0075de] text-white shadow-sm font-semibold'
+                                        : 'bg-[#f4f3f0] dark:bg-[#2a2a2a] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-transparent'
                                 }`}
                             >
                                 {cat}
@@ -139,102 +144,149 @@ export default function ProductList({
                 </div>
             </div>
 
-            {/* Grid */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+            {/* Results Count & Current Active Filters info */}
+            <div className='flex items-center justify-between mb-6 text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] px-1'>
+                <span>
+                    Showing <strong className='text-[#101828] dark:text-white font-semibold'>{filteredProducts.length}</strong> {filteredProducts.length === 1 ? 'item' : 'items'}
+                    {selectedCategory !== 'All' && <span> in <span className='text-[#0075de] dark:text-[#62aef0] font-medium'>{selectedCategory}</span></span>}
+                    {searchTerm && <span> matching &ldquo;{searchTerm}&rdquo;</span>}
+                </span>
+
+                {(searchTerm || selectedCategory !== 'All') && (
+                    <button
+                        onClick={() => {
+                            setSearchTerm('');
+                            setSelectedCategory('All');
+                        }}
+                        className='text-[#0075de] dark:text-[#62aef0] hover:underline font-medium flex items-center gap-1'
+                    >
+                        Reset filters
+                    </button>
+                )}
+            </div>
+
+            {/* Products Grid */}
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6'>
                 {filteredProducts.map((product) => (
                     <div
                         key={product._id}
-                        className='group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 transform hover:-translate-y-1'
+                        className='group bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.35)] transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between'
                     >
-                        {/* Image */}
-                        <div className='relative aspect-[4/3] bg-gray-100 dark:bg-gray-900 overflow-hidden'>
-                            <Image
-                                src={product.image}
-                                alt={product.name}
-                                fill
-                                className='object-cover transition-transform duration-500 group-hover:scale-110'
-                                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                            />
-                            <div className='absolute top-3 left-3'>
-                                <span className='px-2 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-medium rounded-md'>
-                                    {product.category}
-                                </span>
+                        <div>
+                            {/* Product Image */}
+                            <div className='relative aspect-[4/3] bg-[#f6f5f4] dark:bg-[#181818] overflow-hidden border-b border-[#e6e6e6] dark:border-[#2a2a2a]'>
+                                {product.image ? (
+                                    <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        fill
+                                        className='object-cover transition-transform duration-500 group-hover:scale-105'
+                                        sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw'
+                                    />
+                                ) : (
+                                    <div className='w-full h-full flex items-center justify-center text-[#999] dark:text-[#666]'>
+                                        <ShoppingCart size={32} opacity={0.4} />
+                                    </div>
+                                )}
+
+                                {/* Category Tag on Image */}
+                                {product.category && (
+                                    <div className='absolute top-2.5 left-2.5'>
+                                        <span className='px-2.5 py-1 bg-white/90 dark:bg-black/80 backdrop-blur-md text-[#101828] dark:text-white text-[11px] font-semibold rounded-md border border-black/5 dark:border-white/10 shadow-sm'>
+                                            {product.category}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Details Content */}
+                            <div className='p-4 sm:p-5'>
+                                <h3 className='font-semibold text-base sm:text-lg text-[#101828] dark:text-white line-clamp-2 leading-snug group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors mb-2'>
+                                    {product.name}
+                                </h3>
+
+                                <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a8a5a0] line-clamp-2 leading-relaxed mb-3 min-h-[2.5rem]'>
+                                    {product.description || 'Verified student essential recommended for your course.'}
+                                </p>
+
+                                {/* Tags */}
+                                {product.tags && product.tags.length > 0 && (
+                                    <div className='flex flex-wrap gap-1.5 mb-2'>
+                                        {product.tags.slice(0, 3).map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className='inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-[#f4f3f0] dark:bg-[#282828] text-[#73716d] dark:text-[#9e9c97] font-medium'
+                                            >
+                                                <TagIcon size={10} />
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* Content */}
-                        <div className='p-5'>
-                            <div className='flex items-start justify-between gap-3 mb-2'>
-                                <h3 className='font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'>
-                                    {product.name}
-                                </h3>
+                        {/* Footer / Buy & Share Actions */}
+                        <div className='p-4 sm:p-5 pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a] bg-[#fbfbfa]/50 dark:bg-[#1c1c1c]/50 flex items-center justify-between gap-3'>
+                            <div className='flex flex-col'>
+                                <span className='text-[10px] uppercase font-semibold text-[#8c8883] dark:text-[#787672] tracking-wider'>
+                                    Price
+                                </span>
+                                <span className='text-lg sm:text-xl font-bold text-[#101828] dark:text-white tracking-tight'>
+                                    ₹{product.price.toLocaleString('en-IN')}
+                                </span>
                             </div>
 
-                            <p className='text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-4 h-10'>
-                                {product.description}
-                            </p>
+                            <div className='flex items-center gap-2'>
+                                <button
+                                    onClick={() => handleShare(product)}
+                                    className='p-2 text-[#73716d] hover:text-[#0075de] dark:text-[#9e9c97] dark:hover:text-[#62aef0] hover:bg-white dark:hover:bg-[#282828] rounded-lg border border-transparent hover:border-[#e6e6e6] dark:hover:border-[#383838] transition-all'
+                                    title='Share Product'
+                                    aria-label='Share Product'
+                                >
+                                    <Share2 size={17} />
+                                </button>
 
-                            <div className='flex flex-wrap gap-2 mb-4'>
-                                {product.tags.slice(0, 3).map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className='text-xs text-gray-400'
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-
-                            <div className='flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto'>
-                                <div className='flex flex-col'>
-                                    <span className='text-xs text-gray-500 dark:text-gray-400'>
-                                        Price
-                                    </span>
-                                    <span className='text-xl font-bold text-gray-900 dark:text-white'>
-                                        ₹{product.price}
-                                    </span>
-                                </div>
-                                <div className='flex items-center gap-2'>
-                                    <button
-                                        onClick={() => handleShare(product)}
-                                        className='p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all'
-                                        title='Share'
-                                    >
-                                        <Share2 size={20} />
-                                    </button>
-                                    <a
-                                        href={product.buyLink}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        onClick={() =>
-                                            handleProductClick(product._id)
-                                        }
-                                        className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm shadow-md shadow-blue-600/20'
-                                    >
-                                        Buy Now
-                                        <ExternalLink size={16} />
-                                    </a>
-                                </div>
+                                <a
+                                    href={product.buyLink}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    onClick={() => handleProductClick(product._id)}
+                                    className='inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg transition-all font-semibold text-xs sm:text-sm shadow-sm hover:shadow active:scale-[0.98]'
+                                >
+                                    <span>Buy Now</span>
+                                    <ExternalLink size={14} />
+                                </a>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
+            {/* Empty State */}
             {filteredProducts.length === 0 && (
-                <div className='flex flex-col items-center justify-center py-16 text-center'>
-                    <div className='w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4'>
-                        <Search className='text-gray-400' size={32} />
+                <div className='flex flex-col items-center justify-center py-16 px-4 bg-[#fbfbfa] dark:bg-[#1f1f1f] rounded-2xl border border-dashed border-[#e6e6e6] dark:border-[#333] text-center my-6'>
+                    <div className='w-14 h-14 bg-white dark:bg-[#2a2a2a] rounded-full flex items-center justify-center shadow-sm border border-[#e6e6e6] dark:border-[#383838] mb-4 text-[#888]'>
+                        <Search size={24} />
                     </div>
-                    <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
+                    <h3 className='text-base sm:text-lg font-bold text-[#101828] dark:text-white mb-1.5'>
                         No products found
                     </h3>
-                    <p className='text-gray-500 dark:text-gray-400 max-w-sm'>
-                        We couldn&apos;t find any products matching your search
-                        criteria. Try different keywords or filters.
+                    <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] max-w-sm mb-5 leading-relaxed'>
+                        We couldn&apos;t find any products matching your search or selected category.
                     </p>
+                    <button
+                        onClick={() => {
+                            setSearchTerm('');
+                            setSelectedCategory('All');
+                        }}
+                        className='px-4 py-2 rounded-lg bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold transition-colors shadow-sm'
+                    >
+                        Clear Filters
+                    </button>
                 </div>
             )}
         </div>
     );
 }
+
