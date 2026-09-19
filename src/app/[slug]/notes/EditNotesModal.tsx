@@ -89,29 +89,29 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 bg-sky-50 dark:bg-gray-900 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto'>
+        <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
+            <div className='bg-white overflow-y-auto dark:bg-[#191919] rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                 {/* Header */}
-                <div className='flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700'>
-                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
+                <div className='flex items-center justify-between p-5 border-b border-[#e6e6e6] dark:border-[#2f2f2f] sticky top-0 bg-white dark:bg-[#191919] z-10'>
+                    <h2 className='text-lg font-bold text-[#101828] dark:text-[#ededed]'>
                         Edit Note
                     </h2>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors'
+                        className='text-[#8c8883] dark:text-[#787672] hover:text-[#101828] dark:hover:text-white transition-colors p-1 rounded-md hover:bg-[#f6f5f4] dark:hover:bg-[#282828]'
                     >
-                        <X className='w-6 h-6' />
+                        <X className='w-5 h-5' />
                     </button>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className='p-6 space-y-4 bg-white dark:bg-gray-800'
+                    className='overflow-y-auto p-5 space-y-5 bg-white dark:bg-[#191919]'
                 >
                     {/* Title */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            Title *
+                        <label className='block text-xs font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Title <span className='text-red-500'>*</span>
                         </label>
                         <input
                             type='text'
@@ -122,7 +122,7 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                                     title: e.target.value,
                                 }))
                             }
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                             placeholder='Enter note title'
                             required
                         />
@@ -130,8 +130,8 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
 
                     {/* Description */}
                     <div>
-                        <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
-                            Description *
+                        <label className='block text-xs font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                            Description <span className='text-red-500'>*</span>
                         </label>
                         <textarea
                             value={form.description}
@@ -142,17 +142,24 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                                 }))
                             }
                             rows={3}
-                            className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                            className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                             placeholder='Enter note description'
                             required
                         />
                     </div>
 
+                    <div className='h-px w-full bg-[#f0eee9] dark:bg-[#2a2a2a] my-2' />
+
                     {/* Paid Option */}
                     <div className='flex items-center justify-between'>
-                        <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                            Premium Content
-                        </span>
+                        <div>
+                            <span className='block text-sm font-semibold text-[#101828] dark:text-[#ededed]'>
+                                Premium Content
+                            </span>
+                            <span className='text-xs text-[#8c8883] dark:text-[#787672]'>
+                                Charge points for downloading
+                            </span>
+                        </div>
                         <button
                             type='button'
                             onClick={() =>
@@ -162,16 +169,16 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                                     price: !prev.isPaid ? 25 : 0,
                                 }))
                             }
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                                 form.isPaid
-                                    ? 'bg-violet-600'
-                                    : 'bg-gray-200 dark:bg-gray-700'
+                                    ? 'bg-[#d97706]'
+                                    : 'bg-[#d0ceca] dark:bg-[#383838]'
                             }`}
                         >
                             <span
-                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
                                     form.isPaid
-                                        ? 'translate-x-6'
+                                        ? 'translate-x-4.5'
                                         : 'translate-x-1'
                                 }`}
                             />
@@ -180,12 +187,12 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
 
                     {/* Price Input - Only visible when isPaid is true */}
                     {form.isPaid && (
-                        <div>
-                            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                                Price (in Points - 5 points = 1 INR)
+                        <div className='pt-2'>
+                            <label className='block text-xs font-semibold text-[#101828] dark:text-[#ededed] mb-1.5'>
+                                Price (in Points - 5 points = ₹1)
                             </label>
                             <div className='relative'>
-                                <DollarSign className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
+                                <DollarSign className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#8c8883] dark:text-[#787672]' />
                                 <input
                                     type='number'
                                     value={form.price}
@@ -195,7 +202,7 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                                             price: Number(e.target.value),
                                         }))
                                     }
-                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent'
+                                    className='w-full pl-9 pr-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-[#fcfbf9] dark:bg-[#202020] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                                     placeholder='25'
                                     min='25'
                                 />
@@ -204,11 +211,11 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                     )}
 
                     {/* Submit Button */}
-                    <div className='flex justify-end gap-3 pt-4'>
+                    <div className='flex justify-end gap-2.5 pt-6 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                         <button
                             type='button'
                             onClick={onClose}
-                            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200'
+                            className='px-4 py-2 text-sm font-medium text-[#101828] dark:text-[#ededed] bg-white dark:bg-[#191919] border border-[#e6e6e6] dark:border-[#383838] rounded-lg hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors duration-200 shadow-xs'
                         >
                             Cancel
                         </button>
@@ -221,7 +228,7 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
                                 (form.isPaid &&
                                     (!form.price || form.price < 25))
                             }
-                            className='px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
+                            className='px-4 py-2 text-sm font-semibold text-white bg-[#0075de] rounded-lg hover:bg-[#0062bd] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 shadow-xs active:scale-[0.98]'
                         >
                             {loading ? 'Saving...' : 'Save Changes'}
                         </button>
