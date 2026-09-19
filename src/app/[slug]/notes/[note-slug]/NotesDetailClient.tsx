@@ -179,6 +179,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
         (state: RootState) => state.savedCollection,
     );
     const [isSaved, setIsSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleGoBack = () => {
         router.back();
@@ -267,11 +268,21 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     }, [note]);
 
     const handleSave = async () => {
-        await saveResource('note', note._id);
+        setIsSaving(true);
+        try {
+            await saveResource('note', note._id);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleUnsave = async () => {
-        await unsaveResource('note', note._id);
+        setIsSaving(true);
+        try {
+            await unsaveResource('note', note._id);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
@@ -380,48 +391,73 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
             <DetailPageNavbar path='notes' fullPath={`/${slug}/notes`} />
 
-            {/* Document Info Section */}
-            <div className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
-                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 sm:p-8 mb-8'>
-                    <div className='flex flex-col lg:flex-row lg:items-start gap-6'>
-                        {/* Main Info */}
-                        <div className='flex-1'>
-                            <div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6'>
-                                <div>
-                                    <h1 className='text-3xl font-bold text-[#101828] dark:text-white tracking-tight mb-3'>
-                                        {note.title}
-                                    </h1>
-                                    <p className='text-[#475467] dark:text-[#a09e9a] text-sm sm:text-base max-w-3xl'>
+            {/* Document Info Section (Compact Design) */}
+            <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>
+                <div className='bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-5 mb-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'>
+                    <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4'>
+                        {/* Title & Metadata Badges */}
+                        <div className='flex-1 min-w-0'>
+                            <h1 className='text-lg sm:text-xl font-bold text-[#101828] dark:text-white tracking-tight mb-2 sm:mb-2.5'>
+                                {note.title}
+                            </h1>
+                            <div className='flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs'>
+                                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#eaf3fd] dark:bg-[#183153]/70 text-[#0075de] dark:text-[#62aef0] font-semibold border border-[#d2e4f9]/60 dark:border-[#224474]/60'>
+                                    <BookOpen className='w-3.5 h-3.5' />
+                                    <span>Sem {note.subject.semester}</span>
+                                </span>
+                                <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a39e98] font-medium border border-[#e6e6e6] dark:border-[#383838]'>
+                                    <FileText className='w-3.5 h-3.5 text-[#1aae39]' />
+                                    <span>{note.subject.subjectName}</span>
+                                </span>
+                                {note.owner?.username && (
+                                    <span className='inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#f6f5f4] dark:bg-[#282828] text-[#475467] dark:text-[#a39e98] font-medium border border-[#e6e6e6] dark:border-[#383838]'>
+                                        <User className='w-3.5 h-3.5 text-[#8a3fd6]' />
+                                        <span>{note.owner.username}</span>
+                                    </span>
+                                )}
+                            </div>
+                            <p className='text-[#475467] dark:text-[#a09e9a] mt-4 text-sm sm:text-base max-w-3xl'>
                                         {note.description}
                                     </p>
-                                </div>
-                                <div className='flex-shrink-0'>
-                                    <button
-                                        onClick={() => {
-                                            if (isSaved) {
-                                                handleUnsave();
-                                            } else {
-                                                handleSave();
-                                            }
-                                        }}
-                                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-[0.98] ${
-                                            isSaved
-                                                ? 'bg-[#e6f4ea] dark:bg-[#1e3a29] border-[#ceead6] dark:border-[#1e3a29] text-[#137333] dark:text-[#34a853]'
-                                                : 'bg-[#f6f5f4] dark:bg-[#282828] border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-white hover:bg-[#eae8e4] dark:hover:bg-[#333]'
-                                        }`}
-                                        title={
-                                            isSaved
-                                                ? 'Unsave this Note'
-                                                : 'Save this Note'
-                                        }
-                                        aria-label={
-                                            isSaved
-                                                ? 'Unsave this Note'
-                                                : 'Save this Note'
-                                        }
-                                    >
+                        </div>
+
+                        {/* Save Button with Loading State */}
+                        <div className='flex items-center sm:self-center shrink-0'>
+                            <button
+                                onClick={() => {
+                                    if (isSaving) return;
+                                    if (isSaved) {
+                                        handleUnsave();
+                                    } else {
+                                        handleSave();
+                                    }
+                                }}
+                                disabled={isSaving}
+                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed ${
+                                    isSaved
+                                        ? 'bg-[#e6f4ea] dark:bg-[#1e3a29] border-[#ceead6] dark:border-[#2b5238] text-[#137333] dark:text-[#34a853]'
+                                        : 'bg-[#f6f5f4] dark:bg-[#282828] border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-[#ededed] hover:bg-[#eae8e4] dark:hover:bg-[#333]'
+                                }`}
+                                title={
+                                    isSaved
+                                        ? 'Unsave this Note'
+                                        : 'Save this Note'
+                                }
+                                aria-label={
+                                    isSaved
+                                        ? 'Unsave this Note'
+                                        : 'Save this Note'
+                                }
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 className='w-3.5 h-3.5 animate-spin text-[#0075de]' />
+                                        <span>Saving...</span>
+                                    </>
+                                ) : (
+                                    <>
                                         <svg
-                                            className='w-4 h-4'
+                                            className='w-3.5 h-3.5'
                                             fill={
                                                 isSaved
                                                     ? 'currentColor'
@@ -438,57 +474,10 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                                 d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
                                             ></path>
                                         </svg>
-                                        {isSaved ? 'Saved' : 'Save'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <hr className='border-[#f0eee9] dark:border-[#2a2a2a] mb-6' />
-
-                            {/* Details Grid */}
-                            <div className='flex flex-wrap gap-4 sm:gap-8'>
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
-                                        <FileText className='w-5 h-5' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
-                                            Subject
-                                        </p>
-                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
-                                            {note.subject.subjectName}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
-                                        <BookOpen className='w-5 h-5' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
-                                            Semester
-                                        </p>
-                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
-                                            {note.subject.semester}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex items-center gap-3'>
-                                    <div className='w-10 h-10 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] rounded-xl flex items-center justify-center text-[#615d59] dark:text-[#a09e9a]'>
-                                        <User className='w-5 h-5' />
-                                    </div>
-                                    <div>
-                                        <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mb-0.5'>
-                                            Uploaded By
-                                        </p>
-                                        <p className='font-bold text-sm text-[#101828] dark:text-white'>
-                                            {note.owner.username}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                                        <span>{isSaved ? 'Saved' : 'Save'}</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -71,7 +71,7 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     });
     const [canGoBack, setCanGoBack] = useState(false);
 
-    // Initialize subject & URL on client mount
+    // Initialize subject, URL, and history detection on client mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const url = window.location.href;
@@ -80,7 +80,12 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
                 ...prev,
                 subject: 'Reported URL: ' + url,
             }));
-            setCanGoBack(window.history.length > 1);
+            const hasHistory =
+                (window.history.state &&
+                    typeof window.history.state.idx === 'number' &&
+                    window.history.state.idx > 0) ||
+                window.history.length > 1;
+            setCanGoBack(Boolean(hasHistory));
         }
     }, []);
 
@@ -96,10 +101,12 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     }, [showReportModal, isSubmitting]);
 
     const handleBackNavigation = () => {
-        if (fullPath) {
-            router.push(fullPath);
-        } else if (canGoBack) {
+        if (canGoBack || (typeof window !== 'undefined' && window.history.length > 1)) {
             router.back();
+        } else if (fullPath) {
+            router.push(fullPath);
+        } else if (path) {
+            router.push(`/${path}`);
         } else {
             router.push('/');
         }
