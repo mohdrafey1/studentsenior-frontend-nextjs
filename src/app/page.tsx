@@ -167,7 +167,7 @@ export default async function HomePage() {
                         </div>
 
                         {/* Sticker Accent Highlights */}
-                        <div className='flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 mt-8'>
+                        <div className='hidden lg:flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 mt-8'>
                             <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] border border-[#d2e4f9] dark:border-[#224474]'>
                                 📚 1500+ PYQs
                             </span>
