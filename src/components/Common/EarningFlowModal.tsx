@@ -67,17 +67,17 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
         {
             id: 1,
             title: 'Upload & Earn',
-            icon: <FileText className='w-8 h-8 sm:w-12 sm:h-12' />,
-            color: 'from-blue-500 to-cyan-500',
+            icon: <FileText className='w-5 h-5 sm:w-6 sm:h-6' />,
+            color: 'text-[#0075de] dark:text-[#62aef0] bg-[#eaf3fd] dark:bg-[#183153] border-[#d2e4f9] dark:border-[#224474]',
             items: [
                 {
-                    icon: <BookOpen className='w-5 h-5 sm:w-6 sm:h-6' />,
+                    icon: <BookOpen className='w-4 h-4' />,
                     label: 'Upload PYQ',
                     points: '10 Points',
                     description: 'Get 10 points for every approved PYQ',
                 },
                 {
-                    icon: <FileText className='w-5 h-5 sm:w-6 sm:h-6' />,
+                    icon: <FileText className='w-4 h-4' />,
                     label: 'Upload Notes',
                     points: '5 Points',
                     description: 'Earn 5 points for every approved note',
@@ -87,11 +87,11 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
         {
             id: 2,
             title: 'Premium Content',
-            icon: <Sparkles className='w-8 h-8 sm:w-12 sm:h-12' />,
-            color: 'from-purple-500 to-pink-500',
+            icon: <Sparkles className='w-5 h-5 sm:w-6 sm:h-6' />,
+            color: 'text-[#d97706] dark:text-[#fbbf24] bg-[#fffbeb] dark:bg-[#382606] border-[#fef08a] dark:border-[#524419]',
             items: [
                 {
-                    icon: <DollarSign className='w-5 h-5 sm:w-6 sm:h-6' />,
+                    icon: <DollarSign className='w-4 h-4' />,
                     label: 'Paid PYQs & Notes',
                     points: '70% Revenue',
                     description:
@@ -102,17 +102,17 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
         {
             id: 3,
             title: 'Redeem Money',
-            icon: <Wallet className='w-8 h-8 sm:w-12 sm:h-12' />,
-            color: 'from-green-500 to-emerald-500',
+            icon: <Wallet className='w-5 h-5 sm:w-6 sm:h-6' />,
+            color: 'text-[#1aae39] dark:text-[#4ade80] bg-[#eaf7ec] dark:bg-[#163821] border-[#d2f0d9] dark:border-[#205130]',
             items: [
                 {
-                    icon: <TrendingUp className='w-5 h-5 sm:w-6 sm:h-6' />,
+                    icon: <TrendingUp className='w-4 h-4' />,
                     label: 'Convert Points',
                     points: '5 Points = ₹1',
                     description: 'Redeem your points for real money anytime',
                 },
                 {
-                    icon: <Gift className='w-5 h-5 sm:w-6 sm:h-6' />,
+                    icon: <Gift className='w-4 h-4' />,
                     label: 'Withdraw',
                     points: 'To Bank',
                     description:
@@ -123,28 +123,26 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
     ];
 
     return (
-        <div className='fixed inset-0 z-99999 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn'>
-            <div className='relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden animate-scaleIn'>
+        <div className='fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn'>
+            <div className='relative w-full max-w-lg bg-white dark:bg-[#191919] rounded-xl shadow-xl max-h-[90vh] overflow-hidden border border-[#e6e6e6] dark:border-[#2f2f2f] animate-scaleIn flex flex-col'>
                 {/* Header */}
-                <div className='relative bg-gradient-to-r from-sky-600 via-blue-600 to-purple-600 p-4 sm:p-6 md:p-8 text-white overflow-hidden'>
-                    <div className='absolute inset-0 opacity-10'>
-                        <div className='absolute inset-0 bg-white/5'></div>
-                    </div>
+                <div className='relative bg-[#fcfbf9] dark:bg-[#202020] border-b border-[#e6e6e6] dark:border-[#2f2f2f] p-5 sm:p-6 overflow-hidden flex-shrink-0'>
+                    <div className='absolute inset-0 pointer-events-none opacity-[0.35] dark:opacity-[0.12] bg-[radial-gradient(#d0ceca_1px,transparent_1px)] [background-size:20px_20px]'></div>
                     <button
                         onClick={handleClose}
-                        className='absolute top-2 right-2 sm:top-4 sm:right-4 p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors'
+                        className='absolute top-3 right-3 p-1.5 rounded-md text-[#8c8883] dark:text-[#787672] hover:text-[#101828] dark:hover:text-white hover:bg-[#e6e6e6] dark:hover:bg-[#2f2f2f] transition-colors z-10'
                     >
-                        <X className='w-5 h-5 sm:w-6 sm:h-6' />
+                        <X className='w-5 h-5' />
                     </button>
-                    <div className='relative flex items-center gap-3 sm:gap-4'>
-                        <div className='p-2 sm:p-3 bg-white/10 rounded-lg sm:rounded-xl backdrop-blur-sm'>
-                            <TrendingUp className='w-6 h-6 sm:w-8 sm:h-8' />
+                    <div className='relative flex items-center gap-3 z-10'>
+                        <div className='p-2.5 bg-white dark:bg-[#282828] rounded-xl border border-[#e6e6e6] dark:border-[#383838] shadow-xs text-[#0075de] dark:text-[#62aef0]'>
+                            <TrendingUp className='w-6 h-6' />
                         </div>
                         <div>
-                            <h2 className='text-xl sm:text-2xl font-bold mb-1 sm:mb-2'>
+                            <h2 className='text-lg sm:text-xl font-bold text-[#101828] dark:text-[#ededed] leading-tight'>
                                 Start Earning Today! 💰
                             </h2>
-                            <p className='text-blue-100 text-sm sm:text-base md:text-lg'>
+                            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mt-0.5'>
                                 Share knowledge, earn points, get real money
                             </p>
                         </div>
@@ -152,119 +150,102 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
                 </div>
 
                 {/* Content */}
-                <div className='p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-200px)]'>
+                <div className='p-5 sm:p-6 overflow-y-auto flex-1'>
                     {/* Steps Navigation */}
-                    <div className='flex justify-center mb-4 sm:mb-6 md:mb-8 gap-1.5 sm:gap-2'>
+                    <div className='flex justify-center mb-6 gap-2'>
                         {steps.map((step, index) => (
                             <button
                                 key={step.id}
                                 onClick={() => setActiveStep(index)}
-                                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-sm ${
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all text-xs sm:text-sm border ${
                                     activeStep === index
-                                        ? 'bg-gradient-to-r ' +
-                                          step.color +
-                                          ' text-white shadow-lg scale-105'
-                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        ? `border-[#0075de] bg-[#eaf3fd] text-[#0075de] dark:bg-[#183153] dark:text-[#62aef0] dark:border-[#224474]`
+                                        : 'border-[#e6e6e6] bg-[#fcfbf9] text-[#615d59] hover:bg-[#f6f5f4] dark:border-[#383838] dark:bg-[#202020] dark:text-[#a09e9a] dark:hover:bg-[#282828]'
                                 }`}
                             >
-                                <span className='hidden xs:inline sm:inline'>
-                                    Step {step.id}
-                                </span>
-                                <span className='xs:hidden sm:hidden'>
-                                    {step.id}
-                                </span>
+                                <span>Step {step.id}</span>
                                 {activeStep === index && (
-                                    <CheckCircle className='w-3 h-3 sm:w-4 sm:h-4' />
+                                    <CheckCircle className='w-3.5 h-3.5' />
                                 )}
                             </button>
                         ))}
                     </div>
 
                     {/* Active Step Content */}
-                    <div className='space-y-3 sm:space-y-4 md:space-y-6 animate-fadeIn'>
+                    <div className='space-y-4 animate-fadeIn'>
                         {/* Step Items */}
-                        <div className='grid gap-3 sm:gap-4'>
+                        <div className='grid gap-3'>
                             {steps[activeStep].items.map((item, idx) => (
                                 <div
                                     key={idx}
-                                    className='group relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-sky-500 dark:hover:border-sky-500 transition-all hover:shadow-lg hover:scale-[1.02]'
+                                    className='relative bg-white dark:bg-[#202020] p-4 rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de] dark:hover:border-[#0075de] transition-colors group shadow-xs'
                                 >
-                                    <div className='flex items-start gap-3 sm:gap-4'>
+                                    <div className='flex items-start gap-3'>
                                         <div
-                                            className={`p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${steps[activeStep].color} text-white shadow-md flex-shrink-0`}
+                                            className={`p-2 rounded-lg border ${steps[activeStep].color} flex-shrink-0`}
                                         >
                                             {item.icon}
                                         </div>
-                                        <div className='flex-1 min-w-0'>
-                                            <div className='flex items-center justify-between gap-2 mb-1.5 sm:mb-2'>
-                                                <h4 className='text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate'>
+                                        <div className='flex-1 min-w-0 pt-0.5'>
+                                            <div className='flex items-center justify-between gap-2 mb-1'>
+                                                <h4 className='text-sm font-semibold text-[#101828] dark:text-[#ededed] truncate'>
                                                     {item.label}
                                                 </h4>
                                                 <span
-                                                    className={`px-2 sm:px-3 md:px-4 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${steps[activeStep].color} text-white font-bold text-xs sm:text-sm shadow-md whitespace-nowrap flex-shrink-0`}
+                                                    className={`px-2 py-0.5 rounded-md border text-[11px] font-bold whitespace-nowrap flex-shrink-0 ${steps[activeStep].color}`}
                                                 >
                                                     {item.points}
                                                 </span>
                                             </div>
-                                            <p className='text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400'>
+                                            <p className='text-xs text-[#615d59] dark:text-[#a09e9a]'>
                                                 {item.description}
                                             </p>
                                         </div>
                                     </div>
-                                    {/* Decorative corner */}
-                                    <div
-                                        className={`absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${steps[activeStep].color} opacity-5 rounded-bl-full`}
-                                    ></div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Example Calculation */}
                         {activeStep === 2 && (
-                            <div className='mt-4 sm:mt-6 md:mt-8 p-4 sm:p-5 md:p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg sm:rounded-xl border-2 border-green-200 dark:border-green-700'>
-                                <h4 className='text-sm sm:text-base md:text-lg font-bold text-green-900 dark:text-green-100 mb-3 sm:mb-4 flex items-center gap-2'>
-                                    <Sparkles className='w-4 h-4 sm:w-5 sm:h-5' />
+                            <div className='mt-5 p-4 bg-[#fcfbf9] dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                <h4 className='text-sm font-bold text-[#101828] dark:text-[#ededed] mb-3 flex items-center gap-1.5'>
+                                    <Sparkles className='w-4 h-4 text-[#d97706] dark:text-[#fbbf24]' />
                                     Quick Example
                                 </h4>
-                                <div className='space-y-2 sm:space-y-3 text-xs sm:text-sm'>
-                                    <div className='flex justify-between items-center gap-2'>
-                                        <span className='text-gray-700 dark:text-gray-300'>
-                                            10 PYQs uploaded
-                                        </span>
-                                        <span className='font-semibold text-green-700 dark:text-green-300 whitespace-nowrap'>
+                                <div className='space-y-2 text-xs'>
+                                    <div className='flex justify-between items-center gap-2 text-[#615d59] dark:text-[#a09e9a]'>
+                                        <span>10 PYQs uploaded</span>
+                                        <span className='font-semibold text-[#101828] dark:text-[#ededed]'>
                                             100 Points
                                         </span>
                                     </div>
-                                    <div className='flex justify-between items-center gap-2'>
-                                        <span className='text-gray-700 dark:text-gray-300'>
-                                            10 Notes uploaded
-                                        </span>
-                                        <span className='font-semibold text-green-700 dark:text-green-300 whitespace-nowrap'>
+                                    <div className='flex justify-between items-center gap-2 text-[#615d59] dark:text-[#a09e9a]'>
+                                        <span>10 Notes uploaded</span>
+                                        <span className='font-semibold text-[#101828] dark:text-[#ededed]'>
                                             50 Points
                                         </span>
                                     </div>
-                                    <div className='flex justify-between items-center gap-2'>
-                                        <span className='text-gray-700 dark:text-gray-300'>
-                                            10 Paid PYQ sold (50 points)
-                                        </span>
-                                        <span className='font-semibold text-green-700 dark:text-green-300 whitespace-nowrap'>
+                                    <div className='flex justify-between items-center gap-2 text-[#615d59] dark:text-[#a09e9a]'>
+                                        <span>10 Paid PYQ sold (50 points)</span>
+                                        <span className='font-semibold text-[#101828] dark:text-[#ededed]'>
                                             350 Points
                                         </span>
                                     </div>
-                                    <div className='border-t-2 border-green-300 dark:border-green-600 pt-2 sm:pt-3 mt-2 sm:mt-3'>
-                                        <div className='flex justify-between items-center text-sm sm:text-base gap-2'>
-                                            <span className='font-bold text-gray-900 dark:text-gray-100'>
+                                    <div className='border-t border-[#e6e6e6] dark:border-[#383838] pt-2 mt-2'>
+                                        <div className='flex justify-between items-center text-sm gap-2'>
+                                            <span className='font-bold text-[#101828] dark:text-[#ededed]'>
                                                 Total Points
                                             </span>
-                                            <span className='font-bold text-green-700 dark:text-green-300'>
+                                            <span className='font-bold text-[#1aae39] dark:text-[#4ade80]'>
                                                 500 Points
                                             </span>
                                         </div>
-                                        <div className='flex justify-between items-center text-base sm:text-lg md:text-xl mt-1.5 sm:mt-2 gap-2'>
-                                            <span className='font-bold text-gray-900 dark:text-gray-100'>
+                                        <div className='flex justify-between items-center mt-1 gap-2'>
+                                            <span className='font-bold text-[#101828] dark:text-[#ededed]'>
                                                 You Can Redeem
                                             </span>
-                                            <span className='font-bold text-green-600 dark:text-green-400 text-xl sm:text-2xl'>
+                                            <span className='font-bold text-[#1aae39] dark:text-[#4ade80] text-lg'>
                                                 ₹100
                                             </span>
                                         </div>
@@ -273,81 +254,59 @@ const EarningFlowModal: React.FC<EarningFlowModalProps> = ({
                             </div>
                         )}
                     </div>
+                </div>
 
-                    {/* Navigation Buttons */}
-                    <div className='flex justify-between items-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 gap-2 sm:gap-3'>
+                {/* Navigation Buttons */}
+                <div className='flex justify-between items-center p-4 border-t border-[#f0eee9] dark:border-[#2a2a2a] bg-[#fcfbf9] dark:bg-[#1c1c1c] flex-shrink-0'>
+                    <button
+                        onClick={() =>
+                            setActiveStep((prev) => Math.max(0, prev - 1))
+                        }
+                        disabled={activeStep === 0}
+                        className='px-4 py-2 rounded-lg font-medium text-xs sm:text-sm text-[#101828] dark:text-[#ededed] bg-white dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] hover:bg-[#f6f5f4] dark:hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-xs'
+                    >
+                        Previous
+                    </button>
+
+                    {activeStep < steps.length - 1 ? (
                         <button
                             onClick={() =>
-                                setActiveStep((prev) => Math.max(0, prev - 1))
+                                setActiveStep((prev) =>
+                                    Math.min(steps.length - 1, prev + 1),
+                                )
                             }
-                            disabled={activeStep === 0}
-                            className='px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                            className='flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm bg-[#0075de] text-white hover:bg-[#0062bd] shadow-xs transition-all active:scale-[0.98]'
                         >
-                            Previous
+                            <span>Next Step</span>
+                            <ArrowRight className='w-3.5 h-3.5' />
                         </button>
-
-                        {activeStep < steps.length - 1 ? (
-                            <button
-                                onClick={() =>
-                                    setActiveStep((prev) =>
-                                        Math.min(steps.length - 1, prev + 1),
-                                    )
-                                }
-                                className='flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-medium text-sm sm:text-base bg-gradient-to-r from-sky-600 to-blue-600 text-white hover:from-sky-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all'
-                            >
-                                <span className='hidden xs:inline'>
-                                    Next Step
-                                </span>
-                                <span className='xs:hidden'>Next</span>
-                                <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5' />
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleClose}
-                                className='flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg font-medium text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all'
-                            >
-                                <CheckCircle className='w-4 h-4 sm:w-5 sm:h-5' />
-                                <span className='hidden xs:inline'>
-                                    Start Earning Now!
-                                </span>
-                                <span className='xs:hidden'>Start Now!</span>
-                            </button>
-                        )}
-                    </div>
+                    ) : (
+                        <button
+                            onClick={handleClose}
+                            className='flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm bg-[#1aae39] dark:bg-[#163821] text-white dark:text-[#4ade80] border border-transparent dark:border-[#205130] hover:bg-[#179632] dark:hover:bg-[#1c472a] shadow-xs transition-all active:scale-[0.98]'
+                        >
+                            <CheckCircle className='w-3.5 h-3.5' />
+                            <span>Start Earning!</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
             <style jsx>{`
                 @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                    }
-                    to {
-                        opacity: 1;
-                    }
+                    from { opacity: 0; }
+                    to { opacity: 1; }
                 }
-
                 @keyframes scaleIn {
-                    from {
-                        opacity: 0;
-                        transform: scale(0.9);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: scale(1);
-                    }
+                    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+                    to { opacity: 1; transform: scale(1) translateY(0); }
                 }
-
-                .animate-fadeIn {
-                    animation: fadeIn 0.2s ease-out;
-                }
-
-                .animate-scaleIn {
-                    animation: scaleIn 0.3s ease-out;
-                }
+                .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+                .animate-scaleIn { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
             `}</style>
         </div>
     );
 };
+
 
 export default EarningFlowModal;

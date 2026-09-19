@@ -63,62 +63,70 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     return (
         <div className='relative w-full' ref={dropdownRef}>
             {label && (
-                <label className='block font-semibold text-sky-500 dark:text-sky-400 mb-1'>
+                <label className='block text-xs font-semibold text-[#0075de] dark:text-[#62aef0] mb-1'>
                     {label}{' '}
                     {required && <span className='text-red-500'>*</span>}
                 </label>
             )}
 
             <div
-                className={`relative flex items-center border ${
+                className={`relative flex items-center border text-sm ${
                     isOpen
-                        ? 'ring-2 ring-sky-500 border-sky-500'
-                        : 'border-gray-300 dark:border-gray-600'
+                        ? 'ring-1 ring-[#0075de] border-[#0075de]'
+                        : 'border-[#e6e6e6] dark:border-[#383838]'
                 } 
         ${errorState ? 'border-red-500' : ''} 
         ${
             disabled
-                ? 'bg-gray-100 opacity-70 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
-                : 'bg-white dark:bg-gray-700 dark:text-white hover:border-sky-400 dark:hover:border-sky-500'
+                ? 'bg-[#f6f5f4] opacity-70 cursor-not-allowed dark:bg-[#282828] text-[#8c8883]'
+                : 'bg-white dark:bg-[#191919] text-[#101828] dark:text-[#ededed] hover:border-[#0075de]'
         } 
-        rounded-lg shadow-sm transition-all`}
+        rounded-lg shadow-xs transition-all`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
             >
-                <div className='flex-grow px-3 py-2.5 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap'>
-                    {selectedOption ? selectedOption.label : placeholder}
+                <div className='flex-grow px-3 py-2 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs sm:text-sm'>
+                    {selectedOption ? (
+                        <span className='text-[#101828] dark:text-[#ededed] font-medium'>
+                            {selectedOption.label}
+                        </span>
+                    ) : (
+                        <span className='text-[#8c8883] dark:text-[#787672]'>
+                            {placeholder}
+                        </span>
+                    )}
                 </div>
-                <div className='px-3 text-gray-400 dark:text-gray-500'>
-                    <Search className='w-4 h-4' />
+                <div className='px-2.5 text-[#8c8883] dark:text-[#787672]'>
+                    <Search className='w-3.5 h-3.5' />
                 </div>
             </div>
 
             {isOpen && (
-                <div className='absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto'>
-                    <div className='sticky top-0 bg-white dark:bg-gray-800 p-2 border-b border-gray-200 dark:border-gray-700'>
+                <div className='absolute z-30 mt-1 w-full bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#383838] rounded-lg shadow-lg max-h-60 overflow-y-auto text-xs sm:text-sm'>
+                    <div className='sticky top-0 bg-white dark:bg-[#202020] p-2 border-b border-[#e6e6e6] dark:border-[#383838]'>
                         <input
                             ref={inputRef}
                             autoFocus
                             type='text'
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className='w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-100'
+                            className='w-full px-2.5 py-1.5 border border-[#e6e6e6] dark:border-[#383838] rounded-md focus:outline-none focus:ring-1 focus:ring-[#0075de] bg-[#fcfbf9] dark:bg-[#191919] text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] text-xs'
                             placeholder='Search...'
                             onClick={(e) => e.stopPropagation()}
                         />
                     </div>
 
                     {loading ? (
-                        <div className='py-3 px-4 text-gray-500 dark:text-gray-400 text-center'>
+                        <div className='py-3 px-3 text-[#8c8883] dark:text-[#787672] text-center text-xs'>
                             Loading...
                         </div>
                     ) : filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                             <div
                                 key={option.value}
-                                className={`py-3 px-4 hover:bg-sky-50 dark:hover:bg-sky-900 dark:hover:text-sky-100 cursor-pointer ${
+                                className={`py-2 px-3 hover:bg-[#f6f5f4] dark:hover:bg-[#282828] cursor-pointer transition-colors text-xs sm:text-sm ${
                                     value === option.value
-                                        ? 'bg-sky-100 dark:bg-sky-900 dark:text-sky-100'
-                                        : ''
+                                        ? 'bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] font-semibold'
+                                        : 'text-[#101828] dark:text-[#ededed]'
                                 }`}
                                 onClick={() => handleSelect(option.value)}
                             >
@@ -126,8 +134,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                             </div>
                         ))
                     ) : (
-                        <div className='py-3 px-4 text-gray-500 dark:text-gray-400 text-center'>
-                            No options found. Try a different search term.
+                        <div className='py-3 px-3 text-[#8c8883] dark:text-[#787672] text-center text-xs'>
+                            No options found.
                         </div>
                     )}
                 </div>

@@ -12,13 +12,13 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
 }) => {
     return (
         <div className='flex justify-end'>
-            <div className='flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1'>
+            <div className='flex bg-[#f6f5f4] dark:bg-[#282828] rounded-lg p-0.5 border border-[#e6e6e6] dark:border-[#383838]'>
                 <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
+                    className={`p-1.5 sm:p-2 rounded-md transition-all ${
                         viewMode === 'grid'
-                            ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            ? 'bg-white dark:bg-[#191919] text-[#0075de] dark:text-[#62aef0] shadow-xs'
+                            : 'text-[#8c8883] dark:text-[#787672] hover:text-[#101828] dark:hover:text-white'
                     }`}
                     aria-label='Grid view'
                     title='Grid view'
@@ -27,10 +27,10 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
                 </button>
                 <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
+                    className={`p-1.5 sm:p-2 rounded-md transition-all ${
                         viewMode === 'list'
-                            ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            ? 'bg-white dark:bg-[#191919] text-[#0075de] dark:text-[#62aef0] shadow-xs'
+                            : 'text-[#8c8883] dark:text-[#787672] hover:text-[#101828] dark:hover:text-white'
                     }`}
                     aria-label='List view'
                     title='List view'

@@ -40,18 +40,18 @@ export const ResourcePageHeader: React.FC<ResourcePageHeaderProps> = ({
     setViewMode,
 }) => {
     return (
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-            <div className='flex items-center gap-4'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4'>
+            <div className='flex items-center gap-2 sm:gap-3'>
                 <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className='flex gap-3 w-full p-3 justify-center items-center bg-gray-100 hover:bg-gray-200 text-black font-medium rounded-lg dark:bg-gray-500 dark:hover:bg-gray-600'
+                    className='inline-flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#202020] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] text-[#101828] dark:text-[#ededed] font-medium text-xs sm:text-sm rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-xs transition-colors'
                 >
-                    <FilterIcon className='w-4 h-4' />
-                    Filters
+                    <FilterIcon className='w-4 h-4 text-[#615d59] dark:text-[#a09e9a]' />
+                    <span>Filters</span>
                     {hasActiveFilters &&
                         activeFilterCount !== undefined &&
                         activeFilterCount > 0 && (
-                            <span className='inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded-full'>
+                            <span className='inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold bg-[#0075de] text-white rounded-full'>
                                 {activeFilterCount}
                             </span>
                         )}
@@ -59,49 +59,51 @@ export const ResourcePageHeader: React.FC<ResourcePageHeaderProps> = ({
                 {hasActiveFilters && (
                     <button
                         onClick={clearFilters}
-                        className='inline-flex items-center p-3 rounded-lg bg-red-200 gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400'
+                        className='inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-medium rounded-lg bg-[#fff1f2] dark:bg-[#3b1118] text-[#e11d48] dark:text-[#fb7185] border border-[#fecdd3] dark:border-[#5c2328] hover:bg-[#ffe4e6] dark:hover:bg-[#4c0519] transition-colors'
                     >
-                        <XIcon className='w-4 h-4' />
-                        Clear
+                        <XIcon className='w-3.5 h-3.5' />
+                        <span>Clear</span>
                     </button>
                 )}
             </div>
 
             <div className='relative flex-grow'>
-                <div className='flex gap-3 w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-sky-500 focus-within:border-sky-500 dark:bg-gray-800 dark:text-white transition-all'>
-                    <SearchIcon className='w-5 h-5 text-gray-400' />
+                <div className='flex items-center gap-2.5 w-full px-3 py-2 border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg shadow-xs focus-within:ring-1 focus-within:ring-[#0075de] focus-within:border-[#0075de] bg-white dark:bg-[#202020] text-[#101828] dark:text-[#ededed] transition-all'>
+                    <SearchIcon className='w-4 h-4 text-[#8c8883] dark:text-[#787672] flex-shrink-0' />
                     <input
                         type='text'
                         placeholder={searchPlaceholder}
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
-                        className='w-full bg-transparent outline-none text-black dark:text-white'
+                        className='w-full bg-transparent outline-none text-xs sm:text-sm text-[#101828] dark:text-white placeholder-[#8c8883] dark:placeholder-[#787672]'
                     />
                 </div>
             </div>
 
-            {onShowEarning && (
-                <button
-                    onClick={onShowEarning}
-                    className='flex gap-3 w-full sm:w-auto p-3 justify-center items-center bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600'
-                    title='Learn how to earn points'
-                >
-                    <TrendingUp className='w-4 h-4' />
-                    <span className=''>How to Earn</span>
-                </button>
-            )}
+            <div className='flex items-center gap-2'>
+                {onShowEarning && (
+                    <button
+                        onClick={onShowEarning}
+                        className='inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium bg-[#eaf7ec] text-[#1aae39] dark:bg-[#163821] dark:text-[#4ade80] border border-[#d2f0d9] dark:border-[#205130] hover:bg-[#d8f2dc] dark:hover:bg-[#1c472a] rounded-lg transition-colors shadow-xs'
+                        title='Learn how to earn points'
+                    >
+                        <TrendingUp className='w-3.5 h-3.5' />
+                        <span>How to Earn</span>
+                    </button>
+                )}
 
-            {onAdd && (
-                <button
-                    onClick={onAdd}
-                    className='flex gap-3 w-full sm:w-auto p-3 justify-center items-center bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-sky-300 dark:bg-sky-500 dark:hover:bg-sky-600'
-                >
-                    <PlusIcon className='w-4 h-4' />
-                    {addButtonText}
-                </button>
-            )}
-            {/* View Mode Toggle */}
-            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+                {onAdd && (
+                    <button
+                        onClick={onAdd}
+                        className='inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs active:scale-[0.98]'
+                    >
+                        <PlusIcon className='w-4 h-4' />
+                        <span>{addButtonText}</span>
+                    </button>
+                )}
+                {/* View Mode Toggle */}
+                <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
         </div>
     );
 };

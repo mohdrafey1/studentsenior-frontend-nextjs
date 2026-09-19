@@ -59,7 +59,7 @@ export const CommonFilters: React.FC<CommonFiltersProps> = ({
                 <select
                     value={semesterFilter}
                     onChange={(e) => setSemesterFilter(e.target.value)}
-                    className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                    className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-white dark:bg-[#191919] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                 >
                     <option value=''>All Semesters</option>
                     <option value='1'>1st Semester</option>

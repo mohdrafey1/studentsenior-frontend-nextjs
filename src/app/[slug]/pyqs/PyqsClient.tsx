@@ -436,12 +436,12 @@ const PyqsClient = ({
 
             {/* Filters Section */}
             {filterState.showFilters && (
-                <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4'>
+                <div className='bg-[#fcfbf9] dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-5 shadow-xs'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3'>
                         <select
                             value={isSolvedFilter}
                             onChange={(e) => setIsSolvedFilter(e.target.value)}
-                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                            className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-white dark:bg-[#191919] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                         >
                             <option value=''>All Status</option>
                             <option value='true'>Solved</option>
@@ -464,7 +464,7 @@ const PyqsClient = ({
                         <select
                             value={yearFilter}
                             onChange={(e) => setYearFilter(e.target.value)}
-                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                            className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-white dark:bg-[#191919] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                         >
                             <option value=''>All Years</option>
                             {FILTER_ACADEMIC_YEARS.map((year) => (
@@ -477,7 +477,7 @@ const PyqsClient = ({
                         <select
                             value={examTypeFilter}
                             onChange={(e) => setExamTypeFilter(e.target.value)}
-                            className='w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm hover:border-sky-400 dark:hover:border-sky-500'
+                            className='w-full px-3 py-2 text-sm border border-[#e6e6e6] dark:border-[#383838] rounded-lg bg-white dark:bg-[#191919] text-[#101828] dark:text-[#ededed] focus:ring-1 focus:ring-[#0075de] focus:border-[#0075de] outline-none transition-all shadow-xs'
                         >
                             <option value=''>All Exam Types</option>
                             <option value='midsem1'>Midsem 1</option>
@@ -491,8 +491,8 @@ const PyqsClient = ({
 
             {/* Loading State */}
             {loading && (
-                <div className='min-h-screen flex justify-center py-12'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600'></div>
+                <div className='min-h-[300px] flex items-center justify-center py-12'>
+                    <div className='animate-spin rounded-full h-9 w-9 border-2 border-[#0075de] border-t-transparent'></div>
                 </div>
             )}
 
@@ -502,7 +502,7 @@ const PyqsClient = ({
                     {pyqs.length > 0 ? (
                         <>
                             {viewMode === 'grid' ? (
-                                <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6'>
+                                <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4'>
                                     {pyqs.map((pyq) => (
                                         <PyqCard
                                             key={pyq._id}
@@ -529,21 +529,21 @@ const PyqsClient = ({
                         </>
                     ) : (
                         <div className='text-center py-12'>
-                            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto'>
-                                <div className='w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center'>
-                                    <FileText className='w-8 h-8 text-gray-400 dark:text-gray-500' />
+                            <div className='bg-[#fcfbf9] dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 max-w-md mx-auto shadow-xs'>
+                                <div className='w-12 h-12 mx-auto mb-3 bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] rounded-full flex items-center justify-center'>
+                                    <FileText className='w-6 h-6' />
                                 </div>
-                                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+                                <h3 className='text-base font-bold text-[#101828] dark:text-white mb-1'>
                                     No PYQs Found
                                 </h3>
-                                <p className='text-gray-600 dark:text-gray-400 mb-4'>
+                                <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-5 leading-relaxed'>
                                     {hasActiveFilters
-                                        ? 'Try adjusting your filters or add a new PYQ.'
-                                        : 'Be the first to add a PYQ for this college!'}
+                                        ? 'Try adjusting or clearing your filters to discover more papers.'
+                                        : 'Be the first to upload and share a question paper for this college!'}
                                 </p>
                                 <button
                                     onClick={openAddModal}
-                                    className='inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200'
+                                    className='inline-flex items-center gap-1.5 px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs active:scale-[0.98]'
                                 >
                                     <svg
                                         className='w-4 h-4'
