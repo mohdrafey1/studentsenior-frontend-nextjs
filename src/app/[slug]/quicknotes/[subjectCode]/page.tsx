@@ -61,38 +61,39 @@ export default async function QuickNotesListPage({
     const subjectName = subject?.subjectName || subjectCode;
 
     return (
-        <main className='max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
-            <header className='mb-8'>
-                <div className='flex items-center gap-2 text-sm text-gray-500 mb-2'>
-                    <Link href={`/${slug}`} className='hover:text-primary'>
+        <main className='max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8 min-h-screen'>
+            <header className='mb-8 bg-[#fcfbf9] dark:bg-[#202020] p-6 rounded-2xl border border-[#e6e6e6] dark:border-[#383838] shadow-sm'>
+                <div className='flex items-center gap-2 text-sm text-[#8c8883] dark:text-[#787672] mb-3 font-medium'>
+                    <Link href={`/${slug}`} className='hover:text-[#101828] dark:hover:text-white transition-colors'>
                         Home
                     </Link>
                     <span>/</span>
-                    <span className='text-gray-900 dark:text-gray-300'>
+                    <span className='text-[#101828] dark:text-[#ededed]'>
                         Quick Notes
                     </span>
                 </div>
-                <h1 className='text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2'>
+                <h1 className='text-2xl sm:text-3xl font-bold text-[#101828] dark:text-[#ededed] mb-4'>
                     {subjectName}{' '}
-                    <span className='text-primary'>Quick Notes</span>
+                    <span className='text-[#0075de] dark:text-[#62aef0]'>Quick Notes</span>
                 </h1>
-                <div className='flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-100 dark:border-blue-800 text-sm'>
-                    <svg
-                        className='w-5 h-5 flex-shrink-0'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                    >
-                        <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                        />
-                    </svg>
-                    <p>
-                        These are concise revision notes designed for
-                        last-minute exam preparation.
+                <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] rounded-xl border border-[#d2e4f9] dark:border-[#224474] text-sm shadow-xs'>
+                    <div className='p-2 bg-white dark:bg-[#11233c] rounded-lg border border-[#d2e4f9] dark:border-[#224474] flex-shrink-0'>
+                        <svg
+                            className='w-5 h-5'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2.5}
+                                d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                            />
+                        </svg>
+                    </div>
+                    <p className='font-medium leading-relaxed'>
+                        These are concise revision notes designed for last-minute exam preparation.
                     </p>
                 </div>
             </header>
@@ -107,37 +108,37 @@ export default async function QuickNotesListPage({
             </div>
 
             {notes.length === 0 ? (
-                <div className='text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700'>
-                    <p className='text-lg text-gray-500 dark:text-gray-400'>
+                <div className='text-center py-16 px-4 bg-[#fcfbf9] dark:bg-[#202020] rounded-2xl border border-dashed border-[#e6e6e6] dark:border-[#383838] shadow-sm'>
+                    <p className='text-lg font-medium text-[#615d59] dark:text-[#a09e9a]'>
                         No quick notes available for this subject yet.
                     </p>
                 </div>
             ) : (
-                <div className='space-y-4'>
+                <div className='space-y-3'>
                     {notes.map((note, index) => (
                         <React.Fragment key={note._id || note.slug}>
                             <Link
                                 href={`/${slug}/quicknotes/${subjectCode}/${note.slug}`}
-                                className='block group'
+                                className='block group outline-none'
                             >
-                                <div className='bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all flex'>
-                                    {/* Unit Indicator - simple solid color or gradient approx */}
-                                    <div className='w-1 bg-gradient-to-b from-purple-500 to-indigo-600'></div>
+                                <div className='bg-white dark:bg-[#202020] rounded-xl overflow-hidden border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de] dark:hover:border-[#0075de] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-200 flex items-stretch'>
+                                    {/* Accent border left */}
+                                    <div className='w-1 bg-[#f0eee9] dark:bg-[#2a2a2a] group-hover:bg-[#0075de] transition-colors'></div>
 
-                                    <div className='flex-1 p-4 flex items-center gap-4'>
+                                    <div className='flex-1 p-4 sm:p-5 flex items-center gap-4 sm:gap-5'>
                                         {/* Unit Badge */}
-                                        <div className='flex-shrink-0 w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center border border-purple-100 dark:border-purple-800'>
-                                            <span className='text-lg font-bold text-purple-600 dark:text-purple-400'>
-                                                {note.unitNumber}
+                                        <div className='flex-shrink-0 w-12 h-12 rounded-xl bg-[#fcfbf9] dark:bg-[#191919] flex items-center justify-center border border-[#e6e6e6] dark:border-[#383838] group-hover:bg-[#eaf3fd] dark:group-hover:bg-[#183153] group-hover:border-[#d2e4f9] dark:group-hover:border-[#224474] transition-colors'>
+                                            <span className='text-base font-bold text-[#101828] dark:text-[#ededed] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                U{note.unitNumber}
                                             </span>
                                         </div>
 
                                         {/* Content */}
                                         <div className='flex-1 min-w-0'>
-                                            <h3 className='text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors line-clamp-2'>
+                                            <h3 className='text-base font-bold text-[#101828] dark:text-[#ededed] mb-1.5 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors line-clamp-1'>
                                                 {note.title}
                                             </h3>
-                                            <div className='flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400'>
+                                            <div className='flex items-center gap-1.5 text-xs font-semibold text-[#d97706] dark:text-[#fbbf24] bg-[#fffbeb] dark:bg-[#382606] border border-[#fef08a] dark:border-[#524419] px-2 py-0.5 rounded-md inline-flex'>
                                                 <svg
                                                     className='w-3 h-3'
                                                     fill='currentColor'
@@ -154,7 +155,7 @@ export default async function QuickNotesListPage({
                                         </div>
 
                                         {/* Arrow */}
-                                        <div className='flex-shrink-0 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-colors'>
+                                        <div className='flex-shrink-0 text-[#8c8883] dark:text-[#787672] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors group-hover:translate-x-1 duration-200'>
                                             <svg
                                                 className='w-5 h-5'
                                                 fill='none'

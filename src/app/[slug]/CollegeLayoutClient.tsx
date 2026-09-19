@@ -24,7 +24,7 @@ export default function CollegeLayoutClient({
 
     return (
         <div>
-            <div className='min-h-full bg-gradient-to-b from-white to-sky-100 dark:from-gray-900 dark:to-gray-900 pb-16 lg:pb-0'>
+            <div className='min-h-full bg-gradient-to-b from-white to-white dark:from-gray-900 dark:to-gray-900 pb-16 lg:pb-0'>
                 {!hideCollegeLinks && (
                     <div className='flex'>
                         {collegeLinksComponent}

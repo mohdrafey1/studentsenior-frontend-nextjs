@@ -83,12 +83,10 @@ const QuickNoteCard = ({
                 {/* Footer */}
                 <div className='flex items-center justify-between pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                     <div className='flex items-center gap-1.5 text-[11px] font-semibold text-[#d97706] dark:text-[#fbbf24] bg-[#fffbeb] dark:bg-[#382606] border border-[#fef08a] dark:border-[#524419] px-2 py-0.5 rounded-md'>
-                        <Zap className='w-3 h-3' />
-                        <span>Quick Review</span>
-                    </div>
-                    <span className='text-[11px] font-medium text-[#615d59] dark:text-[#a09e9a] truncate max-w-[100px]'>
+                       <span className='text-[11px] font-medium text-[#615d59] dark:text-[#a09e9a] truncate'>
                         {note.subject?.subjectName}
                     </span>
+                    </div>
                 </div>
             </div>
         </Link>
