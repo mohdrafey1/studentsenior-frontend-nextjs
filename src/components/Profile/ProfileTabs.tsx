@@ -7,6 +7,12 @@ import OverviewTab from './OverviewTab';
 import ProductsTab from './ProductsTab';
 import NotesTab from './NotesTab';
 import PYQTab from './PYQTab';
+import {
+    LayoutDashboard,
+    ShoppingBag,
+    FileText,
+    BookOpen,
+} from 'lucide-react';
 
 export default function ProfileTabs() {
     const [activeTab, setActiveTab] = useState<string>('overview');
@@ -16,17 +22,16 @@ export default function ProfileTabs() {
     );
 
     const tabs = [
-        { id: 'overview', label: 'Overview', icon: '📊' },
-        { id: 'products', label: 'Products', icon: '🛍️' },
-        { id: 'notes', label: 'Notes', icon: '📝' },
-        { id: 'pyqs', label: 'PYQs', icon: '📋' },
+        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+        { id: 'products', label: 'Products', icon: ShoppingBag, count: userData.userProductAdd?.length },
+        { id: 'notes', label: 'Notes', icon: FileText, count: userData.userNoteAdd?.length },
+        { id: 'pyqs', label: 'PYQs', icon: BookOpen, count: userData.userPyqAdd?.length },
     ];
 
     const renderTabContent = () => {
         switch (activeTab) {
             case 'overview':
                 return <OverviewTab data={userData} />;
-
             case 'products':
                 return <ProductsTab products={userData.userProductAdd || []} />;
             case 'notes':
@@ -39,52 +44,39 @@ export default function ProfileTabs() {
     };
 
     return (
-        <div 
-            
-            
-            
-            className='bg-white/80 dark:bg-[#111827]/80 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-white/20 dark:border-white/10 overflow-hidden'
-        >
-            {/* Tab Navigation */}
-            <div className='border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/20'>
-                <nav className='flex overflow-x-auto hide-scrollbar space-x-2 sm:space-x-4 p-4'>
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`relative flex items-center space-x-2 px-4 py-2.5 rounded-full font-medium text-sm sm:text-base transition-colors whitespace-nowrap z-10 ${
-                                activeTab === tab.id
-                                    ? 'text-white'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5'
-                            }`}
-                        >
-                            {activeTab === tab.id && (
-                                <div
-                                    
-                                    className="absolute inset-0 bg-blue-600 dark:bg-blue-500 rounded-full -z-10 shadow-lg shadow-blue-500/30"
-                                    
-                                />
-                            )}
-                            <span className="relative z-10">{tab.icon}</span>
-                            <span className="relative z-10">{tab.label}</span>
-                        </button>
-                    ))}
-                </nav>
+        <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_1px_3px_rgba(0,0,0,0.02)] overflow-hidden'>
+            {/* Segmented Tab Navigation */}
+            <div className='p-3 sm:p-4 border-b border-[#f0eee9] dark:border-[#2a2a2a] bg-[#faf9f8] dark:bg-[#242424]'>
+                <div className='flex items-center gap-1.5 p-1 bg-[#f0eee9] dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] overflow-x-auto'>
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+                                    isActive
+                                        ? 'bg-white dark:bg-[#282828] text-[#101828] dark:text-white shadow-xs'
+                                        : 'text-[#615d59] dark:text-[#a09e9a] hover:text-[#101828] dark:hover:text-white'
+                                }`}
+                            >
+                                <Icon className={`w-4 h-4 ${isActive ? 'text-[#0075de] dark:text-[#62aef0]' : 'text-[#8c8883]'}`} />
+                                <span>{tab.label}</span>
+                                {tab.count !== undefined && tab.count > 0 && (
+                                    <span className='px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0]'>
+                                        {tab.count}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
-            {/* Tab Content */}
-            <div className='p-6'>
-                
-                    <div
-                        key={activeTab}
-                        
-                        
-                        
-                        
-                    >
-                        {renderTabContent()}
-                    </div>
-                
+            {/* Tab Content Panel */}
+            <div className='p-4 sm:p-6'>
+                {renderTabContent()}
             </div>
         </div>
     );

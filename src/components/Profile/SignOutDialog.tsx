@@ -1,3 +1,6 @@
+import React from 'react';
+import { LogOut, AlertTriangle, X } from 'lucide-react';
+
 interface SignOutDialogProps {
     showDialog: boolean;
     onClose: () => void;
@@ -14,76 +17,44 @@ export default function SignOutDialog({
     if (!showDialog) return null;
 
     return (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
-            <div className='bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 rounded-lg lg:w-1/3 w-2/3 shadow-2xl'>
-                <div className='sm:flex sm:items-start'>
-                    <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10'>
-                        <svg
-                            className='h-6 w-6 text-red-600 dark:text-red-400'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            strokeWidth='1.5'
-                            stroke='currentColor'
-                        >
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                d='M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z'
-                            />
-                        </svg>
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200'>
+            <div className='w-full max-w-md bg-white dark:bg-[#1f1f1f] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden animate-in zoom-in-95 duration-200'>
+                {/* Header with Danger Icon */}
+                <div className='p-6 text-center space-y-3'>
+                    <div className='w-12 h-12 rounded-full bg-[#fdf2f2] dark:bg-[#3b1118] text-[#e11d48] dark:text-[#fb7185] border border-[#fcdada] dark:border-[#601925] flex items-center justify-center mx-auto'>
+                        <LogOut className='w-6 h-6' />
                     </div>
-                    <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
-                        <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
-                            Sign Out
+
+                    <div className='space-y-1'>
+                        <h3 className='text-lg font-bold text-[#101828] dark:text-white'>
+                            Sign out of your account?
                         </h3>
-                        <div className='mt-2'>
-                            <p className='text-sm text-gray-500 dark:text-gray-400'>
-                                You&apos;ll need to log in again to access your
-                                account.
-                            </p>
-                        </div>
-                        <div className='flex py-4 gap-3 lg:justify-end justify-center'>
-                            <button
-                                className='px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer'
-                                onClick={onClose}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className='px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-50'
-                                onClick={onSignOut}
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <span className='flex items-center'>
-                                        <svg
-                                            className='animate-spin -ml-1 mr-2 h-4 w-4 text-white'
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            fill='none'
-                                            viewBox='0 0 24 24'
-                                        >
-                                            <circle
-                                                className='opacity-25'
-                                                cx='12'
-                                                cy='12'
-                                                r='10'
-                                                stroke='currentColor'
-                                                strokeWidth='4'
-                                            ></circle>
-                                            <path
-                                                className='opacity-75'
-                                                fill='currentColor'
-                                                d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                                            ></path>
-                                        </svg>
-                                        Signing out...
-                                    </span>
-                                ) : (
-                                    'Sign Out'
-                                )}
-                            </button>
-                        </div>
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] leading-relaxed max-w-xs mx-auto'>
+                            You will need to log back in with your credentials to access your notes, wallet, and saved items.
+                        </p>
                     </div>
+                </div>
+
+                {/* Actions */}
+                <div className='p-4 bg-[#faf9f8] dark:bg-[#242424] border-t border-[#f0eee9] dark:border-[#2a2a2a] flex items-center justify-end gap-2.5'>
+                    <button
+                        onClick={onClose}
+                        disabled={loading}
+                        className='px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-[#615d59] dark:text-[#a09e9a] bg-white dark:bg-[#2e2e2e] hover:bg-[#f6f5f4] dark:hover:bg-[#383838] border border-[#e6e6e6] dark:border-[#383838] transition-all shadow-xs'
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onSignOut}
+                        disabled={loading}
+                        className='px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-[#e11d48] hover:bg-[#c9183d] transition-all shadow-xs active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5'
+                    >
+                        {loading ? (
+                            <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                        ) : (
+                            <span>Sign Out</span>
+                        )}
+                    </button>
                 </div>
             </div>
         </div>

@@ -249,24 +249,48 @@ const Header: React.FC = () => {
 
                                     {/* Profile dropdown */}
                                     <div
-                                        className={`absolute right-0 mt-2 w-56 transition-all duration-150 origin-top-right z-50
+                                        className={`absolute right-0 mt-2.5 w-64 transition-all duration-200 origin-top-right z-50
                                         ${
                                             isProfileDropdownOpen
                                                 ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
-                                                : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'
+                                                : 'opacity-0 scale-95 -translate-y-1.5 pointer-events-none'
                                         }`}
                                     >
-                                        <div className='rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden'>
-                                            {/* User info header */}
-                                            <div className='px-4 py-3 bg-[#faf9f8] dark:bg-[#262626] border-b border-[#f0eee6] dark:border-[#2f2f2f]'>
-                                                <p className='text-[11px] font-medium text-[#615d59] dark:text-[#a39e98]'>
-                                                    Signed in as
-                                                </p>
-                                                <p className='text-sm font-bold text-[#000000] dark:text-white truncate'>
-                                                    {currentUser.username}
-                                                </p>
+                                        <div className='rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#1f1f1f] shadow-[0_12px_36px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden divide-y divide-[#f0eee6] dark:divide-[#2a2a2a]'>
+                                            {/* User Profile Card Header */}
+                                            <div className='p-3.5 bg-gradient-to-b from-[#faf9f8] to-white dark:from-[#242424] dark:to-[#1f1f1f]'>
+                                                <div className='flex items-center gap-3'>
+                                                    <div className='relative shrink-0'>
+                                                        <Image
+                                                            src={
+                                                                currentUser.profilePicture ||
+                                                                '/default-avatar.png'
+                                                            }
+                                                            alt='Profile'
+                                                            width={40}
+                                                            height={40}
+                                                            className='rounded-full object-cover ring-2 ring-[#e6e6e6] dark:ring-[#383838]'
+                                                        />
+                                                        <span className='absolute bottom-0 right-0 w-3 h-3 bg-[#1aae39] border-2 border-white dark:border-[#1f1f1f] rounded-full' />
+                                                    </div>
+                                                    <div className='min-w-0 flex-1'>
+                                                        <p className='text-sm font-bold text-[#101828] dark:text-white truncate'>
+                                                            {currentUser.username}
+                                                        </p>
+                                                        <div className='flex items-center gap-1.5 mt-0.5'>
+                                                            <span className='inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] border border-[#d2e4f9] dark:border-[#224474]'>
+                                                                Student
+                                                            </span>
+                                                            <span className='text-[11px] text-[#8c8883] dark:text-[#787672] truncate'>
+                                                                Active
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className='p-1.5 flex flex-col gap-0.5'>
+
+                                            {/* Navigation Items */}
+                                            <div className='p-1.5 space-y-0.5'>
                                                 <Link
                                                     prefetch={false}
                                                     href='/profile'
@@ -275,11 +299,16 @@ const Header: React.FC = () => {
                                                             false,
                                                         )
                                                     }
-                                                    className='flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
+                                                    className='flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#ededed] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors group'
                                                 >
-                                                    <User className='w-4 h-4 text-[#0075de]' />
-                                                    Profile
+                                                    <div className='flex items-center gap-2.5'>
+                                                        <div className='p-1.5 rounded-lg bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] group-hover:scale-105 transition-transform'>
+                                                            <User className='w-3.5 h-3.5' />
+                                                        </div>
+                                                        <span>My Profile</span>
+                                                    </div>
                                                 </Link>
+
                                                 <Link
                                                     prefetch={false}
                                                     href='/wallet'
@@ -288,12 +317,40 @@ const Header: React.FC = () => {
                                                             false,
                                                         )
                                                     }
-                                                    className='flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
+                                                    className='flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#ededed] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors group'
                                                 >
-                                                    <Wallet className='w-4 h-4 text-[#8a3fd6]' />
-                                                    Wallet
+                                                    <div className='flex items-center gap-2.5'>
+                                                        <div className='p-1.5 rounded-lg bg-[#f0ebf8] dark:bg-[#2b1f3d] text-[#8a3fd6] dark:text-[#c084fc] group-hover:scale-105 transition-transform'>
+                                                            <Wallet className='w-3.5 h-3.5' />
+                                                        </div>
+                                                        <span>Wallet & Credits</span>
+                                                    </div>
                                                 </Link>
-                                                <div className='my-1 h-px bg-[#f0eee6] dark:border-[#2f2f2f]' />
+
+                                                <Link
+                                                    prefetch={false}
+                                                    href='/tools'
+                                                    onClick={() =>
+                                                        setIsProfileDropdownOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                    className='flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#ededed] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors group'
+                                                >
+                                                    <div className='flex items-center gap-2.5'>
+                                                        <div className='p-1.5 rounded-lg bg-[#eaf7ec] dark:bg-[#163821] text-[#1aae39] dark:text-[#4ade80] group-hover:scale-105 transition-transform'>
+                                                            <Sparkles className='w-3.5 h-3.5' />
+                                                        </div>
+                                                        <span>Student Tools</span>
+                                                    </div>
+                                                    <span className='text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#eaf7ec] text-[#1aae39] dark:bg-[#163821] dark:text-[#4ade80]'>
+                                                        New
+                                                    </span>
+                                                </Link>
+                                            </div>
+
+                                            {/* Sign Out Footer */}
+                                            <div className='p-1.5'>
                                                 <button
                                                     onClick={() => {
                                                         handleSignOut();
@@ -301,10 +358,12 @@ const Header: React.FC = () => {
                                                             false,
                                                         );
                                                     }}
-                                                    className='flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-[#e03e3e] hover:bg-[#ffebe6] dark:hover:bg-[#3d1818] transition-colors duration-150'
+                                                    className='flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#e11d48] dark:text-[#fb7185] hover:bg-[#fdf2f2] dark:hover:bg-[#3b1118] transition-colors'
                                                 >
-                                                    <LogOut className='w-4 h-4' />
-                                                    Sign Out
+                                                    <div className='p-1.5 rounded-lg bg-[#fdf2f2] dark:bg-[#3b1118] text-[#e11d48] dark:text-[#fb7185]'>
+                                                        <LogOut className='w-3.5 h-3.5' />
+                                                    </div>
+                                                    <span>Sign Out</span>
                                                 </button>
                                             </div>
                                         </div>
