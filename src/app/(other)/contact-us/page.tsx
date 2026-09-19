@@ -9,7 +9,7 @@ export const metadata = {
 
 const ContactUs = () => {
     return (
-        <div className='min-h-screen sm:min-h-full bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] transition-colors py-8 sm:py-12'>
+        <div className='w-full h-auto lg:min-h-[calc(100vh-140px)] bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] transition-colors py-6 sm:py-10 lg:py-12 flex flex-col justify-center'>
             <div className='max-w-2xl mx-auto px-4 sm:px-6'>
                 {/* Header */}
                 <div className='text-center mb-8'>
