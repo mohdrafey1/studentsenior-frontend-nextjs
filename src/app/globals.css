@@ -84,3 +84,29 @@ body {
     background-image: radial-gradient(circle, #334155 1px, transparent 1px);
     background-size: 20px 20px;
 }
+
+/* Notion Design System Shadows & Utilities */
+.notion-card {
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.dark .notion-card {
+    background-color: #202020;
+    border-color: #2f2f2f;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.notion-card-elevated {
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+.dark .notion-card-elevated {
+    background-color: #202020;
+    border-color: #2f2f2f;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+

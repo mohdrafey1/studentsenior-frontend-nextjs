@@ -41,22 +41,22 @@ export default function CollegeSelectHandler({
     };
 
     return (
-        <div className='w-full max-w-md mx-auto'>
+        <div className='w-full max-w-lg mx-auto'>
             <div className='relative'>
-                <div className='relative bg-white lg:w-full mx-auto w-3/4 dark:bg-gray-700 rounded-full border border-blue-300 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:shadow-blue-500/40'>
-                    <div className='flex items-center w-full px-4'>
-                        {/* Icon container - Updated to use Lucide */}
-                        <div className='flex-shrink-0'>
+                <div className='relative bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_16px_rgba(0,0,0,0.03)] dark:shadow-none transition-all duration-200 hover:border-[#d0d0d0] dark:hover:border-[#404040] focus-within:border-[#0075de] focus-within:ring-3 focus-within:ring-[#0075de]/15'>
+                    <div className='flex items-center w-full px-4 py-1'>
+                        {/* Icon container */}
+                        <div className='flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-[#f6f5f4] dark:bg-[#2a2a2a] text-[#0075de] dark:text-[#62aef0]'>
                             <Building2
-                                className='h-5 w-5 text-blue-500'
-                                strokeWidth={2}
+                                className='h-4 w-4'
+                                strokeWidth={2.2}
                             />
                         </div>
 
                         <div className='flex-1 ml-3'>
                             <select
                                 id='college-select'
-                                className='w-full bg-transparent py-4 outline-none focus:ring-0 appearance-none dark:text-white text-gray-700 font-medium'
+                                className='w-full bg-transparent py-3.5 outline-none focus:ring-0 appearance-none text-[#000000] dark:text-[#f0f0f0] text-[15px] font-medium cursor-pointer'
                                 value={selectedCollege}
                                 onChange={handleChange}
                                 disabled={isLoading}
@@ -65,20 +65,20 @@ export default function CollegeSelectHandler({
                                 <option
                                     value=''
                                     disabled
-                                    className='bg-white dark:bg-gray-700 text-gray-800 dark:text-white'
+                                    className='bg-white dark:bg-[#202020] text-[#615d59] dark:text-[#a39e98]'
                                 >
-                                    Select Your College
+                                    Select Your College...
                                 </option>
                                 {colleges.map((college) => {
                                     const displayName =
-                                        college.name.length > 40
-                                            ? `${college.name.substring(0, 37)}...`
+                                        college.name.length > 42
+                                            ? `${college.name.substring(0, 40)}...`
                                             : college.name;
                                     return (
                                         <option
                                             key={college.slug}
                                             value={college.slug}
-                                            className='bg-white dark:bg-gray-700 text-gray-800 dark:text-white py-3 px-4 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100 last:border-b-0'
+                                            className='bg-white dark:bg-[#202020] text-[#000000] dark:text-[#f0f0f0] py-2'
                                         >
                                             {displayName}
                                         </option>
@@ -87,25 +87,23 @@ export default function CollegeSelectHandler({
                             </select>
                         </div>
 
-                        {/* Custom arrow icon - Updated to use Lucide */}
-                        <div className='flex-shrink-0'>
+                        {/* Custom arrow icon */}
+                        <div className='flex-shrink-0 pl-2 pointer-events-none'>
                             <ChevronDown
-                                className='h-5 w-5 text-gray-400'
-                                strokeWidth={2.5}
+                                className='h-4 w-4 text-[#615d59] dark:text-[#a39e98]'
+                                strokeWidth={2}
                             />
                         </div>
                     </div>
                 </div>
-
-                <div className='absolute -inset-1 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full blur-xl opacity-30 -z-10'></div>
             </div>
 
-            <p className='text-sm text-gray-500 mt-4 text-center'>
+            <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a39e98] mt-3.5 text-center'>
                 Can’t find your college?{' '}
                 <Link
                     prefetch={false}
                     href='/add-college'
-                    className='text-blue-600 hover:underline'
+                    className='text-[#0075de] dark:text-[#62aef0] hover:underline font-medium'
                 >
                     Click here
                 </Link>{' '}
@@ -114,3 +112,4 @@ export default function CollegeSelectHandler({
         </div>
     );
 }
+

@@ -119,63 +119,76 @@ export default async function HomePage() {
 
     return (
         <>
-            <main role='main'>
-                {/* Hero Section - Modern Tech SaaS with Brand Tagline */}
-                <section className='relative lg:min-h-[95dvh] lg:rounded-none rounded-b-4xl flex flex-col justify-center bg-gradient-to-b from-slate-50 via-white to-slate-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 overflow-hidden py-16 px-4 sm:px-6 lg:px-8'>
-                    {/* Ambient Glow & Dotted Grid Mesh */}
-                    <div className='absolute inset-0 pointer-events-none'>
-                        {/* Top Ambient Spotlight Glow */}
-                        <div className='absolute -top-28 left-1/2 -translate-x-1/2 w-[680px] h-[320px] bg-gradient-to-b from-blue-500/15 via-indigo-500/10 to-transparent blur-[110px] rounded-full dark:from-blue-600/15 dark:via-indigo-600/10'></div>
-
-                        {/* Subtle Ambient Accent Glows */}
-                        <div className='absolute top-1/4 -left-16 w-72 h-72 bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl'></div>
-                        <div className='absolute top-1/3 -right-16 w-72 h-72 bg-indigo-400/10 dark:bg-purple-500/5 rounded-full blur-3xl'></div>
-
-                        {/* Modern Tech SaaS Dotted Grid */}
-                        <div className='absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.12] dark:opacity-[0.07] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_35%,#000_70%,transparent_100%)]'></div>
-                    </div>
+            <main role='main' className='min-h-screen bg-[#ffffff] dark:bg-[#191919] text-[#000000] dark:text-[#ededed]'>
+                {/* Hero Section - Notion Warm Paper & Confident Typography */}
+                <section className='relative bg-[#f6f5f4] dark:bg-[#1f1f1f] border-b border-[#e6e6e6] dark:border-[#2f2f2f] overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-20 px-4 sm:px-6 lg:px-8'>
+                    {/* Subtle Notion Document Grid / Dot Mesh */}
+                    <div className='absolute inset-0 pointer-events-none opacity-[0.4] dark:opacity-[0.15] bg-[radial-gradient(#d0ceca_1px,transparent_1px)] [background-size:24px_24px]'></div>
 
                     {/* Main Content */}
-                    <div className='relative z-10 max-w-4xl mx-auto w-full flex flex-col items-center text-center my-auto'>
+                    <div className='relative z-10 max-w-4xl mx-auto w-full flex flex-col items-center text-center'>
+                        {/* Eyebrow Badge Pill */}
+                        {/* <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] shadow-[0_1px_2px_rgba(0,0,0,0.03)] mb-6'>
+                            <span className='w-2 h-2 rounded-full bg-[#0075de] animate-pulse'></span>
+                            <span>Academic Mentorship & Resource Platform</span>
+                        </div> */}
+
                         {/* Headline */}
-                        <h1 className='font-extrabold tracking-tight leading-[1.14] mb-6 text-4xl sm:text-5xl md:text-6xl text-slate-900 dark:text-white max-w-3xl mx-auto'>
+                        <h1 className='font-bold tracking-[-0.035em] leading-[1.08] mb-5 text-4xl sm:text-5xl md:text-6xl text-[#000000] dark:text-white max-w-3xl mx-auto'>
                             Student Senior :{' '}
-                            <span className='bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-300 dark:to-violet-400 bg-clip-text text-transparent'>
+                            <span className='text-[#0075de] dark:text-[#62aef0]'>
                                 Study Smarter, Score Better
                             </span>
                         </h1>
 
                         {/* Subtitle */}
-                        <p className='max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-8'>
+                        <p className='max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-[#615d59] dark:text-[#b8b5b0] leading-relaxed mb-8'>
                             Access verified{' '}
-                            <strong className='text-slate-900 dark:text-white font-semibold'>
+                            <strong className='text-[#000000] dark:text-white font-semibold'>
                                 PYQs
                             </strong>
                             , curated{' '}
-                            <strong className='text-slate-900 dark:text-white font-semibold'>
+                            <strong className='text-[#000000] dark:text-white font-semibold'>
                                 study notes
                             </strong>
                             , and connect with{' '}
-                            <strong className='text-slate-900 dark:text-white font-semibold'>
+                            <strong className='text-[#000000] dark:text-white font-semibold'>
                                 senior mentors
                             </strong>{' '}
-                            across universities — everything you need to ace
-                            your semester.
+                            across universities — everything you need to ace your semester.
                         </p>
 
-                        {/* CTA Button */}
+                        {/* Download App CTA (Android Only / PWA) */}
                         <DownloadAppButton />
 
-                        {/* College Selector */}
-                        <div className='w-full max-w-xl mx-auto pt-4'>
+                        {/* Notion-style College Selector */}
+                        <div className='w-full max-w-xl mx-auto'>
                             <CollegeSelectHandler colleges={colleges} />
                         </div>
+
+                        {/* Sticker Accent Highlights */}
+                        <div className='flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 mt-8'>
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] border border-[#d2e4f9] dark:border-[#224474]'>
+                                📚 1500+ PYQs
+                            </span>
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#f5edfd] dark:bg-[#321c4b] text-[#8a3fd6] dark:text-[#d6b6f6] border border-[#e8d5fc] dark:border-[#4a2673]'>
+                                🎓 50+ Senior Guides
+                            </span>
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#eaf7ec] dark:bg-[#163821] text-[#1aae39] dark:text-[#4ade80] border border-[#d2f0d9] dark:border-[#205130]'>
+                                ⚡ Verified Notes
+                            </span>
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#fdf1e8] dark:bg-[#3d2411] text-[#dd5b00] dark:text-[#fb923c] border border-[#fbd8c1] dark:border-[#583318]'>
+                                💰 Earn While Helping
+                            </span>
+                        </div>
                     </div>
+
                 </section>
 
-                <div className='relative py-10 bg-gradient-to-b from-white via-slate-50/40 to-white dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-950 border-t border-slate-100 dark:border-slate-800/60'>
+                {/* Resource Quick Start Section */}
+                {/* <div className='relative py-4 sm:py-6 px-4 sm:px-6 '> */}
                     <ResourceQuickStart colleges={colleges} />
-                </div>
+                {/* </div> */}
 
                 {/* Quick Access Section */}
                 <QuickLinks colleges={colleges} />
@@ -183,8 +196,10 @@ export default async function HomePage() {
                 {/* Earning Showcase Section */}
                 <EarningShowcase />
 
+                {/* Features & Achievements Section */}
                 <OurFeatures />
 
+                {/* FAQ Section */}
                 <FAQPage />
             </main>
 
@@ -193,3 +208,4 @@ export default async function HomePage() {
         </>
     );
 }
+

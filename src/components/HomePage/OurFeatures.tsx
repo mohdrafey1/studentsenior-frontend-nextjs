@@ -30,26 +30,26 @@ const OurFeatures: React.FC = () => {
         {
             id: 1,
             title: 'PYQ Access',
-            icon: <FileText className='w-8 h-8' />,
+            icon: <FileText className='w-6 h-6 text-[#0075de]' strokeWidth={2.2} />,
             description:
                 'Access comprehensive past year question papers, analyze trends, and develop winning exam strategies with our curated collection.',
-            color: 'from-blue-500 to-cyan-500',
+            color: 'bg-[#eaf3fd] dark:bg-[#10243e]',
         },
         {
             id: 2,
             title: 'Senior Mentorship',
-            icon: <Users className='w-8 h-8' />,
+            icon: <Users className='w-6 h-6 text-[#8a3fd6]' strokeWidth={2.2} />,
             description:
                 'Connect with experienced seniors for personalized academic guidance, career advice, and valuable insights into your field.',
-            color: 'from-purple-500 to-pink-500',
+            color: 'bg-[#f5edfd] dark:bg-[#2b1744]',
         },
         {
             id: 3,
             title: 'Student Store',
-            icon: <ShoppingBag className='w-8 h-8' />,
+            icon: <ShoppingBag className='w-6 h-6 text-[#1aae39]' strokeWidth={2.2} />,
             description:
                 'Discover essential academic supplies and sell your own items in our dedicated student marketplace community.',
-            color: 'from-green-500 to-emerald-500',
+            color: 'bg-[#eaf7ec] dark:bg-[#112d1b]',
         },
     ];
 
@@ -57,72 +57,68 @@ const OurFeatures: React.FC = () => {
         {
             id: 1,
             title: 'PYQs Available',
-            icon: <BookOpen className='w-6 h-6' />,
+            icon: <BookOpen className='w-5 h-5 text-[#0075de]' strokeWidth={2.2} />,
             count: 1500,
-            color: 'from-blue-500 to-blue-600',
+            color: 'bg-[#eaf3fd] dark:bg-[#10243e]',
             suffix: '+',
         },
         {
             id: 2,
             title: 'Senior Guides',
-            icon: <Award className='w-6 h-6' />,
+            icon: <Award className='w-5 h-5 text-[#8a3fd6]' strokeWidth={2.2} />,
             count: 50,
-            color: 'from-purple-500 to-purple-600',
+            color: 'bg-[#f5edfd] dark:bg-[#2b1744]',
             suffix: '+',
         },
         {
             id: 3,
             title: 'Products Sold',
-            icon: <Target className='w-6 h-6' />,
+            icon: <Target className='w-5 h-5 text-[#1aae39]' strokeWidth={2.2} />,
             count: 15,
-            color: 'from-green-500 to-green-600',
+            color: 'bg-[#eaf7ec] dark:bg-[#112d1b]',
             suffix: '+',
         },
         {
             id: 4,
             title: 'Active Users',
-            icon: <TrendingUp className='w-6 h-6' />,
+            icon: <TrendingUp className='w-5 h-5 text-[#dd5b00]' strokeWidth={2.2} />,
             count: 10000,
-            color: 'from-orange-500 to-red-500',
+            color: 'bg-[#fdf1e8] dark:bg-[#381e0f]',
             suffix: '+',
         },
     ];
 
     return (
-        <div className='bg-white dark:bg-gray-900 transition-colors duration-300'>
+        <div className='bg-[#f6f5f4] dark:bg-[#191919] border-t border-[#e6e6e6] dark:border-[#2f2f2f] transition-colors duration-200'>
             {/* Achievements Section */}
-            <section className='py-16 px-4'>
-                <div className='max-w-7xl mx-auto'>
-                    <div className='text-center mb-12'>
-                        <h2 className='text-4xl font-fugaz md:text-5xl font-bold text-gray-900 dark:text-white mb-4'>
-                            Trusted by{' '}
-                            <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400'>
-                                Thousands
-                            </span>
+            <section className='py-14 sm:py-18 px-4 sm:px-6'>
+                <div className='max-w-6xl mx-auto'>
+                    <div className='text-center mb-10'>
+                        <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#262626] text-[#0075de] dark:text-[#62aef0] border border-[#e6e6e6] dark:border-[#383838] mb-3'>
+                            <span>Community Impact</span>
+                        </div>
+                        <h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#000000] dark:text-white tracking-[-0.025em] mb-2.5'>
+                            Trusted by Thousands
                         </h2>
-                        <p className='text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed'>
-                            Join our thriving community of students who are
-                            transforming their academic journey through
-                            collaboration and shared knowledge.
+                        <p className='text-sm sm:text-base text-[#615d59] dark:text-[#a39e98] max-w-2xl mx-auto'>
+                            Join our thriving community of students who are transforming their academic journey through collaboration and shared knowledge.
                         </p>
                     </div>
 
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+                    <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4'>
                         {achievements.map((item) => (
                             <div key={item.id} className='group'>
-                                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-900/20 p-8 text-center border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300'>
+                                <div className='bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-[0_1px_2px_rgba(0,0,0,0.02)] p-5 text-center transition-all duration-200 hover:border-[#0075de] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5'>
                                     <div
-                                        className={`w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-gradient-to-r ${item.color} shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
+                                        className={`w-10 h-10 mx-auto mb-3.5 flex items-center justify-center rounded-xl ${item.color}`}
                                     >
-                                        <div className='text-white'>
-                                            {item.icon}
-                                        </div>
+                                        {item.icon}
                                     </div>
-                                    <div className='space-y-3'>
-                                        <h3 className='text-4xl md:text-5xl font-fugaz font-bold text-gray-900 dark:text-white'>
-                                            {item.count} {item.suffix}
+                                    <div className='space-y-1'>
+                                        <h3 className='text-2xl sm:text-3xl font-bold text-[#000000] dark:text-white tracking-tight'>
+                                            {item.count.toLocaleString()}{item.suffix}
                                         </h3>
-                                        <p className='text-lg font-semibold text-gray-600 dark:text-gray-300'>
+                                        <p className='text-xs font-medium text-[#615d59] dark:text-[#a39e98]'>
                                             {item.title}
                                         </p>
                                     </div>
@@ -134,38 +130,34 @@ const OurFeatures: React.FC = () => {
             </section>
 
             {/* Features Section */}
-            <section className='py-16 px-4 bg-white dark:bg-gray-800'>
-                <div className='max-w-7xl mx-auto'>
-                    <div className='text-center mb-16'>
-                        <h2 className='text-4xl font-fugaz md:text-5xl font-bold text-gray-900 dark:text-white mb-6 relative'>
-                            Our{' '}
-                            <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400'>
-                                Features
-                            </span>
-                            <div className='absolute left-1/2 transform -translate-x-1/2 bottom-[-12px] h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full'></div>
+            <section className='py-14 sm:py-18 px-4 sm:px-6 bg-white dark:bg-[#202020] border-t border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                <div className='max-w-6xl mx-auto'>
+                    <div className='text-center mb-12'>
+                        <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eaf3fd] dark:bg-[#10243e] text-[#0075de] dark:text-[#62aef0] border border-[#d0e5fb] dark:border-[#1a3860] mb-3'>
+                            <span>Core Features</span>
+                        </div>
+                        <h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#000000] dark:text-white tracking-[-0.025em] mb-2.5'>
+                            Our Features
                         </h2>
-                        <p className='text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed'>
-                            Discover the powerful tools and resources that make
-                            your academic journey smoother and more successful.
+                        <p className='text-sm sm:text-base text-[#615d59] dark:text-[#a39e98] max-w-2xl mx-auto'>
+                            Discover the powerful tools and resources that make your academic journey smoother and more successful.
                         </p>
                     </div>
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+                    <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
                         {features.map((feature) => (
                             <div key={feature.id} className='group'>
-                                <div className='bg-white dark:bg-gray-700 rounded-2xl shadow-lg dark:shadow-gray-900/20 p-8 h-full border border-gray-100 dark:border-gray-600 hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl'>
-                                    <div
-                                        className={`w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-r ${feature.color} shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300`}
-                                    >
-                                        <div className='text-white'>
+                                <div className='bg-[#f6f5f4] dark:bg-[#262626] rounded-2xl border border-[#e6e6e6] dark:border-[#383838] p-6 h-full transition-all duration-200 hover:border-[#0075de] dark:hover:border-[#0075de] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 flex flex-col justify-between'>
+                                    <div>
+                                        <div
+                                            className={`w-12 h-12 mb-4 flex items-center justify-center rounded-xl ${feature.color}`}
+                                        >
                                             {feature.icon}
                                         </div>
-                                    </div>
-                                    <div className='text-center space-y-4'>
-                                        <h3 className='text-2xl font-fugaz font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300'>
+                                        <h3 className='text-lg font-bold text-[#000000] dark:text-white mb-2 tracking-[-0.2px]'>
                                             {feature.title}
                                         </h3>
-                                        <p className='text-gray-600 dark:text-gray-300 text-base leading-relaxed'>
+                                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a39e98] leading-relaxed'>
                                             {feature.description}
                                         </p>
                                     </div>
@@ -180,3 +172,4 @@ const OurFeatures: React.FC = () => {
 };
 
 export default OurFeatures;
+
