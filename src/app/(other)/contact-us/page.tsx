@@ -1,41 +1,62 @@
 import React from 'react';
 import ContactUsForm from './ContactUsForm';
+import { Mail, MessageCircle, Clock, Sparkles } from 'lucide-react';
 
 export const metadata = {
     title: 'Contact Us - Student Senior',
-    description: 'Get in Touch with us',
+    description: 'Get in touch with the Student Senior team for support, feedback, and questions.',
 };
 
 const ContactUs = () => {
     return (
-        <div className='py-12 px-4 sm:px-6 lg:px-8'>
-            <div className='max-w-2xl mx-auto'>
+        <div className='min-h-screen sm:min-h-full bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] transition-colors py-8 sm:py-12'>
+            <div className='max-w-2xl mx-auto px-4 sm:px-6'>
                 {/* Header */}
-                <div className='text-center mb-12'>
-                    <h1 className='text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 text-transparent bg-clip-text'>
+                <div className='text-center mb-8'>
+                    <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191919] dark:text-[#ececec] mb-2.5'>
                         Get in Touch
                     </h1>
-                    <p className='text-gray-600 dark:text-gray-300'>
-                        Have a question or feedback? We&apos;d love to hear from
-                        you.
+                    <p className='text-xs sm:text-sm text-[#787774] dark:text-[#9b9a97] max-w-lg mx-auto leading-relaxed'>
+                        Have a question, feedback, or need help? Send us a message and our team will get back to you shortly.
                     </p>
+                </div>
+
+                {/* Quick Info Grid */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-6'>
+                    <a
+                        href='mailto:studentsenior.help@gmail.com'
+                        className='p-3 rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs hover:border-[#0075de]/40 hover:shadow-xs transition-all flex items-center gap-3 group'
+                    >
+                        <div className='w-8 h-8 rounded-lg bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20 flex items-center justify-center shrink-0'>
+                            <Mail className='w-4 h-4' />
+                        </div>
+                        <div className='min-w-0'>
+                            <div className='text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                Direct Email
+                            </div>
+                            <div className='text-xs font-medium text-[#191919] dark:text-[#ececec] group-hover:text-[#0075de] transition-colors truncate'>
+                                studentsenior.help@gmail.com
+                            </div>
+                        </div>
+                    </a>
+
+                    <div className='p-3 rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs flex items-center gap-3'>
+                        <div className='w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center shrink-0'>
+                            <Clock className='w-4 h-4' />
+                        </div>
+                        <div className='min-w-0'>
+                            <div className='text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                Response Time
+                            </div>
+                            <div className='text-xs font-medium text-[#191919] dark:text-[#ececec]'>
+                                Usually within 24 hours
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Contact Form */}
                 <ContactUsForm />
-
-                {/* Contact Info */}
-                <div className='mt-12 text-center'>
-                    <p className='text-gray-600 dark:text-gray-300'>
-                        You can also reach us at{' '}
-                        <a
-                            href='mailto:studentsenior.help@gmail.com'
-                            className='text-blue-600 dark:text-blue-400 hover:underline'
-                        >
-                            studentsenior.help@gmail.com
-                        </a>
-                    </p>
-                </div>
             </div>
         </div>
     );

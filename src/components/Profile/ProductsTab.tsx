@@ -1,6 +1,8 @@
+'use client';
+
 import { UserDataState } from '@/redux/slices/userDataSlice';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
     ChevronLeft,
     ChevronRight,
@@ -9,8 +11,15 @@ import {
     Calendar,
     Package,
     Eye,
-    Grid3X3,
+    LayoutGrid,
     List,
+    X,
+    SlidersHorizontal,
+    Tag,
+    AlertCircle,
+    CheckCircle2,
+    Clock,
+    Plus,
 } from 'lucide-react';
 import { formatDate } from '@/utils/formatting';
 
@@ -18,212 +27,374 @@ interface ProductsTabProps {
     products: UserDataState['userProductAdd'];
 }
 
-type SortOption = 'name' | 'price' | 'dateAdded';
+type SortOption = 'dateAdded' | 'name' | 'price';
 type SortOrder = 'asc' | 'desc';
 type ViewMode = 'grid' | 'list';
+type StatusFilter = 'all' | 'approved' | 'pending' | 'rejected';
 
 export default function ProductsTab({ products }: ProductsTabProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [sortBy, setSortBy] = useState<SortOption>('dateAdded');
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
+    // Extract unique categories from products
+    const availableCategories = useMemo(() => {
+        if (!products) return [];
+        const cats = new Set<string>();
+        products.forEach((p) => {
+            if (p.category) cats.add(p.category);
+        });
+        return Array.from(cats);
+    }, [products]);
+
     // Filter and sort products
-    const filteredProducts =
-        products
-            ?.filter((product) => {
+    const filteredProducts = useMemo(() => {
+        if (!products) return [];
+        return products
+            .filter((product) => {
                 const matchesSearch =
-                    product?.name
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                    product?.description
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase());
-                return matchesSearch;
+                    !searchTerm.trim() ||
+                    product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product?.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product?.category?.toLowerCase().includes(searchTerm.toLowerCase());
+
+                const matchesStatus =
+                    statusFilter === 'all' ||
+                    (product.submissionStatus?.toLowerCase() === statusFilter.toLowerCase());
+
+                const matchesCategory =
+                    selectedCategory === 'all' ||
+                    product.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+                return matchesSearch && matchesStatus && matchesCategory;
             })
             .sort((a, b) => {
                 let comparison = 0;
-
                 switch (sortBy) {
                     case 'name':
-                        comparison = a.name.localeCompare(b.name);
+                        comparison = (a.name || '').localeCompare(b.name || '');
                         break;
                     case 'price':
-                        comparison = a.price - b.price;
+                        comparison = (a.price || 0) - (b.price || 0);
                         break;
                     case 'dateAdded':
+                    default:
                         comparison =
                             new Date(a.createdAt).getTime() -
                             new Date(b.createdAt).getTime();
                         break;
                 }
-
                 return sortOrder === 'asc' ? comparison : -comparison;
-            }) || [];
+            });
+    }, [products, searchTerm, statusFilter, selectedCategory, sortBy, sortOrder]);
 
     // Pagination
     const totalItems = filteredProducts.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
-    // Reset page when filters change
-    const handleFilterChange = (callback: () => void) => {
-        callback();
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
         setCurrentPage(1);
     };
 
-    return (
-        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700'>
-            {/* Header */}
-            <div className='p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700'>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                        <div>
-                            <h3 className='text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2'>
-                                <Package className='w-5 h-5 text-blue-500' />
-                                My Products
-                            </h3>
-                            <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                                Showing {startIndex + 1}-
-                                {Math.min(endIndex, totalItems)} of {totalItems}{' '}
-                                products
-                            </p>
-                        </div>
+    const clearAllFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('all');
+        setSelectedCategory('all');
+        setCurrentPage(1);
+    };
 
-                        {/* View Mode Toggle */}
+    const getStatusBadge = (status?: string) => {
+        const s = (status || 'approved').toLowerCase();
+        if (s === 'approved') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#ebfbf0] dark:bg-[#13301f] text-[#1aae39] dark:text-[#4ade80] border border-[#d2f4dc] dark:border-[#1a4a2b]'>
+                    <CheckCircle2 className='w-3 h-3' />
+                    Approved
+                </span>
+            );
+        }
+        if (s === 'pending' || s === 'under review') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#fff8eb] dark:bg-[#342410] text-[#d97706] dark:text-[#fbbf24] border border-[#fee7b8] dark:border-[#523812]'>
+                    <Clock className='w-3 h-3' />
+                    Under Review
+                </span>
+            );
+        }
+        if (s === 'rejected') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#fef2f2] dark:bg-[#351618] text-[#e11d48] dark:text-[#f87171] border border-[#fecdd3] dark:border-[#581c24]'>
+                    <AlertCircle className='w-3 h-3' />
+                    Rejected
+                </span>
+            );
+        }
+        return null;
+    };
+
+    const getProductHref = (product: { slug: string; college?: { slug?: string } }) => {
+        const collegeSlug = product.college?.slug;
+        if (collegeSlug) {
+            return `/${collegeSlug}/store/${product.slug}`;
+        }
+        return `/store/${product.slug}`;
+    };
+
+    return (
+        <div className='divide-y divide-[#f0eee9] dark:divide-[#2a2a2a]'>
+            {/* Header Toolbar */}
+            <div className='p-4 sm:p-6 bg-white dark:bg-[#1c1c1c] space-y-4'>
+                {/* Top Row: Title + Count + View Toggle */}
+                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+                    <div>
                         <div className='flex items-center gap-2'>
-                            <div className='flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1'>
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-colors ${
-                                        viewMode === 'grid'
-                                            ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <Grid3X3 className='w-4 h-4' />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-colors ${
-                                        viewMode === 'list'
-                                            ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <List className='w-4 h-4' />
-                                </button>
+                            <div className='w-7 h-7 rounded-lg bg-[#eaf3fd] dark:bg-[#183153] flex items-center justify-center text-[#0075de] dark:text-[#62aef0]'>
+                                <Package className='w-4 h-4' />
                             </div>
+                            <h3 className='text-base sm:text-lg font-semibold text-[#101828] dark:text-white tracking-tight'>
+                                My Listed Products
+                            </h3>
+                            <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                {products?.length || 0}
+                            </span>
                         </div>
+                        <p className='text-xs text-[#615d59] dark:text-[#a09e9a] mt-1 pl-9'>
+                            Manage and track items you&apos;ve put up for sale or sharing in your campus store.
+                        </p>
                     </div>
 
-                    {/* Search and Filters */}
-                    <div className='flex flex-col sm:flex-row gap-3'>
-                        {/* Search */}
-                        <div className='relative flex-1'>
-                            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
-                            <input
-                                type='text'
-                                placeholder='Search products...'
-                                value={searchTerm}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSearchTerm(e.target.value),
-                                    )
-                                }
-                                className='w-full pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                            />
-                        </div>
-
-                        {/* Sort */}
-                        <div className='flex items-center gap-2'>
-                            <select
-                                value={`${sortBy}-${sortOrder}`}
-                                onChange={(e) => {
-                                    const [field, order] =
-                                        e.target.value.split('-');
-                                    setSortBy(field as SortOption);
-                                    setSortOrder(order as SortOrder);
-                                }}
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                    {/* View Switcher & Action Buttons */}
+                    <div className='flex items-center gap-2 self-start sm:self-auto pl-9 sm:pl-0'>
+                        <div className='flex items-center p-0.5 bg-[#f0eee9] dark:bg-[#252525] rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                title='Grid View'
+                                aria-label='Grid View'
+                                className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                                    viewMode === 'grid'
+                                        ? 'bg-white dark:bg-[#1c1c1c] text-[#101828] dark:text-white shadow-xs'
+                                        : 'text-[#8c8883] hover:text-[#101828] dark:hover:text-white'
+                                }`}
                             >
-                                <option value='dateAdded-desc'>
-                                    Newest First
-                                </option>
-                                <option value='dateAdded-asc'>
-                                    Oldest First
-                                </option>
-                                <option value='name-asc'>Name A-Z</option>
-                                <option value='name-desc'>Name Z-A</option>
-                                <option value='price-asc'>
-                                    Price Low-High
-                                </option>
-                                <option value='price-desc'>
-                                    Price High-Low
-                                </option>
-                            </select>
+                                <LayoutGrid className='w-4 h-4' />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                title='List View'
+                                aria-label='List View'
+                                className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                                    viewMode === 'list'
+                                        ? 'bg-white dark:bg-[#1c1c1c] text-[#101828] dark:text-white shadow-xs'
+                                        : 'text-[#8c8883] hover:text-[#101828] dark:hover:text-white'
+                                }`}
+                            >
+                                <List className='w-4 h-4' />
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                {/* Filters Row: Search, Category, Status, Sort */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 pt-1'>
+                    {/* Search Input */}
+                    <div className={`relative sm:col-span-2 ${availableCategories.length > 0 ? 'lg:col-span-4' : 'lg:col-span-6'}`}>
+                        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8c8883]' />
+                        <input
+                            type='text'
+                            placeholder='Search products by title, description...'
+                            value={searchTerm}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            className='w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white placeholder-[#8c8883] focus:outline-none focus:border-[#0075de] dark:focus:border-[#0075de] focus:bg-white dark:focus:bg-[#1c1c1c] transition-all'
+                        />
+                        {searchTerm && (
+                            <button
+                                onClick={() => handleSearchChange('')}
+                                className='absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8c8883] hover:text-[#101828] dark:hover:text-white p-0.5'
+                            >
+                                <X className='w-3.5 h-3.5' />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Category Filter (if categories exist) */}
+                    {availableCategories.length > 0 && (
+                        <div className='sm:col-span-1 lg:col-span-3'>
+                            <div className='relative'>
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => {
+                                        setSelectedCategory(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                    className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer truncate'
+                                >
+                                    <option value='all'>All Categories</option>
+                                    {availableCategories.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Status Filter */}
+                    <div className={`sm:col-span-1 ${availableCategories.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => {
+                                setStatusFilter(e.target.value as StatusFilter);
+                                setCurrentPage(1);
+                            }}
+                            className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer'
+                        >
+                            <option value='all'>All Status</option>
+                            <option value='approved'>Approved</option>
+                            <option value='pending'>Under Review</option>
+                            <option value='rejected'>Rejected</option>
+                        </select>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className='sm:col-span-2 lg:col-span-3'>
+                        <select
+                            value={`${sortBy}-${sortOrder}`}
+                            onChange={(e) => {
+                                const [field, order] = e.target.value.split('-');
+                                setSortBy(field as SortOption);
+                                setSortOrder(order as SortOrder);
+                            }}
+                            className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer'
+                        >
+                            <option value='dateAdded-desc'>Newest First</option>
+                            <option value='dateAdded-asc'>Oldest First</option>
+                            <option value='price-asc'>Price: Low to High</option>
+                            <option value='price-desc'>Price: High to Low</option>
+                            <option value='name-asc'>Name: A to Z</option>
+                            <option value='name-desc'>Name: Z to A</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Filter info tags if active */}
+                {(searchTerm || statusFilter !== 'all' || selectedCategory !== 'all') && (
+                    <div className='flex items-center flex-wrap gap-2 pt-1'>
+                        <span className='text-[11px] text-[#8c8883] font-medium'>Active filters:</span>
+                        {searchTerm && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Search: &ldquo;{searchTerm}&rdquo;
+                                <button onClick={() => handleSearchChange('')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        {statusFilter !== 'all' && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Status: {statusFilter}
+                                <button onClick={() => setStatusFilter('all')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        {selectedCategory !== 'all' && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Category: {selectedCategory}
+                                <button onClick={() => setSelectedCategory('all')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        <button
+                            onClick={clearAllFilters}
+                            className='text-[11px] text-[#0075de] hover:underline font-medium ml-1'
+                        >
+                            Reset all
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Products Content */}
-            <div className='p-4 sm:p-6'>
-                
+            <div className='p-4 sm:p-6 bg-[#faf9f8] dark:bg-[#191919] min-h-[360px]'>
                 {currentProducts.length > 0 ? (
-                    <div
-                        className="w-full"
-                    >
+                    <div>
                         {/* Grid View */}
                         {viewMode === 'grid' && (
-                            <div 
-                                
-                                
-                                
-                                className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6'
-                            >
-                                {currentProducts?.map((product) => (
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+                                {currentProducts.map((product) => (
                                     <div
-                                        key={product.slug}
-                                        
-                                        
-                                        className='group bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden flex flex-col'
+                                        key={product.slug || product.id}
+                                        className='group bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de]/40 dark:hover:border-[#0075de]/50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden'
                                     >
-                                        <div className='p-4 sm:p-5'>
-                                            <div className='flex items-start justify-between mb-3'>
-                                                <div className='text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1'>
-                                                    <Calendar className='w-3 h-3' />
-                                                    {formatDate(
-                                                        product.createdAt,
-                                                    )}
-                                                </div>
+                                        <div className='p-4 sm:p-4.5 space-y-3'>
+                                            {/* Top badges: Category & Status */}
+                                            <div className='flex items-center justify-between gap-2 flex-wrap'>
+                                                {product.category ? (
+                                                    <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                                        <Tag className='w-3 h-3' />
+                                                        {product.category}
+                                                    </span>
+                                                ) : (
+                                                    <span />
+                                                )}
+                                                {getStatusBadge(product.submissionStatus)}
                                             </div>
 
-                                            <h4 className='font-semibold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-sm sm:text-base'>
-                                                {product.name}
-                                            </h4>
+                                            {/* Product Title */}
+                                            <div>
+                                                <h4 className='font-semibold text-sm sm:text-base text-[#101828] dark:text-white line-clamp-2 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors leading-snug'>
+                                                    {product.name}
+                                                </h4>
+                                                {product.description && (
+                                                    <p className='text-xs text-[#615d59] dark:text-[#a09e9a] line-clamp-2 mt-1.5 leading-relaxed'>
+                                                        {product.description}
+                                                    </p>
+                                                )}
+                                            </div>
 
-                                            <div className='flex items-center justify-between mb-4'>
-                                                <div className='flex items-center gap-1 text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400'>
-                                                    ₹
-                                                    {product.price.toLocaleString()}
+                                            {/* Rejection notice if present */}
+                                            {product.submissionStatus?.toLowerCase() === 'rejected' && product.rejectionReason && (
+                                                <div className='p-2 rounded-lg bg-[#fef2f2] dark:bg-[#351618] border border-[#fecdd3] dark:border-[#581c24] text-[11px] text-[#e11d48] dark:text-[#f87171] leading-tight'>
+                                                    <strong>Reason:</strong> {product.rejectionReason}
+                                                </div>
+                                            )}
+
+                                            {/* Date info */}
+                                            <div className='flex items-center gap-1.5 text-[11px] text-[#8c8883] pt-1'>
+                                                <Calendar className='w-3 h-3' />
+                                                <span>{formatDate(product.createdAt)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Bottom Bar: Price + View Link */}
+                                        <div className='p-4 pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a] bg-[#faf9f8] dark:bg-[#1c1c1c] flex items-center justify-between gap-3'>
+                                            <div>
+                                                <div className='text-[10px] uppercase font-semibold text-[#8c8883] tracking-wider'>
+                                                    Price
+                                                </div>
+                                                <div className='text-base font-bold text-[#101828] dark:text-white flex items-center'>
+                                                    ₹{(product.price || 0).toLocaleString('en-IN')}
                                                 </div>
                                             </div>
 
                                             <Link
                                                 prefetch={false}
-                                                href={`${product.college.slug}/store/${product.slug}`}
-                                                className='block'
+                                                href={getProductHref(product)}
+                                                className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#282828] hover:bg-[#0075de] hover:text-white dark:hover:bg-[#0075de] dark:hover:text-white text-[#101828] dark:text-white border border-[#e6e6e6] dark:border-[#383838] transition-all shadow-xs'
                                             >
-                                                <button className='w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md'>
-                                                    <Eye className='w-4 h-4' />
-                                                    View Product
-                                                    <ExternalLink className='w-3 h-3' />
-                                                </button>
+                                                <Eye className='w-3.5 h-3.5' />
+                                                <span>View</span>
+                                                <ExternalLink className='w-3 h-3 opacity-60' />
                                             </Link>
                                         </div>
                                     </div>
@@ -233,48 +404,68 @@ export default function ProductsTab({ products }: ProductsTabProps) {
 
                         {/* List View */}
                         {viewMode === 'list' && (
-                            <div 
-                                
-                                
-                                
-                                className='space-y-3'
-                            >
-                                {currentProducts?.map((product) => (
+                            <div className='space-y-2.5'>
+                                {currentProducts.map((product) => (
                                     <div
-                                        key={product.slug}
-                                        
-                                        
-                                        className='group p-4 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300'
+                                        key={product.slug || product.id}
+                                        className='group p-3.5 sm:p-4 bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de]/40 dark:hover:border-[#0075de]/50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4'
                                     >
-                                        <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
-                                            <div className='flex-1 min-w-0'>
-                                                <div className='flex items-start gap-3'>
-                                                    <div className='flex-1 min-w-0'>
-                                                        <h4 className='font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'>
-                                                            {product.name}
-                                                        </h4>
-                                                    </div>
+                                        {/* Left info */}
+                                        <div className='flex items-start gap-3.5 flex-1 min-w-0'>
+                                            <div className='w-10 h-10 rounded-lg bg-[#f0eee9] dark:bg-[#282828] flex items-center justify-center text-[#615d59] dark:text-[#a09e9a] flex-shrink-0 group-hover:bg-[#eaf3fd] group-hover:text-[#0075de] dark:group-hover:bg-[#183153] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                <Package className='w-5 h-5' />
+                                            </div>
+
+                                            <div className='min-w-0 flex-1'>
+                                                <div className='flex items-center gap-2 flex-wrap mb-1'>
+                                                    {product.category && (
+                                                        <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                                            {product.category}
+                                                        </span>
+                                                    )}
+                                                    {getStatusBadge(product.submissionStatus)}
+                                                    <span className='text-[11px] text-[#8c8883] flex items-center gap-1'>
+                                                        <Calendar className='w-3 h-3' />
+                                                        {formatDate(product.createdAt)}
+                                                    </span>
+                                                </div>
+
+                                                <h4 className='font-semibold text-sm sm:text-base text-[#101828] dark:text-white truncate group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                    {product.name}
+                                                </h4>
+
+                                                {product.description && (
+                                                    <p className='text-xs text-[#615d59] dark:text-[#a09e9a] truncate mt-0.5 max-w-xl'>
+                                                        {product.description}
+                                                    </p>
+                                                )}
+
+                                                {product.submissionStatus?.toLowerCase() === 'rejected' && product.rejectionReason && (
+                                                    <p className='text-[11px] text-[#e11d48] dark:text-[#f87171] mt-1'>
+                                                        Rejection reason: {product.rejectionReason}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Right actions */}
+                                        <div className='flex items-center justify-between sm:justify-end gap-4 pl-13 sm:pl-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                            <div className='text-left sm:text-right'>
+                                                <div className='text-[10px] uppercase font-semibold text-[#8c8883]'>Price</div>
+                                                <div className='text-base font-bold text-[#101828] dark:text-white'>
+                                                    ₹{(product.price || 0).toLocaleString('en-IN')}
                                                 </div>
                                             </div>
 
-                                            <div className='flex items-center gap-4'>
-                                                <div className='text-right'>
-                                                    <div className='text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1'>
-                                                        ₹{product.price.toLocaleString()}
-                                                    </div>
-                                                </div>
-
-                                                <Link
-                                                    prefetch={false}
-                                                    href={`${product.college.slug}/store/${product.slug}`}
-                                                >
-                                                    <button className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap'>
-                                                        <Eye className='w-4 h-4' />
-                                                        View Product
-                                                        <ExternalLink className='w-3 h-3' />
-                                                    </button>
-                                                </Link>
-                                            </div>
+                                            <Link
+                                                prefetch={false}
+                                                href={getProductHref(product)}
+                                                className='inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#101828] text-white dark:bg-white dark:text-[#101828] hover:bg-[#0075de] dark:hover:bg-[#0075de] dark:hover:text-white transition-all shadow-xs'
+                                            >
+                                                <Eye className='w-3.5 h-3.5' />
+                                                <span>View</span>
+                                                <ExternalLink className='w-3 h-3 opacity-60' />
+                                            </Link>
                                         </div>
                                     </div>
                                 ))}
@@ -282,126 +473,113 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                         )}
                     </div>
                 ) : (
-                    <div 
-                        
-                        
-                        
-                        className='text-center py-16'
-                    >
-                        <div className='mx-auto w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 border border-gray-100 dark:border-white/5'>
-                            <Package className='w-10 h-10 text-gray-400 dark:text-gray-500' />
+                    /* Empty State */
+                    <div className='py-16 text-center max-w-md mx-auto'>
+                        <div className='w-14 h-14 mx-auto mb-4 rounded-2xl bg-white dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] flex items-center justify-center text-[#8c8883] shadow-xs'>
+                            <Package className='w-7 h-7' />
                         </div>
-                        <p className='text-gray-900 dark:text-white font-medium text-lg mb-2'>
+                        <h4 className='text-base font-semibold text-[#101828] dark:text-white mb-1.5'>
+                            {products?.length === 0 ? 'No products listed yet' : 'No matching products found'}
+                        </h4>
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-5 leading-relaxed'>
                             {products?.length === 0
-                                ? 'No products found'
-                                : 'No matching products'}
+                                ? 'You haven’t listed any items or materials in your campus store yet. Start sharing books, calculators, and tools with peers.'
+                                : 'We couldn’t find any items matching your active search terms and filter criteria.'}
                         </p>
-                        <p className='text-gray-500 dark:text-gray-400 text-sm mb-6'>
-                            {products?.length === 0
-                                ? 'Get started by creating your first product.'
-                                : 'Try adjusting your search or filters.'}
-                        </p>
-                        {searchTerm ? (
+                        {products && products.length > 0 ? (
                             <button
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setCurrentPage(1);
-                                }}
-                                className='bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-6 py-2 rounded-full text-sm font-medium transition-colors'
+                                onClick={clearAllFilters}
+                                className='inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-white hover:bg-[#f0eee9] dark:hover:bg-[#333333] transition-all shadow-xs'
                             >
-                                Clear filters
+                                Reset All Filters
                             </button>
                         ) : null}
                     </div>
                 )}
-                
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Footer */}
             {totalPages > 1 && (
-                <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 rounded-b-xl'>
-                    <div className='flex flex-col sm:flex-row items-center justify-between gap-4'>
-                        {/* Items per page */}
-                        <div className='flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300'>
-                            <span>Show:</span>
-                            <select
-                                value={itemsPerPage}
-                                onChange={(e) => {
-                                    setItemsPerPage(Number(e.target.value));
-                                    setCurrentPage(1);
-                                }}
-                                className='px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs focus:ring-2 focus:ring-blue-500'
-                            >
-                                <option value={6}>6</option>
-                                <option value={12}>12</option>
-                                <option value={24}>24</option>
-                                <option value={48}>48</option>
-                            </select>
-                            <span>per page</span>
+                <div className='p-4 sm:p-5 bg-white dark:bg-[#1c1c1c] flex flex-col sm:flex-row items-center justify-between gap-4'>
+                    {/* Items per page selector */}
+                    <div className='flex items-center gap-2 text-xs text-[#615d59] dark:text-[#a09e9a]'>
+                        <span>Showing</span>
+                        <span className='font-semibold text-[#101828] dark:text-white'>
+                            {startIndex + 1} - {Math.min(endIndex, totalItems)}
+                        </span>
+                        <span>of</span>
+                        <span className='font-semibold text-[#101828] dark:text-white'>{totalItems}</span>
+                        <span>items</span>
+                        <span className='mx-1 text-[#d0cdc7] dark:text-[#3a3a3a]'>•</span>
+                        <span>Rows:</span>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                            className='px-2 py-1 bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded text-xs text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de]'
+                        >
+                            <option value={8}>8</option>
+                            <option value={12}>12</option>
+                            <option value={24}>24</option>
+                            <option value={48}>48</option>
+                        </select>
+                    </div>
+
+                    {/* Pagination page buttons */}
+                    <div className='flex items-center gap-1.5'>
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className='p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#242424] text-[#101828] dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-all shadow-xs'
+                            title='Previous Page'
+                        >
+                            <ChevronLeft className='w-4 h-4' />
+                        </button>
+
+                        <div className='flex items-center gap-1'>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number;
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                } else {
+                                    pageNum = currentPage - 2 + i;
+                                }
+
+                                const isActive = currentPage === pageNum;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${
+                                            isActive
+                                                ? 'bg-[#101828] text-white dark:bg-white dark:text-[#101828] shadow-xs'
+                                                : 'bg-white dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#615d59] dark:text-[#a09e9a] hover:text-[#101828] dark:hover:text-white hover:bg-[#faf9f8] dark:hover:bg-[#282828]'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
                         </div>
 
-                        {/* Pagination controls */}
-                        <div className='flex items-center gap-1 sm:gap-2'>
-                            <button
-                                onClick={() => setCurrentPage(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className='p-1 sm:p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors'
-                            >
-                                <ChevronLeft className='w-4 h-4' />
-                            </button>
-
-                            <div className='flex gap-1'>
-                                {Array.from(
-                                    { length: Math.min(5, totalPages) },
-                                    (_, i) => {
-                                        let pageNum;
-                                        if (totalPages <= 5) {
-                                            pageNum = i + 1;
-                                        } else if (currentPage <= 3) {
-                                            pageNum = i + 1;
-                                        } else if (
-                                            currentPage >=
-                                            totalPages - 2
-                                        ) {
-                                            pageNum = totalPages - 4 + i;
-                                        } else {
-                                            pageNum = currentPage - 2 + i;
-                                        }
-
-                                        return (
-                                            <button
-                                                key={pageNum}
-                                                onClick={() =>
-                                                    setCurrentPage(pageNum)
-                                                }
-                                                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                                                    currentPage === pageNum
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                                                }`}
-                                            >
-                                                {pageNum}
-                                            </button>
-                                        );
-                                    },
-                                )}
-                            </div>
-
-                            <button
-                                onClick={() => setCurrentPage(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className='p-1 sm:p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors'
-                            >
-                                <ChevronRight className='w-4 h-4' />
-                            </button>
-                        </div>
-
-                        <div className='text-xs sm:text-sm text-gray-600 dark:text-gray-300'>
-                            Page {currentPage} of {totalPages}
-                        </div>
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className='p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#242424] text-[#101828] dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-all shadow-xs'
+                            title='Next Page'
+                        >
+                            <ChevronRight className='w-4 h-4' />
+                        </button>
                     </div>
                 </div>
             )}
         </div>
     );
 }
+

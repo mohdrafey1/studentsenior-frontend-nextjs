@@ -1,8 +1,31 @@
 'use client';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import {
+    Wallet,
+    ArrowDownToLine,
+    PlusCircle,
+    TrendingUp,
+    Receipt,
+    RefreshCw,
+    CheckCircle2,
+    AlertTriangle,
+    XCircle,
+    Clock,
+    X,
+    ChevronLeft,
+    ChevronRight,
+    ArrowUpRight,
+    ArrowDownLeft,
+    ShieldCheck,
+    CreditCard,
+    Sparkles,
+    Search,
+    IndianRupee,
+} from 'lucide-react';
 
 declare global {
     interface Window {
@@ -69,9 +92,11 @@ export default function WalletPage() {
     const [txns, setTxns] = useState<Txn[]>([]);
 
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [redemptions, setRedemptions] = useState<Redemption[]>([]);
+
     // Modal and form states
     const [showAddModal, setShowAddModal] = useState(false);
     const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -83,8 +108,9 @@ export default function WalletPage() {
 
     // Transaction filters and pagination
     const [type, setType] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
 
     // Withdrawal requests filters and pagination
     const [statusFilter, setStatusFilter] = useState<string>('');
@@ -92,21 +118,41 @@ export default function WalletPage() {
     const [redemptionPageSize, setRedemptionPageSize] = useState(10);
 
     // Tab state
-    const [activeTab, setActiveTab] = useState<'transactions' | 'withdrawals'>(
-        'transactions',
-    );
+    const [activeTab, setActiveTab] = useState<'transactions' | 'withdrawals'>('transactions');
+
+    const isObjId = (v: unknown): v is ObjId =>
+        !!v &&
+        typeof v === 'object' &&
+        '_id' in (v as Record<string, unknown>) &&
+        typeof (v as Record<string, unknown>)['_id'] === 'string';
+
+    const asId = (v: unknown) => {
+        if (!v) return '';
+        if (typeof v === 'string') return v;
+        if (isObjId(v)) return v._id;
+        return '';
+    };
 
     const filtered = useMemo(() => {
-        return txns.filter((t) => !type || t.type === type);
-    }, [txns, type]);
+        return txns.filter((t) => {
+            const matchesType = !type || t.type === type;
+            const ref = asId(t.orderId) || asId(t.paymentId) || t.description || '';
+            const matchesSearch =
+                !searchQuery ||
+                ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.type.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesType && matchesSearch;
+        });
+    }, [txns, type, searchQuery]);
 
     const start = (page - 1) * pageSize;
     const current = filtered.slice(start, start + pageSize);
+    const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
     // Filter and paginate redemptions
     const filteredRedemptions = useMemo(() => {
         return redemptions.filter(
-            (r) => !statusFilter || r.status === statusFilter,
+            (r) => !statusFilter || r.status.toLowerCase() === statusFilter.toLowerCase(),
         );
     }, [redemptions, statusFilter]);
 
@@ -115,11 +161,17 @@ export default function WalletPage() {
         redemptionStart,
         redemptionStart + redemptionPageSize,
     );
+    const totalRedemptionPages =
+        Math.ceil(filteredRedemptions.length / redemptionPageSize) || 1;
 
-    const fetchAll = async () => {
+    const fetchAll = async (isManualRefresh = false) => {
         try {
             setError('');
-            setLoading(true);
+            if (isManualRefresh) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
             const [bRes, tRes, rRes] = await Promise.all([
                 fetch(`${API_BASE}/payment/wallet/balance`, {
                     credentials: 'include',
@@ -127,7 +179,6 @@ export default function WalletPage() {
                 fetch(`${API_BASE}/payment/wallet/transactions?limit=200`, {
                     credentials: 'include',
                 }),
-
                 fetch(`${API_BASE}/payment/wallet/redeem`, {
                     credentials: 'include',
                 }),
@@ -139,7 +190,7 @@ export default function WalletPage() {
             const bData = await bRes.json();
             const tData = await tRes.json();
 
-            setWallet(bData?.data?.wallet ?? 0);
+            setWallet(bData?.data?.wallet ?? { currentBalance: 0, totalEarning: 0, totalWithdrawal: 0 });
             setTxns(tData?.data?.transactions || tData?.data || []);
 
             const rData = await rRes.json();
@@ -150,29 +201,17 @@ export default function WalletPage() {
             setError(msg);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
     useEffect(() => {
-        // Redirect to sign-in if not logged in
         if (!currentUser) {
             router.push('/sign-in?from=/wallet');
             return;
         }
         fetchAll();
     }, [currentUser, router]);
-
-    const isObjId = (v: unknown): v is ObjId =>
-        !!v &&
-        typeof v === 'object' &&
-        '_id' in (v as Record<string, unknown>) &&
-        typeof (v as Record<string, unknown>)['_id'] === 'string';
-    const asId = (v: unknown) => {
-        if (!v) return '';
-        if (typeof v === 'string') return v;
-        if (isObjId(v)) return v._id;
-        return '';
-    };
 
     // Sync rupees with addPoints (5 pts = ₹1)
     useEffect(() => {
@@ -189,10 +228,11 @@ export default function WalletPage() {
         }
         setSubmitting(true);
         try {
-            // Load Razorpay script
             const scriptLoaded = await loadRazorpayScript();
             if (!scriptLoaded) {
-                throw new Error('Failed to load Razorpay. Please check your internet connection.');
+                throw new Error(
+                    'Failed to load Razorpay checkout. Please check your internet connection.',
+                );
             }
 
             const returnUrl = `${window.location.origin}/wallet`;
@@ -211,12 +251,12 @@ export default function WalletPage() {
             if (!createRes.ok) {
                 const msg =
                     (await createRes.json().catch(() => ({}))).message ||
-                    'Failed to create order';
+                    'Failed to create payment order';
                 throw new Error(msg);
             }
             const orderData = await createRes.json();
             const orderId = orderData?.data?.orderId || orderData?.orderId;
-            if (!orderId) throw new Error('Order not created');
+            if (!orderId) throw new Error('Order was not created');
 
             const payRes = await fetch(`${API_BASE}/payment/pay/online`, {
                 method: 'POST',
@@ -231,7 +271,7 @@ export default function WalletPage() {
             if (!payRes.ok) {
                 const msg =
                     (await payRes.json().catch(() => ({}))).message ||
-                    'Failed to initiate payment';
+                    'Failed to initiate payment gateway';
                 throw new Error(msg);
             }
             const payData = await payRes.json();
@@ -244,13 +284,12 @@ export default function WalletPage() {
 
             setShowAddModal(false);
 
-            // Open Razorpay checkout popup
             const razorpayOptions = {
                 key: razorpayKeyId,
                 amount: amountInPaise,
                 currency: currency || 'INR',
                 name: 'StudentSenior',
-                description: `Add ${addPoints} points to wallet`,
+                description: `Add ${addPoints.toLocaleString()} points to wallet`,
                 order_id: razorpayOrderId,
                 handler: async (response: {
                     razorpay_payment_id: string;
@@ -258,7 +297,6 @@ export default function WalletPage() {
                     razorpay_signature: string;
                 }) => {
                     try {
-                        // Verify payment on backend
                         const verifyRes = await fetch(
                             `${API_BASE}/payment/pay/verify`,
                             {
@@ -281,13 +319,13 @@ export default function WalletPage() {
                         }
 
                         setMessage(
-                            `Successfully added ${addPoints} points to your wallet!`,
+                            `Success! Added ${addPoints.toLocaleString()} points to your wallet.`,
                         );
-                        fetchAll(); // Refresh wallet data
+                        fetchAll(true);
                     } catch (err) {
                         console.error('Verification error:', err);
                         setError(
-                            'Payment completed but verification failed. Please contact support.',
+                            'Payment was charged but automatic verification failed. Please contact support.',
                         );
                     } finally {
                         setSubmitting(false);
@@ -299,7 +337,7 @@ export default function WalletPage() {
                     },
                 },
                 theme: {
-                    color: '#2563eb', // blue-600
+                    color: '#0075de',
                 },
             };
 
@@ -308,7 +346,7 @@ export default function WalletPage() {
             rzp.on('payment.failed', (response: any) => {
                 setError(
                     response.error?.description ||
-                        'Payment failed. Please try again.',
+                        'Payment failed or was cancelled. Please try again.',
                 );
                 setSubmitting(false);
             });
@@ -327,15 +365,15 @@ export default function WalletPage() {
         setMessage('');
         const pts = Number(withdrawPoints || 0);
         if (!withdrawUpiId || !/^[\w.\-]+@[\w\-]+$/.test(withdrawUpiId)) {
-            setError('Enter a valid UPI ID');
+            setError('Please enter a valid UPI ID (e.g. username@okhdfcbank)');
             return;
         }
         if (pts < 500) {
-            setError('Minimum withdrawal is 500 points');
+            setError('Minimum withdrawal is 500 points (₹100)');
             return;
         }
         if (pts > wallet.currentBalance) {
-            setError('Insufficient balance');
+            setError('Insufficient wallet points');
             return;
         }
         setSubmitting(true);
@@ -349,14 +387,16 @@ export default function WalletPage() {
             const data = await res.json();
             if (!res.ok) {
                 throw new Error(
-                    data?.message || 'Failed to create withdrawal request',
+                    data?.message || 'Failed to submit withdrawal request',
                 );
             }
-            setMessage('Withdrawal request submitted successfully.');
+            setMessage(
+                `Withdrawal request for ₹${Math.floor(pts / 5)} submitted successfully.`,
+            );
             setWithdrawUpiId('');
             setWithdrawPoints(500);
             setShowWithdrawModal(false);
-            fetchAll();
+            fetchAll(true);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to submit');
         } finally {
@@ -364,215 +404,379 @@ export default function WalletPage() {
         }
     };
 
+    const getTypeBadge = (txnType: Txn['type']) => {
+        switch (txnType) {
+            case 'add':
+                return {
+                    label: 'Added',
+                    classes:
+                        'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200 dark:border-blue-800/60',
+                    icon: PlusCircle,
+                };
+            case 'earn':
+                return {
+                    label: 'Earned',
+                    classes:
+                        'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
+                    icon: TrendingUp,
+                };
+            case 'sale':
+                return {
+                    label: 'Sale',
+                    classes:
+                        'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
+                    icon: ArrowUpRight,
+                };
+            case 'bonus':
+                return {
+                    label: 'Bonus',
+                    classes:
+                        'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border-purple-200 dark:border-purple-800/60',
+                    icon: Sparkles,
+                };
+            case 'refund':
+                return {
+                    label: 'Refund',
+                    classes:
+                        'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800/60',
+                    icon: ArrowDownLeft,
+                };
+            case 'redeem':
+                return {
+                    label: 'Withdrawal',
+                    classes:
+                        'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200 dark:border-rose-800/60',
+                    icon: ArrowDownToLine,
+                };
+            case 'spend':
+            default:
+                return {
+                    label: 'Spent',
+                    classes:
+                        'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700',
+                    icon: Receipt,
+                };
+        }
+    };
+
+    const getStatusBadge = (status: string) => {
+        const s = status.toLowerCase();
+        if (s === 'approved') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60'>
+                    <CheckCircle2 className='w-3 h-3' />
+                    Approved
+                </span>
+            );
+        }
+        if (s === 'rejected') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60'>
+                    <XCircle className='w-3 h-3' />
+                    Rejected
+                </span>
+            );
+        }
+        return (
+            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60'>
+                <Clock className='w-3 h-3' />
+                Pending
+            </span>
+        );
+    };
+
     return (
-        <div className='min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800'>
-            <div className='max-w-7xl mx-auto p-4 sm:p-6 lg:p-8'>
-                {/* Header */}
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4'>
-                    <div>
-                        <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1'>
-                            My Wallet
-                        </h1>
-                        <p className='text-gray-500 dark:text-gray-400 text-sm'>
-                            Manage your points and withdrawals
-                        </p>
-                    </div>
-                    <div className='flex gap-3'>
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className='px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200'
-                        >
-                            <span className='flex items-center gap-2'>
-                                <span>+</span>
-                                <span>Add Points</span>
+        <div className='min-h-screen bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] transition-colors pb-8'>
+            <div className='max-w-5xl mx-auto px-3 sm:px-4 pt-4'>
+                {/* Compact Header & Action Bar */}
+                <div className='flex items-center justify-between gap-3 pb-3 border-b border-[#e6e6e6] dark:border-[#2f2f2f] mb-3'>
+                    <div className='flex items-center gap-2.5'>
+                        <div className='w-8 h-8 rounded-lg bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20 flex items-center justify-center border border-[#0075de]/20 shrink-0'>
+                            <Wallet className='w-4 h-4' />
+                        </div>
+                        <div>
+                            <h1 className='text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2 leading-none'>
+                                <span>My Wallet</span>
+                            </h1>
+                            <span className='text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                Manage points & instant payouts
                             </span>
+                        </div>
+                    </div>
+
+                    <div className='flex items-center gap-2'>
+                        <button
+                            onClick={() => fetchAll(true)}
+                            disabled={refreshing || loading}
+                            title='Refresh wallet data'
+                            className='p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-[#ececec] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] transition-all disabled:opacity-50'
+                        >
+                            <RefreshCw
+                                className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-[#0075de]' : ''}`}
+                            />
                         </button>
+
                         <button
                             onClick={() => setShowWithdrawModal(true)}
-                            className='px-5 py-2.5 rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white font-medium shadow-md hover:shadow-lg transition-all duration-200'
+                            className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] text-[#191919] dark:text-[#ececec] shadow-2xs transition-all'
                         >
-                            <span className='flex items-center gap-2'>
-                                <span>↓</span>
-                                <span>Withdraw</span>
-                            </span>
+                            <ArrowDownToLine className='w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400' />
+                            <span>Withdraw</span>
+                        </button>
+
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#0075de] hover:bg-[#0060b9] text-white shadow-2xs transition-all'
+                        >
+                            <PlusCircle className='w-3.5 h-3.5' />
+                            <span>Add Points</span>
                         </button>
                     </div>
                 </div>
 
-                {/* Alerts */}
+                {/* Compact Alerts */}
                 {error && (
-                    <div className='mb-6 p-4 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 shadow-sm'>
-                        <div className='flex items-start gap-3'>
-                            <span className='text-xl'>⚠️</span>
-                            <div>{error}</div>
+                    <div className='mb-3 px-3 py-2 rounded-lg border border-rose-200 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/30 text-rose-800 dark:text-rose-200 flex items-center justify-between gap-2 text-xs shadow-2xs'>
+                        <div className='flex items-center gap-2'>
+                            <AlertTriangle className='w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0' />
+                            <span>{error}</span>
                         </div>
-                    </div>
-                )}
-                {message && (
-                    <div className='mb-6 p-4 rounded-lg border border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 shadow-sm'>
-                        <div className='flex items-start gap-3'>
-                            <span className='text-xl'>✓</span>
-                            <div>{message}</div>
-                        </div>
+                        <button
+                            onClick={() => setError('')}
+                            className='text-rose-500 hover:text-rose-700 dark:hover:text-rose-300'
+                        >
+                            <X className='w-3.5 h-3.5' />
+                        </button>
                     </div>
                 )}
 
-                {/* Balance & Stats Cards */}
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-                    <div className='p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow'>
-                        <div className='flex items-center justify-between mb-2'>
-                            <div className='text-sm font-medium text-gray-600 dark:text-gray-300'>
-                                Current Balance
+                {message && (
+                    <div className='mb-3 px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-2 text-xs shadow-2xs'>
+                        <div className='flex items-center gap-2'>
+                            <CheckCircle2 className='w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0' />
+                            <span>{message}</span>
+                        </div>
+                        <button
+                            onClick={() => setMessage('')}
+                            className='text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300'
+                        >
+                            <X className='w-3.5 h-3.5' />
+                        </button>
+                    </div>
+                )}
+
+                {/* Compact 3 Overview Stat Cards */}
+                <div className='grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3'>
+                    {/* Balance Card */}
+                    <div className='p-3 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs group hover:border-[#0075de]/40 transition-all'>
+                        <div className='flex items-center justify-between mb-1'>
+                            <span className='text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                Available Balance
+                            </span>
+                            <div className='w-6 h-6 rounded-md bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20 flex items-center justify-center'>
+                                <Wallet className='w-3.5 h-3.5' />
                             </div>
-                            <span className='text-2xl'>💰</span>
                         </div>
-                        <div className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1'>
-                            {wallet.currentBalance.toLocaleString()} pts
+                        <div className='text-xl font-bold tracking-tight text-[#191919] dark:text-[#ececec] leading-tight'>
+                            {wallet.currentBalance.toLocaleString()}{' '}
+                            <span className='text-xs font-normal text-[#787774] dark:text-[#9b9a97]'>
+                                pts
+                            </span>
                         </div>
-                        <div className='text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1'>
+                        <div className='flex items-center justify-between mt-1 pt-1 border-t border-[#f0efee] dark:border-[#2a2a2a] text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                            <span className='font-medium text-[#191919] dark:text-[#ececec]'>
+                                ≈ ₹{Math.floor(wallet.currentBalance / 5).toLocaleString()}
+                            </span>
+                            <span className='px-1 py-0.2 rounded text-[10px] bg-[#f3f2ef] dark:bg-[#282828] text-[#787774] dark:text-[#9b9a97]'>
+                                5 pts = ₹1
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Lifetime Earnings Card */}
+                    <div className='p-3 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs group hover:border-emerald-500/40 transition-all'>
+                        <div className='flex items-center justify-between mb-1'>
+                            <span className='text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                Lifetime Earnings
+                            </span>
+                            <div className='w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center'>
+                                <TrendingUp className='w-3.5 h-3.5' />
+                            </div>
+                        </div>
+                        <div className='text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 leading-tight'>
+                            {(wallet.totalEarning ?? 0).toLocaleString()}{' '}
+                            <span className='text-xs font-normal text-[#787774] dark:text-[#9b9a97]'>
+                                pts
+                            </span>
+                        </div>
+                        <div className='flex items-center justify-between mt-1 pt-1 border-t border-[#f0efee] dark:border-[#2a2a2a] text-[11px] text-[#787774] dark:text-[#9b9a97]'>
                             <span>
-                                ≈ ₹
-                                {Math.floor(
-                                    wallet.currentBalance / 5,
-                                ).toLocaleString()}
+                                ≈ ₹{Math.floor((wallet.totalEarning ?? 0) / 5).toLocaleString()}
                             </span>
-                            <span className='text-gray-400 dark:text-gray-500'>
-                                •
-                            </span>
-                            <span>1 INR = 5 pts</span>
+                            <span>Sales & Rewards</span>
                         </div>
                     </div>
-                    <div className='p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow'>
-                        <div className='flex items-center justify-between mb-2'>
-                            <div className='text-sm font-medium text-gray-600 dark:text-gray-300'>
-                                Total Earned
+
+                    {/* Total Redeemed Card */}
+                    <div className='p-3 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs group hover:border-amber-500/40 transition-all'>
+                        <div className='flex items-center justify-between mb-1'>
+                            <span className='text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                Total Withdrawn
+                            </span>
+                            <div className='w-6 h-6 rounded-md bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 flex items-center justify-center'>
+                                <Receipt className='w-3.5 h-3.5' />
                             </div>
-                            <span className='text-2xl'>📈</span>
                         </div>
-                        <div className='text-3xl font-bold text-green-600 dark:text-green-400 mb-1'>
-                            {(wallet.totalEarning ?? 0).toLocaleString()} pts
+                        <div className='text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400 leading-tight'>
+                            {(wallet.totalWithdrawal ?? 0).toLocaleString()}{' '}
+                            <span className='text-xs font-normal text-[#787774] dark:text-[#9b9a97]'>
+                                pts
+                            </span>
                         </div>
-                        <div className='text-xs text-gray-500 dark:text-gray-400'>
-                            Lifetime earnings
-                        </div>
-                    </div>
-                    <div className='p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow'>
-                        <div className='flex items-center justify-between mb-2'>
-                            <div className='text-sm font-medium text-gray-600 dark:text-gray-300'>
-                                Total Withdrawl
-                            </div>
-                            <span className='text-2xl'>📊</span>
-                        </div>
-                        <div className='text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1'>
-                            {(wallet.totalWithdrawal ?? 0).toLocaleString()} pts
-                        </div>
-                        <div className='text-xs text-gray-500 dark:text-gray-400'>
-                            All time Redeem
+                        <div className='flex items-center justify-between mt-1 pt-1 border-t border-[#f0efee] dark:border-[#2a2a2a] text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                            <span>
+                                ≈ ₹{Math.floor((wallet.totalWithdrawal ?? 0) / 5).toLocaleString()}
+                            </span>
+                            <span>UPI Payouts</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700'>
-                    <div className='border-b border-gray-200 dark:border-gray-700'>
-                        <div className='flex'>
+                {/* Ultra-compact Info Bar */}
+                <div className='py-1.5 px-3 mb-3 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[11px] text-[#787774] dark:text-[#9b9a97] flex items-center justify-between'>
+                    <div className='flex items-center gap-1.5'>
+                        <IndianRupee className='w-3 h-3 text-emerald-600 shrink-0' />
+                        <span><strong>5 pts = ₹1</strong> • Min withdrawal: <strong>500 pts (₹100)</strong></span>
+                    </div>
+                    <div className='flex items-center gap-1 text-[#0075de] font-medium'>
+                        <ShieldCheck className='w-3 h-3' />
+                        <span>Instant UPI payout</span>
+                    </div>
+                </div>
+
+                {/* Compact Main Table Container */}
+                <div className='rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] shadow-2xs overflow-hidden'>
+                    {/* Compact Tabs Header */}
+                    <div className='flex items-center justify-between border-b border-[#e6e6e6] dark:border-[#2f2f2f] px-3 bg-[#fbfbfa] dark:bg-[#232323]'>
+                        <div className='flex items-center gap-1'>
                             <button
-                                onClick={() => setActiveTab('transactions')}
-                                className={`flex-1 px-6 py-4 text-sm font-semibold transition-all ${
+                                onClick={() => {
+                                    setActiveTab('transactions');
+                                    setPage(1);
+                                }}
+                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-all -mb-[1px] ${
                                     activeTab === 'transactions'
-                                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                        ? 'border-[#0075de] text-[#0075de]'
+                                        : 'border-transparent text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-[#ececec]'
                                 }`}
                             >
-                                <span className='flex items-center justify-center gap-2'>
-                                    <span>Transaction History</span>
-                                    <span className='ml-2 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 dark:text-gray-200 text-xs font-medium'>
-                                        {filtered.length}
-                                    </span>
+                                <span>Transactions</span>
+                                <span
+                                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-semibold ${
+                                        activeTab === 'transactions'
+                                            ? 'bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20'
+                                            : 'bg-[#e6e6e6] dark:bg-[#2f2f2f] text-[#787774] dark:text-[#9b9a97]'
+                                    }`}
+                                >
+                                    {filtered.length}
                                 </span>
                             </button>
+
                             <button
-                                onClick={() => setActiveTab('withdrawals')}
-                                className={`flex-1 px-6 py-4 text-sm font-semibold transition-all ${
+                                onClick={() => {
+                                    setActiveTab('withdrawals');
+                                    setRedemptionPage(1);
+                                }}
+                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-all -mb-[1px] ${
                                     activeTab === 'withdrawals'
-                                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                        ? 'border-[#0075de] text-[#0075de]'
+                                        : 'border-transparent text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-[#ececec]'
                                 }`}
                             >
-                                <span className='flex items-center justify-center gap-2'>
-                                    <span>Withdrawal Requests</span>
-                                    <span className='ml-2 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 dark:text-gray-200 text-xs font-medium'>
-                                        {filteredRedemptions.length}
-                                    </span>
+                                <span>Withdrawals</span>
+                                <span
+                                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-semibold ${
+                                        activeTab === 'withdrawals'
+                                            ? 'bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20'
+                                            : 'bg-[#e6e6e6] dark:bg-[#2f2f2f] text-[#787774] dark:text-[#9b9a97]'
+                                    }`}
+                                >
+                                    {filteredRedemptions.length}
                                 </span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Transactions Tab Content */}
+                    {/* Transactions Tab */}
                     {activeTab === 'transactions' && (
-                        <>
-                            <div className='p-6 border-b border-gray-200 dark:border-gray-700'>
-                                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
-                                        Transaction History
-                                    </h2>
+                        <div>
+                            {/* Compact Toolbar */}
+                            <div className='p-2.5 border-b border-[#e6e6e6] dark:border-[#2f2f2f] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2'>
+                                <div className='relative flex-1 max-w-xs'>
+                                    <Search className='w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#787774] dark:text-[#9b9a97]' />
+                                    <input
+                                        type='text'
+                                        placeholder='Search reference...'
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            setPage(1);
+                                        }}
+                                        className='w-full pl-8 pr-7 py-1 text-xs rounded-md border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] placeholder-[#9b9a97] focus:outline-none focus:border-[#0075de] transition-colors'
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className='absolute right-2 top-1/2 -translate-y-1/2 text-[#787774] hover:text-[#191919] dark:hover:text-[#ececec]'
+                                        >
+                                            <X className='w-3 h-3' />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className='flex items-center gap-1.5'>
                                     <select
-                                        className='border text-black border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent'
+                                        className='text-xs px-2.5 py-1 rounded-md border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] focus:outline-none focus:border-[#0075de] cursor-pointer'
                                         value={type}
                                         onChange={(e) => {
                                             setType(e.target.value);
                                             setPage(1);
                                         }}
                                     >
-                                        <option value=''>All types</option>
+                                        <option value=''>All Types</option>
                                         <option value='add'>Added</option>
-                                        <option value='earn'>Earn</option>
-                                        <option value='spend'>Spend</option>
-                                        <option value='sale'>Sale</option>
-                                        <option value='refund'>Refund</option>
-                                        <option value='redeem'>
-                                            Withdrawal
-                                        </option>
+                                        <option value='earn'>Earned</option>
+                                        <option value='sale'>Sale Revenue</option>
                                         <option value='bonus'>Bonus</option>
+                                        <option value='spend'>Spent</option>
+                                        <option value='redeem'>Withdrawal</option>
+                                        <option value='refund'>Refund</option>
                                     </select>
                                 </div>
                             </div>
 
+                            {/* Table */}
                             <div className='overflow-x-auto'>
-                                <table className='min-w-full'>
-                                    <thead className='bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700'>
-                                        <tr>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Date
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Type
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Points
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Balance
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Reference
-                                            </th>
+                                <table className='w-full text-left text-xs border-collapse'>
+                                    <thead>
+                                        <tr className='border-b border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#fbfbfa] dark:bg-[#232323] text-[#787774] dark:text-[#9b9a97] uppercase tracking-wider text-[10px] font-semibold'>
+                                            <th className='px-3 sm:px-4 py-2'>Date</th>
+                                            <th className='px-3 sm:px-4 py-2'>Type</th>
+                                            <th className='px-3 sm:px-4 py-2'>Points</th>
+                                            <th className='px-3 sm:px-4 py-2'>Balance</th>
+                                            <th className='px-3 sm:px-4 py-2'>Reference</th>
                                         </tr>
                                     </thead>
-                                    <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
+                                    <tbody className='divide-y divide-[#e6e6e6] dark:divide-[#2f2f2f]'>
                                         {loading ? (
                                             <tr>
                                                 <td
                                                     colSpan={5}
-                                                    className='px-6 py-12 text-center text-gray-500 dark:text-gray-400'
+                                                    className='px-4 py-10 text-center text-[#787774] dark:text-[#9b9a97]'
                                                 >
                                                     <div className='flex items-center justify-center gap-2'>
-                                                        <div className='w-4 h-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin'></div>
-                                                        <span>
-                                                            Loading
-                                                            transactions...
-                                                        </span>
+                                                        <RefreshCw className='w-4 h-4 animate-spin text-[#0075de]' />
+                                                        <span className='text-xs'>Loading...</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -580,188 +784,176 @@ export default function WalletPage() {
                                             <tr>
                                                 <td
                                                     colSpan={5}
-                                                    className='px-6 py-12 text-center text-gray-500 dark:text-gray-400'
+                                                    className='px-4 py-10 text-center text-[#787774] dark:text-[#9b9a97]'
                                                 >
-                                                    <div className='flex flex-col items-center gap-2'>
-                                                        <span className='text-4xl'>
-                                                            📭
-                                                        </span>
-                                                        <span>
-                                                            No transactions
-                                                            found
-                                                        </span>
+                                                    <div className='flex flex-col items-center justify-center gap-1 max-w-xs mx-auto'>
+                                                        <Receipt className='w-5 h-5 text-[#787774]' />
+                                                        <p className='text-xs font-medium text-[#191919] dark:text-[#ececec]'>
+                                                            No transactions found
+                                                        </p>
                                                     </div>
                                                 </td>
                                             </tr>
                                         ) : (
-                                            current.map((t) => (
-                                                <tr
-                                                    key={t._id}
-                                                    className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'
-                                                >
-                                                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300'>
-                                                        {t.createdAt
-                                                            ? new Date(
-                                                                  t.createdAt,
-                                                              ).toLocaleString(
-                                                                  'en-US',
-                                                                  {
+                                            current.map((t) => {
+                                                const badge = getTypeBadge(t.type);
+                                                const BadgeIcon = badge.icon;
+                                                const isPositive = t.points >= 0;
+                                                const ref =
+                                                    asId(t.orderId) ||
+                                                    asId(t.paymentId) ||
+                                                    t.description;
+
+                                                return (
+                                                    <tr
+                                                        key={t._id}
+                                                        className='hover:bg-[#fbfbfa] dark:hover:bg-[#252525] transition-colors'
+                                                    >
+                                                        <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap text-[#787774] dark:text-[#9b9a97] text-[11px]'>
+                                                            {t.createdAt
+                                                                ? new Date(
+                                                                      t.createdAt,
+                                                                  ).toLocaleString('en-US', {
                                                                       month: 'short',
                                                                       day: 'numeric',
-                                                                      year: 'numeric',
                                                                       hour: '2-digit',
                                                                       minute: '2-digit',
-                                                                  },
-                                                              )
-                                                            : '-'}
-                                                    </td>
-                                                    <td className='px-6 py-4 whitespace-nowrap'>
-                                                        <span
-                                                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium capitalize
-                          ${t.type === 'add' || t.type === 'earn' || t.type === 'sale' || t.type === 'bonus' || t.type === 'refund' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300'}`}
-                                                        >
-                                                            {t.type}
-                                                        </span>
-                                                    </td>
-                                                    <td
-                                                        className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${t.points >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
-                                                    >
-                                                        {t.points >= 0
-                                                            ? '+'
-                                                            : ''}
-                                                        {t.points}
-                                                    </td>
-                                                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium'>
-                                                        {t.balanceAfter}
-                                                    </td>
-                                                    <td className='px-6 py-4 text-xs text-gray-500 dark:text-gray-400 font-mono max-w-xs truncate'>
-                                                        {asId(t.orderId) ||
-                                                            asId(t.paymentId) ||
-                                                            '-'}
-                                                    </td>
-                                                </tr>
-                                            ))
+                                                                  })
+                                                                : '-'}
+                                                        </td>
+                                                        <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap'>
+                                                            <span
+                                                                className={`inline-flex items-center gap-1 px-2 py-0.2 rounded text-[11px] font-medium border ${badge.classes}`}
+                                                            >
+                                                                <BadgeIcon className='w-2.5 h-2.5' />
+                                                                {badge.label}
+                                                            </span>
+                                                        </td>
+                                                        <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap font-semibold'>
+                                                            <span
+                                                                className={
+                                                                    isPositive
+                                                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                                                        : 'text-rose-600 dark:text-rose-400'
+                                                                }
+                                                            >
+                                                                {isPositive ? '+' : ''}
+                                                                {t.points.toLocaleString()} pts
+                                                            </span>
+                                                        </td>
+                                                        <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap font-medium text-[#191919] dark:text-[#ececec]'>
+                                                            {t.balanceAfter.toLocaleString()}
+                                                        </td>
+                                                        <td className='px-3 sm:px-4 py-2.5 text-[11px] text-[#787774] dark:text-[#9b9a97] font-mono max-w-xs truncate'>
+                                                            {ref || '-'}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
                                         )}
                                     </tbody>
                                 </table>
                             </div>
 
-                            {/* Transaction Pagination */}
-                            <div className='px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between'>
-                                <div className='flex items-center gap-2'>
+                            {/* Compact Pagination */}
+                            <div className='px-3 sm:px-4 py-2 border-t border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#fbfbfa] dark:bg-[#232323] flex items-center justify-between text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                <div className='flex items-center gap-1.5'>
                                     <select
-                                        className='borde text-black border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
+                                        className='px-1.5 py-0.5 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] focus:outline-none'
                                         value={pageSize}
                                         onChange={(e) => {
-                                            setPageSize(
-                                                parseInt(e.target.value),
-                                            );
+                                            setPageSize(parseInt(e.target.value, 10));
                                             setPage(1);
                                         }}
                                     >
-                                        {[10, 20, 50, 100].map((n) => (
+                                        {[10, 20, 50].map((n) => (
                                             <option key={n} value={n}>
                                                 {n}
                                             </option>
                                         ))}
                                     </select>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        per page
+                                    <span>
+                                        {filtered.length > 0 ? start + 1 : 0}-
+                                        {Math.min(start + pageSize, filtered.length)} of{' '}
+                                        {filtered.length}
                                     </span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        {start + 1}-
-                                        {Math.min(
-                                            start + pageSize,
-                                            filtered.length,
-                                        )}{' '}
-                                        of {filtered.length}
+
+                                <div className='flex items-center gap-1'>
+                                    <span>
+                                        {page}/{totalPages}
                                     </span>
                                     <button
-                                        className='px-4 text-black py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
                                         disabled={page === 1}
-                                        onClick={() =>
-                                            setPage((p) => Math.max(1, p - 1))
-                                        }
+                                        className='p-1 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                        title='Previous'
                                     >
-                                        Prev
+                                        <ChevronLeft className='w-3.5 h-3.5' />
                                     </button>
                                     <button
-                                        className='px-4 text-black py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-                                        disabled={
-                                            start + pageSize >= filtered.length
-                                        }
-                                        onClick={() => setPage((p) => p + 1)}
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        disabled={page >= totalPages}
+                                        className='p-1 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                        title='Next'
                                     >
-                                        Next
+                                        <ChevronRight className='w-3.5 h-3.5' />
                                     </button>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
 
-                    {/* Withdrawals Tab Content */}
+                    {/* Withdrawals Tab */}
                     {activeTab === 'withdrawals' && (
-                        <>
-                            <div className='p-6 border-b border-gray-200 dark:border-gray-700'>
-                                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                                    <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100'>
-                                        Withdrawal Requests
-                                    </h2>
-                                    <select
-                                        className='border text-black border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent'
-                                        value={statusFilter}
-                                        onChange={(e) => {
-                                            setStatusFilter(e.target.value);
-                                            setRedemptionPage(1);
-                                        }}
-                                    >
-                                        <option value=''>All Status</option>
-                                        <option value='pending'>Pending</option>
-                                        <option value='approved'>
-                                            Approved
-                                        </option>
-                                        <option value='rejected'>
-                                            Rejected
-                                        </option>
-                                    </select>
-                                </div>
+                        <div>
+                            {/* Compact Toolbar */}
+                            <div className='p-2.5 border-b border-[#e6e6e6] dark:border-[#2f2f2f] flex items-center justify-between gap-2'>
+                                <select
+                                    className='text-xs px-2.5 py-1 rounded-md border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] focus:outline-none focus:border-[#0075de] cursor-pointer'
+                                    value={statusFilter}
+                                    onChange={(e) => {
+                                        setStatusFilter(e.target.value);
+                                        setRedemptionPage(1);
+                                    }}
+                                >
+                                    <option value=''>All Statuses</option>
+                                    <option value='pending'>Pending</option>
+                                    <option value='approved'>Approved</option>
+                                    <option value='rejected'>Rejected</option>
+                                </select>
+
+                                <button
+                                    onClick={() => setShowWithdrawModal(true)}
+                                    className='inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-2xs transition-all'
+                                >
+                                    <PlusCircle className='w-3 h-3' />
+                                    <span>New Request</span>
+                                </button>
                             </div>
 
+                            {/* Table */}
                             <div className='overflow-x-auto'>
-                                <table className='min-w-full'>
-                                    <thead className='bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700'>
-                                        <tr>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Date
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                UPI ID
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Amount (₹)
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Status
-                                            </th>
-                                            <th className='text-left px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
-                                                Reason
-                                            </th>
+                                <table className='w-full text-left text-xs border-collapse'>
+                                    <thead>
+                                        <tr className='border-b border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#fbfbfa] dark:bg-[#232323] text-[#787774] dark:text-[#9b9a97] uppercase tracking-wider text-[10px] font-semibold'>
+                                            <th className='px-3 sm:px-4 py-2'>Date</th>
+                                            <th className='px-3 sm:px-4 py-2'>UPI ID</th>
+                                            <th className='px-3 sm:px-4 py-2'>Amount</th>
+                                            <th className='px-3 sm:px-4 py-2'>Status</th>
+                                            <th className='px-3 sm:px-4 py-2'>Reason</th>
                                         </tr>
                                     </thead>
-                                    <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
+                                    <tbody className='divide-y divide-[#e6e6e6] dark:divide-[#2f2f2f]'>
                                         {loading ? (
                                             <tr>
                                                 <td
                                                     colSpan={5}
-                                                    className='px-6 py-12 text-center text-gray-500 dark:text-gray-400'
+                                                    className='px-4 py-10 text-center text-[#787774] dark:text-[#9b9a97]'
                                                 >
                                                     <div className='flex items-center justify-center gap-2'>
-                                                        <div className='w-4 h-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin'></div>
-                                                        <span>
-                                                            Loading requests...
-                                                        </span>
+                                                        <RefreshCw className='w-4 h-4 animate-spin text-[#0075de]' />
+                                                        <span className='text-xs'>Loading...</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -769,20 +961,12 @@ export default function WalletPage() {
                                             <tr>
                                                 <td
                                                     colSpan={5}
-                                                    className='px-6 py-12 text-center text-gray-500 dark:text-gray-400'
+                                                    className='px-4 py-10 text-center text-[#787774] dark:text-[#9b9a97]'
                                                 >
-                                                    <div className='flex flex-col items-center gap-2'>
-                                                        <span className='text-4xl'>
-                                                            💸
-                                                        </span>
-                                                        <span>
-                                                            No withdrawal
-                                                            requests
-                                                        </span>
-                                                        <p className='text-xs text-gray-400 dark:text-gray-500 mt-1'>
-                                                            Your withdrawal
-                                                            requests will appear
-                                                            here
+                                                    <div className='flex flex-col items-center justify-center gap-1 max-w-xs mx-auto'>
+                                                        <ArrowDownToLine className='w-5 h-5 text-[#787774]' />
+                                                        <p className='text-xs font-medium text-[#191919] dark:text-[#ececec]'>
+                                                            No withdrawal requests
                                                         </p>
                                                     </div>
                                                 </td>
@@ -791,58 +975,37 @@ export default function WalletPage() {
                                             currentRedemptions.map((r) => (
                                                 <tr
                                                     key={r._id}
-                                                    className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'
+                                                    className='hover:bg-[#fbfbfa] dark:hover:bg-[#252525] transition-colors'
                                                 >
-                                                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300'>
+                                                    <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap text-[#787774] dark:text-[#9b9a97] text-[11px]'>
                                                         {r.createdAt
                                                             ? new Date(
                                                                   r.createdAt,
-                                                              ).toLocaleString(
-                                                                  'en-US',
-                                                                  {
-                                                                      month: 'short',
-                                                                      day: 'numeric',
-                                                                      year: 'numeric',
-                                                                      hour: '2-digit',
-                                                                      minute: '2-digit',
-                                                                  },
-                                                              )
+                                                              ).toLocaleString('en-US', {
+                                                                  month: 'short',
+                                                                  day: 'numeric',
+                                                                  hour: '2-digit',
+                                                                  minute: '2-digit',
+                                                              })
                                                             : '-'}
                                                     </td>
-                                                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium'>
+                                                    <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap font-mono text-xs text-[#191919] dark:text-[#ececec]'>
                                                         {r.upiId}
                                                     </td>
-                                                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-semibold'>
+                                                    <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap font-semibold text-[#191919] dark:text-[#ececec]'>
                                                         ₹{r.rewardBalance}
                                                     </td>
-                                                    <td className='px-6 py-4 whitespace-nowrap'>
-                                                        <span
-                                                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium border capitalize ${
-                                                                r.status ===
-                                                                'approved'
-                                                                    ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700'
-                                                                    : r.status ===
-                                                                        'rejected'
-                                                                      ? 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700'
-                                                                      : 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700'
-                                                            }`}
-                                                        >
-                                                            {r.status}
-                                                        </span>
+                                                    <td className='px-3 sm:px-4 py-2.5 whitespace-nowrap'>
+                                                        {getStatusBadge(r.status)}
                                                     </td>
-                                                    <td className='px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs'>
-                                                        {r.status ===
-                                                            'Rejected' &&
+                                                    <td className='px-3 sm:px-4 py-2.5 text-[11px] text-[#787774] dark:text-[#9b9a97] max-w-xs'>
+                                                        {r.status.toLowerCase() === 'rejected' &&
                                                         r.rejectionReason ? (
-                                                            <span className='text-red-600 dark:text-red-400'>
-                                                                {
-                                                                    r.rejectionReason
-                                                                }
+                                                            <span className='text-rose-600 dark:text-rose-400 font-medium'>
+                                                                {r.rejectionReason}
                                                             </span>
                                                         ) : (
-                                                            <span className='text-gray-400 dark:text-gray-500'>
-                                                                -
-                                                            </span>
+                                                            <span>-</span>
                                                         )}
                                                     </td>
                                                 </tr>
@@ -852,304 +1015,330 @@ export default function WalletPage() {
                                 </table>
                             </div>
 
-                            {/* Withdrawal Pagination */}
-                            <div className='px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between'>
-                                <div className='flex items-center gap-2'>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        Show
-                                    </span>
+                            {/* Compact Pagination */}
+                            <div className='px-3 sm:px-4 py-2 border-t border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#fbfbfa] dark:bg-[#232323] flex items-center justify-between text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                <div className='flex items-center gap-1.5'>
                                     <select
-                                        className='border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
+                                        className='px-1.5 py-0.5 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] focus:outline-none'
                                         value={redemptionPageSize}
                                         onChange={(e) => {
                                             setRedemptionPageSize(
-                                                parseInt(e.target.value),
+                                                parseInt(e.target.value, 10),
                                             );
                                             setRedemptionPage(1);
                                         }}
                                     >
-                                        {[5, 10, 20, 50].map((n) => (
+                                        {[5, 10, 20].map((n) => (
                                             <option key={n} value={n}>
                                                 {n}
                                             </option>
                                         ))}
                                     </select>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        per page
-                                    </span>
-                                </div>
-                                <div className='flex items-center gap-2'>
-                                    <span className='text-sm text-gray-600 dark:text-gray-300'>
-                                        {redemptionStart + 1}-
+                                    <span>
+                                        {filteredRedemptions.length > 0 ? redemptionStart + 1 : 0}-
                                         {Math.min(
-                                            redemptionStart +
-                                                redemptionPageSize,
+                                            redemptionStart + redemptionPageSize,
                                             filteredRedemptions.length,
                                         )}{' '}
                                         of {filteredRedemptions.length}
                                     </span>
+                                </div>
+
+                                <div className='flex items-center gap-1'>
+                                    <span>
+                                        {redemptionPage}/{totalRedemptionPages}
+                                    </span>
                                     <button
-                                        className='px-4 text-black py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                                        onClick={() =>
+                                            setRedemptionPage((p) => Math.max(1, p - 1))
+                                        }
                                         disabled={redemptionPage === 1}
+                                        className='p-1 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                        title='Previous'
+                                    >
+                                        <ChevronLeft className='w-3.5 h-3.5' />
+                                    </button>
+                                    <button
                                         onClick={() =>
                                             setRedemptionPage((p) =>
-                                                Math.max(1, p - 1),
+                                                Math.min(totalRedemptionPages, p + 1),
                                             )
                                         }
+                                        disabled={redemptionPage >= totalRedemptionPages}
+                                        className='p-1 rounded border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#202020] text-[#191919] dark:text-[#ececec] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+                                        title='Next'
                                     >
-                                        Previous
-                                    </button>
-                                    <button
-                                        className='px-4 text-black py-2 border border-gray-300 dark:border-gray-600 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-                                        disabled={
-                                            redemptionStart +
-                                                redemptionPageSize >=
-                                            filteredRedemptions.length
-                                        }
-                                        onClick={() =>
-                                            setRedemptionPage((p) => p + 1)
-                                        }
-                                    >
-                                        Next
+                                        <ChevronRight className='w-3.5 h-3.5' />
                                     </button>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
+            </div>
 
-                {/* Add Points Modal */}
-                {showAddModal && (
-                    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-                        <div className='w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl transform transition-all'>
-                            <div className='flex items-center justify-between mb-6'>
-                                <div>
-                                    <h3 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>
-                                        Add Points
-                                    </h3>
-                                    <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                                        Purchase points using Razorpay
-                                    </p>
+            {/* Compact Add Points Modal */}
+            {showAddModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-100'>
+                    <div className='w-full max-w-sm rounded-xl bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 shadow-xl transition-all'>
+                        <div className='flex items-center justify-between pb-3 mb-3 border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                            <div className='flex items-center gap-2'>
+                                <div className='w-7 h-7 rounded-md bg-[#0075de]/10 text-[#0075de] dark:bg-[#0075de]/20 flex items-center justify-center'>
+                                    <PlusCircle className='w-4 h-4' />
                                 </div>
-                                <button
-                                    onClick={() => setShowAddModal(false)}
-                                    className='text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-2xl'
-                                >
-                                    ✕
-                                </button>
+                                <h3 className='text-sm font-bold text-[#191919] dark:text-[#ececec]'>
+                                    Add Points
+                                </h3>
                             </div>
-                            <form
-                                onSubmit={handleAddPointsSubmit}
-                                className='space-y-5'
+                            <button
+                                onClick={() => setShowAddModal(false)}
+                                className='p-1 rounded text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-[#ececec] transition-colors'
                             >
-                                <div>
-                                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'>
-                                        Points to Add
-                                    </label>
-                                    <input
-                                        type='number'
-                                        min={500}
-                                        max={100000}
-                                        value={addPoints}
-                                        onChange={(e) =>
-                                            setAddPoints(
-                                                Math.max(
-                                                    0,
-                                                    parseInt(
-                                                        e.target.value || '0',
-                                                        10,
-                                                    ),
-                                                ),
-                                            )
-                                        }
-                                        className='w-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400/50 transition-all text-lg'
-                                        placeholder='Enter points'
-                                    />
-                                    <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
-                                        Min: 500 pts • Max: 100,000 pts
-                                    </p>
+                                <X className='w-4 h-4' />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddPointsSubmit} className='space-y-3'>
+                            {/* Preset Buttons */}
+                            <div>
+                                <label className='block text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97] mb-1.5'>
+                                    Quick Select
+                                </label>
+                                <div className='grid grid-cols-4 gap-1.5'>
+                                    {[500, 1000, 2500, 5000].map((preset) => (
+                                        <button
+                                            key={preset}
+                                            type='button'
+                                            onClick={() => setAddPoints(preset)}
+                                            className={`py-1 px-1 text-center rounded-md border text-xs font-medium transition-all ${
+                                                addPoints === preset
+                                                    ? 'border-[#0075de] bg-[#0075de]/10 text-[#0075de] font-semibold'
+                                                    : 'border-[#e6e6e6] dark:border-[#2f2f2f] hover:bg-[#f3f2ef] dark:hover:bg-[#252525] text-[#191919] dark:text-[#ececec]'
+                                            }`}
+                                        >
+                                            <div>{preset}</div>
+                                            <div className='text-[10px] text-[#787774] dark:text-[#9b9a97]'>
+                                                ₹{preset / 5}
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/50 dark:to-blue-800/50 rounded-lg p-4 border border-blue-200 dark:border-blue-700'>
-                                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'>
-                                        Amount to Pay
-                                    </label>
-                                    <div className='text-3xl font-bold text-blue-600 dark:text-blue-400'>
+                            </div>
+
+                            {/* Custom Points Input */}
+                            <div>
+                                <label className='block text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97] mb-1'>
+                                    Points Amount
+                                </label>
+                                <input
+                                    type='number'
+                                    min={500}
+                                    max={100000}
+                                    step={50}
+                                    value={addPoints}
+                                    onChange={(e) =>
+                                        setAddPoints(
+                                            Math.max(
+                                                0,
+                                                parseInt(e.target.value || '0', 10),
+                                            ),
+                                        )
+                                    }
+                                    className='w-full border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#0075de] font-semibold'
+                                    placeholder='500'
+                                />
+                                <div className='flex justify-between items-center text-[10px] text-[#787774] dark:text-[#9b9a97] mt-0.5'>
+                                    <span>Min: 500 pts</span>
+                                    <span>Max: 100,000 pts</span>
+                                </div>
+                            </div>
+
+                            {/* Calculation Banner */}
+                            <div className='p-2.5 rounded-lg border border-[#0075de]/20 bg-[#0075de]/5 dark:bg-[#0075de]/10 flex items-center justify-between'>
+                                <div>
+                                    <div className='text-[10px] text-[#787774] dark:text-[#9b9a97]'>
+                                        Payable Amount
+                                    </div>
+                                    <div className='text-lg font-bold text-[#0075de]'>
                                         ₹{addRupees}
                                     </div>
-                                    <div className='text-xs text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-2'>
-                                        <span className='inline-flex items-center px-2 py-0.5 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium'>
-                                            5 pts = ₹1
-                                        </span>
-                                        <span>•</span>
-                                        <span>
-                                            {addPoints.toLocaleString()} points
-                                        </span>
+                                </div>
+                                <div className='text-right text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                    <div className='font-medium text-[#191919] dark:text-[#ececec]'>
+                                        {addPoints.toLocaleString()} pts
                                     </div>
+                                    <div className='text-[10px]'>5 pts = ₹1.00</div>
                                 </div>
-                                <div className='flex gap-3 pt-2'>
-                                    <button
-                                        type='button'
-                                        onClick={() => setShowAddModal(false)}
-                                        className='flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors'
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type='submit'
-                                        disabled={submitting || addPoints < 500}
-                                        className='flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all'
-                                    >
-                                        {submitting ? (
-                                            <span className='flex items-center justify-center gap-2'>
-                                                <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
-                                                Processing...
-                                            </span>
-                                        ) : (
-                                            'Proceed to Pay'
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                            </div>
 
-                {/* Withdraw Modal */}
-                {showWithdrawModal && (
-                    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-                        <div className='w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl transform transition-all'>
-                            <div className='flex items-center justify-between mb-6'>
-                                <div>
-                                    <h3 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>
-                                        Withdraw Points
-                                    </h3>
-                                    <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                                        Convert points to cash via UPI
-                                    </p>
-                                </div>
+                            <div className='flex items-center gap-1.5 text-[10px] text-[#787774] dark:text-[#9b9a97] bg-[#fbfbfa] dark:bg-[#252525] p-2 rounded-md border border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                                <CreditCard className='w-3.5 h-3.5 text-[#0075de] shrink-0' />
+                                <span>Secured by Razorpay</span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className='flex items-center gap-2 pt-1'>
                                 <button
-                                    onClick={() => setShowWithdrawModal(false)}
-                                    className='text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-2xl'
+                                    type='button'
+                                    onClick={() => setShowAddModal(false)}
+                                    className='flex-1 px-3 py-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] text-xs font-medium hover:bg-[#f3f2ef] dark:hover:bg-[#252525] transition-colors'
                                 >
-                                    ✕
+                                    Cancel
+                                </button>
+                                <button
+                                    type='submit'
+                                    disabled={submitting || addPoints < 500}
+                                    className='flex-1 px-3 py-1.5 rounded-lg bg-[#0075de] hover:bg-[#0060b9] text-white text-xs font-semibold shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5'
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <RefreshCw className='w-3 h-3 animate-spin' />
+                                            <span>Processing...</span>
+                                        </>
+                                    ) : (
+                                        <span>Pay ₹{addRupees}</span>
+                                    )}
                                 </button>
                             </div>
-                            <form
-                                onSubmit={handleWithdrawSubmit}
-                                className='space-y-5'
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Compact Withdraw Modal */}
+            {showWithdrawModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-100'>
+                    <div className='w-full max-w-sm rounded-xl bg-white dark:bg-[#202020] border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 shadow-xl transition-all'>
+                        <div className='flex items-center justify-between pb-3 mb-3 border-b border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                            <div className='flex items-center gap-2'>
+                                <div className='w-7 h-7 rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center'>
+                                    <ArrowDownToLine className='w-4 h-4' />
+                                </div>
+                                <h3 className='text-sm font-bold text-[#191919] dark:text-[#ececec]'>
+                                    Withdraw Points
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setShowWithdrawModal(false)}
+                                className='p-1 rounded text-[#787774] dark:text-[#9b9a97] hover:text-[#191919] dark:hover:text-[#ececec] transition-colors'
                             >
-                                <div>
-                                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'>
-                                        UPI ID
+                                <X className='w-4 h-4' />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleWithdrawSubmit} className='space-y-3'>
+                            {/* UPI ID Input */}
+                            <div>
+                                <label className='block text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97] mb-1'>
+                                    UPI ID
+                                </label>
+                                <input
+                                    type='text'
+                                    placeholder='username@okhdfcbank'
+                                    value={withdrawUpiId}
+                                    onChange={(e) => setWithdrawUpiId(e.target.value)}
+                                    className='w-full border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-mono'
+                                    required
+                                />
+                            </div>
+
+                            {/* Points Input */}
+                            <div>
+                                <div className='flex justify-between items-center mb-1'>
+                                    <label className='block text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:text-[#9b9a97]'>
+                                        Points to Redeem
                                     </label>
-                                    <input
-                                        type='text'
-                                        placeholder='yourname@paytm'
-                                        value={withdrawUpiId}
-                                        onChange={(e) =>
-                                            setWithdrawUpiId(e.target.value)
-                                        }
-                                        className='w-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-200 dark:focus:ring-green-400/50 transition-all'
-                                        required
-                                    />
-                                    <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
-                                        Enter your UPI ID to receive payment
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'>
-                                        Points to Withdraw
-                                    </label>
-                                    <input
-                                        type='number'
-                                        min={500}
-                                        max={wallet.currentBalance}
-                                        step={50}
-                                        value={withdrawPoints}
-                                        onChange={(e) =>
-                                            setWithdrawPoints(
-                                                parseInt(
-                                                    e.target.value || '0',
-                                                    10,
-                                                ),
-                                            )
-                                        }
-                                        className='w-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-200 dark:focus:ring-green-400/50 transition-all text-lg'
-                                        placeholder='Enter points'
-                                        required
-                                    />
-                                    <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
-                                        Available:{' '}
-                                        {wallet.currentBalance.toLocaleString()}{' '}
-                                        pts
-                                    </p>
-                                </div>
-                                <div className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/50 dark:to-green-800/50 rounded-lg p-4 border border-green-200 dark:border-green-700'>
-                                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'>
-                                        You Will Receive
-                                    </label>
-                                    <div className='text-3xl font-bold text-green-600 dark:text-green-400'>
-                                        ₹
-                                        {Math.floor(
-                                            Number(withdrawPoints || 0) / 5,
-                                        )}
-                                    </div>
-                                    <div className='text-xs text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-2'>
-                                        <span className='inline-flex items-center px-2 py-0.5 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium'>
-                                            5 pts = ₹1
-                                        </span>
-                                        <span>•</span>
-                                        <span>
-                                            {withdrawPoints.toLocaleString()}{' '}
-                                            points
-                                        </span>
-                                    </div>
-                                </div>
-                                {withdrawPoints > wallet.currentBalance && (
-                                    <div className='bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-3 text-sm text-red-600 dark:text-red-300 flex items-center gap-2'>
-                                        <span className='text-lg'>⚠️</span>
-                                        <span>
-                                            Insufficient balance. You have{' '}
-                                            {wallet.currentBalance.toLocaleString()}{' '}
-                                            points.
-                                        </span>
-                                    </div>
-                                )}
-                                <div className='flex gap-3 pt-2'>
                                     <button
                                         type='button'
                                         onClick={() =>
-                                            setShowWithdrawModal(false)
+                                            setWithdrawPoints(wallet.currentBalance)
                                         }
-                                        className='flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors'
+                                        className='text-[10px] font-semibold text-[#0075de] hover:underline'
                                     >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type='submit'
-                                        disabled={
-                                            submitting ||
-                                            withdrawPoints >
-                                                wallet.currentBalance ||
-                                            withdrawPoints < 500
-                                        }
-                                        className='flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all'
-                                    >
-                                        {submitting ? (
-                                            <span className='flex items-center justify-center gap-2'>
-                                                <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
-                                                Processing...
-                                            </span>
-                                        ) : (
-                                            'Submit Request'
-                                        )}
+                                        Max ({wallet.currentBalance.toLocaleString()})
                                     </button>
                                 </div>
-                            </form>
-                        </div>
+                                <input
+                                    type='number'
+                                    min={500}
+                                    max={wallet.currentBalance}
+                                    step={50}
+                                    value={withdrawPoints}
+                                    onChange={(e) =>
+                                        setWithdrawPoints(
+                                            parseInt(e.target.value || '0', 10),
+                                        )
+                                    }
+                                    className='w-full border border-[#e6e6e6] dark:border-[#2f2f2f] bg-[#faf9f8] dark:bg-[#191919] text-[#191919] dark:text-[#ececec] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500 font-semibold'
+                                    placeholder='500'
+                                    required
+                                />
+                                <div className='flex justify-between items-center text-[10px] text-[#787774] dark:text-[#9b9a97] mt-0.5'>
+                                    <span>Min: 500 pts (₹100)</span>
+                                    <span>
+                                        Avail: {wallet.currentBalance.toLocaleString()} pts
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Calculation Banner */}
+                            <div className='p-2.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10 flex items-center justify-between'>
+                                <div>
+                                    <div className='text-[10px] text-[#787774] dark:text-[#9b9a97]'>
+                                        You Will Receive
+                                    </div>
+                                    <div className='text-lg font-bold text-emerald-600 dark:text-emerald-400'>
+                                        ₹{Math.floor(Number(withdrawPoints || 0) / 5)}
+                                    </div>
+                                </div>
+                                <div className='text-right text-[11px] text-[#787774] dark:text-[#9b9a97]'>
+                                    <div className='font-medium text-[#191919] dark:text-[#ececec]'>
+                                        {withdrawPoints.toLocaleString()} pts
+                                    </div>
+                                    <div className='text-[10px]'>5 pts = ₹1.00</div>
+                                </div>
+                            </div>
+
+                            {withdrawPoints > wallet.currentBalance && (
+                                <div className='p-2 rounded-md border border-rose-200 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-[11px] flex items-center gap-1.5'>
+                                    <AlertTriangle className='w-3.5 h-3.5 shrink-0' />
+                                    <span>Insufficient balance.</span>
+                                </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className='flex items-center gap-2 pt-1'>
+                                <button
+                                    type='button'
+                                    onClick={() => setShowWithdrawModal(false)}
+                                    className='flex-1 px-3 py-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] text-xs font-medium hover:bg-[#f3f2ef] dark:hover:bg-[#252525] transition-colors'
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type='submit'
+                                    disabled={
+                                        submitting ||
+                                        withdrawPoints > wallet.currentBalance ||
+                                        withdrawPoints < 500 ||
+                                        !withdrawUpiId
+                                    }
+                                    className='flex-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5'
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <RefreshCw className='w-3 h-3 animate-spin' />
+                                            <span>Submitting...</span>
+                                        </>
+                                    ) : (
+                                        <span>Submit</span>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

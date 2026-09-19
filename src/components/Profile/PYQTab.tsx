@@ -1,543 +1,626 @@
+'use client';
+
 import { UserDataState } from '@/redux/slices/userDataSlice';
 import { formatDate } from '@/utils/formatting';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
     ChevronLeft,
     ChevronRight,
     Search,
     ExternalLink,
-    FileQuestion,
+    BookOpen,
     Eye,
-    Grid3X3,
+    LayoutGrid,
     List,
+    X,
     Calendar,
+    AlertCircle,
+    CheckCircle2,
+    Clock,
+    GraduationCap,
+    FileCheck2,
 } from 'lucide-react';
 
 interface PYQTabProps {
     pyqs: UserDataState['userPyqAdd'];
 }
 
-type SortOption = 'subject' | 'year' | 'createdAt' | 'college';
+type SortOption = 'createdAt' | 'subject' | 'year' | 'college';
 type SortOrder = 'asc' | 'desc';
 type ViewMode = 'grid' | 'list';
+type StatusFilter = 'all' | 'approved' | 'pending' | 'rejected';
 
 export default function PYQTab({ pyqs }: PYQTabProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(12);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [selectedYear, setSelectedYear] = useState<string>('all');
+    const [selectedSubject, setSelectedSubject] = useState<string>('all');
     const [sortBy, setSortBy] = useState<SortOption>('createdAt');
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-    const years = Array.from(
-        new Set(pyqs?.map((p) => p.year.toString()) || []),
-    ).sort((a, b) => parseInt(b) - parseInt(a));
+    // Extract unique years
+    const availableYears = useMemo(() => {
+        if (!pyqs) return [];
+        const ySet = new Set<string>();
+        pyqs.forEach((p) => {
+            if (p.year) ySet.add(p.year.toString());
+        });
+        return Array.from(ySet).sort((a, b) => parseInt(b) - parseInt(a));
+    }, [pyqs]);
+
+    // Extract unique subjects
+    const availableSubjects = useMemo(() => {
+        if (!pyqs) return [];
+        const sSet = new Set<string>();
+        pyqs.forEach((p) => {
+            if (p.subject?.subjectName) sSet.add(p.subject.subjectName);
+        });
+        return Array.from(sSet).sort();
+    }, [pyqs]);
 
     // Filter and sort pyqs
-    const filteredPYQs =
-        pyqs
-            ?.filter((pyq) => {
+    const filteredPYQs = useMemo(() => {
+        if (!pyqs) return [];
+        return pyqs
+            .filter((pyq) => {
                 const matchesSearch =
-                    pyq.subject.subjectName
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                    pyq.year.toString().includes(searchTerm) ||
-                    pyq.college.name
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase());
+                    !searchTerm.trim() ||
+                    pyq.subject?.subjectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    pyq.year?.toString().includes(searchTerm) ||
+                    pyq.examType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    pyq.college?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+                const matchesStatus =
+                    statusFilter === 'all' ||
+                    (pyq.submissionStatus?.toLowerCase() === statusFilter.toLowerCase());
+
                 const matchesYear =
-                    selectedYear === 'all' ||
-                    pyq.year.toString() === selectedYear;
-                return matchesSearch && matchesYear;
+                    selectedYear === 'all' || pyq.year?.toString() === selectedYear;
+
+                const matchesSubject =
+                    selectedSubject === 'all' ||
+                    pyq.subject?.subjectName?.toLowerCase() === selectedSubject.toLowerCase();
+
+                return matchesSearch && matchesStatus && matchesYear && matchesSubject;
             })
             .sort((a, b) => {
                 let comparison = 0;
-
                 switch (sortBy) {
                     case 'subject':
-                        comparison = a.subject.subjectName.localeCompare(
-                            b.subject.subjectName,
+                        comparison = (a.subject?.subjectName || '').localeCompare(
+                            b.subject?.subjectName || '',
                         );
                         break;
                     case 'year':
-                        comparison = parseInt(a.year) - parseInt(b.year);
+                        comparison = parseInt(a.year || '0') - parseInt(b.year || '0');
+                        break;
+                    case 'college':
+                        comparison = (a.college?.name || '').localeCompare(
+                            b.college?.name || '',
+                        );
                         break;
                     case 'createdAt':
+                    default:
                         comparison =
                             new Date(a.createdAt).getTime() -
                             new Date(b.createdAt).getTime();
                         break;
-                    case 'college':
-                        comparison = a.college.name.localeCompare(
-                            b.college.name,
-                        );
-                        break;
                 }
-
                 return sortOrder === 'asc' ? comparison : -comparison;
-            }) || [];
+            });
+    }, [pyqs, searchTerm, statusFilter, selectedYear, selectedSubject, sortBy, sortOrder]);
 
     // Pagination
     const totalItems = filteredPYQs.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentPYQs = filteredPYQs.slice(startIndex, endIndex);
 
-    // Reset page when filters change
-    const handleFilterChange = (callback: () => void) => {
-        callback();
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
         setCurrentPage(1);
     };
 
-    const getSubjectColor = (subject: string) => {
-        const colors = [
-            'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300',
-            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-            'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-            'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
-            'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-            'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
-            'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
-            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-        ];
-        const hash = subject.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-        return colors[hash % colors.length];
+    const clearAllFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('all');
+        setSelectedYear('all');
+        setSelectedSubject('all');
+        setCurrentPage(1);
     };
 
-    const getYearColor = (year: number) => {
-        const currentYear = new Date().getFullYear();
-        const yearsAgo = currentYear - year;
-
-        if (yearsAgo <= 1)
-            return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-        if (yearsAgo <= 3)
-            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-        if (yearsAgo <= 5)
-            return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    const getStatusBadge = (status?: string) => {
+        const s = (status || 'approved').toLowerCase();
+        if (s === 'approved') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#ebfbf0] dark:bg-[#13301f] text-[#1aae39] dark:text-[#4ade80] border border-[#d2f4dc] dark:border-[#1a4a2b]'>
+                    <CheckCircle2 className='w-3 h-3' />
+                    Approved
+                </span>
+            );
+        }
+        if (s === 'pending' || s === 'under review') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#fff8eb] dark:bg-[#342410] text-[#d97706] dark:text-[#fbbf24] border border-[#fee7b8] dark:border-[#523812]'>
+                    <Clock className='w-3 h-3' />
+                    Under Review
+                </span>
+            );
+        }
+        if (s === 'rejected') {
+            return (
+                <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#fef2f2] dark:bg-[#351618] text-[#e11d48] dark:text-[#f87171] border border-[#fecdd3] dark:border-[#581c24]'>
+                    <AlertCircle className='w-3 h-3' />
+                    Rejected
+                </span>
+            );
+        }
+        return null;
     };
 
-    const getCollegeInitials = (collegeName: string) => {
-        return collegeName
-            .split(' ')
-            .map((word) => word.charAt(0))
-            .join('')
-            .toUpperCase()
-            .slice(0, 3);
+    const getPyqHref = (pyq: { slug: string; college?: { slug?: string } }) => {
+        const collegeSlug = pyq.college?.slug;
+        if (collegeSlug) {
+            return `/${collegeSlug}/pyqs/${pyq.slug}`;
+        }
+        return `/pyqs/${pyq.slug}`;
     };
 
     return (
-        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700'>
-            {/* Header */}
-            <div className='p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700'>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                        <div>
-                            <h3 className='text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2'>
-                                <FileQuestion className='w-5 h-5 text-violet-500' />
-                                Previous Year Questions
-                            </h3>
-                            <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                                Showing {startIndex + 1}-
-                                {Math.min(endIndex, totalItems)} of {totalItems}{' '}
-                                PYQs
-                            </p>
-                        </div>
-
-                        {/* View Mode Toggle */}
+        <div className='divide-y divide-[#f0eee9] dark:divide-[#2a2a2a]'>
+            {/* Header Toolbar */}
+            <div className='p-4 sm:p-6 bg-white dark:bg-[#1c1c1c] space-y-4'>
+                {/* Top Row: Title + Count + View Toggle */}
+                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+                    <div>
                         <div className='flex items-center gap-2'>
-                            <div className='flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1'>
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-colors ${
-                                        viewMode === 'grid'
-                                            ? 'bg-white dark:bg-gray-600 text-violet-600 dark:text-violet-400 shadow-sm'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <Grid3X3 className='w-4 h-4' />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-colors ${
-                                        viewMode === 'list'
-                                            ? 'bg-white dark:bg-gray-600 text-violet-600 dark:text-violet-400 shadow-sm'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <List className='w-4 h-4' />
-                                </button>
+                            <div className='w-7 h-7 rounded-lg bg-[#f4edfd] dark:bg-[#281c3c] flex items-center justify-center text-[#8a3fd6] dark:text-[#be8bf4]'>
+                                <BookOpen className='w-4 h-4' />
                             </div>
+                            <h3 className='text-base sm:text-lg font-semibold text-[#101828] dark:text-white tracking-tight'>
+                                Previous Year Questions (PYQs)
+                            </h3>
+                            <span className='px-2 py-0.5 rounded-full text-xs font-semibold bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                {pyqs?.length || 0}
+                            </span>
                         </div>
+                        <p className='text-xs text-[#615d59] dark:text-[#a09e9a] mt-1 pl-9'>
+                            Exam papers and question archives you&apos;ve uploaded to your campus resource repository.
+                        </p>
                     </div>
 
-                    {/* Search and Filters */}
-                    <div className='flex flex-col lg:flex-row gap-3'>
-                        {/* Search */}
-                        <div className='relative flex-1'>
-                            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
-                            <input
-                                type='text'
-                                placeholder='Search subjects, years, or colleges...'
-                                value={searchTerm}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSearchTerm(e.target.value),
-                                    )
-                                }
-                                className='w-full pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500'
-                            />
+                    {/* View Switcher */}
+                    <div className='flex items-center gap-2 self-start sm:self-auto pl-9 sm:pl-0'>
+                        <div className='flex items-center p-0.5 bg-[#f0eee9] dark:bg-[#252525] rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f]'>
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                title='Grid View'
+                                aria-label='Grid View'
+                                className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                                    viewMode === 'grid'
+                                        ? 'bg-white dark:bg-[#1c1c1c] text-[#101828] dark:text-white shadow-xs'
+                                        : 'text-[#8c8883] hover:text-[#101828] dark:hover:text-white'
+                                }`}
+                            >
+                                <LayoutGrid className='w-4 h-4' />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                title='List View'
+                                aria-label='List View'
+                                className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                                    viewMode === 'list'
+                                        ? 'bg-white dark:bg-[#1c1c1c] text-[#101828] dark:text-white shadow-xs'
+                                        : 'text-[#8c8883] hover:text-[#101828] dark:hover:text-white'
+                                }`}
+                            >
+                                <List className='w-4 h-4' />
+                            </button>
                         </div>
+                    </div>
+                </div>
 
-                        {/* Year Filter */}
-                        <div className='flex items-center gap-2'>
+                {/* Filters Row: Search, Subject, Year, Status, Sort */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 pt-1'>
+                    {/* Search Input */}
+                    <div className='relative sm:col-span-2 lg:col-span-4'>
+                        <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8c8883]' />
+                        <input
+                            type='text'
+                            placeholder='Search subjects, years, or exam type...'
+                            value={searchTerm}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            className='w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white placeholder-[#8c8883] focus:outline-none focus:border-[#0075de] dark:focus:border-[#0075de] focus:bg-white dark:focus:bg-[#1c1c1c] transition-all'
+                        />
+                        {searchTerm && (
+                            <button
+                                onClick={() => handleSearchChange('')}
+                                className='absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8c8883] hover:text-[#101828] dark:hover:text-white p-0.5'
+                            >
+                                <X className='w-3.5 h-3.5' />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Year Filter */}
+                    {availableYears.length > 0 && (
+                        <div className='sm:col-span-1 lg:col-span-2'>
                             <select
                                 value={selectedYear}
-                                onChange={(e) =>
-                                    handleFilterChange(() =>
-                                        setSelectedYear(e.target.value),
-                                    )
-                                }
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500'
+                                onChange={(e) => {
+                                    setSelectedYear(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer'
                             >
                                 <option value='all'>All Years</option>
-                                {years.map((year) => (
-                                    <option key={year} value={year}>
-                                        {year}
+                                {availableYears.map((yr) => (
+                                    <option key={yr} value={yr}>
+                                        {yr}
                                     </option>
                                 ))}
                             </select>
                         </div>
+                    )}
 
-                        {/* Sort */}
-                        <div className='flex items-center gap-2'>
+                    {/* Subject Filter */}
+                    {availableSubjects.length > 0 && (
+                        <div className='sm:col-span-1 lg:col-span-2'>
                             <select
-                                value={`${sortBy}-${sortOrder}`}
+                                value={selectedSubject}
                                 onChange={(e) => {
-                                    const [field, order] =
-                                        e.target.value.split('-');
-                                    setSortBy(field as SortOption);
-                                    setSortOrder(order as SortOrder);
+                                    setSelectedSubject(e.target.value);
+                                    setCurrentPage(1);
                                 }}
-                                className='px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500'
+                                className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer truncate'
                             >
-                                <option value='createdAt-desc'>
-                                    Newest First
-                                </option>
-                                <option value='createdAt-asc'>
-                                    Oldest First
-                                </option>
-                                <option value='year-desc'>Year (Latest)</option>
-                                <option value='year-asc'>Year (Oldest)</option>
-                                <option value='subject-asc'>Subject A-Z</option>
-                                <option value='college-asc'>College A-Z</option>
+                                <option value='all'>All Subjects</option>
+                                {availableSubjects.map((sub) => (
+                                    <option key={sub} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
                             </select>
                         </div>
+                    )}
+
+                    {/* Status Filter */}
+                    <div className='sm:col-span-1 lg:col-span-2'>
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => {
+                                setStatusFilter(e.target.value as StatusFilter);
+                                setCurrentPage(1);
+                            }}
+                            className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer'
+                        >
+                            <option value='all'>All Status</option>
+                            <option value='approved'>Approved</option>
+                            <option value='pending'>Under Review</option>
+                            <option value='rejected'>Rejected</option>
+                        </select>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className='sm:col-span-1 lg:col-span-2'>
+                        <select
+                            value={`${sortBy}-${sortOrder}`}
+                            onChange={(e) => {
+                                const [field, order] = e.target.value.split('-');
+                                setSortBy(field as SortOption);
+                                setSortOrder(order as SortOrder);
+                            }}
+                            className='w-full px-3 py-2 text-xs sm:text-sm bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded-lg text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de] transition-all cursor-pointer'
+                        >
+                            <option value='createdAt-desc'>Newest First</option>
+                            <option value='createdAt-asc'>Oldest First</option>
+                            <option value='year-desc'>Year (Latest)</option>
+                            <option value='year-asc'>Year (Oldest)</option>
+                            <option value='subject-asc'>Subject: A to Z</option>
+                            <option value='college-asc'>College: A to Z</option>
+                        </select>
                     </div>
                 </div>
+
+                {/* Filter info tags if active */}
+                {(searchTerm || statusFilter !== 'all' || selectedYear !== 'all' || selectedSubject !== 'all') && (
+                    <div className='flex items-center flex-wrap gap-2 pt-1'>
+                        <span className='text-[11px] text-[#8c8883] font-medium'>Active filters:</span>
+                        {searchTerm && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Search: &ldquo;{searchTerm}&rdquo;
+                                <button onClick={() => handleSearchChange('')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        {statusFilter !== 'all' && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Status: {statusFilter}
+                                <button onClick={() => setStatusFilter('all')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        {selectedYear !== 'all' && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Year: {selectedYear}
+                                <button onClick={() => setSelectedYear('all')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        {selectedSubject !== 'all' && (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[#f0eee9] dark:bg-[#282828] text-[#101828] dark:text-white'>
+                                Subject: {selectedSubject}
+                                <button onClick={() => setSelectedSubject('all')}>
+                                    <X className='w-3 h-3 hover:text-[#e11d48]' />
+                                </button>
+                            </span>
+                        )}
+                        <button
+                            onClick={clearAllFilters}
+                            className='text-[11px] text-[#0075de] hover:underline font-medium ml-1'
+                        >
+                            Reset all
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* PYQs Content */}
-            <div className='p-4 sm:p-6'>
-                
-                    {currentPYQs.length > 0 ? (
-                        <div
-                            key='content'
-                            
-                            
-                            
-                            className='w-full'
-                        >
-                            {/* Grid View */}
-                            {viewMode === 'grid' && (
-                                <div
-                                    
-                                    
-                                    
-                                    className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'
-                                >
-                                    {currentPYQs.map((pyq) => (
-                                        <div
-                                            key={pyq.id}
-                                            
-                                            
-                                            className='group bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 overflow-hidden flex flex-col'
-                                        >
-                                            {/* Card Body */}
-                                            <div className='px-4 py-4'>
-                                                <h4 className='font-bold text-gray-900 dark:text-white mb-3 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-base leading-tight'>
-                                                    {pyq.subject.subjectName} -{' '}
-                                                    {pyq.year}
-                                                </h4>
-
-                                                <p className='text-gray-500 dark:text-gray-400 mb-3'>
-                                                    {pyq.examType}
-                                                </p>
-
-                                                {/* College Info */}
-                                                <div className='flex items-center gap-2 mb-3 p-2 bg-gray-50 dark:bg-gray-600 rounded-lg'>
-                                                    <div className='w-8 h-8 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm'>
-                                                        {getCollegeInitials(
-                                                            pyq.submissionStatus,
-                                                        )}
-                                                    </div>
-                                                    <div className='flex-1 min-w-0'>
-                                                        <span className='text-sm font-medium text-gray-700 dark:text-gray-200 truncate block'>
-                                                            {
-                                                                pyq.submissionStatus
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    {pyq.submissionStatus ===
-                                                        'rejected' && (
-                                                        <span className='text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full font-semibold'>
-                                                            {pyq.rejectionReason ||
-                                                                'Rejected'}
+            <div className='p-4 sm:p-6 bg-[#faf9f8] dark:bg-[#191919] min-h-[360px]'>
+                {currentPYQs.length > 0 ? (
+                    <div>
+                        {/* Grid View */}
+                        {viewMode === 'grid' && (
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4'>
+                                {currentPYQs.map((pyq) => (
+                                    <div
+                                        key={pyq.slug || pyq.id}
+                                        className='group bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de]/40 dark:hover:border-[#0075de]/50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden'
+                                    >
+                                        <div className='p-4 sm:p-4.5 space-y-3'>
+                                            {/* Top Row: Year Pill & Status */}
+                                            <div className='flex items-center justify-between gap-2 flex-wrap'>
+                                                <div className='flex items-center gap-1.5'>
+                                                    <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#f4edfd] dark:bg-[#281c3c] text-[#8a3fd6] dark:text-[#be8bf4] border border-[#e9d8fd] dark:border-[#442c67]'>
+                                                        {pyq.year}
+                                                    </span>
+                                                    {pyq.examType && (
+                                                        <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                                            <FileCheck2 className='w-3 h-3' />
+                                                            {pyq.examType}
                                                         </span>
                                                     )}
                                                 </div>
+                                                {getStatusBadge(pyq.submissionStatus)}
+                                            </div>
 
-                                                {/* Date */}
-                                                <div className='text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded mb-4 flex items-center gap-1'>
-                                                    <Calendar className='w-3 h-3' />
-                                                    Added{' '}
-                                                    {formatDate(pyq.createdAt)}
+                                            {/* Subject Title */}
+                                            <div>
+                                                <h4 className='font-semibold text-sm sm:text-base text-[#101828] dark:text-white line-clamp-2 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors leading-snug'>
+                                                    {pyq.subject?.subjectName}
+                                                </h4>
+                                            </div>
+
+                                            {/* College info */}
+                                            {pyq.college?.name && (
+                                                <div className='flex items-center gap-1.5 text-xs text-[#615d59] dark:text-[#a09e9a]'>
+                                                    <GraduationCap className='w-3.5 h-3.5 text-[#8c8883]' />
+                                                    <span className='truncate'>{pyq.college.name}</span>
                                                 </div>
+                                            )}
 
-                                                <Link
-                                                    prefetch={false}
-                                                    href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
-                                                    className='block mt-auto'
-                                                >
-                                                    <button className='w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
-                                                        <Eye className='w-4 h-4' />
-                                                        View PYQ
-                                                        <ExternalLink className='w-3 h-3 opacity-75' />
-                                                    </button>
-                                                </Link>
+                                            {/* Rejection notice if present */}
+                                            {pyq.submissionStatus?.toLowerCase() === 'rejected' && pyq.rejectionReason && (
+                                                <div className='p-2 rounded-lg bg-[#fef2f2] dark:bg-[#351618] border border-[#fecdd3] dark:border-[#581c24] text-[11px] text-[#e11d48] dark:text-[#f87171] leading-tight'>
+                                                    <strong>Reason:</strong> {pyq.rejectionReason}
+                                                </div>
+                                            )}
+
+                                            {/* Date info */}
+                                            <div className='flex items-center gap-1.5 text-[11px] text-[#8c8883] pt-1'>
+                                                <Calendar className='w-3 h-3' />
+                                                <span>Added {formatDate(pyq.createdAt)}</span>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
 
-                            {/* List View */}
-                            {viewMode === 'list' && (
-                                <div
-                                    
-                                    
-                                    
-                                    className='space-y-4'
-                                >
-                                    {currentPYQs.map((pyq) => (
-                                        <div
-                                            key={pyq.id}
-                                            
-                                            
-                                            className='group p-5 bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300'
-                                        >
-                                            <div className='flex flex-col sm:flex-row sm:items-center gap-4'>
-                                                <div className='flex-1 min-w-0'>
-                                                    <div className='flex items-start gap-4'>
-                                                        {/* College Avatar */}
-                                                        <div className='w-12 h-12 bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0'>
-                                                            {getCollegeInitials(
-                                                                pyq.college
-                                                                    .name,
-                                                            )}
-                                                        </div>
+                                        {/* Bottom Bar: Action Link */}
+                                        <div className='p-4 pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a] bg-[#faf9f8] dark:bg-[#1c1c1c] flex items-center justify-between gap-3'>
+                                            <span className='text-xs text-[#8c8883] font-medium'>Exam Archive</span>
 
-                                                        <div className='flex-1 min-w-0'>
-                                                            <h4 className='font-bold text-gray-900 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors text-lg'>
-                                                                {
-                                                                    pyq.subject
-                                                                        .subjectName
-                                                                }{' '}
-                                                                - {pyq.year}
-                                                            </h4>
-                                                            <div className='flex flex-wrap items-center gap-3'>
-                                                                <span
-                                                                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${getSubjectColor(
-                                                                        pyq
-                                                                            .subject
-                                                                            .subjectName,
-                                                                    )}`}
-                                                                >
-                                                                    {
-                                                                        pyq
-                                                                            .subject
-                                                                            .subjectName
-                                                                    }
-                                                                </span>
-                                                                <span
-                                                                    className={`px-2 py-1 text-xs font-bold rounded-md ${getYearColor(
-                                                                        parseInt(
-                                                                            pyq.year,
-                                                                        ),
-                                                                    )}`}
-                                                                >
-                                                                    {pyq.year}
-                                                                </span>
-                                                                <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
-                                                                    <span className='font-medium'>
-                                                                        {
-                                                                            pyq
-                                                                                .college
-                                                                                .name
-                                                                        }
-                                                                    </span>
-                                                                </div>
-                                                                <span className='flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded'>
-                                                                    <Calendar className='w-3 h-3' />
-                                                                    {formatDate(
-                                                                        pyq.createdAt,
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='flex items-center flex-shrink-0'>
-                                                    <Link
-                                                        prefetch={false}
-                                                        href={`${pyq.college.slug}/pyqs/${pyq.slug}`}
-                                                    >
-                                                        <button className='bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-[1.02]'>
-                                                            <Eye className='w-4 h-4' />
-                                                            View PYQ
-                                                            <ExternalLink className='w-3 h-3 opacity-75' />
-                                                        </button>
-                                                    </Link>
-                                                </div>
-                                            </div>
+                                            <Link
+                                                prefetch={false}
+                                                href={getPyqHref(pyq)}
+                                                className='inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#282828] hover:bg-[#0075de] hover:text-white dark:hover:bg-[#0075de] dark:hover:text-white text-[#101828] dark:text-white border border-[#e6e6e6] dark:border-[#383838] transition-all shadow-xs'
+                                            >
+                                                <Eye className='w-3.5 h-3.5' />
+                                                <span>View</span>
+                                                <ExternalLink className='w-3 h-3 opacity-60' />
+                                            </Link>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div
-                            
-                            
-                            
-                            className='text-center py-16'
-                        >
-                            <div className='mx-auto w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 border border-gray-100 dark:border-white/5'>
-                                <FileQuestion className='w-10 h-10 text-gray-400 dark:text-gray-500' />
+                                    </div>
+                                ))}
                             </div>
-                            <p className='text-gray-900 dark:text-white font-medium text-lg mb-2'>
-                                {pyqs?.length === 0
-                                    ? 'No PYQs added yet'
-                                    : 'No matching PYQs'}
-                            </p>
-                            <p className='text-gray-500 dark:text-gray-400 text-sm mb-6'>
-                                {pyqs?.length === 0
-                                    ? 'Get started by creating your first PYQ.'
-                                    : 'Try adjusting your search or filters.'}
-                            </p>
-                            {searchTerm || selectedYear !== 'all' ? (
-                                <button
-                                    onClick={() => {
-                                        setSearchTerm('');
-                                        setSelectedYear('all');
-                                        setCurrentPage(1);
-                                    }}
-                                    className='bg-violet-50 hover:bg-violet-100 dark:bg-violet-900/20 dark:hover:bg-violet-900/40 text-violet-600 dark:text-violet-400 px-6 py-2 rounded-full text-sm font-medium transition-colors'
-                                >
-                                    Clear filters
-                                </button>
-                            ) : null}
+                        )}
+
+                        {/* List View */}
+                        {viewMode === 'list' && (
+                            <div className='space-y-2.5'>
+                                {currentPYQs.map((pyq) => (
+                                    <div
+                                        key={pyq.slug || pyq.id}
+                                        className='group p-3.5 sm:p-4 bg-white dark:bg-[#202020] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] hover:border-[#0075de]/40 dark:hover:border-[#0075de]/50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4'
+                                    >
+                                        {/* Left info */}
+                                        <div className='flex items-start gap-3.5 flex-1 min-w-0'>
+                                            <div className='w-10 h-10 rounded-lg bg-[#f4edfd] dark:bg-[#281c3c] flex items-center justify-center text-[#8a3fd6] dark:text-[#be8bf4] flex-shrink-0 group-hover:bg-[#eaf3fd] group-hover:text-[#0075de] dark:group-hover:bg-[#183153] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                <BookOpen className='w-5 h-5' />
+                                            </div>
+
+                                            <div className='min-w-0 flex-1'>
+                                                <div className='flex items-center gap-2 flex-wrap mb-1'>
+                                                    <span className='inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#f4edfd] dark:bg-[#281c3c] text-[#8a3fd6] dark:text-[#be8bf4]'>
+                                                        {pyq.year}
+                                                    </span>
+                                                    {pyq.examType && (
+                                                        <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-[#f0eee9] dark:bg-[#282828] text-[#615d59] dark:text-[#a09e9a]'>
+                                                            {pyq.examType}
+                                                        </span>
+                                                    )}
+                                                    {getStatusBadge(pyq.submissionStatus)}
+                                                    <span className='text-[11px] text-[#8c8883] flex items-center gap-1'>
+                                                        <Calendar className='w-3 h-3' />
+                                                        {formatDate(pyq.createdAt)}
+                                                    </span>
+                                                </div>
+
+                                                <h4 className='font-semibold text-sm sm:text-base text-[#101828] dark:text-white truncate group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
+                                                    {pyq.subject?.subjectName}
+                                                </h4>
+
+                                                {pyq.college?.name && (
+                                                    <div className='flex items-center gap-1.5 text-xs text-[#615d59] dark:text-[#a09e9a] mt-0.5'>
+                                                        <GraduationCap className='w-3.5 h-3.5 text-[#8c8883]' />
+                                                        <span>{pyq.college.name}</span>
+                                                    </div>
+                                                )}
+
+                                                {pyq.submissionStatus?.toLowerCase() === 'rejected' && pyq.rejectionReason && (
+                                                    <p className='text-[11px] text-[#e11d48] dark:text-[#f87171] mt-1'>
+                                                        Rejection reason: {pyq.rejectionReason}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Right actions */}
+                                        <div className='flex items-center justify-between sm:justify-end gap-3 pl-13 sm:pl-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#f0eee9] dark:border-[#2a2a2a]'>
+                                            <Link
+                                                prefetch={false}
+                                                href={getPyqHref(pyq)}
+                                                className='inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#101828] text-white dark:bg-white dark:text-[#101828] hover:bg-[#0075de] dark:hover:bg-[#0075de] dark:hover:text-white transition-all shadow-xs'
+                                            >
+                                                <Eye className='w-3.5 h-3.5' />
+                                                <span>View PYQ</span>
+                                                <ExternalLink className='w-3 h-3 opacity-60' />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    /* Empty State */
+                    <div className='py-16 text-center max-w-md mx-auto'>
+                        <div className='w-14 h-14 mx-auto mb-4 rounded-2xl bg-white dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] flex items-center justify-center text-[#8c8883] shadow-xs'>
+                            <BookOpen className='w-7 h-7' />
                         </div>
-                    )}
-                
+                        <h4 className='text-base font-semibold text-[#101828] dark:text-white mb-1.5'>
+                            {pyqs?.length === 0 ? 'No PYQs uploaded yet' : 'No matching PYQs found'}
+                        </h4>
+                        <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] mb-5 leading-relaxed'>
+                            {pyqs?.length === 0
+                                ? 'You haven’t uploaded any previous year question papers yet. Share question sets to help fellow students prepare.'
+                                : 'We couldn’t find any questions matching your active search terms and filter criteria.'}
+                        </p>
+                        {pyqs && pyqs.length > 0 ? (
+                            <button
+                                onClick={clearAllFilters}
+                                className='inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-white hover:bg-[#f0eee9] dark:hover:bg-[#333333] transition-all shadow-xs'
+                            >
+                                Reset All Filters
+                            </button>
+                        ) : null}
+                    </div>
+                )}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Footer */}
             {totalPages > 1 && (
-                <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 rounded-b-xl'>
-                    <div className='flex flex-col sm:flex-row items-center justify-between gap-4'>
-                        {/* Items per page */}
-                        <div className='flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300'>
-                            <span>Show:</span>
-                            <select
-                                value={itemsPerPage}
-                                onChange={(e) => {
-                                    setItemsPerPage(Number(e.target.value));
-                                    setCurrentPage(1);
-                                }}
-                                className='px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs focus:ring-2 focus:ring-violet-500'
-                            >
-                                <option value={6}>6</option>
-                                <option value={12}>12</option>
-                                <option value={24}>24</option>
-                                <option value={48}>48</option>
-                            </select>
-                            <span>per page</span>
+                <div className='p-4 sm:p-5 bg-white dark:bg-[#1c1c1c] flex flex-col sm:flex-row items-center justify-between gap-4'>
+                    {/* Items per page selector */}
+                    <div className='flex items-center gap-2 text-xs text-[#615d59] dark:text-[#a09e9a]'>
+                        <span>Showing</span>
+                        <span className='font-semibold text-[#101828] dark:text-white'>
+                            {startIndex + 1} - {Math.min(endIndex, totalItems)}
+                        </span>
+                        <span>of</span>
+                        <span className='font-semibold text-[#101828] dark:text-white'>{totalItems}</span>
+                        <span>items</span>
+                        <span className='mx-1 text-[#d0cdc7] dark:text-[#3a3a3a]'>•</span>
+                        <span>Rows:</span>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                            className='px-2 py-1 bg-[#faf9f8] dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] rounded text-xs text-[#101828] dark:text-white focus:outline-none focus:border-[#0075de]'
+                        >
+                            <option value={8}>8</option>
+                            <option value={12}>12</option>
+                            <option value={24}>24</option>
+                            <option value={48}>48</option>
+                        </select>
+                    </div>
+
+                    {/* Pagination page buttons */}
+                    <div className='flex items-center gap-1.5'>
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className='p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#242424] text-[#101828] dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-all shadow-xs'
+                            title='Previous Page'
+                        >
+                            <ChevronLeft className='w-4 h-4' />
+                        </button>
+
+                        <div className='flex items-center gap-1'>
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum: number;
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                } else {
+                                    pageNum = currentPage - 2 + i;
+                                }
+
+                                const isActive = currentPage === pageNum;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${
+                                            isActive
+                                                ? 'bg-[#101828] text-white dark:bg-white dark:text-[#101828] shadow-xs'
+                                                : 'bg-white dark:bg-[#242424] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#615d59] dark:text-[#a09e9a] hover:text-[#101828] dark:hover:text-white hover:bg-[#faf9f8] dark:hover:bg-[#282828]'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
                         </div>
 
-                        {/* Pagination controls */}
-                        <div className='flex items-center gap-1 sm:gap-2'>
-                            <button
-                                onClick={() => setCurrentPage(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className='p-1 sm:p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors'
-                            >
-                                <ChevronLeft className='w-4 h-4' />
-                            </button>
-
-                            <div className='flex gap-1'>
-                                {Array.from(
-                                    { length: Math.min(5, totalPages) },
-                                    (_, i) => {
-                                        let pageNum;
-                                        if (totalPages <= 5) {
-                                            pageNum = i + 1;
-                                        } else if (currentPage <= 3) {
-                                            pageNum = i + 1;
-                                        } else if (
-                                            currentPage >=
-                                            totalPages - 2
-                                        ) {
-                                            pageNum = totalPages - 4 + i;
-                                        } else {
-                                            pageNum = currentPage - 2 + i;
-                                        }
-
-                                        return (
-                                            <button
-                                                key={pageNum}
-                                                onClick={() =>
-                                                    setCurrentPage(pageNum)
-                                                }
-                                                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                                                    currentPage === pageNum
-                                                        ? 'bg-violet-500 text-white'
-                                                        : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                                                }`}
-                                            >
-                                                {pageNum}
-                                            </button>
-                                        );
-                                    },
-                                )}
-                            </div>
-
-                            <button
-                                onClick={() => setCurrentPage(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className='p-1 sm:p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors'
-                            >
-                                <ChevronRight className='w-4 h-4' />
-                            </button>
-                        </div>
-
-                        <div className='text-xs sm:text-sm text-gray-600 dark:text-gray-300'>
-                            Page {currentPage} of {totalPages}
-                        </div>
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className='p-1.5 rounded-lg border border-[#e6e6e6] dark:border-[#2f2f2f] bg-white dark:bg-[#242424] text-[#101828] dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#faf9f8] dark:hover:bg-[#282828] transition-all shadow-xs'
+                            title='Next Page'
+                        >
+                            <ChevronRight className='w-4 h-4' />
+                        </button>
                     </div>
                 </div>
             )}
