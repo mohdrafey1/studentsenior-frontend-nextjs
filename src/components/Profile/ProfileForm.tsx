@@ -16,13 +16,9 @@ import {
     Phone,
     GraduationCap,
     Camera,
-    ShieldCheck,
-    Mail,
     Edit3,
     Check,
     X,
-    Lock,
-    Sparkles,
 } from 'lucide-react';
 
 interface UserType {
@@ -58,7 +54,6 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const fileRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<FormData>({});
-    const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [imageLoading, setImageLoading] = useState<boolean>(false);
 
@@ -66,7 +61,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const [imageUploadProgress, setImageUploadProgress] = useState<number | null>(null);
     const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
-    const { currentUser, loading, error } = useSelector(
+    const { currentUser, loading } = useSelector(
         (state: { user: UserState }) => state.user,
     );
 
@@ -172,7 +167,6 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
             }
 
             dispatch(updateUserSuccess(data.data));
-            setUpdateSuccess(true);
             toast.success('🎉 Profile Updated Successfully');
             setEditMode(false);
             setFormData({});
@@ -294,7 +288,6 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                 <button
                     onClick={() => {
                         setEditMode(!editMode);
-                        setUpdateSuccess(false);
                         setFormData({});
                         setImageUploadError(null);
                         setImageUploadProgress(null);

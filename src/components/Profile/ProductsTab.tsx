@@ -14,12 +14,10 @@ import {
     LayoutGrid,
     List,
     X,
-    SlidersHorizontal,
     Tag,
     AlertCircle,
     CheckCircle2,
     Clock,
-    Plus,
 } from 'lucide-react';
 import { formatDate } from '@/utils/formatting';
 

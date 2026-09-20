@@ -12,7 +12,6 @@ import {
     Heart,
     Linkedin,
     Target,
-    Compass,
     CheckCircle2,
 } from 'lucide-react';
 

@@ -164,7 +164,6 @@ export default function DownloadSemesterPdfButton({
                 }
 
                 const col1Width = 40;
-                const col2Width = tableWidth - col1Width;
 
                 // Course Info Cards
                 const subjectText = `${syllabus.subject?.subjectName} - ${syllabus.subject?.subjectCode}` || 'N/A';

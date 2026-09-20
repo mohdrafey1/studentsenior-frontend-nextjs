@@ -184,13 +184,6 @@ export default function ResourceQuickStart({ colleges }: Props) {
         );
     }, [courses, courseCode]);
 
-    const branchName = useMemo(() => {
-        return (
-            branches.find((b) => b.branchCode === branchCode)?.branchName ||
-            branchCode
-        );
-    }, [branches, branchCode]);
-
     function handleSave(andGo: boolean = false) {
         if (!canSubmit) {
             toast.error('Please select college, course, and branch');

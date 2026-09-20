@@ -76,6 +76,19 @@ type Redemption = {
     createdAt?: string;
 };
 
+const isObjId = (v: unknown): v is ObjId =>
+    !!v &&
+    typeof v === 'object' &&
+    '_id' in (v as Record<string, unknown>) &&
+    typeof (v as Record<string, unknown>)['_id'] === 'string';
+
+const asId = (v: unknown) => {
+    if (!v) return '';
+    if (typeof v === 'string') return v;
+    if (isObjId(v)) return v._id;
+    return '';
+};
+
 export default function WalletPage() {
     const router = useRouter();
     const { currentUser } = useSelector((state: RootState) => state.user);
@@ -119,19 +132,6 @@ export default function WalletPage() {
 
     // Tab state
     const [activeTab, setActiveTab] = useState<'transactions' | 'withdrawals'>('transactions');
-
-    const isObjId = (v: unknown): v is ObjId =>
-        !!v &&
-        typeof v === 'object' &&
-        '_id' in (v as Record<string, unknown>) &&
-        typeof (v as Record<string, unknown>)['_id'] === 'string';
-
-    const asId = (v: unknown) => {
-        if (!v) return '';
-        if (typeof v === 'string') return v;
-        if (isObjId(v)) return v._id;
-        return '';
-    };
 
     const filtered = useMemo(() => {
         return txns.filter((t) => {

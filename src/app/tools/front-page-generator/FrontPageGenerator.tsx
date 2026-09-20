@@ -2,24 +2,15 @@
 
 import React, { useState, useRef } from 'react';
 import {
-    FileText,
     Printer,
-    Download,
     RotateCcw,
     Upload,
-    Check,
-    Copy,
-    Share2,
     Eye,
     Edit3,
-    Sparkles,
     GraduationCap,
     School,
     User,
-    Calendar,
     BookOpen,
-    CheckCircle2,
-    Maximize2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

@@ -15,7 +15,6 @@ import {
     GraduationCap,
     BookOpen,
     Calendar,
-    ArrowRight,
     AlertCircle,
 } from 'lucide-react';
 import PaginationComponent from '@/components/Common/Pagination';
@@ -406,7 +405,7 @@ const SyllabusClient = ({
                         No Syllabus Found
                     </p>
                     <p className='text-sm text-[#615d59] dark:text-[#a09e9a] max-w-md text-center'>
-                        We couldn't find any syllabus matching your current filters. Try adjusting your search criteria.
+                        We couldn&apos;t find any syllabus matching your current filters. Try adjusting your search criteria.
                     </p>
                     {hasActiveFilters && (
                         <button

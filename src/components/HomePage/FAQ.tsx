@@ -4,12 +4,10 @@ import React, { useState } from 'react';
 import {
     ChevronDown,
     ChevronUp,
-    HelpCircle,
     MessageCircle,
     Mail,
     Phone,
 } from 'lucide-react';
-import Head from 'next/head';
 
 import { faqs } from '@/constant';
 

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { CollegePageProps, IPagination, INote } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import NotesClient from './NotesClient';
-import { FileText, Sparkles, CheckCircle2, TrendingUp } from 'lucide-react';
+import { FileText, CheckCircle2, TrendingUp } from 'lucide-react';
 
 export async function generateMetadata({
     params,

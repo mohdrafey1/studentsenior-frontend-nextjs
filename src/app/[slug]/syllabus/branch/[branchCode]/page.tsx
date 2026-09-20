@@ -186,7 +186,7 @@ export default async function BranchSyllabusPage({
 
                                     <div className='divide-y divide-[#e6e6e6] dark:divide-[#2f2f2f]'>
                                         {groupedBySemester[semester].map(
-                                            (syllabus, index) => (
+                                            (syllabus) => (
                                                 <div
                                                     key={syllabus._id}
                                                     className='p-6 sm:p-8 bg-white dark:bg-[#202020]'

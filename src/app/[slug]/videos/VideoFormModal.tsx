@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ICourse, IBranch } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import { CheckCircle, X, Youtube, ExternalLink } from 'lucide-react';
@@ -83,6 +83,29 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
         }
     }, [isOpen, courses, selectedCourse, fetchBranches]);
 
+    const fetchSubjects = useCallback(
+        async (branchCode: string) => {
+            setLoadingSubjects(true);
+            try {
+                const response = await fetch(
+                    api.resources.getSubjects(branchCode, collegeSlug),
+                );
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to fetch subjects');
+                }
+
+                setSubjects(data.data || []);
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+            } finally {
+                setLoadingSubjects(false);
+            }
+        },
+        [collegeSlug],
+    );
+
     // After branches load, apply saved branch by branchCode (once per open)
     useEffect(() => {
         if (!isOpen || appliedPrefRef.current || branches.length === 0) return;
@@ -103,27 +126,7 @@ const VideoFormModal: React.FC<VideoFormModalProps> = ({
         } catch {
             // ignore
         }
-    }, [isOpen, branches]);
-
-    const fetchSubjects = async (branchCode: string) => {
-        setLoadingSubjects(true);
-        try {
-            const response = await fetch(
-                api.resources.getSubjects(branchCode, collegeSlug),
-            );
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch subjects');
-            }
-
-            setSubjects(data.data || []);
-        } catch (error) {
-            console.error('Error fetching subjects:', error);
-        } finally {
-            setLoadingSubjects(false);
-        }
-    };
+    }, [isOpen, branches, fetchSubjects]);
 
     const handleCourseChange = (courseId: string) => {
         setSelectedCourse(courseId);

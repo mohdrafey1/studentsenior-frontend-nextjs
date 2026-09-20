@@ -6,7 +6,6 @@ import {
     Eye,
     IndianRupee,
     CheckCircle,
-    Clock,
     ShoppingBag,
     XCircle,
 } from 'lucide-react';

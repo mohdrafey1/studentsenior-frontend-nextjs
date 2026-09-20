@@ -2,7 +2,6 @@ import { api } from '@/config/apiUrls';
 import React from 'react';
 import ProductList from './ProductList';
 import type { Metadata } from 'next';
-import { Sparkles, ShieldCheck, Tag, ShoppingBag } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'Recommended Products - Student Senior',

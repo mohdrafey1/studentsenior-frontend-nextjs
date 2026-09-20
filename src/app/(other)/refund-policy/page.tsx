@@ -13,7 +13,6 @@ import {
     Mail,
     ArrowRight,
     AlertTriangle,
-    Shield,
     Scale,
     Lock,
 } from 'lucide-react';

@@ -12,7 +12,6 @@ import {
     Loader2,
     Check,
     GraduationCap,
-    Users,
     BookOpen,
 } from 'lucide-react';
 import { CollegeData } from '@/utils/interface';

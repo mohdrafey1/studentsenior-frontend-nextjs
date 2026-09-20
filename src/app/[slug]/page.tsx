@@ -30,7 +30,6 @@ import {
     Layers,
     Zap,
     MapPin,
-    Sparkles,
     CheckCircle2,
 } from 'lucide-react';
 import { DEFAULT_SECTIONS } from '@/constant';

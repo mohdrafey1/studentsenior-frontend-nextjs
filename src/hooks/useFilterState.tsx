@@ -63,9 +63,14 @@ export const useFilterState = (options: UseFilterStateOptions = {}) => {
         if (page > 1) params.set('page', page.toString());
 
         // Add additional filters from pages (like yearFilter, examTypeFilter, etc.)
-        Object.entries(additionalFilters).forEach(([key, value]) => {
-            if (value) params.set(key, value);
-        });
+        try {
+            const parsedAdditional = JSON.parse(additionalFiltersString) as Record<string, string>;
+            Object.entries(parsedAdditional).forEach(([key, value]) => {
+                if (value) params.set(key, value);
+            });
+        } catch {
+            // ignore
+        }
 
         const newUrl = params.toString()
             ? `${pathname}?${params.toString()}`

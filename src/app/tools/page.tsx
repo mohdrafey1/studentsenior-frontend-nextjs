@@ -7,7 +7,6 @@ import {
     CalendarClock,
     ArrowRight,
     Sparkles,
-    CheckCircle2,
     ShieldCheck,
     Zap,
     HelpCircle,

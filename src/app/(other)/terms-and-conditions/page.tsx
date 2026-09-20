@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-    Scale,
     UserCheck,
     FileText,
     CreditCard,
@@ -16,7 +15,6 @@ import {
     Mail,
     ArrowRight,
     ShieldCheck,
-    AlertCircle,
     Clock,
 } from 'lucide-react';
 

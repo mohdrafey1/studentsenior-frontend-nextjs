@@ -8,7 +8,6 @@ import {
     GraduationCap,
     Calendar,
     Eye,
-    Download,
     BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';

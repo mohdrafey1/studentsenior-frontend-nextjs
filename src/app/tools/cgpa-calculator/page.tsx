@@ -4,7 +4,6 @@ import Link from 'next/link';
 import CGPACalculator from './CGPACalculator';
 import {
     Calculator,
-    CheckCircle2,
     ShieldCheck,
     Zap,
     BookOpen,
@@ -12,7 +11,6 @@ import {
     ArrowLeft,
     CalendarClock,
     FileText,
-    ArrowRight,
     Sparkles,
 } from 'lucide-react';
 

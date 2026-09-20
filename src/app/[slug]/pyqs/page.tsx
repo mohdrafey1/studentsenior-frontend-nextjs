@@ -3,7 +3,7 @@ import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { CollegePageProps, IPagination, IPyq } from '@/utils/interface';
 import PyqsClient from './PyqsClient';
-import { Archive, Sparkles, CheckCircle2, TrendingUp } from 'lucide-react';
+import { Sparkles, CheckCircle2, TrendingUp } from 'lucide-react';
 
 export async function generateMetadata({
     params,

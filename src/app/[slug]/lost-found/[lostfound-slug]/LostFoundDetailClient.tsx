@@ -5,7 +5,6 @@ import { ILostFoundItem } from '@/utils/interface';
 import {
     Phone,
     Calendar,
-    ExternalLink,
     MapPin,
     AlertCircle,
     CheckCircle2,

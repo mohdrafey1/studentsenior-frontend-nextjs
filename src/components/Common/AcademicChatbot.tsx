@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import {
-    MessageCircle,
     X,
     RotateCcw,
     ChevronRight,
@@ -14,7 +13,6 @@ import {
     Sparkles,
     Bot,
     ExternalLink,
-    Zap,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';

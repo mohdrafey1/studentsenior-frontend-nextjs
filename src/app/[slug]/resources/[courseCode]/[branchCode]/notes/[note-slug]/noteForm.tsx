@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { api } from '@/config/apiUrls';
 import { UploadIcon, DollarSign, CheckCircle, X } from 'lucide-react';
 import SearchableSelect from '@/components/Common/SearchableSelect';
@@ -53,31 +53,34 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
         }
     }, [isOpen]);
 
+    const fetchSubjects = useCallback(
+        async (branchCode: string) => {
+            setLoadingSubjects(true);
+            try {
+                const response = await fetch(
+                    api.resources.getSubjects(branchCode, collegeSlug),
+                );
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to fetch subjects');
+                }
+
+                setSubjects(data.data || []);
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+            } finally {
+                setLoadingSubjects(false);
+            }
+        },
+        [collegeSlug],
+    );
+
     useEffect(() => {
         if (isOpen && branchCode) {
             fetchSubjects(branchCode);
         }
-    }, [isOpen, branchCode]);
-
-    const fetchSubjects = async (branchCode: string) => {
-        setLoadingSubjects(true);
-        try {
-            const response = await fetch(
-                api.resources.getSubjects(branchCode, collegeSlug),
-            );
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch subjects');
-            }
-
-            setSubjects(data.data || []);
-        } catch (error) {
-            console.error('Error fetching subjects:', error);
-        } finally {
-            setLoadingSubjects(false);
-        }
-    };
+    }, [isOpen, branchCode, fetchSubjects]);
 
     useEffect(() => {
         if (subjects.length > 0 && subject) {

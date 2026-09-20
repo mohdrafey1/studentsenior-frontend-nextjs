@@ -1,31 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
     Mail,
-    Phone,
     ArrowUpRight,
-    GraduationCap,
     Heart,
     ShieldCheck,
-    BookOpen,
     Users,
     Sparkles,
     ChevronRight,
 } from 'lucide-react';
 
 const Footer: React.FC = () => {
-    const [isAndroid, setIsAndroid] = useState<boolean>(false);
-
-    useEffect(() => {
-        const userAgent = navigator.userAgent || navigator.vendor;
-        if (/android/i.test(userAgent)) {
-            setIsAndroid(true);
-        }
-    }, []);
-
     const socialLinks = [
         {
             name: 'Telegram',
@@ -85,14 +73,6 @@ const Footer: React.FC = () => {
         { to: '/privacy-policy', text: 'Privacy Policy' },
         { to: '/terms-and-conditions', text: 'Terms & Conditions' },
         { to: '/refund-policy', text: 'Refund Policy' },
-    ];
-
-    const resourceLinks = [
-        { to: '/', text: 'Previous Year Questions (PYQs)' },
-        { to: '/', text: 'Verified Senior Notes' },
-        { to: '/', text: 'Mentor Guidance Network' },
-        { to: '/sign-up', text: 'Create Free Account' },
-        { to: '/sign-in', text: 'Student Portal Login' },
     ];
 
     return (

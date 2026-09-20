@@ -6,7 +6,6 @@ import {
     CreditCard,
     PackageSearch,
     ArrowRight,
-    TrendingUp,
 } from 'lucide-react';
 
 interface OverviewTabProps {

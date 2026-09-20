@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, AlertTriangle, X } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 interface SignOutDialogProps {
     showDialog: boolean;

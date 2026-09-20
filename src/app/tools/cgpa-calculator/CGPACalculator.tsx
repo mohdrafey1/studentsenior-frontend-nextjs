@@ -8,18 +8,10 @@ import {
     RotateCcw,
     Check,
     Copy,
-    Info,
     Award,
     TrendingUp,
     Percent,
     Target,
-    BookOpen,
-    HelpCircle,
-    Sparkles,
-    ChevronDown,
-    ArrowRightLeft,
-    CheckCircle2,
-    AlertCircle,
     Share2,
     SlidersHorizontal,
 } from 'lucide-react';
@@ -41,7 +33,7 @@ interface Semester {
 }
 
 type ModeType = 'SGPA' | 'CGPA' | 'PERCENTAGE' | 'TARGET';
-type FormulaType = 'aicte' | 'cbse' | 'direct' | 'mumbai' | 'custom';
+type FormulaType = 'aicte' | 'cbse' | 'direct' | 'mumbai';
 
 const GRADE_POINTS: Record<Grade, number> = {
     O: 10,
@@ -89,7 +81,6 @@ export default function CGPACalculator() {
     // CGPA ⇋ Percentage State
     const [conversionDirection, setConversionDirection] = useState<'cgpaToPct' | 'pctToCgpa'>('cgpaToPct');
     const [formula, setFormula] = useState<FormulaType>('aicte');
-    const [customMultiplier, setCustomMultiplier] = useState<number>(9.5);
     const [convInput, setConvInput] = useState<string>('8.5');
 
     // Target CGPA Planner State
@@ -167,9 +158,6 @@ export default function CGPACalculator() {
                 case 'mumbai': // 7.25 * CGPA + 11 (for >=7) or 7.1 * CGPA + 12
                     pct = val >= 7 ? 7.25 * val + 11 : 7.1 * val + 12;
                     break;
-                case 'custom':
-                    pct = val * (customMultiplier || 10);
-                    break;
             }
             return {
                 type: 'percentage',
@@ -193,9 +181,6 @@ export default function CGPACalculator() {
                 case 'mumbai':
                     cg = (val - 11) / 7.25;
                     break;
-                case 'custom':
-                    cg = val / (customMultiplier || 10);
-                    break;
             }
             return {
                 type: 'cgpa',
@@ -203,7 +188,7 @@ export default function CGPACalculator() {
                 input: val,
             };
         }
-    }, [convInput, conversionDirection, formula, customMultiplier]);
+    }, [convInput, conversionDirection, formula]);
 
     // 4. Target Planner Calculation
     const targetPlanResult = useMemo(() => {

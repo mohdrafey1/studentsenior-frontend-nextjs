@@ -4,9 +4,7 @@ import Link from 'next/link';
 import AttendanceCalculator from './AttendanceCalculator';
 import {
     CalendarClock,
-    CheckCircle2,
     ShieldCheck,
-    Zap,
     BookOpen,
     HelpCircle,
     ArrowLeft,
@@ -14,7 +12,6 @@ import {
     FileText,
     Sparkles,
     Flame,
-    AlertTriangle,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

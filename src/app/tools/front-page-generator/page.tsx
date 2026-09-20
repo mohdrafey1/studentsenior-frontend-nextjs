@@ -3,10 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import FrontPageGenerator from './FrontPageGenerator';
 import {
-    FileText,
     Printer,
-    Download,
-    CheckCircle2,
     ShieldCheck,
     Zap,
     BookOpen,

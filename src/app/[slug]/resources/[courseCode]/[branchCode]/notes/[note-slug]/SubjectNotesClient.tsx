@@ -240,7 +240,7 @@ export default function SubjectNotesClient({
                         No notes found
                     </h3>
                     <p className='text-sm text-[#475467] dark:text-[#9ea3ae] mb-6 max-w-md mx-auto'>
-                        No notes match your search for "{search}". Try different keywords.
+                        No notes match your search for &quot;{search}&quot;. Try different keywords.
                     </p>
                     <button
                         onClick={() => setSearch('')}

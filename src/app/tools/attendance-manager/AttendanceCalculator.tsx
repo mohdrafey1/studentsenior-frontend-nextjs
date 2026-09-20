@@ -9,20 +9,14 @@ import {
     Plus,
     Trash2,
     Check,
-    Copy,
     Share2,
-    Info,
     AlertCircle,
     CheckCircle2,
     Sparkles,
     ShieldAlert,
     ShieldCheck,
     Layers,
-    ListFilter,
-    CalendarCheck,
-    Clock,
     Flame,
-    Award,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

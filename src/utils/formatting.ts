@@ -1,11 +1,12 @@
-export function capitalizeWords(str: string | any): string {
+export function capitalizeWords(str: unknown): string {
     if (!str) return '';
 
     if (typeof str !== 'string') {
-        if (typeof str === 'object') {
-            if (typeof str.name === 'string') return capitalizeWords(str.name);
-            if (typeof str.slug === 'string') return capitalizeWords(str.slug);
-            if (typeof str.title === 'string') return capitalizeWords(str.title);
+        if (typeof str === 'object' && str !== null) {
+            const obj = str as Record<string, unknown>;
+            if (typeof obj.name === 'string') return capitalizeWords(obj.name);
+            if (typeof obj.slug === 'string') return capitalizeWords(obj.slug);
+            if (typeof obj.title === 'string') return capitalizeWords(obj.title);
         }
         return String(str);
     }

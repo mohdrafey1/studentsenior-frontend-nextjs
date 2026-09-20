@@ -13,8 +13,6 @@ import {
     Loader2,
     ArrowRight,
     ArrowLeft,
-    Sparkles,
-    ShieldCheck,
     GraduationCap,
     BookOpen,
     Users,

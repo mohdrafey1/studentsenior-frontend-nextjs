@@ -6,8 +6,6 @@ import {
     ExternalLink,
     GraduationCap,
     Calendar,
-    Globe,
-    User,
     MessageCircle,
     MapPin,
     Eye,

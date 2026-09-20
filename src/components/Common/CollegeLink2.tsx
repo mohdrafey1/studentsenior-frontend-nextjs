@@ -18,7 +18,6 @@ import {
     Users,
     Briefcase,
     Search,
-    Menu,
     X,
     LayoutGrid,
 } from 'lucide-react';
@@ -43,9 +42,6 @@ const CollegeLink2 = ({ sections }: CollegeLink2Props) => {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
 
-    // Prevent rendering if slug is not available
-    if (!slug) return null;
-
     const toggleMenu = () => {
         setIsOpen((prev) => !prev);
     };
@@ -66,6 +62,9 @@ const CollegeLink2 = ({ sections }: CollegeLink2Props) => {
     useEffect(() => {
         setIsOpen(false);
     }, [pathname]);
+
+    // Prevent rendering if slug is not available
+    if (!slug) return null;
 
     const enabledSections: CollegeSections = {
         ...DEFAULT_SECTIONS,

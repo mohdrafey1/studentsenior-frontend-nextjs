@@ -1,6 +1,6 @@
 import React from 'react';
 import ContactUsForm from './ContactUsForm';
-import { Mail, MessageCircle, Clock, Sparkles } from 'lucide-react';
+import { Mail, Clock } from 'lucide-react';
 
 export const metadata = {
     title: 'Contact Us - Student Senior',
