@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import React from 'react';
 import { api } from '@/config/apiUrls';
 import { Metadata } from 'next';
@@ -16,7 +17,7 @@ export async function generateMetadata({
     const { 'lostfound-slug': lostFoundSlug } = await params;
 
     try {
-        const res = await fetch(
+        const res = await fetchPublicApi(
             `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
             {
                 next: { revalidate: 300 },
@@ -38,18 +39,14 @@ export async function generateMetadata({
             description: lostFoundItem.description.slice(0, 160),
         };
     } catch (error) {
-        console.log(error);
-        return {
-            title: 'Lost & Found - Student Senior',
-            description: 'View lost and found item details',
-        };
+        throw error;
     }
 }
 
 export default async function LostFoundPage({ params }: LostFoundPageProps) {
     const { 'lostfound-slug': lostFoundSlug } = await params;
 
-    const res = await fetch(
+    const res = await fetchPublicApi(
         `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
         { next: { revalidate: 300 } },
     );

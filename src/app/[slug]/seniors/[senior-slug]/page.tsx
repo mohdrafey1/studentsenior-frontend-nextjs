@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -14,7 +15,7 @@ export async function generateMetadata({
 
     try {
         // Fetch senior details for dynamic metadata
-        const res = await fetch(`${api.seniors.getSeniorBySlug(seniorSlug)}`, {
+        const res = await fetchPublicApi(`${api.seniors.getSeniorBySlug(seniorSlug)}`, {
             cache: 'force-cache',
         });
 
@@ -62,14 +63,7 @@ export async function generateMetadata({
             },
         };
     } catch (error) {
-        console.error('Error generating metadata:', error);
-        return {
-            title: `${capitalizeWords(seniorSlug)} - Seniors - ${capitalizeWords(slug)}`,
-            description: 'Senior profile details and contact information.',
-            openGraph: {
-                images: ['/icons/image192edge.png'],
-            },
-        };
+        throw error;
     }
 }
 
@@ -83,7 +77,7 @@ export default async function SeniorDetailPage({
 
     try {
         const url = `${api.seniors.getSeniorBySlug(seniorSlug)}`;
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -92,7 +86,7 @@ export default async function SeniorDetailPage({
         const data = await res.json();
         senior = data?.data || null;
     } catch (error) {
-        console.error('Error fetching senior details:', error);
+        throw error;
     }
 
     if (!senior) {

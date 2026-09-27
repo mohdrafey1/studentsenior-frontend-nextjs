@@ -1,3 +1,4 @@
+import ServiceWorkerRegistration from '@/components/Common/ServiceWorkerRegistration';
 import type { Metadata } from 'next';
 import { PT_Serif, Geist_Mono, Quicksand } from 'next/font/google';
 import './globals.css';
@@ -135,6 +136,7 @@ export default function RootLayout({
             <body
                 className={`${quicksand.variable} ${geistMono.variable} ${fugazOne.variable} antialiased`}
             >
+                <ServiceWorkerRegistration />
                 <Providers>
                     <Toaster
                         position='top-center'

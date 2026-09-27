@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { Metadata } from 'next';
 import GoogleAd from '@/components/GoogleAd';
 import { notFound } from 'next/navigation';
@@ -45,7 +46,7 @@ async function getCollegeData(
     slug: string,
 ): Promise<CollegeDataResponse | null> {
     try {
-        const res = await fetch(api.college.getCollegeBySlug(slug), {
+        const res = await fetchPublicApi(api.college.getCollegeBySlug(slug), {
             next: { revalidate: 86400 }, // Cache for 24 hours (86400 seconds)
         });
 
@@ -61,8 +62,7 @@ async function getCollegeData(
         const data = await res.json();
         return data;
     } catch (error) {
-        console.error('Error fetching college:', error);
-        return null;
+        throw error;
     }
 }
 

@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { capitalizeWords } from '@/utils/formatting';
@@ -33,14 +34,14 @@ export default async function CommunityGroupPreview({ params }: PageProps) {
     let messages: PreviewMessage[] = [];
     try {
         // Web preview is capped server-side at 50 messages.
-        const res = await fetch(
+        const res = await fetchPublicApi(
             `${api.community.getMessages(groupId)}?limit=50`,
             { next: { revalidate: 30 } }
         );
         const data = await res.json();
         messages = data?.data?.messages || [];
-    } catch {
-        messages = [];
+    } catch (error) {
+        throw error;
     }
 
     return (

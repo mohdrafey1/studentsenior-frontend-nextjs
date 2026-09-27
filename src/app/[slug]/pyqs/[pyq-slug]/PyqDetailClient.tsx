@@ -180,6 +180,10 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         (state: RootState) => state.user.currentUser,
     );
     const ownerId = currentUser?._id;
+    const identityRef = useRef(ownerId);
+    identityRef.current = ownerId;
+    const [loadAttempt, setLoadAttempt] = useState(0);
+    const [hasAccess, setHasAccess] = useState(!pyq.isPaid);
 
     const { saveResource, unsaveResource } = useSaveResource();
     const { savedPYQs } = useSelector(
@@ -193,36 +197,45 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     };
 
     useEffect(() => {
-        const fetchSignedUrlForView = async () => {
-            if (!pyq?.fileUrl) return;
-
+        const controller = new AbortController();
+        let loadingTask: ReturnType<typeof pdfjsLib.getDocument> | undefined;
+        const loadDocument = async () => {
             setIsLoading(true);
+            setError(null);
+            setPdfDoc(null);
+            setSignedUrl(null);
+            setHasAccess(false);
             try {
+                const metadata = await fetch(api.pyq.getPyqBySlug(pyq.slug), {
+                    credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+                });
+                const detail = await metadata.json();
+                if (!metadata.ok || detail.success !== true) throw new Error('Unable to check document access.');
+                const allowed = detail.data.hasAccess === true;
+                if (controller.signal.aborted) return;
+                setHasAccess(allowed);
+                if (!allowed) return;
                 const response = await fetch(
-                    `${api.aws.getSignedUrl}?fileUrl=${pyq.fileUrl}`,
+                    `${api.aws.getSignedUrl}?resourceType=pyq&resourceId=${encodeURIComponent(pyq._id)}`,
+                    { credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) },
                 );
                 const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        data.message || 'Failed to get signed URL.',
-                    );
+                if (!response.ok || data.success !== true) throw new Error(data.message || 'Unable to open document.');
+                loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
+                const document = await loadingTask.promise;
+                if (!controller.signal.aborted) {
+                    setSignedUrl(data.data.signedUrl);
+                    setPdfDoc(document);
                 }
-
-                setSignedUrl(data.data.signedUrl);
-                const loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
-                const pdf = await loadingTask.promise;
-                setPdfDoc(pdf);
-            } catch (err) {
-                console.error('Error getting signed URL for view:', err);
-                setError('Failed to load PDF document.');
+            } catch {
+                if (!controller.signal.aborted) setError('Failed to load PDF document. Please try again.');
             } finally {
-                setIsLoading(false);
+                if (!controller.signal.aborted) setIsLoading(false);
             }
         };
-
-        fetchSignedUrlForView();
-    }, [pyq?.fileUrl]);
+        void loadDocument();
+        return () => { controller.abort(); void loadingTask?.destroy(); };
+    }, [pyq._id, pyq.slug, ownerId, loadAttempt]);
 
     useEffect(() => {
         const userAgent = navigator.userAgent || navigator.vendor;
@@ -337,36 +350,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     };
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
-    useEffect(() => {
-        const preventContextMenu = (e: MouseEvent) => e.preventDefault();
-        const preventShortcuts = (e: KeyboardEvent) => {
-            if (
-                e.ctrlKey &&
-                (e.key === 'p' || e.key === 's' || e.key === 'u')
-            ) {
-                e.preventDefault();
-            }
-        };
-        const blockDevTools = (e: KeyboardEvent) => {
-            if (
-                e.keyCode === 123 ||
-                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
-                (e.metaKey && e.altKey && ['I', 'J'].includes(e.key))
-            ) {
-                e.preventDefault();
-            }
-        };
 
-        document.addEventListener('contextmenu', preventContextMenu);
-        document.addEventListener('keydown', preventShortcuts);
-        document.addEventListener('keydown', blockDevTools);
-
-        return () => {
-            document.removeEventListener('contextmenu', preventContextMenu);
-            document.removeEventListener('keydown', preventShortcuts);
-            document.removeEventListener('keydown', blockDevTools);
-        };
-    }, []);
 
     if (error) {
         return (
@@ -381,6 +365,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     <p className='text-[#475467] dark:text-[#a09e9a] mb-6 text-sm'>
                         {error}
                     </p>
+                    <button className="p-3 underline" onClick={() => setLoadAttempt(value => value + 1)}>Retry</button>
                     <button
                         onClick={handleGoBack}
                         className='inline-flex items-center gap-2 px-6 py-2.5 bg-[#0075de] text-white font-semibold rounded-xl hover:bg-[#0062bd] transition-colors'
@@ -410,22 +395,24 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         );
     }
 
-    const isOwner = pyq.owner?._id === ownerId;
-    const isPaidAndNotOwner =
-        pyq.isPaid && !isOwner && !pyq.purchasedBy?.includes(ownerId || '');
+    const isPaidAndNotOwner = pyq.isPaid && !hasAccess;
+
     const downloadFileName = `${pyq.subject.subjectCode}-${pyq.examType}-${pyq.year}-studentsenior.pdf`;
 
     const handleSecureDownload = async () => {
-        if (!pyq?.fileUrl) return;
+        if (!hasAccess) return;
+        const requestingIdentity = identityRef.current;
         try {
             const response = await fetch(
-                `${api.aws.getSignedUrl}?fileUrl=${pyq.fileUrl}`,
+                `${api.aws.getSignedUrl}?resourceType=pyq&resourceId=${encodeURIComponent(pyq._id)}`,
+                { credentials: 'include', cache: 'no-store', signal: AbortSignal.timeout(15000) },
             );
             const data = await response.json();
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to get download link.');
             }
 
+            if (identityRef.current !== requestingIdentity) return;
             const link = document.createElement('a');
             link.href = data.data.signedUrl;
             link.download = downloadFileName;
@@ -542,21 +529,8 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
                 {/* PDF Viewer Section */}
                 <div className='pdf-viewer max-w-4xl mx-auto'>
-                    {pdfDoc ? (
-                        isPaidAndNotOwner ? (
+                    {isPaidAndNotOwner ? (
                             <>
-                                {/* Preview Pages */}
-                                {Array.from({
-                                    length: Math.min(2, pdfDoc.numPages),
-                                }).map((_, index) => (
-                                    <LazyPDFPage
-                                        key={index}
-                                        pdf={pdfDoc}
-                                        pageNum={index + 1}
-                                        scale={1.5}
-                                    />
-                                ))}
-
                                 {/* Purchase CTA */}
                                 <div className='bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-sky-200 dark:border-sky-700 p-8 text-center'>
                                     <div className='w-20 h-20 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
@@ -566,10 +540,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                         Unlock Complete PYQ
                                     </h3>
                                     <p className='text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto'>
-                                        You&apos;ve seen a preview of this
-                                        question paper. Purchase to access all{' '}
-                                        {pdfDoc.numPages} pages and get the
-                                        complete PYQ with solutions.
+                                        Purchase to open and download the complete document.
                                     </p>
                                     <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
                                         <button
@@ -590,12 +561,12 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     </div>
                                 </div>
                             </>
-                        ) : (
+                    ) : pdfDoc ? (
                             <>
                                 {Array.from({ length: pdfDoc.numPages }).map(
                                     (_, index) => (
                                         <LazyPDFPage
-                                            key={index}
+                                            key={`${pyq._id}:${ownerId || "guest"}:${index}`}
                                             pdf={pdfDoc}
                                             pageNum={index + 1}
                                             scale={1.5}
@@ -603,7 +574,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                     ),
                                 )}
                             </>
-                        )
                     ) : (
                         <div className='flex justify-center items-center min-h-[400px] bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60'>
                             <div className='text-center'>

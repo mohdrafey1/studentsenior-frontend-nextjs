@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import React from 'react';
 import ProductList from './ProductList';
@@ -29,7 +31,7 @@ interface IProduct {
 
 async function getProducts() {
     try {
-        const res = await fetch(`${api.affiliateProducts.getAll}`, {
+        const res = await fetchPublicApi(`${api.affiliateProducts.getAll}`, {
             next: { revalidate: 3600 }, // Cache for 1 hour
         });
         if (!res.ok) {
@@ -37,8 +39,7 @@ async function getProducts() {
         }
         return res.json();
     } catch (error) {
-        console.error('Error fetching products:', error);
-        return { success: false, data: [] };
+        throw error;
     }
 }
 

@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -47,7 +48,7 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
 
     try {
         const url = `${api.notes.getNoteBySlug(noteSlug)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetchPublicApi(url, { cache: 'no-store' });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -56,7 +57,7 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
         const data = await res.json();
         note = data?.data || null;
     } catch (error) {
-        console.error('Error fetching note details:', error);
+        throw error;
     }
 
     if (!note) {

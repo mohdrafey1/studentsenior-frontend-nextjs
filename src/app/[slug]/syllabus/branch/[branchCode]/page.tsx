@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { api } from '@/config/apiUrls';
@@ -71,7 +72,7 @@ export default async function BranchSyllabusPage({
 
     try {
         const url = api.syllabus.getSyllabusByBranch(slug, branchCode);
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
 
@@ -80,7 +81,7 @@ export default async function BranchSyllabusPage({
             subjectCount = data.data.subjectCount || 0;
         }
     } catch (error) {
-        console.error('Error fetching syllabus:', error);
+        throw error;
     }
 
     const filteredSyllabus = selectedSemester

@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { CollegePageProps } from '@/utils/interface';
@@ -39,7 +40,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
 
     try {
         const url = `${api.resources.getBranches(courseCode)}`;
-        const res = await fetch(url, { next: { revalidate: 86400 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
         }
@@ -47,7 +48,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
         const data = await res.json();
         branches = data?.data || [];
     } catch (error) {
-        console.error('Failed to fetch courses:', error);
+        throw error;
     }
 
     return (

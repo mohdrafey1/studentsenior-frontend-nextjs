@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { CollegePageProps, IPagination } from '@/utils/interface';
@@ -46,7 +47,7 @@ export default async function QuickNotesPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.quickNotes.getQuickNotesByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -56,7 +57,7 @@ export default async function QuickNotesPage({ params }: CollegePageProps) {
         quicknotes = data?.data?.quicknotes || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Error fetching quick notes:', error);
+        throw error;
     }
 
     return (

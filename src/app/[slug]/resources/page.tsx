@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { CollegePageProps } from '@/utils/interface';
@@ -29,12 +30,12 @@ export default async function ResourcesPage({ params }: CollegePageProps) {
     let courses: ICourse[] = [];
     try {
         const url = `${api.resources.getCourses}`;
-        const res = await fetch(url, { next: { revalidate: 86400 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
         courses = data?.data || [];
     } catch (error) {
-        console.error('Failed to fetch courses:', error);
+        throw error;
     }
 
     return (

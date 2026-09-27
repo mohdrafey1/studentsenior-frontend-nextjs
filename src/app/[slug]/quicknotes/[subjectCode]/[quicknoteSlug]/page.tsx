@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import type { Metadata } from 'next';
 import { IQuickNote } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
@@ -7,15 +8,14 @@ import { capitalizeWords } from '@/utils/formatting';
 
 const getQuickNoteDetail = async (slug: string): Promise<IQuickNote | null> => {
     try {
-        const res = await fetch(api.quickNotes.getNoteDetail(slug), {
+        const res = await fetchPublicApi(api.quickNotes.getNoteDetail(slug), {
             next: { revalidate: 60 },
         });
         if (!res.ok) return null;
         const json = await res.json();
         return json.data;
     } catch (error) {
-        console.error('Error fetching quick note detail:', error);
-        return null;
+        throw error;
     }
 };
 

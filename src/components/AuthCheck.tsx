@@ -17,7 +17,7 @@ export const UserInitProvider = () => {
                 });
 
                 if (!response.ok) {
-                    dispatch(signOut());
+                    if (response.status === 401 || response.status === 403) dispatch(signOut());
                     throw new Error('Failed to fetch user data');
                 }
 
@@ -25,7 +25,7 @@ export const UserInitProvider = () => {
                 dispatch(signInSuccess(userData));
             } catch (error) {
                 console.error('Error fetching user:', error);
-                dispatch(signOut());
+                // Keep a valid local session on network/server outages.
             }
         };
 

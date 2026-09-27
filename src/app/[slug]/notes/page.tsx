@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { CollegePageProps, IPagination, INote } from '@/utils/interface';
@@ -27,7 +28,7 @@ export default async function NotesPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.notes.getNotesByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -37,7 +38,7 @@ export default async function NotesPage({ params }: CollegePageProps) {
         notes = data?.data?.notes || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Error fetching notes:', error);
+        throw error;
     }
 
     return (

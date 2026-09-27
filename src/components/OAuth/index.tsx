@@ -24,6 +24,7 @@ export default function OAuth() {
             const auth = getAuth(app);
 
             const result = await signInWithPopup(auth, provider);
+            const idToken = await result.user.getIdToken();
 
             const res = await fetch(api.auth.google, {
                 method: 'POST',
@@ -33,15 +34,14 @@ export default function OAuth() {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    name: result.user.displayName,
-                    email: result.user.email,
-                    photo: result.user.photoURL,
+                    idToken,
+                    provider: 'firebase',
                 }),
             });
 
             const data = await res.json();
 
-            if (data.success === false) {
+            if (!res.ok || data.success !== true) {
                 toast.error(data.message || 'Google sign-in failed');
                 return;
             }
@@ -51,7 +51,7 @@ export default function OAuth() {
 
             // Read "from" param from query string, fallback to "/"
             const from = searchParams.get('from') || '/';
-            router.replace(from);
+            router.replace(from.startsWith('/') && !from.startsWith('//') ? from : '/');
         } catch (error) {
             console.error('Could not login with Google', error);
             toast.error('Google sign-in failed. Please try again.');

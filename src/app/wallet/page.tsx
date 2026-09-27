@@ -176,7 +176,7 @@ export default function WalletPage() {
                 fetch(`${API_BASE}/payment/wallet/balance`, {
                     credentials: 'include',
                 }),
-                fetch(`${API_BASE}/payment/wallet/transactions?limit=200`, {
+                fetch(`${API_BASE}/payment/wallet/transactions?limit=100`, {
                     credentials: 'include',
                 }),
                 fetch(`${API_BASE}/payment/wallet/redeem`, {
@@ -377,11 +377,15 @@ export default function WalletPage() {
             return;
         }
         setSubmitting(true);
+        // Keep the same key on an uncertain network result; isolate different users/requests.
+        const requestStorageKey = `withdrawal:${currentUser?._id}:${pts}:${withdrawUpiId.trim()}`;
+        const requestKey = sessionStorage.getItem(requestStorageKey) || crypto.randomUUID();
+        sessionStorage.setItem(requestStorageKey, requestKey);
         try {
             const res = await fetch(`${API_BASE}/payment/wallet/redeem`, {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': requestKey },
                 body: JSON.stringify({ upiId: withdrawUpiId, points: pts }),
             });
             const data = await res.json();
@@ -390,6 +394,7 @@ export default function WalletPage() {
                     data?.message || 'Failed to submit withdrawal request',
                 );
             }
+            sessionStorage.removeItem(requestStorageKey);
             setMessage(
                 `Withdrawal request for ₹${Math.floor(pts / 5)} submitted successfully.`,
             );

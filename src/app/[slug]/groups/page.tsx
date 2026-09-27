@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import WhatsAppGroupClient from './WhatsAppGroupClient';
@@ -30,7 +31,7 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.groups.getGroupsByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -40,7 +41,7 @@ export default async function WhatsAppGroupPage({ params }: CollegePageProps) {
         groups = data?.data?.groups || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Failed to fetch groups:', error);
+        throw error;
     }
 
     return (

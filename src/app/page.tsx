@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+import { fetchPublicApi } from '@/utils/serverFetch';
 import CollegeSelectHandler from '@/components/HomePage/CollegeSelectHandler';
 import DownloadAppButton from '@/components/HomePage/DownloadAppButton';
 import ResourceQuickStart from '@/components/HomePage/ResourceQuickStart';
@@ -7,7 +9,6 @@ import type { Metadata } from 'next';
 import FAQPage from '@/components/HomePage/FAQ';
 import OurFeatures from '@/components/HomePage/OurFeatures';
 import { IApiResponse } from '@/utils/interface';
-import { rawColleges } from '@/constant';
 import AcademicChatbotLazy from '@/components/Common/AcademicChatbotLazy';
 import EarningShowcase from '@/components/HomePage/EarningShowcase';
 
@@ -18,7 +19,7 @@ type College = {
 
 async function getColleges(): Promise<IApiResponse<College[]>> {
     try {
-        const res = await fetch(api.college.getColleges, {
+        const res = await fetchPublicApi(api.college.getColleges, {
             next: { revalidate: 3600 }, // Cache for 1 hour
         });
 
@@ -30,12 +31,7 @@ async function getColleges(): Promise<IApiResponse<College[]>> {
 
         return await res.json();
     } catch (e) {
-        console.error('Fetch error:', e);
-        return {
-            status: false,
-            message: 'Failed to fetch colleges',
-            data: [],
-        };
+        throw e;
     }
 }
 
@@ -109,13 +105,7 @@ export const revalidate = 3600;
 
 export default async function HomePage() {
     const AllColleges = await getColleges();
-    const colleges = AllColleges.data?.length ? AllColleges.data : rawColleges;
-
-    if (!AllColleges.data?.length) {
-        console.warn(
-            '⚠️ Using rawColleges fallback due to fetch failure or empty response',
-        );
-    }
+    const colleges = AllColleges.data || [];
 
     return (
         <>

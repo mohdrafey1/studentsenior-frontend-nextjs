@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import type { Metadata } from 'next';
 import LeaderboardTabs, {
@@ -22,8 +24,8 @@ export default async function LeaderboardPage() {
 
     try {
         const [leaderboardRes, contributorsRes] = await Promise.all([
-            fetch(`${api.savedData.leaderboard}`, { next: { revalidate } }),
-            fetch(`${api.contributors.getTopContributors(100)}`, {
+            fetchPublicApi(`${api.savedData.leaderboard}`, { next: { revalidate } }),
+            fetchPublicApi(`${api.contributors.getTopContributors(100)}`, {
                 next: { revalidate },
             }),
         ]);
@@ -40,7 +42,7 @@ export default async function LeaderboardPage() {
             contributors = json?.data?.contributors || [];
         }
     } catch (e) {
-        console.error('Error fetching leaderboard data:', e);
+        throw e;
     }
 
     return (

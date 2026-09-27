@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import type { Metadata } from 'next';
 import { IPyq, IPyqSolution } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
@@ -7,29 +8,27 @@ import { capitalizeWords } from '@/utils/formatting';
 
 async function getPyq(slug: string): Promise<IPyq | null> {
     try {
-        const res = await fetch(api.pyq.getPyqBySlug(slug), {
+        const res = await fetchPublicApi(api.pyq.getPyqBySlug(slug), {
             next: { revalidate: 60 },
         });
         if (!res.ok) return null;
         const json = await res.json();
         return json.data;
     } catch (error) {
-        console.error('Error fetching PYQ:', error);
-        return null;
+        throw error;
     }
 }
 
 async function getSolution(pyqId: string): Promise<IPyqSolution | null> {
     try {
-        const res = await fetch(api.pyqSolutions.getPublicSolution(pyqId), {
+        const res = await fetchPublicApi(api.pyqSolutions.getPublicSolution(pyqId), {
             next: { revalidate: 60 },
         });
         if (!res.ok) return null;
         const json = await res.json();
         return json.data;
     } catch (error) {
-        console.error('Error fetching Solution:', error);
-        return null;
+        throw error;
     }
 }
 
