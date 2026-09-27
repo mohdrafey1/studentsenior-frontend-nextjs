@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -47,7 +48,7 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
 
     try {
         const url = `${api.pyq.getPyqBySlug(pyqSlug)}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetchPublicApi(url, { cache: 'no-store' });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -56,7 +57,7 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
         const data = await res.json();
         pyq = data?.data || null;
     } catch (error) {
-        console.error('Error fetching pyq details:', error);
+        throw error;
     }
 
     if (!pyq) {

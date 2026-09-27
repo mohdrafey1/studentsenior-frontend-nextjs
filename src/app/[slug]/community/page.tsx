@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -29,13 +30,13 @@ export default async function CommunitiesPage({ params }: CollegePageProps) {
 
     let groups: CommunityGroup[] = [];
     try {
-        const res = await fetch(api.community.listByCollege(slug), {
+        const res = await fetchPublicApi(api.community.listByCollege(slug), {
             next: { revalidate: 60 },
         });
         const data = await res.json();
         groups = data?.data?.groups || [];
-    } catch {
-        groups = [];
+    } catch (error) {
+        throw error;
     }
 
     return (

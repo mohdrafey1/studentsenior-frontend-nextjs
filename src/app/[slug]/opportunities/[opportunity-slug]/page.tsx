@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import React from 'react';
 import { api } from '@/config/apiUrls';
 import { Metadata } from 'next';
@@ -16,7 +17,7 @@ export async function generateMetadata({
     const { 'opportunity-slug': opportunitySlug } = await params;
 
     try {
-        const res = await fetch(
+        const res = await fetchPublicApi(
             `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
             {
                 next: { revalidate: 300 },
@@ -37,11 +38,7 @@ export async function generateMetadata({
             description: opportunity.description.slice(0, 160),
         };
     } catch (error) {
-        console.log(error);
-        return {
-            title: 'Opportunity - Student Senior',
-            description: 'View opportunity details',
-        };
+        throw error;
     }
 }
 
@@ -50,7 +47,7 @@ export default async function OpportunityPage({
 }: OpportunityPageProps) {
     const { 'opportunity-slug': opportunitySlug } = await params;
 
-    const res = await fetch(
+    const res = await fetchPublicApi(
         `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
         { next: { revalidate: 300 } },
     );

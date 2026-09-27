@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -46,7 +47,7 @@ export async function generateMetadata({
     // Fetch syllabus to get actual subject info
     try {
         const url = api.syllabus.getSyllabusBySlug(subjectCode);
-        const res = await fetch(url, { next: { revalidate: 86400 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (res.ok) {
             const data = await res.json();
@@ -60,7 +61,7 @@ export async function generateMetadata({
             };
         }
     } catch (error) {
-        console.error('Error fetching metadata:', error);
+        throw error;
     }
 
     return {
@@ -79,7 +80,7 @@ export default async function SyllabusDetailPage({
     try {
         // subjectCode parameter is actually the syllabus slug
         const url = api.syllabus.getSyllabusBySlug(subjectCode);
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -88,7 +89,7 @@ export default async function SyllabusDetailPage({
         const data = await res.json();
         syllabus = data?.data || null;
     } catch (error) {
-        console.error('Error fetching syllabus:', error);
+        throw error;
     }
 
     if (!syllabus) {

@@ -163,6 +163,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                     body: JSON.stringify({
                         fileName: `ss-notes/${fileName}`,
                         fileType,
+                        fileSize: file.size,
                     }),
                 });
 
@@ -173,7 +174,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                     );
                 }
 
-                const { uploadUrl, key } = await response.json();
+                const { uploadUrl, fileUrl: uploadedFileUrl } = await response.json();
 
                 // Step 2: Upload file directly to S3
                 const uploadResponse = await fetch(uploadUrl, {
@@ -188,7 +189,7 @@ const NotesFormModal: React.FC<NotesFormModalProps> = ({
                     throw new Error('Failed to upload file');
                 }
 
-                fileUrl = `https://dixu7g0y1r80v.cloudfront.net/${key}`;
+                fileUrl = uploadedFileUrl;
                 setForm((prev) => ({ ...prev, fileUrl }));
             }
 

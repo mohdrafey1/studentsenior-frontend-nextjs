@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { api } from '@/config/apiUrls';
@@ -24,12 +25,11 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
 
     let syllabus: ISyllabus[] = [];
     let pagination: IPagination | null = null;
-    let error: string | null = null;
 
     try {
         const url = api.syllabus.getSyllabusByCollege(collegeName);
         // ✅ Add caching with revalidation
-        const res = await fetch(url, {
+        const res = await fetchPublicApi(url, {
             next: { revalidate: 3600 }, // Cache for 1 hour
         });
 
@@ -41,8 +41,7 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
         syllabus = data?.data?.syllabus || [];
         pagination = data?.data?.pagination || null;
     } catch (err) {
-        console.error('Error fetching syllabus:', err);
-        error = err instanceof Error ? err.message : 'Failed to load syllabus';
+        throw err;
     }
 
     return (
@@ -83,7 +82,7 @@ export default async function SyllabusPage({ params }: CollegePageProps) {
                         }
                     }
                     collegeName={collegeName}
-                    initialError={error}
+                    initialError={null}
                 />
             </div>
         </main>

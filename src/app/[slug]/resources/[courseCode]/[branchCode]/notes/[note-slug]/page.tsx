@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -16,7 +17,7 @@ async function getSubjectName(
     subjectCode: string,
     collegeSlug: string,
 ) {
-    const response = await fetch(
+    const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
             next: { revalidate: 3600 },
@@ -124,11 +125,11 @@ export default async function SubjectNotesPage({
 
     try {
         const url = api.resources.getNotesBySubject(subjectCode, slug);
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
         const data = await res.json();
         notes = data?.data || [];
     } catch (e) {
-        console.error('Notes fetch error:', e);
+        throw e;
     }
 
     return (

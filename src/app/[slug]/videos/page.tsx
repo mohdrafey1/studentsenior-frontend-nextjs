@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { api } from '@/config/apiUrls';
@@ -33,7 +34,7 @@ export async function generateMetadata({
 
 async function getVideosData(collegeSlug: string) {
     try {
-        const response = await fetch(
+        const response = await fetchPublicApi(
             `${api.videos.getVideosByCollegeSlug(collegeSlug)}?page=1&limit=12`,
             {
                 next: { revalidate: 60 },
@@ -50,11 +51,7 @@ async function getVideosData(collegeSlug: string) {
             pagination: data.data.pagination || null,
         };
     } catch (error) {
-        console.error('Error fetching videos:', error);
-        return {
-            videos: [],
-            pagination: null,
-        };
+        throw error;
     }
 }
 

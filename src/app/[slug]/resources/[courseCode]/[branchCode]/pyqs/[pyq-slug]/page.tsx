@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import { IPyq } from '@/utils/interface';
@@ -23,7 +24,7 @@ async function getSubjectName(
     subjectCode: string,
     collegeSlug: string,
 ) {
-    const response = await fetch(
+    const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
             next: { revalidate: 300 },
@@ -127,11 +128,11 @@ export default async function SubjectPyqsPage({
 
     try {
         const url = api.resources.getPyqsBySubject(subjectCode, slug);
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
         const data = await res.json();
         pyqs = data?.data || [];
     } catch (e) {
-        console.error('PYQ fetch error:', e);
+        throw e;
     }
 
     return (

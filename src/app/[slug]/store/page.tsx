@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -23,7 +24,7 @@ export default async function StorePage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.store.getStoreByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -33,7 +34,7 @@ export default async function StorePage({ params }: CollegePageProps) {
         items = data?.data?.products || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Error fetching store items:', error);
+        throw error;
     }
 
     return (

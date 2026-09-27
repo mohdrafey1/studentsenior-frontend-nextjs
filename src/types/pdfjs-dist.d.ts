@@ -5,6 +5,7 @@ declare module 'pdfjs-dist/legacy/build/pdf' {
 
     export function getDocument(url: string | Uint8Array | ArrayBuffer): {
         promise: Promise<PDFDocumentProxy>;
+        destroy(): Promise<void>;
     };
 
     export interface PDFPageProxy {

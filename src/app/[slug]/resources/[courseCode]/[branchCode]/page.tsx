@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import { api } from '@/config/apiUrls';
@@ -38,13 +39,13 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
 
     try {
         const url = `${api.resources.getSubjects(branchCode, slug)}`;
-        const res = await fetch(url, { next: { revalidate: 3600 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
 
         const data = await res.json();
         subjects = data?.data || [];
     } catch (error) {
-        console.error('Failed to fetch subjects:', error);
+        throw error;
     }
 
     return (

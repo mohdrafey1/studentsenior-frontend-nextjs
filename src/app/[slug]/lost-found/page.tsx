@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -30,7 +31,7 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.lostFound.getLostFoundByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -40,7 +41,7 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
         items = data?.data?.items || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Error fetching lost and found items:', error);
+        throw error;
     }
 
     return (

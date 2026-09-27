@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ import {
     updateUserStart,
     updateUserSuccess,
     updateUserFailure,
+    signOut,
 } from '@/redux/slices/userSlice';
 import {
     User,
@@ -42,6 +44,7 @@ interface FormData {
     college?: string;
     phone?: string;
     password?: string;
+    currentPassword?: string;
     profilePicture?: string;
 }
 
@@ -51,6 +54,7 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ onSignOut }: ProfileFormProps) {
     const dispatch = useDispatch();
+    const router = useRouter();
     const fileRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<FormData>({});
@@ -77,12 +81,12 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ fileName, fileType }),
+                body: JSON.stringify({ fileName, fileType, fileSize: file.size }),
             });
 
             if (!presignedRes.ok) throw new Error('Failed to get upload URL');
 
-            const { uploadUrl, key } = await presignedRes.json();
+            const { uploadUrl, fileUrl: uploadedFileUrl } = await presignedRes.json();
 
             const uploadRes = await fetch(uploadUrl, {
                 method: 'PUT',
@@ -92,7 +96,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
 
             if (!uploadRes.ok) throw new Error('Failed to upload image');
 
-            return `https://dixu7g0y1r80v.cloudfront.net/${key}`;
+            return uploadedFileUrl;
         } catch (error) {
             console.error('Upload error:', error);
             throw new Error('Failed to upload image');
@@ -150,12 +154,15 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
             return;
         }
 
+        if (formData.password && (!formData.currentPassword || formData.password.length < 8)) {
+            toast.error('Enter your current password and a new password with at least 8 characters.'); return;
+        }
         try {
             dispatch(updateUserStart());
             const res = await fetch(`${api.user.update(currentUser._id)}`, {
                 method: 'PUT',
                 credentials: 'include',
-                body: JSON.stringify(formData),
+                body: JSON.stringify(Object.fromEntries(Object.entries(formData).filter(([, value]) => value !== ''))),
                 headers: { 'Content-Type': 'application/json' },
             });
             const data = await res.json();
@@ -166,6 +173,9 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                 return;
             }
 
+            if (data.data?.requiresReauthentication) {
+                dispatch(signOut()); toast.success('Password updated. Please sign in again.'); router.replace('/sign-in'); return;
+            }
             dispatch(updateUserSuccess(data.data));
             toast.success('🎉 Profile Updated Successfully');
             setEditMode(false);
@@ -356,6 +366,12 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                             />
                         </div>
 
+                        <p className='text-xs text-gray-500'>Your verified email stays unchanged. Contact support to change it.</p>
+                        <div>
+                            <label htmlFor='currentPassword' className='block text-xs font-semibold mb-1'>Current password (required to change password)</label>
+                            <input id='currentPassword' type='password' autoComplete='current-password' className='w-full rounded-xl border px-3 py-2 text-sm' onChange={handleChange} />
+                            <p className='mt-1 text-xs text-gray-500'>If you use Google sign-in, continue using Google to access your account.</p>
+                        </div>
                         <div>
                             <label className='block text-[11px] font-semibold text-[#615d59] dark:text-[#a09e9a] mb-1'>
                                 New Password (Optional)
@@ -363,6 +379,9 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
                             <input
                                 type='password'
                                 id='password'
+                                minLength={8}
+                                maxLength={72}
+                                autoComplete='new-password'
                                 placeholder='••••••••'
                                 className='w-full px-3 py-2 text-xs bg-[#faf9f8] dark:bg-[#181818] border border-[#e6e6e6] dark:border-[#2f2f2f] text-[#101828] dark:text-[#ededed] rounded-xl focus:outline-none focus:border-[#0075de] transition-all'
                                 onChange={handleChange}

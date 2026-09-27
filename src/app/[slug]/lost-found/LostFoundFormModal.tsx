@@ -116,14 +116,14 @@ const LostFoundFormModal: React.FC<LostFoundFormModalProps> = ({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ fileName, fileType }),
+                body: JSON.stringify({ fileName, fileType, fileSize: file.size }),
             });
 
             if (!presignedRes.ok) {
                 throw new Error('Failed to get upload URL');
             }
 
-            const { uploadUrl, key } = await presignedRes.json();
+            const { uploadUrl, fileUrl: uploadedFileUrl } = await presignedRes.json();
 
             // Upload to S3
             const uploadRes = await fetch(uploadUrl, {
@@ -137,7 +137,7 @@ const LostFoundFormModal: React.FC<LostFoundFormModalProps> = ({
             }
 
             // Return the CloudFront URL
-            return `https://dixu7g0y1r80v.cloudfront.net/${key}`;
+            return uploadedFileUrl;
         } catch (error) {
             console.error('Upload error:', error);
             throw new Error('Failed to upload image');

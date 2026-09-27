@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -24,7 +25,7 @@ export default async function SeniorsPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.seniors.getSeniorsByCollegeSlug(collegeName)}`;
-        const res = await fetch(url, { next: { revalidate: 10 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 10 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
@@ -34,7 +35,7 @@ export default async function SeniorsPage({ params }: CollegePageProps) {
         seniors = data?.data?.seniors || [];
         pagination = data?.data?.pagination || null;
     } catch (error) {
-        console.error('Error fetching seniors:', error);
+        throw error;
     }
 
     return (

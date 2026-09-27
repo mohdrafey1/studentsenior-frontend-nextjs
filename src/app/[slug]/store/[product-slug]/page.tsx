@@ -1,3 +1,4 @@
+import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -14,7 +15,7 @@ export async function generateMetadata({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
         if (!res.ok) throw new Error(`Failed to fetch product`);
 
         const data = await res.json();
@@ -48,11 +49,7 @@ export async function generateMetadata({
             },
         };
     } catch (error) {
-        console.error('Error generating metadata:', error);
-        return {
-            title: `${capitalizeWords(productSlug)} - Store`,
-            description: 'Product details and contact information.',
-        };
+        throw error;
     }
 }
 
@@ -65,14 +62,14 @@ export default async function ProductDetailPage({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetch(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
 
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
 
         const data = await res.json();
         product = data?.data || null;
     } catch (error) {
-        console.error('Error fetching product details:', error);
+        throw error;
     }
 
     if (!product) {

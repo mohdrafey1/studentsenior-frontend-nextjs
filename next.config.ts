@@ -1,6 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+    async headers() {
+        return [{ source: '/sw.js', headers: [
+            { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+            { key: 'Service-Worker-Allowed', value: '/' },
+            { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+        ] }];
+    },
     // Reduce initial JS by improving tree-shaking for icon libs and other ESM packages
     experimental: {
         optimizePackageImports: ['lucide-react'],
@@ -10,10 +17,6 @@ const nextConfig: NextConfig = {
     reactStrictMode: true,
     images: {
         remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '**',
-            },
             {
                 protocol: 'https',
                 hostname: 'firebasestorage.googleapis.com',
