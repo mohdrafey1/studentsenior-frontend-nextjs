@@ -19,12 +19,13 @@ interface DetailPageNavbarProps {
     fullPath?: string;
 }
 
+// Each issue type maps to the reason the support inbox files the report under.
 const ISSUE_TYPES = [
-    'Broken link / Download error',
-    'Incorrect or outdated content',
-    'Poor quality / Unreadable',
-    'Copyright or privacy concern',
-    'Other issue',
+    { label: 'Broken link / Download error', reason: 'broken' },
+    { label: 'Incorrect or outdated content', reason: 'incorrect' },
+    { label: 'Poor quality / Unreadable', reason: 'poor-quality' },
+    { label: 'Copyright or privacy concern', reason: 'copyright' },
+    { label: 'Other issue', reason: 'other' },
 ];
 
 const formatPathName = (rawPath?: string) => {
@@ -64,22 +65,13 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     const [currentUrl, setCurrentUrl] = useState<string>('');
     const router = useRouter();
 
-    const [formData, setFormData] = useState({
-        email: 'complain@studentsenior.com',
-        subject: '',
-        description: '',
-    });
+    const [formData, setFormData] = useState({ description: '' });
     const [canGoBack, setCanGoBack] = useState(false);
 
     // Initialize subject, URL, and history detection on client mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const url = window.location.href;
-            setCurrentUrl(url);
-            setFormData((prev) => ({
-                ...prev,
-                subject: 'Reported URL: ' + url,
-            }));
+            setCurrentUrl(window.location.href);
             const hasHistory =
                 (window.history.state &&
                     typeof window.history.state.idx === 'number' &&
@@ -162,27 +154,8 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
         }
     };
 
-    const handleCategoryClick = (cat: string) => {
-        if (selectedCategory === cat) {
-            setSelectedCategory('');
-            setFormData((prev) => ({
-                ...prev,
-                description: prev.description.replace(`[${cat}] `, ''),
-            }));
-            return;
-        }
-
-        setSelectedCategory(cat);
-        setFormData((prev) => {
-            let updated = prev.description;
-            if (selectedCategory && updated.startsWith(`[${selectedCategory}] `)) {
-                updated = updated.replace(`[${selectedCategory}] `, '');
-            }
-            return {
-                ...prev,
-                description: `[${cat}] ${updated}`.trimStart(),
-            };
-        });
+    const handleCategoryClick = (reason: string) => {
+        setSelectedCategory((current) => (current === reason ? '' : reason));
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -198,17 +171,35 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(api.contactus.createContactus, {
+            // Signed-in students can follow the report under Support.
+            const response = await fetch(api.support.tickets, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    category: 'content-report',
+                    message: formData.description.trim(),
+                    context: {
+                        url: `${window.location.origin}${window.location.pathname}`,
+                        platform: 'web',
+                        ...(selectedCategory
+                            ? { reason: selectedCategory }
+                            : {}),
+                    },
+                }),
             });
 
             if (response.ok) {
-                toast.success('Thank you! Your report has been submitted.');
-                setFormData((prev) => ({ ...prev, description: '' }));
+                const body = await response.json().catch(() => null);
+                const number = body?.data?.ticket?.ticketNumber;
+                toast.success(
+                    number
+                        ? `Thank you! Report #${number} has been submitted.`
+                        : 'Thank you! Your report has been submitted.',
+                );
+                setFormData({ description: '' });
                 setSelectedCategory('');
                 setShowReportModal(false);
             } else {
@@ -341,13 +332,16 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
                                 <div className='flex flex-wrap gap-1.5'>
                                     {ISSUE_TYPES.map((type) => {
                                         const isSelected =
-                                            selectedCategory === type;
+                                            selectedCategory === type.reason;
                                         return (
                                             <button
-                                                key={type}
+                                                key={type.reason}
                                                 type='button'
+                                                aria-pressed={isSelected}
                                                 onClick={() =>
-                                                    handleCategoryClick(type)
+                                                    handleCategoryClick(
+                                                        type.reason,
+                                                    )
                                                 }
                                                 className={`text-xs px-2.5 py-1.5 rounded-lg border transition-all duration-150 ${
                                                     isSelected
@@ -355,7 +349,7 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
                                                         : 'bg-[#faf9f8] dark:bg-[#262626] text-[#615d59] dark:text-[#a39e98] border-[#e6e6e6] dark:border-[#2f2f2f] hover:text-[#101828] dark:hover:text-white hover:bg-[#f0eee6] dark:hover:bg-[#303030]'
                                                 }`}
                                             >
-                                                {type}
+                                                {type.label}
                                             </button>
                                         );
                                     })}

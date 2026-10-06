@@ -142,8 +142,15 @@ export const api = {
             `${API_BASE_URL}/resource/videos/${subjectCode}/${slug}`,
     },
 
-    contactus: {
-        createContactus: `${API_BASE_URL}/contactus`,
+    support: {
+        tickets: `${API_BASE_URL}/support/tickets`,
+        ticket: (id: string) =>
+            `${API_BASE_URL}/support/tickets/${encodeURIComponent(id)}`,
+        messages: (id: string) =>
+            `${API_BASE_URL}/support/tickets/${encodeURIComponent(id)}/messages`,
+        resolve: (id: string) =>
+            `${API_BASE_URL}/support/tickets/${encodeURIComponent(id)}/resolve`,
+        unreadCount: `${API_BASE_URL}/support/unread-count`,
     },
 
     aws: {

@@ -1,10 +1,10 @@
-import React from 'react';
-import ContactUsForm from './ContactUsForm';
+import React, { Suspense } from 'react';
 import { Mail, Clock } from 'lucide-react';
+import SupportRequestForm from '@/components/Support/SupportRequestForm';
 
 export const metadata = {
-    title: 'Contact Us - Student Senior',
-    description: 'Get in touch with the Student Senior team for support, feedback, and questions.',
+    title: 'Help & Support - Student Senior',
+    description: 'Get help from the Student Senior team with your account, payments, notes and PYQs, or send us feedback.',
 };
 
 const ContactUs = () => {
@@ -14,10 +14,10 @@ const ContactUs = () => {
                 {/* Header */}
                 <div className='text-center mb-8'>
                     <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191919] dark:text-[#ececec] mb-2.5'>
-                        Get in Touch
+                        Help & Support
                     </h1>
                     <p className='text-xs sm:text-sm text-[#787774] dark:text-[#9b9a97] max-w-lg mx-auto leading-relaxed'>
-                        Have a question, feedback, or need help? Send us a message and our team will get back to you shortly.
+                        Have a question, a problem or an idea? Send us a message and we’ll reply. If you’re signed in, you can follow the whole conversation here.
                     </p>
                 </div>
 
@@ -55,8 +55,10 @@ const ContactUs = () => {
                     </div>
                 </div>
 
-                {/* Contact Form */}
-                <ContactUsForm />
+                {/* Support request form; reads ?ref= for follow-ups */}
+                <Suspense fallback={null}>
+                    <SupportRequestForm />
+                </Suspense>
             </div>
         </div>
     );

@@ -74,7 +74,7 @@ export const faqs: FAQ[] = [
     },
     {
         question: 'How do I contact support?',
-        answer: "We offer multiple ways to get help! You can reach us through our 'Contact Us' page, email us directly at studentsenior.help@gmail.com, or use our in-app chat support. Our team typically responds within 24 hours during business days. For urgent issues, please mention 'URGENT' in your subject line.",
+        answer: "Send us a message from the Help & Support page (Contact Us), or from Help & support in the app. If you're signed in, you can follow the whole conversation under Support, and we email you whenever we reply. You can also write to studentsenior.help@gmail.com. We usually reply within 24 hours.",
         category: 'Support',
     },
     {
