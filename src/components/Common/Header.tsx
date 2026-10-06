@@ -16,6 +16,7 @@ import {
     Wallet,
     ChevronDown,
     Sparkles,
+    LifeBuoy,
 } from 'lucide-react';
 import { signOut } from '@/redux/slices/userSlice';
 import { api } from '@/config/apiUrls';
@@ -30,6 +31,25 @@ const Header: React.FC = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { currentUser } = useSelector((state: RootState) => state.user);
+    const [supportUnread, setSupportUnread] = useState(0);
+    const onSupportPage = pathname.startsWith('/support');
+
+    // Unread support replies, refreshed when entering or leaving Support.
+    useEffect(() => {
+        if (!currentUser) {
+            setSupportUnread(0);
+            return;
+        }
+        const controller = new AbortController();
+        fetch(api.support.unreadCount, {
+            credentials: 'include',
+            signal: controller.signal,
+        })
+            .then((response) => (response.ok ? response.json() : null))
+            .then((body) => setSupportUnread(body?.data?.unread || 0))
+            .catch(() => undefined);
+        return () => controller.abort();
+    }, [currentUser, onSupportPage]);
 
     // Scroll detection for subtle elevation
     useEffect(() => {
@@ -238,6 +258,13 @@ const Header: React.FC = () => {
                                                 className='rounded-full object-cover ring-1 ring-[#e6e6e6] dark:ring-[#383838]'
                                             />
                                             <span className='absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#1aae39] border-2 border-white dark:border-[#202020] rounded-full' />
+                                            {supportUnread > 0 && (
+                                                <span className='absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#0075de] border-2 border-white dark:border-[#202020] rounded-full'>
+                                                    <span className='sr-only'>
+                                                        New support reply
+                                                    </span>
+                                                </span>
+                                            )}
                                         </div>
                                         <span className='text-sm font-semibold text-[#000000] dark:text-[#f0f0f0] max-w-[100px] truncate'>
                                             {currentUser.username}
@@ -325,6 +352,29 @@ const Header: React.FC = () => {
                                                         </div>
                                                         <span>Wallet & Credits</span>
                                                     </div>
+                                                </Link>
+
+                                                <Link
+                                                    prefetch={false}
+                                                    href='/support'
+                                                    onClick={() =>
+                                                        setIsProfileDropdownOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                    className='flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#31302e] dark:text-[#ededed] hover:bg-[#f6f5f4] dark:hover:bg-[#282828] transition-colors group'
+                                                >
+                                                    <div className='flex items-center gap-2.5'>
+                                                        <div className='p-1.5 rounded-lg bg-[#fff4e5] dark:bg-[#3a2a12] text-[#dd5b00] dark:text-[#f5b45c] group-hover:scale-105 transition-transform'>
+                                                            <LifeBuoy className='w-3.5 h-3.5' />
+                                                        </div>
+                                                        <span>Support</span>
+                                                    </div>
+                                                    {supportUnread > 0 && (
+                                                        <span className='text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#eaf3fd] text-[#0075de] dark:bg-[#183153] dark:text-[#62aef0]'>
+                                                            {supportUnread} new
+                                                        </span>
+                                                    )}
                                                 </Link>
 
                                                 <Link
@@ -537,6 +587,20 @@ const Header: React.FC = () => {
                             >
                                 <Wallet className='w-4 h-4 text-[#8a3fd6]' />
                                 Wallet
+                            </Link>
+                            <Link
+                                prefetch={false}
+                                href='/support'
+                                onClick={() => setIsMenuOpen(false)}
+                                className='flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#31302e] dark:text-[#d3d1cb] hover:bg-[#f6f5f4] dark:hover:bg-[#2a2a2a] transition-colors duration-150'
+                            >
+                                <LifeBuoy className='w-4 h-4 text-[#dd5b00]' />
+                                Support
+                                {supportUnread > 0 && (
+                                    <span className='ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#eaf3fd] text-[#0075de] dark:bg-[#183153] dark:text-[#62aef0]'>
+                                        {supportUnread} new
+                                    </span>
+                                )}
                             </Link>
                             <button
                                 onClick={() => {
