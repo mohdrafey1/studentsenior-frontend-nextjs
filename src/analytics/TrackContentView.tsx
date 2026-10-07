@@ -16,15 +16,14 @@ export default function TrackContentView({
     const pathname = usePathname();
     const params = useParams();
     const template = routeTemplate(pathname || '/', params, staticSegments);
-    const college = typeof params.slug === 'string' ? params.slug : undefined;
     const last = useRef('');
     useEffect(() => {
         if (!validContent(type, id)) return;
         const key = `${pathname}:${type}:${id}`;
         if (last.current === key) return;
         last.current = key;
-        analytics.screen(template, college, pathname);
+        analytics.screen(template, undefined, pathname);
         analytics.track('content_view', { type, id, source: 'unknown' });
-    }, [type, id, pathname, template, college]);
+    }, [type, id, pathname, template]);
     return null;
 }

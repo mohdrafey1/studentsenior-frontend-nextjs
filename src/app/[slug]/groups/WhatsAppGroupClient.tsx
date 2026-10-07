@@ -1,5 +1,5 @@
 'use client';
-import { analytics } from '@/analytics';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -104,6 +104,8 @@ const WhatsAppGroupClient = ({
     );
 
     // Fetch groups from backend
+    const trackSearch = useSearchTracker('group', searchTerm);
+
     const fetchGroups = useCallback(async () => {
         setLoading(true);
         try {
@@ -127,7 +129,7 @@ const WhatsAppGroupClient = ({
             if (!res.ok)
                 throw new Error(data.message || 'Failed to fetch groups');
             setGroups(data.data.groups || []);
-            if (searchTerm.trim()) analytics.track('search', { scope: 'group', queryLength: searchTerm.trim().length, resultCount: (data.data.groups || []).length });
+            trackSearch(searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
@@ -135,7 +137,7 @@ const WhatsAppGroupClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, selectedDomain]);
+    }, [trackSearch, collegeName, page, searchTerm, selectedDomain]);
 
     // Only fetch when filters change, not on initial mount
     useEffect(() => {

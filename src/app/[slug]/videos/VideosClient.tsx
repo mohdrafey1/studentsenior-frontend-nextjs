@@ -1,5 +1,5 @@
 'use client';
-import { analytics } from '@/analytics';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -107,6 +107,8 @@ const VideosClient = ({
         setIsInitialMount(false);
     }, []);
 
+    const trackSearch = useSearchTracker('video', filterState.searchTerm);
+
     const fetchVideos = useCallback(async () => {
         setLoading(true);
         try {
@@ -133,7 +135,7 @@ const VideosClient = ({
 
             const data = await response.json();
             setVideos(data.data.videos || []);
-            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'video', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.videos || []).length });
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching videos:', error);
@@ -142,6 +144,7 @@ const VideosClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.searchTerm,
         filterState.courseFilter,
@@ -445,7 +448,7 @@ const VideosClient = ({
                                 <p className='text-sm text-[#615d59] dark:text-[#a09e9a] mb-6 leading-relaxed'>
                                     {hasActiveFilters
                                         ? "We couldn't find any videos matching your filters. Try adjusting them."
-                                        : "Be the first to share your knowledge and add a video for this college!"}
+                                        : 'Be the first to share your knowledge and add a video for this college!'}
                                 </p>
                                 <button
                                     onClick={openAddModal}

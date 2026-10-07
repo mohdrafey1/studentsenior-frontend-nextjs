@@ -28,6 +28,7 @@ export async function getCollegeSections(
         });
         if (!res.ok) return null;
         const data = await res.json();
+        if (!data?.data?._id || data.data.slug !== slug) return null;
         return {
             ...DEFAULT_SECTIONS,
             ...(data?.data?.sections || {}),

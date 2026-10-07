@@ -1,5 +1,5 @@
 'use client';
-import { analytics } from '@/analytics';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -102,6 +102,8 @@ const SyllabusClient = ({
         setIsInitialMount(false);
     }, []);
 
+    const trackSearch = useSearchTracker('syllabus', filterState.searchTerm);
+
     const fetchSyllabus = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -129,7 +131,7 @@ const SyllabusClient = ({
             }
 
             setSyllabus(data?.data?.syllabus || []);
-            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'syllabus', queryLength: filterState.searchTerm.trim().length, resultCount: (data?.data?.syllabus || []).length });
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data?.data?.pagination || null);
         } catch (err) {
             console.error('Error fetching syllabus:', err);
@@ -141,6 +143,7 @@ const SyllabusClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.searchTerm,
         filterState.courseFilter,
@@ -364,7 +367,8 @@ const SyllabusClient = ({
                                                         Units
                                                     </span>
                                                     <span className='text-xs font-semibold text-[#101828] dark:text-[#ededed]'>
-                                                        {item.units?.length || 0}
+                                                        {item.units?.length ||
+                                                            0}
                                                     </span>
                                                 </div>
                                             </div>
@@ -407,7 +411,8 @@ const SyllabusClient = ({
                         No Syllabus Found
                     </p>
                     <p className='text-sm text-[#615d59] dark:text-[#a09e9a] max-w-md text-center'>
-                        We couldn&apos;t find any syllabus matching your current filters. Try adjusting your search criteria.
+                        We couldn&apos;t find any syllabus matching your current
+                        filters. Try adjusting your search criteria.
                     </p>
                     {hasActiveFilters && (
                         <button

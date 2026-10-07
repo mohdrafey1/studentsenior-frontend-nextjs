@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { api } from '@/config/apiUrls';
 import { signInSuccess, signOut } from '@/redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
+import { startAuthCheck } from '@/analytics/authCheck';
 
 export const UserInitProvider = ({
     onReady,
@@ -11,64 +12,27 @@ export const UserInitProvider = ({
     onReady: (ready: boolean) => void;
 }) => {
     const dispatch = useDispatch();
-
     useEffect(() => {
-        let settled = false;
-        let pending = false;
-        let disposed = false;
-        let retry: ReturnType<typeof setTimeout>;
-        const controller = new AbortController();
-        const fetchUser = async () => {
-            if (settled || pending || disposed) return;
-            pending = true;
-            try {
-                const response = await fetch(api.auth.userDetail, {
-                    method: 'GET',
-                    credentials: 'include',
-                    signal: controller.signal,
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        settled = true;
-                        dispatch(signOut());
-                        onReady(true);
-                        return;
-                    }
-                    throw new Error('Failed to fetch user data');
-                }
-
-                const userData = await response.json();
-                if (disposed) return;
-                settled = true;
-                dispatch(signInSuccess(userData));
-                onReady(true);
-            } catch (error) {
-                if (disposed) return;
-                console.error('Error fetching user:', error);
-                retry = setTimeout(() => {
-                    void fetchUser();
-                }, 30000);
-                // Keep a valid local session on network/server outages.
-            } finally {
-                pending = false;
-            }
-        };
-
-        void fetchUser();
+        const check = startAuthCheck({
+            url: api.auth.userDetail,
+            signedOut: () => {
+                dispatch(signOut());
+            },
+            signedIn: (user) => {
+                dispatch(signInSuccess(user));
+            },
+            ready: () => onReady(true),
+        });
         const resume = () => {
-            if (document.visibilityState !== 'hidden') void fetchUser();
+            if (document.visibilityState !== 'hidden') check.resume();
         };
         window.addEventListener('online', resume);
         document.addEventListener('visibilitychange', resume);
         return () => {
-            disposed = true;
-            controller.abort();
-            clearTimeout(retry);
+            check.dispose();
             window.removeEventListener('online', resume);
             document.removeEventListener('visibilitychange', resume);
         };
     }, [dispatch, onReady]);
-
     return null;
 };

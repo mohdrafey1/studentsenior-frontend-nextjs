@@ -1,5 +1,6 @@
 'use client';
 import { analytics } from '@/analytics';
+import { shareAndTrack } from '@/analytics/share';
 import TrackContentView from '@/analytics/TrackContentView';
 import { IVideo } from '@/utils/interface';
 
@@ -13,18 +14,26 @@ interface VideoDetailClientProps {
 
 const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
     const handleShare = async () => {
-        analytics.track('share', { type: 'video', id: video._id });
         try {
-            await navigator.share({
-                title: video.title,
-                text:
-                    video.description || `Check out this video: ${video.title}`,
-                url: window.location.href,
-            });
+            await shareAndTrack(
+                () =>
+                    navigator.share({
+                        title: video.title,
+                        text:
+                            video.description ||
+                            `Check out this video: ${video.title}`,
+                        url: window.location.href,
+                    }),
+                () => {
+                    analytics.track('share', { type: 'video', id: video._id });
+                },
+            );
         } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') return;
             // Fallback to copying URL
             console.log(error);
             await navigator.clipboard.writeText(window.location.href);
+            analytics.track('share', { type: 'video', id: video._id });
             toast.success('Link copied to clipboard!');
         }
     };
@@ -50,10 +59,13 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
 
     return (
         <div className='min-h-screen bg-white dark:bg-[#191919]'>
-            <TrackContentView type="video" id={video._id} />
-            <DetailPageNavbar contentType="video" contentId={video._id} path='videos' />
+            <TrackContentView type='video' id={video._id} />
+            <DetailPageNavbar
+                contentType='video'
+                contentId={video._id}
+                path='videos'
+            />
             <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8'>
-                
                 {/* Title and Share Header */}
                 <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4'>
                     <div className='flex-1'>
@@ -136,13 +148,14 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
                                 </p>
                             </div>
                             <p className='font-semibold text-[#101828] dark:text-[#ededed]'>
-                                {new Date(
-                                    video.createdAt,
-                                ).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                })}
+                                {new Date(video.createdAt).toLocaleDateString(
+                                    'en-US',
+                                    {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    },
+                                )}
                             </p>
                         </div>
 

@@ -151,7 +151,7 @@ const LazyPDFPage = ({
     );
 };
 
-const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
+const PyqDocument: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     const { slug } = useParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -208,20 +208,34 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
             setHasAccess(false);
             try {
                 const metadata = await fetch(api.pyq.getPyqBySlug(pyq.slug), {
-                    credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+                    credentials: 'include',
+                    cache: 'no-store',
+                    signal: AbortSignal.any([
+                        controller.signal,
+                        AbortSignal.timeout(15000),
+                    ]),
                 });
                 const detail = await metadata.json();
-                if (!metadata.ok || detail.success !== true) throw new Error('Unable to check document access.');
+                if (!metadata.ok || detail.success !== true)
+                    throw new Error('Unable to check document access.');
                 const allowed = detail.data.hasAccess === true;
                 if (controller.signal.aborted) return;
                 setHasAccess(allowed);
                 if (!allowed) return;
                 const response = await fetch(
                     `${api.aws.getSignedUrl}?resourceType=pyq&resourceId=${encodeURIComponent(pyq._id)}`,
-                    { credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) },
+                    {
+                        credentials: 'include',
+                        cache: 'no-store',
+                        signal: AbortSignal.any([
+                            controller.signal,
+                            AbortSignal.timeout(15000),
+                        ]),
+                    },
                 );
                 const data = await response.json();
-                if (!response.ok || data.success !== true) throw new Error(data.message || 'Unable to open document.');
+                if (!response.ok || data.success !== true)
+                    throw new Error(data.message || 'Unable to open document.');
                 loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
                 const document = await loadingTask.promise;
                 if (!controller.signal.aborted) {
@@ -229,13 +243,17 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     setPdfDoc(document);
                 }
             } catch {
-                if (!controller.signal.aborted) setError('Failed to load PDF document. Please try again.');
+                if (!controller.signal.aborted)
+                    setError('Failed to load PDF document. Please try again.');
             } finally {
                 if (!controller.signal.aborted) setIsLoading(false);
             }
         };
         void loadDocument();
-        return () => { controller.abort(); void loadingTask?.destroy(); };
+        return () => {
+            controller.abort();
+            void loadingTask?.destroy();
+        };
     }, [pyq._id, pyq.slug, ownerId, loadAttempt]);
 
     useEffect(() => {
@@ -352,11 +370,9 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
 
-
     if (error) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
-                <TrackContentView type="pyq" id={pyq._id} />
                 <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 text-center max-w-md w-full'>
                     <div className='w-20 h-20 bg-[#fef3f2] dark:bg-[#381a1a] rounded-full flex items-center justify-center mx-auto mb-6'>
                         <FileText className='w-10 h-10 text-[#d92d20]' />
@@ -367,7 +383,12 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                     <p className='text-[#475467] dark:text-[#a09e9a] mb-6 text-sm'>
                         {error}
                     </p>
-                    <button className="p-3 underline" onClick={() => setLoadAttempt(value => value + 1)}>Retry</button>
+                    <button
+                        className='p-3 underline'
+                        onClick={() => setLoadAttempt((value) => value + 1)}
+                    >
+                        Retry
+                    </button>
                     <button
                         onClick={handleGoBack}
                         className='inline-flex items-center gap-2 px-6 py-2.5 bg-[#0075de] text-white font-semibold rounded-xl hover:bg-[#0062bd] transition-colors'
@@ -383,7 +404,6 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     if (isLoading && !pdfDoc) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
-                <TrackContentView type="pyq" id={pyq._id} />
                 <div className='text-center'>
                     <div className='w-14 h-14 border-3 border-[#0075de] border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
                     <h2 className='text-xl font-bold text-[#101828] dark:text-white mb-2'>
@@ -408,7 +428,11 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
         try {
             const response = await fetch(
                 `${api.aws.getSignedUrl}?resourceType=pyq&resourceId=${encodeURIComponent(pyq._id)}`,
-                { credentials: 'include', cache: 'no-store', signal: AbortSignal.timeout(15000) },
+                {
+                    credentials: 'include',
+                    cache: 'no-store',
+                    signal: AbortSignal.timeout(15000),
+                },
             );
             const data = await response.json();
             if (!response.ok) {
@@ -430,8 +454,12 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
-            <TrackContentView type="pyq" id={pyq._id} />
-            <DetailPageNavbar contentType="pyq" contentId={pyq._id} path='pyqs' fullPath={`/${slug}/pyqs`} />
+            <DetailPageNavbar
+                contentType='pyq'
+                contentId={pyq._id}
+                path='pyqs'
+                fullPath={`/${slug}/pyqs`}
+            />
             {/* Document Info Section (Compact Design) */}
             <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>
                 <div className='bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-5 mb-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'>
@@ -514,7 +542,9 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                 d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
                                             ></path>
                                         </svg>
-                                        <span>{isSaved ? 'Saved' : 'Save'}</span>
+                                        <span>
+                                            {isSaved ? 'Saved' : 'Save'}
+                                        </span>
                                     </>
                                 )}
                             </button>
@@ -534,50 +564,51 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                 {/* PDF Viewer Section */}
                 <div className='pdf-viewer max-w-4xl mx-auto'>
                     {isPaidAndNotOwner ? (
-                            <>
-                                {/* Purchase CTA */}
-                                <div className='bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-sky-200 dark:border-sky-700 p-8 text-center'>
-                                    <div className='w-20 h-20 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
-                                        <Lock className='w-10 h-10 text-sky-600 dark:text-sky-400' />
-                                    </div>
-                                    <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-4'>
-                                        Unlock Complete PYQ
-                                    </h3>
-                                    <p className='text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto'>
-                                        Purchase to open and download the complete document.
-                                    </p>
-                                    <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                                        <button
-                                            onClick={() => {
-                                                if (!currentUser) {
-                                                    router.push(
-                                                        `/sign-in?from=${pathname}`,
-                                                    );
-                                                } else {
-                                                    setIsPaymentModalOpen(true);
-                                                }
-                                            }}
-                                            className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
-                                        >
-                                            <ShoppingCart className='w-5 h-5' />
-                                            Purchase for {pyq.price} points
-                                        </button>
-                                    </div>
+                        <>
+                            {/* Purchase CTA */}
+                            <div className='bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-sky-200 dark:border-sky-700 p-8 text-center'>
+                                <div className='w-20 h-20 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-6'>
+                                    <Lock className='w-10 h-10 text-sky-600 dark:text-sky-400' />
                                 </div>
-                            </>
+                                <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-4'>
+                                    Unlock Complete PYQ
+                                </h3>
+                                <p className='text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto'>
+                                    Purchase to open and download the complete
+                                    document.
+                                </p>
+                                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+                                    <button
+                                        onClick={() => {
+                                            if (!currentUser) {
+                                                router.push(
+                                                    `/sign-in?from=${pathname}`,
+                                                );
+                                            } else {
+                                                setIsPaymentModalOpen(true);
+                                            }
+                                        }}
+                                        className='inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-500 text-white font-semibold rounded-xl hover:from-sky-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                    >
+                                        <ShoppingCart className='w-5 h-5' />
+                                        Purchase for {pyq.price} points
+                                    </button>
+                                </div>
+                            </div>
+                        </>
                     ) : pdfDoc ? (
-                            <>
-                                {Array.from({ length: pdfDoc.numPages }).map(
-                                    (_, index) => (
-                                        <LazyPDFPage
-                                            key={`${pyq._id}:${ownerId || "guest"}:${index}`}
-                                            pdf={pdfDoc}
-                                            pageNum={index + 1}
-                                            scale={1.5}
-                                        />
-                                    ),
-                                )}
-                            </>
+                        <>
+                            {Array.from({ length: pdfDoc.numPages }).map(
+                                (_, index) => (
+                                    <LazyPDFPage
+                                        key={`${pyq._id}:${ownerId || 'guest'}:${index}`}
+                                        pdf={pdfDoc}
+                                        pageNum={index + 1}
+                                        scale={1.5}
+                                    />
+                                ),
+                            )}
+                        </>
                     ) : (
                         <div className='flex justify-center items-center min-h-[400px] bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60'>
                             <div className='text-center'>
@@ -685,7 +716,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                 <div className='mt-12 mb-8'>
                     <div className='flex items-center gap-3 mb-6'>
                         <div className='w-10 h-10 rounded-xl bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center'>
-                             <BookOpen className='w-5 h-5' />
+                            <BookOpen className='w-5 h-5' />
                         </div>
                         <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                             Explore More Resources
@@ -798,17 +829,26 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                         <div className='flex items-start justify-between mb-4'>
                                                             <div>
                                                                 <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
-                                                                    {suggestedPyq.year}
+                                                                    {
+                                                                        suggestedPyq.year
+                                                                    }
                                                                 </h3>
                                                                 <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
-                                                                    {suggestedPyq.examType}
+                                                                    {
+                                                                        suggestedPyq.examType
+                                                                    }
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                                                             <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
                                                                 <Eye className='w-3.5 h-3.5' />
-                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                                <span>
+                                                                    {
+                                                                        suggestedPyq.clickCounts
+                                                                    }{' '}
+                                                                    views
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -838,17 +878,26 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                         <div className='flex items-start justify-between mb-4'>
                                                             <div>
                                                                 <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
-                                                                    {suggestedPyq.year}
+                                                                    {
+                                                                        suggestedPyq.year
+                                                                    }
                                                                 </h3>
                                                                 <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
-                                                                    {suggestedPyq.examType}
+                                                                    {
+                                                                        suggestedPyq.examType
+                                                                    }
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                                                             <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
                                                                 <Eye className='w-3.5 h-3.5' />
-                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                                <span>
+                                                                    {
+                                                                        suggestedPyq.clickCounts
+                                                                    }{' '}
+                                                                    views
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -878,22 +927,35 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
                                                         <div className='flex items-start justify-between mb-4'>
                                                             <div>
                                                                 <h3 className='text-xl font-bold text-[#101828] dark:text-white leading-none tracking-tight group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors'>
-                                                                    {suggestedPyq.year}
+                                                                    {
+                                                                        suggestedPyq.year
+                                                                    }
                                                                 </h3>
                                                                 <p className='text-xs font-semibold text-[#615d59] dark:text-[#9ea3ae] uppercase tracking-wider mt-2'>
-                                                                    {suggestedPyq.examType}
+                                                                    {
+                                                                        suggestedPyq.examType
+                                                                    }
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div className='mb-3'>
                                                             <h4 className='font-semibold text-[#101828] dark:text-white text-sm line-clamp-2'>
-                                                                {suggestedPyq.subject.subjectName}
+                                                                {
+                                                                    suggestedPyq
+                                                                        .subject
+                                                                        .subjectName
+                                                                }
                                                             </h4>
                                                         </div>
                                                         <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                                                             <div className='flex items-center gap-1 text-[11px] font-medium text-[#8c8883] dark:text-[#787672]'>
                                                                 <Eye className='w-3.5 h-3.5' />
-                                                                <span>{suggestedPyq.clickCounts} views</span>
+                                                                <span>
+                                                                    {
+                                                                        suggestedPyq.clickCounts
+                                                                    }{' '}
+                                                                    views
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -927,4 +989,11 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     );
 };
 
-export default PyqDetailClient;
+export default function PyqDetailClient(props: PyqDetailClientProps) {
+    return (
+        <>
+            <TrackContentView type='pyq' id={props.pyq._id} />
+            <PyqDocument {...props} />
+        </>
+    );
+}

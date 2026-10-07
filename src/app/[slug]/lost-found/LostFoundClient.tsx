@@ -1,5 +1,5 @@
 'use client';
-import { analytics } from '@/analytics';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useCallback,
     useEffect,
@@ -97,6 +97,8 @@ const LostFoundClient = ({
     }, [searchInput]);
 
     // Fetch items from backend
+    const trackSearch = useSearchTracker('lostfound', searchTerm);
+
     const fetchItems = useCallback(async () => {
         setLoading(true);
         try {
@@ -118,7 +120,7 @@ const LostFoundClient = ({
                 throw new Error(data.message || 'Failed to fetch items');
 
             setItems(data.data.items || []);
-            if (searchTerm.trim()) analytics.track('search', { scope: 'lostfound', queryLength: searchTerm.trim().length, resultCount: (data.data.items || []).length });
+            trackSearch(searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
@@ -126,7 +128,7 @@ const LostFoundClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, typeFilter, statusFilter]);
+    }, [trackSearch, collegeName, page, searchTerm, typeFilter, statusFilter]);
 
     // Only fetch when filters change, not on initial mount
     useEffect(() => {
@@ -299,7 +301,9 @@ const LostFoundClient = ({
                                     type='text'
                                     placeholder='Search by item name or description...'
                                     value={searchInput}
-                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onChange={(e) =>
+                                        setSearchInput(e.target.value)
+                                    }
                                     className='w-full bg-transparent outline-none text-xs sm:text-sm text-[#101828] dark:text-[#ededed] placeholder-[#8c8883] dark:placeholder-[#6b6965]'
                                     aria-label='Search items'
                                 />
@@ -345,7 +349,9 @@ const LostFoundClient = ({
                             >
                                 <option value=''>All Status</option>
                                 <option value='open'>Open (Active)</option>
-                                <option value='closed'>Closed (Resolved)</option>
+                                <option value='closed'>
+                                    Closed (Resolved)
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -454,4 +460,3 @@ const LostFoundClient = ({
 };
 
 export default LostFoundClient;
-

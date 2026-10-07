@@ -1,5 +1,6 @@
 'use client';
 import { analytics } from '@/analytics';
+import { shareAndTrack } from '@/analytics/share';
 import TrackContentView from '@/analytics/TrackContentView';
 
 import React, { useState, useEffect } from 'react';
@@ -75,16 +76,25 @@ export default function QuickNoteClient({
     }, [quicknoteSlug]);
 
     const handleShare = async () => {
-        analytics.track('share', { type: 'quicknote', id: note._id });
         try {
             if (navigator.share) {
-                await navigator.share({
-                    title: note.title,
-                    text: `Check out this quick note on ${note.title}`,
-                    url: window.location.href,
-                });
+                await shareAndTrack(
+                    () =>
+                        navigator.share({
+                            title: note.title,
+                            text: `Check out this quick note on ${note.title}`,
+                            url: window.location.href,
+                        }),
+                    () => {
+                        analytics.track('share', {
+                            type: 'quicknote',
+                            id: note._id,
+                        });
+                    },
+                );
             } else {
                 await navigator.clipboard.writeText(window.location.href);
+                analytics.track('share', { type: 'quicknote', id: note._id });
                 toast.success('Link copied to clipboard!');
             }
         } catch (error) {
@@ -94,8 +104,12 @@ export default function QuickNoteClient({
 
     return (
         <div className='min-h-screen bg-sky-50 dark:bg-gray-900'>
-            <TrackContentView type="quicknote" id={note._id} />
-            <DetailPageNavbar contentType="quicknote" contentId={note._id} path='quicknotes' />
+            <TrackContentView type='quicknote' id={note._id} />
+            <DetailPageNavbar
+                contentType='quicknote'
+                contentId={note._id}
+                path='quicknotes'
+            />
             <AppPromotionModal isOpen={showAppModal} />
 
             <main

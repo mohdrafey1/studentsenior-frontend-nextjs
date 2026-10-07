@@ -10,10 +10,9 @@ export default function AnalyticsProvider() {
     const pathname = usePathname();
     const params = useParams();
     const template = routeTemplate(pathname || '/', params, staticSegments);
-    const college = typeof params.slug === 'string' ? params.slug : undefined;
     useEffect(() => analytics.start(), []);
     useEffect(() => {
-        analytics.screen(template, college, pathname);
-    }, [template, college, pathname]);
+        analytics.screen(template, undefined, pathname);
+    }, [template, pathname]);
     return null;
 }

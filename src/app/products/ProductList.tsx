@@ -1,8 +1,18 @@
 'use client';
 import { analytics } from '@/analytics';
+import { shareAndTrack } from '@/analytics/share';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, ExternalLink, Filter, Share2, X, ShoppingCart, Tag as TagIcon } from 'lucide-react';
+import {
+    Search,
+    ExternalLink,
+    Filter,
+    Share2,
+    X,
+    ShoppingCart,
+    Tag as TagIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/config/apiUrls';
 import { useSearchParams } from 'next/navigation';
@@ -56,11 +66,15 @@ export default function ProductList({
         });
     }, [initialProducts, searchTerm, selectedCategory]);
 
+    const trackSearch = useSearchTracker('affiliate', searchTerm, true);
     useEffect(() => {
         if (!searchTerm.trim()) return;
-        const timer = setTimeout(() => analytics.track('search', { scope: 'affiliate', queryLength: searchTerm.trim().length, resultCount: filteredProducts.length }), 500);
+        const timer = setTimeout(
+            () => trackSearch(searchTerm, filteredProducts.length),
+            500,
+        );
         return () => clearTimeout(timer);
-    }, [searchTerm, filteredProducts.length]);
+    }, [searchTerm, filteredProducts.length, trackSearch]);
 
     const handleProductClick = async (productId: string) => {
         analytics.track('affiliate_click', { productId });
@@ -74,7 +88,6 @@ export default function ProductList({
     };
 
     const handleShare = async (product: IProduct) => {
-        analytics.track('share', { type: 'affiliate', id: product._id });
         const shareUrl = `${window.location.origin}/products?search=${encodeURIComponent(
             product.name,
         )}`;
@@ -86,13 +99,25 @@ export default function ProductList({
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                await shareAndTrack(
+                    () => navigator.share(shareData),
+                    () => {
+                        analytics.track('share', {
+                            type: 'affiliate',
+                            id: product._id,
+                        });
+                    },
+                );
             } catch (error) {
                 console.error('Error sharing:', error);
             }
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
+                analytics.track('share', {
+                    type: 'affiliate',
+                    id: product._id,
+                });
                 toast.success('Product link copied to clipboard!');
             } catch (error) {
                 console.error('Error copying to clipboard:', error);
@@ -156,9 +181,23 @@ export default function ProductList({
             {/* Results Count & Current Active Filters info */}
             <div className='flex items-center justify-between mb-6 text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] px-1'>
                 <span>
-                    Showing <strong className='text-[#101828] dark:text-white font-semibold'>{filteredProducts.length}</strong> {filteredProducts.length === 1 ? 'item' : 'items'}
-                    {selectedCategory !== 'All' && <span> in <span className='text-[#0075de] dark:text-[#62aef0] font-medium'>{selectedCategory}</span></span>}
-                    {searchTerm && <span> matching &ldquo;{searchTerm}&rdquo;</span>}
+                    Showing{' '}
+                    <strong className='text-[#101828] dark:text-white font-semibold'>
+                        {filteredProducts.length}
+                    </strong>{' '}
+                    {filteredProducts.length === 1 ? 'item' : 'items'}
+                    {selectedCategory !== 'All' && (
+                        <span>
+                            {' '}
+                            in{' '}
+                            <span className='text-[#0075de] dark:text-[#62aef0] font-medium'>
+                                {selectedCategory}
+                            </span>
+                        </span>
+                    )}
+                    {searchTerm && (
+                        <span> matching &ldquo;{searchTerm}&rdquo;</span>
+                    )}
                 </span>
 
                 {(searchTerm || selectedCategory !== 'All') && (
@@ -215,7 +254,8 @@ export default function ProductList({
                                 </h3>
 
                                 <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a8a5a0] line-clamp-2 leading-relaxed mb-3 min-h-[2.5rem]'>
-                                    {product.description || 'Verified student essential recommended for your course.'}
+                                    {product.description ||
+                                        'Verified student essential recommended for your course.'}
                                 </p>
 
                                 {/* Tags */}
@@ -260,7 +300,9 @@ export default function ProductList({
                                     href={product.buyLink}
                                     target='_blank'
                                     rel='noopener noreferrer'
-                                    onClick={() => handleProductClick(product._id)}
+                                    onClick={() =>
+                                        handleProductClick(product._id)
+                                    }
                                     className='inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg transition-all font-semibold text-xs sm:text-sm shadow-sm hover:shadow active:scale-[0.98]'
                                 >
                                     <span>Buy Now</span>
@@ -282,7 +324,8 @@ export default function ProductList({
                         No products found
                     </h3>
                     <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] max-w-sm mb-5 leading-relaxed'>
-                        We couldn&apos;t find any products matching your search or selected category.
+                        We couldn&apos;t find any products matching your search
+                        or selected category.
                     </p>
                     <button
                         onClick={() => {
@@ -298,4 +341,3 @@ export default function ProductList({
         </div>
     );
 }
-

@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useLayoutEffect } from 'react';
+import { registerCollege } from '@/analytics/college';
 import type { CollegeSections } from '@/utils/interface';
 
 interface CollegeLayoutClientProps {
@@ -15,10 +16,15 @@ interface CollegeLayoutClientProps {
 export default function CollegeLayoutClient({
     children,
     slug,
+    sections,
     collegeLinksComponent,
     collegeLink2Component,
 }: CollegeLayoutClientProps) {
     const pathname = usePathname();
+    useLayoutEffect(
+        () => (sections ? registerCollege(slug) : undefined),
+        [slug, sections],
+    );
 
     const hideCollegeLinks = pathname.startsWith(`/${slug}/test`);
 
