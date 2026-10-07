@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -172,6 +173,7 @@ const PyqsClient = ({
 
             const data = await response.json();
             setPyqs(data.data.pyqs || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'pyq', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.pyqs || []).length });
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching PYQs:', error);

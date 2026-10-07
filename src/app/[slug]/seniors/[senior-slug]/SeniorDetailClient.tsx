@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 import React from 'react';
 import { ISenior } from '@/utils/interface';
 import { capitalizeWords } from '@/utils/formatting';
@@ -62,7 +63,8 @@ const SeniorDetailClient: React.FC<SeniorDetailClientProps> = ({
 
     return (
         <>
-            <DetailPageNavbar
+            <TrackContentView type="senior" id={senior._id} />
+            <DetailPageNavbar contentType="senior" contentId={senior._id}
                 path='seniors'
                 fullPath={`/${collegeName}/seniors`}
             />

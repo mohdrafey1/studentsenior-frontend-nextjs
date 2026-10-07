@@ -1,6 +1,7 @@
 'use client';
+import { analytics } from '@/analytics';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, ExternalLink, Filter, Share2, X, ShoppingCart, Tag as TagIcon } from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/config/apiUrls';
@@ -55,7 +56,14 @@ export default function ProductList({
         });
     }, [initialProducts, searchTerm, selectedCategory]);
 
+    useEffect(() => {
+        if (!searchTerm.trim()) return;
+        const timer = setTimeout(() => analytics.track('search', { scope: 'affiliate', queryLength: searchTerm.trim().length, resultCount: filteredProducts.length }), 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm, filteredProducts.length]);
+
     const handleProductClick = async (productId: string) => {
+        analytics.track('affiliate_click', { productId });
         try {
             await fetch(`${api.affiliateProducts.trackClick(productId)}`, {
                 method: 'POST',
@@ -66,6 +74,7 @@ export default function ProductList({
     };
 
     const handleShare = async (product: IProduct) => {
+        analytics.track('share', { type: 'affiliate', id: product._id });
         const shareUrl = `${window.location.origin}/products?search=${encodeURIComponent(
             product.name,
         )}`;

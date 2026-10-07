@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -97,6 +98,7 @@ const Header: React.FC = () => {
 
     const handleSignOut = async () => {
         try {
+            await analytics.prepareIdentityChange();
             await fetch(api.auth.signout, {
                 method: 'POST',
                 credentials: 'include',
@@ -105,6 +107,7 @@ const Header: React.FC = () => {
         } catch (error) {
             console.error('Error signing out:', error);
         } finally {
+            analytics.reset();
             dispatch(signOut());
             router.push('/');
         }

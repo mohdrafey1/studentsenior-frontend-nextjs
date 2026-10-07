@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 import React, { useState, useEffect, useRef } from 'react';
 import { IPyq } from '@/utils/interface';
 import toast from 'react-hot-toast';
@@ -355,6 +356,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     if (error) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <TrackContentView type="pyq" id={pyq._id} />
                 <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-8 text-center max-w-md w-full'>
                     <div className='w-20 h-20 bg-[#fef3f2] dark:bg-[#381a1a] rounded-full flex items-center justify-center mx-auto mb-6'>
                         <FileText className='w-10 h-10 text-[#d92d20]' />
@@ -381,6 +383,7 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
     if (isLoading && !pdfDoc) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <TrackContentView type="pyq" id={pyq._id} />
                 <div className='text-center'>
                     <div className='w-14 h-14 border-3 border-[#0075de] border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
                     <h2 className='text-xl font-bold text-[#101828] dark:text-white mb-2'>
@@ -427,7 +430,8 @@ const PyqDetailClient: React.FC<PyqDetailClientProps> = ({ pyq }) => {
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
-            <DetailPageNavbar path='pyqs' fullPath={`/${slug}/pyqs`} />
+            <TrackContentView type="pyq" id={pyq._id} />
+            <DetailPageNavbar contentType="pyq" contentId={pyq._id} path='pyqs' fullPath={`/${slug}/pyqs`} />
             {/* Document Info Section (Compact Design) */}
             <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>
                 <div className='bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-4 sm:p-5 mb-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'>

@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import React, {
     useEffect,
@@ -109,6 +110,7 @@ const OpportunityClient = ({
                 );
 
             setOpportunities(data.data.opportunities || []);
+            if (searchTerm.trim()) analytics.track('search', { scope: 'opportunity', queryLength: searchTerm.trim().length, resultCount: (data.data.opportunities || []).length });
             setPagination(data.data.pagination || initialPagination);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);

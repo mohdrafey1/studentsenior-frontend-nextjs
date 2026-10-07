@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -133,6 +134,7 @@ const NotesClient = ({
 
             const data = await response.json();
             setNotes(data.data.notes || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'note', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.notes || []).length });
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching notes:', error);

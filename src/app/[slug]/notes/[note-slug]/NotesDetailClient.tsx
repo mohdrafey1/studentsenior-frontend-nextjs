@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 import React, { useState, useEffect, useRef } from 'react';
 import { INote } from '@/utils/interface';
 import toast from 'react-hot-toast';
@@ -303,6 +304,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     if (error) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <TrackContentView type="note" id={note._id} />
                 <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-8 text-center max-w-md w-full'>
                     <div className='w-16 h-16 bg-[#fef2f2] dark:bg-[#3d1c1c] border border-[#fee2e2] dark:border-[#3d1c1c] rounded-2xl flex items-center justify-center mx-auto mb-6'>
                         <FileText className='w-8 h-8 text-[#dc2626] dark:text-[#f87171]' />
@@ -329,6 +331,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     if (isLoading && !pdfDoc) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
+                <TrackContentView type="note" id={note._id} />
                 <div className='text-center'>
                     <div className='w-16 h-16 border-4 border-[#0075de] border-t-transparent rounded-full animate-spin mx-auto mb-6'></div>
                     <h2 className='text-xl font-bold text-[#101828] dark:text-white tracking-tight mb-2'>
@@ -374,7 +377,8 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
-            <DetailPageNavbar path='notes' fullPath={`/${slug}/notes`} />
+            <TrackContentView type="note" id={note._id} />
+            <DetailPageNavbar contentType="note" contentId={note._id} path='notes' fullPath={`/${slug}/notes`} />
 
             {/* Document Info Section (Compact Design) */}
             <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>

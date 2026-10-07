@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -128,6 +129,7 @@ const SyllabusClient = ({
             }
 
             setSyllabus(data?.data?.syllabus || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'syllabus', queryLength: filterState.searchTerm.trim().length, resultCount: (data?.data?.syllabus || []).length });
             setPagination(data?.data?.pagination || null);
         } catch (err) {
             console.error('Error fetching syllabus:', err);

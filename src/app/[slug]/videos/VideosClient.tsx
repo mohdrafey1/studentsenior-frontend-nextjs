@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -132,6 +133,7 @@ const VideosClient = ({
 
             const data = await response.json();
             setVideos(data.data.videos || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'video', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.videos || []).length });
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching videos:', error);

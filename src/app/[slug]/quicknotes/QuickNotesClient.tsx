@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -166,6 +167,7 @@ const QuickNotesClient = ({
 
             const data = await response.json();
             setQuicknotes(data.data.quicknotes || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'quicknote', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.quicknotes || []).length });
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching quick notes:', error);

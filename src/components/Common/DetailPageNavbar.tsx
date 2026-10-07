@@ -1,4 +1,6 @@
 'use client';
+import { analytics } from '@/analytics';
+import type { ContentType } from '@/analytics/core';
 import React, { useEffect, useState } from 'react';
 import { api } from '@/config/apiUrls';
 import { useRouter } from 'next/navigation';
@@ -15,6 +17,8 @@ import {
 } from 'lucide-react';
 
 interface DetailPageNavbarProps {
+    contentType?: ContentType;
+    contentId?: string;
     path?: string;
     fullPath?: string;
 }
@@ -57,6 +61,8 @@ const formatPathName = (rawPath?: string) => {
 const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     path,
     fullPath,
+    contentType,
+    contentId,
 }) => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -133,6 +139,7 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     };
 
     const handleShare = async () => {
+        analytics.track('share', { type: contentType, id: contentId });
         if (typeof window === 'undefined') return;
 
         const url = window.location.href;

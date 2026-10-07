@@ -1,4 +1,6 @@
 'use client';
+import { analytics } from '@/analytics';
+import TrackContentView from '@/analytics/TrackContentView';
 
 import React, { useState, useEffect } from 'react';
 import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
@@ -73,6 +75,7 @@ export default function QuickNoteClient({
     }, [quicknoteSlug]);
 
     const handleShare = async () => {
+        analytics.track('share', { type: 'quicknote', id: note._id });
         try {
             if (navigator.share) {
                 await navigator.share({
@@ -91,7 +94,8 @@ export default function QuickNoteClient({
 
     return (
         <div className='min-h-screen bg-sky-50 dark:bg-gray-900'>
-            <DetailPageNavbar path='quicknotes' />
+            <TrackContentView type="quicknote" id={note._id} />
+            <DetailPageNavbar contentType="quicknote" contentId={note._id} path='quicknotes' />
             <AppPromotionModal isOpen={showAppModal} />
 
             <main

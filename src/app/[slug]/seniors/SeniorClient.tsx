@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -135,6 +136,7 @@ const SeniorClient = ({
                 throw new Error(data.message || 'Failed to fetch seniors');
 
             setSeniors(data.data.seniors || []);
+            if (filterState.searchTerm.trim()) analytics.track('search', { scope: 'senior', queryLength: filterState.searchTerm.trim().length, resultCount: (data.data.seniors || []).length });
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);

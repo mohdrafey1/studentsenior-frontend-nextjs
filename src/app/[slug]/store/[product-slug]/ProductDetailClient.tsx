@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 import React from 'react';
 import { IStoreItem } from '@/utils/interface';
 import {
@@ -21,7 +22,8 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
 }) => {
     return (
         <>
-            <DetailPageNavbar path='store' />
+            <TrackContentView type="product" id={product._id} />
+            <DetailPageNavbar contentType="product" contentId={product._id} path='store' />
             <div className='max-w-6xl mx-auto px-4 py-8'>
                 <div className='bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 sm:p-8 mb-6 sm:mb-8'>
                     <div className='flex flex-col lg:flex-row gap-6 sm:gap-8'>

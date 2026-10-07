@@ -1,4 +1,6 @@
 'use client';
+import { analytics } from '@/analytics';
+import TrackContentView from '@/analytics/TrackContentView';
 import { IVideo } from '@/utils/interface';
 
 import { Play, Calendar, BookOpen, User, Share2 } from 'lucide-react';
@@ -11,6 +13,7 @@ interface VideoDetailClientProps {
 
 const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
     const handleShare = async () => {
+        analytics.track('share', { type: 'video', id: video._id });
         try {
             await navigator.share({
                 title: video.title,
@@ -47,7 +50,8 @@ const VideoDetailClient: React.FC<VideoDetailClientProps> = ({ video }) => {
 
     return (
         <div className='min-h-screen bg-white dark:bg-[#191919]'>
-            <DetailPageNavbar path='videos' />
+            <TrackContentView type="video" id={video._id} />
+            <DetailPageNavbar contentType="video" contentId={video._id} path='videos' />
             <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8'>
                 
                 {/* Title and Share Header */}

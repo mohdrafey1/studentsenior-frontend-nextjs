@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useCallback,
     useEffect,
@@ -117,6 +118,7 @@ const LostFoundClient = ({
                 throw new Error(data.message || 'Failed to fetch items');
 
             setItems(data.data.items || []);
+            if (searchTerm.trim()) analytics.track('search', { scope: 'lostfound', queryLength: searchTerm.trim().length, resultCount: (data.data.items || []).length });
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);

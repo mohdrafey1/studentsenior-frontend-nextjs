@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -126,6 +127,7 @@ const WhatsAppGroupClient = ({
             if (!res.ok)
                 throw new Error(data.message || 'Failed to fetch groups');
             setGroups(data.data.groups || []);
+            if (searchTerm.trim()) analytics.track('search', { scope: 'group', queryLength: searchTerm.trim().length, resultCount: (data.data.groups || []).length });
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);

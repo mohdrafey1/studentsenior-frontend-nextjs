@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 import React, {
     useEffect,
     useState,
@@ -109,6 +110,7 @@ const StoreClient = ({
                 throw new Error(data.message || 'Failed to fetch products');
 
             setItems(data.data.products || []);
+            if (searchTerm.trim()) analytics.track('search', { scope: 'product', queryLength: searchTerm.trim().length, resultCount: (data.data.products || []).length });
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
