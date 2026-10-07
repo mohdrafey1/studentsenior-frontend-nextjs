@@ -113,7 +113,11 @@ const SeniorClient = ({
     }, []);
 
     // Fetch seniors from backend - now uses URL params
-    const trackSearch = useSearchTracker('senior', filterState.searchTerm);
+    const trackSearch = useSearchTracker(
+        'senior',
+        filterState.searchTerm,
+        true,
+    );
 
     const fetchSeniors = useCallback(async () => {
         setLoading(true);

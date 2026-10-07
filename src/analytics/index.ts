@@ -4,6 +4,7 @@ import { AnalyticsQueue, randomId } from './core';
 import { tabStorage } from './browserStorage';
 import { sendBatch } from './transport';
 import { collegeForPath } from './college';
+import { activityHandlers } from './browserActivity';
 const PLATFORM = 'web' as const;
 const ANON_KEY = 'ss_analytics_anon';
 const QUEUE_KEY = `ss_analytics_queue_${PLATFORM}`;
@@ -118,8 +119,13 @@ export const analytics = {
     start() {
         const queue = getClient();
         if (!queue || stop) return () => undefined;
-        const visibility = () =>
-            document.visibilityState === 'hidden' ? queue.hide() : queue.show();
+        const visibility = () => {
+            if (document.visibilityState === 'hidden') queue.hide();
+            else {
+                persistence?.renew();
+                queue.show();
+            }
+        };
         const hidden = () => {
             queue.hide();
             void queue.flushPersistence().then(() => persistence?.release());
@@ -143,14 +149,20 @@ export const analytics = {
                 /* Ignore malformed external storage. */
             }
         };
-        const interaction = () => queue.activity();
+        const activity = activityHandlers(queue);
         const timer = window.setInterval(() => {
             persistence?.renew();
-            if (document.visibilityState !== 'hidden') queue.heartbeat();
+            activity.tick(
+                document.visibilityState !== 'hidden',
+                document.activeElement?.tagName,
+            );
             void queue.flush();
         }, 30000);
-        for (const event of ['pointerdown', 'keydown', 'scroll', 'touchstart'])
-            document.addEventListener(event, interaction, { passive: true });
+        for (const event of ['pointerdown', 'keydown', 'touchstart'])
+            document.addEventListener(event, activity.interaction, {
+                passive: true,
+            });
+        document.addEventListener('scroll', activity.scroll, { passive: true });
         document.addEventListener('visibilitychange', visibility);
         window.addEventListener('pagehide', hidden);
         window.addEventListener('pageshow', visible);
@@ -159,13 +171,9 @@ export const analytics = {
         if (document.visibilityState === 'hidden') queue.hide();
         stop = () => {
             window.clearInterval(timer);
-            for (const event of [
-                'pointerdown',
-                'keydown',
-                'scroll',
-                'touchstart',
-            ])
-                document.removeEventListener(event, interaction);
+            for (const event of ['pointerdown', 'keydown', 'touchstart'])
+                document.removeEventListener(event, activity.interaction);
+            document.removeEventListener('scroll', activity.scroll);
             void queue.flushPersistence();
             document.removeEventListener('visibilitychange', visibility);
             window.removeEventListener('pagehide', hidden);

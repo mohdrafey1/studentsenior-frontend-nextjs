@@ -145,7 +145,7 @@ const PyqsClient = ({
         setIsInitialMount(false);
     }, []);
 
-    const trackSearch = useSearchTracker('pyq', filterState.searchTerm);
+    const trackSearch = useSearchTracker('pyq', filterState.searchTerm, true);
 
     const fetchPyqs = useCallback(async () => {
         setLoading(true);

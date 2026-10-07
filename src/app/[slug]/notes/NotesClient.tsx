@@ -108,7 +108,7 @@ const NotesClient = ({
         setIsInitialMount(false);
     }, []);
 
-    const trackSearch = useSearchTracker('note', filterState.searchTerm);
+    const trackSearch = useSearchTracker('note', filterState.searchTerm, true);
 
     const fetchNotes = useCallback(async () => {
         setLoading(true);

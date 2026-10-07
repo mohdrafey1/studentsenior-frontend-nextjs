@@ -5,36 +5,40 @@ export function startAuthCheck(options: {
     signedIn: (user: unknown) => void;
     ready: () => void;
     fetcher?: typeof fetch;
+    authRevision?: () => number;
 }) {
     let settled = false;
     let pending = false;
     let disposed = false;
     let retry: ReturnType<typeof setTimeout> | undefined;
     let timeout: ReturnType<typeof setTimeout> | undefined;
-    let controller: AbortController | undefined;
     const check = async () => {
         if (settled || pending || disposed) return;
         clearTimeout(retry);
         pending = true;
-        controller = new AbortController();
-        const signal = controller.signal;
+        const revision = options.authRevision?.();
+        const stale = () => disposed || options.authRevision?.() !== revision;
         timeout = setTimeout(() => {
-            controller?.abort();
             if (!disposed) options.ready();
         }, 5000);
         try {
             const response = await (options.fetcher || fetch)(options.url, {
                 method: 'GET',
                 credentials: 'include',
-                signal,
             });
-            if (disposed || signal.aborted) return;
+            if (stale()) {
+                settled = true;
+                return;
+            }
             if ([401, 403, 404].includes(response.status)) {
                 settled = true;
                 options.signedOut();
             } else if (response.ok) {
                 const user = await response.json();
-                if (disposed || signal.aborted) return;
+                if (stale()) {
+                    settled = true;
+                    return;
+                }
                 settled = true;
                 options.signedIn(user);
             } else throw new Error('Auth check unavailable');
@@ -59,9 +63,25 @@ export function startAuthCheck(options: {
         },
         dispose: () => {
             disposed = true;
-            controller?.abort();
             clearTimeout(retry);
             clearTimeout(timeout);
         },
     };
+}
+
+/** A later login/logout wins over the response to an earlier startup request. */
+export function watchAuthChanges(store: {
+    getState: () => { user: { currentUser: unknown } };
+    subscribe: (listener: () => void) => () => void;
+}) {
+    let current = store.getState().user.currentUser;
+    let revision = 0;
+    const unsubscribe = store.subscribe(() => {
+        const next = store.getState().user.currentUser;
+        if (next !== current) {
+            current = next;
+            revision++;
+        }
+    });
+    return { revision: () => revision, unsubscribe };
 }

@@ -2,8 +2,9 @@
 import { analytics } from '@/analytics';
 import { shareAndTrack } from '@/analytics/share';
 import { useSearchTracker } from '@/analytics/useSearchTracker';
+import { scheduleSettledSearch } from '@/analytics/search';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
     Search,
     ExternalLink,
@@ -47,36 +48,40 @@ export default function ProductList({
         ...new Set(initialProducts.map((p) => p.category).filter(Boolean)),
     ];
 
-    const filteredProducts = useMemo(() => {
-        return initialProducts.filter((product) => {
-            const matchesSearch =
-                !searchTerm.trim() ||
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.description
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                product.tags?.some((tag) =>
-                    tag.toLowerCase().includes(searchTerm.toLowerCase()),
+    const queryProducts = useMemo(
+        () =>
+            initialProducts.filter((product) => {
+                const query = searchTerm.trim().toLowerCase();
+                return (
+                    !query ||
+                    product.name.toLowerCase().includes(query) ||
+                    product.description.toLowerCase().includes(query) ||
+                    product.tags?.some((tag) =>
+                        tag.toLowerCase().includes(query),
+                    )
                 );
-            const matchesCategory =
-                selectedCategory === 'All' ||
-                product.category === selectedCategory;
-
-            return matchesSearch && matchesCategory;
-        });
-    }, [initialProducts, searchTerm, selectedCategory]);
+            }),
+        [initialProducts, searchTerm],
+    );
+    const filteredProducts = useMemo(
+        () =>
+            queryProducts.filter(
+                (product) =>
+                    selectedCategory === 'All' ||
+                    product.category === selectedCategory,
+            ),
+        [queryProducts, selectedCategory],
+    );
 
     const trackSearch = useSearchTracker('affiliate', searchTerm, true);
-    useEffect(() => {
-        if (!searchTerm.trim()) return;
-        const timer = setTimeout(
-            () => trackSearch(searchTerm, filteredProducts.length),
-            500,
-        );
-        return () => clearTimeout(timer);
-    }, [searchTerm, filteredProducts.length, trackSearch]);
+    const settleSearch = useCallback(
+        () => trackSearch(searchTerm, queryProducts.length),
+        [trackSearch, searchTerm, queryProducts.length],
+    );
+    useEffect(() => scheduleSettledSearch(settleSearch), [settleSearch]);
 
     const handleProductClick = async (productId: string) => {
+        settleSearch();
         analytics.track('affiliate_click', { productId });
         try {
             await fetch(`${api.affiliateProducts.trackClick(productId)}`, {
@@ -141,6 +146,10 @@ export default function ProductList({
                             type='text'
                             placeholder='Search textbooks, scientific calculators, stationery...'
                             value={searchTerm}
+                            onBlur={settleSearch}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') settleSearch();
+                            }}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className='w-full pl-10 pr-10 py-2 sm:py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#383838] bg-[#fbfbfa] dark:bg-[#191919] text-[#101828] dark:text-white placeholder-[#999] dark:placeholder-[#666] text-sm focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] transition-colors'
                         />

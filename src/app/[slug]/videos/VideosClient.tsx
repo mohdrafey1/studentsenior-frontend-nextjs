@@ -107,7 +107,7 @@ const VideosClient = ({
         setIsInitialMount(false);
     }, []);
 
-    const trackSearch = useSearchTracker('video', filterState.searchTerm);
+    const trackSearch = useSearchTracker('video', filterState.searchTerm, true);
 
     const fetchVideos = useCallback(async () => {
         setLoading(true);

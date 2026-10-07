@@ -90,7 +90,7 @@ const StoreClient = ({
     }, [searchInput]);
 
     // Fetch items from backend
-    const trackSearch = useSearchTracker('product', searchTerm);
+    const trackSearch = useSearchTracker('product', searchTerm, true);
 
     const fetchItems = useCallback(async () => {
         setLoading(true);

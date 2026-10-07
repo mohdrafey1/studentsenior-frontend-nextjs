@@ -141,7 +141,11 @@ const QuickNotesClient = ({
         setIsInitialMount(false);
     }, []);
 
-    const trackSearch = useSearchTracker('quicknote', filterState.searchTerm);
+    const trackSearch = useSearchTracker(
+        'quicknote',
+        filterState.searchTerm,
+        true,
+    );
 
     const fetchQuickNotes = useCallback(async () => {
         setLoading(true);

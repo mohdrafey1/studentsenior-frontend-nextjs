@@ -104,7 +104,7 @@ const WhatsAppGroupClient = ({
     );
 
     // Fetch groups from backend
-    const trackSearch = useSearchTracker('group', searchTerm);
+    const trackSearch = useSearchTracker('group', searchTerm, true);
 
     const fetchGroups = useCallback(async () => {
         setLoading(true);

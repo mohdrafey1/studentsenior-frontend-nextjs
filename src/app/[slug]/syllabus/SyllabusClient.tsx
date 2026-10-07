@@ -102,7 +102,11 @@ const SyllabusClient = ({
         setIsInitialMount(false);
     }, []);
 
-    const trackSearch = useSearchTracker('syllabus', filterState.searchTerm);
+    const trackSearch = useSearchTracker(
+        'syllabus',
+        filterState.searchTerm,
+        true,
+    );
 
     const fetchSyllabus = useCallback(async () => {
         setLoading(true);

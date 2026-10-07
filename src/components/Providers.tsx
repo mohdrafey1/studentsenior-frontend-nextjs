@@ -1,6 +1,7 @@
 'use client';
 
 import IdentifyBridge from '@/analytics/IdentifyBridge';
+import AnalyticsProvider from '@/analytics/AnalyticsProvider';
 import { useState } from 'react';
 import { store, persistor } from '@/redux/store';
 import { Provider } from 'react-redux';
@@ -12,6 +13,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
+                <AnalyticsProvider />
                 <UserInitProvider onReady={setAuthReady} />
                 {authReady && <IdentifyBridge />}
                 {children}

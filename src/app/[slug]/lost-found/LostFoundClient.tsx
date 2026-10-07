@@ -97,7 +97,7 @@ const LostFoundClient = ({
     }, [searchInput]);
 
     // Fetch items from backend
-    const trackSearch = useSearchTracker('lostfound', searchTerm);
+    const trackSearch = useSearchTracker('lostfound', searchTerm, true);
 
     const fetchItems = useCallback(async () => {
         setLoading(true);

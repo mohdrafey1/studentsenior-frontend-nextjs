@@ -89,7 +89,7 @@ const OpportunityClient = ({
     }, [searchInput]);
 
     // Fetch opportunities from backend
-    const trackSearch = useSearchTracker('opportunity', searchTerm);
+    const trackSearch = useSearchTracker('opportunity', searchTerm, true);
 
     const fetchOpportunities = useCallback(async () => {
         setLoading(true);
