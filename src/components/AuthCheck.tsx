@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { analytics } from '@/analytics';
 import { api } from '@/config/apiUrls';
 import { signInSuccess, signOut } from '@/redux/slices/userSlice';
 import { useDispatch, useStore } from 'react-redux';
@@ -19,6 +20,9 @@ export const UserInitProvider = ({
         const check = startAuthCheck({
             url: api.auth.userDetail,
             authRevision: auth.revision,
+            currentUserId: () => store.getState().user.currentUser?._id || null,
+            prepareIdentityChange: () => analytics.prepareIdentityChange(),
+            cancelIdentityChange: () => analytics.cancelIdentityChange(),
             signedOut: () => {
                 dispatch(signOut());
             },

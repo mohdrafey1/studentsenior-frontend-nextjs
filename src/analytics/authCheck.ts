@@ -6,7 +6,15 @@ export function startAuthCheck(options: {
     ready: () => void;
     fetcher?: typeof fetch;
     authRevision?: () => number;
+    currentUserId?: () => string | null;
+    prepareIdentityChange?: () => Promise<void>;
+    cancelIdentityChange?: () => void;
 }) {
+    let readyReleased = false;
+    const ready = () => {
+        readyReleased = true;
+        options.ready();
+    };
     let settled = false;
     let pending = false;
     let disposed = false;
@@ -16,10 +24,11 @@ export function startAuthCheck(options: {
         if (settled || pending || disposed) return;
         clearTimeout(retry);
         pending = true;
+        let preparingIdentity = false;
         const revision = options.authRevision?.();
         const stale = () => disposed || options.authRevision?.() !== revision;
         timeout = setTimeout(() => {
-            if (!disposed) options.ready();
+            if (!disposed) ready();
         }, 5000);
         try {
             const response = await (options.fetcher || fetch)(options.url, {
@@ -30,19 +39,34 @@ export function startAuthCheck(options: {
                 settled = true;
                 return;
             }
-            if ([401, 403, 404].includes(response.status)) {
+            const signedOut = [401, 403, 404].includes(response.status);
+            if (!signedOut && !response.ok)
+                throw new Error('Auth check unavailable');
+            const user = signedOut ? null : await response.json();
+            const id = user && typeof user._id === 'string' ? user._id : null;
+            if (stale()) {
                 settled = true;
-                options.signedOut();
-            } else if (response.ok) {
-                const user = await response.json();
+                return;
+            }
+            if (
+                readyReleased &&
+                options.currentUserId &&
+                id !== options.currentUserId()
+            ) {
+                preparingIdentity = true;
+                await options.prepareIdentityChange?.();
+                // A newer login/logout may complete while the bounded queue drain runs.
                 if (stale()) {
+                    options.cancelIdentityChange?.();
                     settled = true;
                     return;
                 }
-                settled = true;
-                options.signedIn(user);
-            } else throw new Error('Auth check unavailable');
+            }
+            settled = true;
+            if (signedOut) options.signedOut();
+            else options.signedIn(user);
         } catch {
+            if (preparingIdentity) options.cancelIdentityChange?.();
             // Preserve an existing local session through a temporary outage.
             if (!disposed) {
                 clearTimeout(retry);
@@ -53,7 +77,7 @@ export function startAuthCheck(options: {
         } finally {
             clearTimeout(timeout);
             pending = false;
-            if (!disposed) options.ready();
+            if (!disposed) ready();
         }
     };
     void check();

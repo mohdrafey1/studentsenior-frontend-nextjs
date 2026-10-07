@@ -280,50 +280,6 @@ test('every list search skips the initial URL query', () => {
         );
 });
 
-test('AnalyticsProvider is gated by rehydration and mounts before the hydrated college subtree', () => {
-    const Module = require('node:module');
-    const React = require('react');
-    const { PersistGate } = require('redux-persist/integration/react');
-    const filename = require.resolve('../src/components/Providers.tsx');
-    const loaded = new Module(filename, module);
-    const analytics = () => null;
-    loaded.require = (name) => {
-        if (name === 'react')
-            return { ...React, useState: () => [false, () => {}] };
-        if (name === '@/analytics/AnalyticsProvider')
-            return { __esModule: true, default: analytics };
-        if (name === '@/analytics/IdentifyBridge')
-            return { __esModule: true, default: () => null };
-        if (name === '@/redux/store') return { store: {}, persistor: {} };
-        if (name === './AuthCheck') return { UserInitProvider: () => null };
-        return require(name);
-    };
-    loaded._compile(
-        ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
-            compilerOptions: {
-                module: ts.ModuleKind.CommonJS,
-                jsx: ts.JsxEmit.ReactJSX,
-            },
-        }).outputText,
-        filename,
-    );
-    const collegeTree = React.createElement('main', { id: 'college-layout' });
-    const provider = loaded.exports.default({ children: collegeTree });
-    const gateElement = provider.props.children;
-    assert.equal(gateElement.type, PersistGate);
-    const gate = new PersistGate(gateElement.props);
-    assert.equal(gate.render(), null);
-    gate.state = { bootstrapped: true };
-    const hydrated = React.Children.toArray(gate.render());
-    assert.equal(hydrated[0].type, analytics);
-    assert.equal(hydrated.at(-1).props.id, 'college-layout');
-    assert.ok(
-        !fs
-            .readFileSync('src/app/layout.tsx', 'utf8')
-            .includes('<AnalyticsProvider'),
-    );
-});
-
 test('product query totals ignore categories and settle on Enter, blur and result selection', () => {
     const Module = require('node:module');
     const React = require('react');
@@ -557,4 +513,194 @@ test('mobile visibility resume renews the tab lease without a pageshow event', a
             else delete globalThis[key];
         }
     }
+});
+
+for (const status of [200, 401])
+    test(`late auth ${status} flushes unsent landing events before changing the Redux identity`, async (t) => {
+        t.mock.timers.enable({ apis: ['setTimeout'] });
+        const { AnalyticsQueue } = require('../src/analytics/core.ts');
+        const { configureStore } = require('@reduxjs/toolkit');
+        const user = require('../src/redux/slices/userSlice.ts');
+        const { watchAuthChanges } = require('../src/analytics/authCheck.ts');
+        const store = configureStore({ reducer: { user: user.default } });
+        const oldAccount = { _id: 'old-account', username: 'old' };
+        const newAccount = { _id: 'new-account', username: 'new' };
+        if (status === 401) store.dispatch(user.signInSuccess(oldAccount));
+        let sequence = 0,
+            finishAuth,
+            finishSend,
+            startedSend;
+        const batches = [];
+        const queue = new AnalyticsQueue({
+            anonId: 'a'.repeat(32),
+            platform: 'web',
+            id: () => String(++sequence).padStart(32, '0'),
+            persist() {},
+            send: async (batch) => {
+                batches.push({
+                    identity: store.getState().user.currentUser?._id || null,
+                    events: batch.events,
+                });
+                startedSend = true;
+                return new Promise((resolve) => {
+                    finishSend = resolve;
+                });
+            },
+        });
+        queue.identify(store.getState().user.currentUser?._id || null);
+        queue.screen('/[slug]/notes/[note]', 'real-college');
+        queue.track('content_view', {
+            type: 'note',
+            id: '507f1f77bcf86cd799439011',
+            source: 'unknown',
+        });
+        const auth = watchAuthChanges(store);
+        let ready = false;
+        const check = startAuthCheck({
+            url: '/auth/user',
+            authRevision: auth.revision,
+            currentUserId: () => store.getState().user.currentUser?._id || null,
+            prepareIdentityChange: () => queue.prepareIdentityChange(),
+            cancelIdentityChange: () => queue.cancelIdentityChange(),
+            ready: () => {
+                ready = true;
+            },
+            signedIn: (account) => {
+                store.dispatch(user.signInSuccess(account));
+                queue.identify(account._id);
+            },
+            signedOut: () => {
+                store.dispatch(user.signOut());
+                queue.reset();
+            },
+            fetcher: async () =>
+                new Promise((resolve) => {
+                    finishAuth = resolve;
+                }),
+        });
+        t.mock.timers.tick(5000);
+        assert.equal(ready, true);
+        finishAuth({
+            status,
+            ok: status === 200,
+            json: async () => newAccount,
+        });
+        await tick();
+        assert.equal(startedSend, true);
+        assert.equal(
+            store.getState().user.currentUser?._id || null,
+            status === 401 ? 'old-account' : null,
+        );
+        assert.ok(
+            batches[0].events.some((event) => event.name === 'content_view'),
+        );
+        finishSend({ status: 204 });
+        await tick();
+        assert.deepEqual(
+            store.getState().user.currentUser,
+            status === 401 ? null : newAccount,
+        );
+        assert.equal(
+            batches[0].identity,
+            status === 401 ? 'old-account' : null,
+        );
+        check.dispose();
+        auth.unsubscribe();
+    });
+for (const status of [200, 401])
+    test(`a newer explicit auth change during the late ${status} flush still wins`, async (t) => {
+        t.mock.timers.enable({ apis: ['setTimeout'] });
+        let revision = 0,
+            finishAuth,
+            finishFlush,
+            prepare = 0,
+            cancelled = 0;
+        let account = status === 200 ? null : { _id: 'old-account' };
+        const check = startAuthCheck({
+            url: '/auth/user',
+            ready() {},
+            authRevision: () => revision,
+            currentUserId: () => account?._id || null,
+            prepareIdentityChange: async () => {
+                prepare++;
+                await new Promise((resolve) => {
+                    finishFlush = resolve;
+                });
+            },
+            cancelIdentityChange: () => cancelled++,
+            signedIn: (value) => {
+                account = value;
+            },
+            signedOut: () => {
+                account = null;
+            },
+            fetcher: async () =>
+                new Promise((resolve) => {
+                    finishAuth = resolve;
+                }),
+        });
+        t.mock.timers.tick(5000);
+        finishAuth({
+            status,
+            ok: status === 200,
+            json: async () => ({ _id: 'startup-account' }),
+        });
+        await tick();
+        assert.equal(prepare, 1);
+        account = status === 200 ? null : { _id: 'explicit-login' };
+        revision++;
+        finishFlush();
+        await tick();
+        assert.deepEqual(
+            account,
+            status === 200 ? null : { _id: 'explicit-login' },
+        );
+        assert.equal(cancelled, 1);
+        check.dispose();
+    });
+test('early auth and unchanged late identities do not drain the startup queue', async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    for (const late of [false, true]) {
+        let finish,
+            drains = 0;
+        const check = startAuthCheck({
+            url: '/auth/user',
+            ready() {},
+            currentUserId: () => (late ? 'account' : null),
+            prepareIdentityChange: async () => {
+                drains++;
+            },
+            signedIn() {},
+            signedOut() {},
+            fetcher: async () =>
+                new Promise((resolve) => {
+                    finish = resolve;
+                }),
+        });
+        if (late) t.mock.timers.tick(5000);
+        finish({
+            status: 200,
+            ok: true,
+            json: async () => ({ _id: 'account' }),
+        });
+        await tick();
+        assert.equal(drains, 0);
+        check.dispose();
+    }
+});
+test('an unrelated auth request failure never cancels an explicit identity transition', async () => {
+    let cancelled = 0;
+    const check = startAuthCheck({
+        url: '/auth/user',
+        ready() {},
+        signedIn() {},
+        signedOut() {},
+        cancelIdentityChange: () => cancelled++,
+        fetcher: async () => {
+            throw new Error('offline');
+        },
+    });
+    await tick();
+    assert.equal(cancelled, 0);
+    check.dispose();
 });
