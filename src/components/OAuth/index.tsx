@@ -24,7 +24,6 @@ export default function OAuth() {
             const auth = getAuth(app);
 
             const result = await signInWithPopup(auth, provider);
-            const idToken = await result.user.getIdToken();
 
             const res = await fetch(api.auth.google, {
                 method: 'POST',
@@ -34,8 +33,9 @@ export default function OAuth() {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    idToken,
-                    provider: 'firebase',
+                    name: result.user.displayName,
+                    email: result.user.email,
+                    photo: result.user.photoURL,
                 }),
             });
 
