@@ -1,7 +1,19 @@
 'use client';
+import { analytics } from '@/analytics';
+import { shareAndTrack } from '@/analytics/share';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
+import { scheduleSettledSearch } from '@/analytics/search';
 
-import React, { useState, useMemo } from 'react';
-import { Search, ExternalLink, Filter, Share2, X, ShoppingCart, Tag as TagIcon } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+    Search,
+    ExternalLink,
+    Filter,
+    Share2,
+    X,
+    ShoppingCart,
+    Tag as TagIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { api } from '@/config/apiUrls';
 import { useSearchParams } from 'next/navigation';
@@ -36,26 +48,41 @@ export default function ProductList({
         ...new Set(initialProducts.map((p) => p.category).filter(Boolean)),
     ];
 
-    const filteredProducts = useMemo(() => {
-        return initialProducts.filter((product) => {
-            const matchesSearch =
-                !searchTerm.trim() ||
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.description
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                product.tags?.some((tag) =>
-                    tag.toLowerCase().includes(searchTerm.toLowerCase()),
+    const queryProducts = useMemo(
+        () =>
+            initialProducts.filter((product) => {
+                const query = searchTerm.trim().toLowerCase();
+                return (
+                    !query ||
+                    product.name.toLowerCase().includes(query) ||
+                    product.description.toLowerCase().includes(query) ||
+                    product.tags?.some((tag) =>
+                        tag.toLowerCase().includes(query),
+                    )
                 );
-            const matchesCategory =
-                selectedCategory === 'All' ||
-                product.category === selectedCategory;
+            }),
+        [initialProducts, searchTerm],
+    );
+    const filteredProducts = useMemo(
+        () =>
+            queryProducts.filter(
+                (product) =>
+                    selectedCategory === 'All' ||
+                    product.category === selectedCategory,
+            ),
+        [queryProducts, selectedCategory],
+    );
 
-            return matchesSearch && matchesCategory;
-        });
-    }, [initialProducts, searchTerm, selectedCategory]);
+    const trackSearch = useSearchTracker('affiliate', searchTerm, true);
+    const settleSearch = useCallback(
+        () => trackSearch(searchTerm, queryProducts.length),
+        [trackSearch, searchTerm, queryProducts.length],
+    );
+    useEffect(() => scheduleSettledSearch(settleSearch), [settleSearch]);
 
     const handleProductClick = async (productId: string) => {
+        settleSearch();
+        analytics.track('affiliate_click', { productId });
         try {
             await fetch(`${api.affiliateProducts.trackClick(productId)}`, {
                 method: 'POST',
@@ -77,13 +104,25 @@ export default function ProductList({
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                await shareAndTrack(
+                    () => navigator.share(shareData),
+                    () => {
+                        analytics.track('share', {
+                            type: 'affiliate',
+                            id: product._id,
+                        });
+                    },
+                );
             } catch (error) {
                 console.error('Error sharing:', error);
             }
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
+                analytics.track('share', {
+                    type: 'affiliate',
+                    id: product._id,
+                });
                 toast.success('Product link copied to clipboard!');
             } catch (error) {
                 console.error('Error copying to clipboard:', error);
@@ -107,6 +146,10 @@ export default function ProductList({
                             type='text'
                             placeholder='Search textbooks, scientific calculators, stationery...'
                             value={searchTerm}
+                            onBlur={settleSearch}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') settleSearch();
+                            }}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className='w-full pl-10 pr-10 py-2 sm:py-2.5 rounded-lg border border-[#e6e6e6] dark:border-[#383838] bg-[#fbfbfa] dark:bg-[#191919] text-[#101828] dark:text-white placeholder-[#999] dark:placeholder-[#666] text-sm focus:outline-none focus:ring-2 focus:ring-[#0075de]/20 focus:border-[#0075de] transition-colors'
                         />
@@ -147,9 +190,23 @@ export default function ProductList({
             {/* Results Count & Current Active Filters info */}
             <div className='flex items-center justify-between mb-6 text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] px-1'>
                 <span>
-                    Showing <strong className='text-[#101828] dark:text-white font-semibold'>{filteredProducts.length}</strong> {filteredProducts.length === 1 ? 'item' : 'items'}
-                    {selectedCategory !== 'All' && <span> in <span className='text-[#0075de] dark:text-[#62aef0] font-medium'>{selectedCategory}</span></span>}
-                    {searchTerm && <span> matching &ldquo;{searchTerm}&rdquo;</span>}
+                    Showing{' '}
+                    <strong className='text-[#101828] dark:text-white font-semibold'>
+                        {filteredProducts.length}
+                    </strong>{' '}
+                    {filteredProducts.length === 1 ? 'item' : 'items'}
+                    {selectedCategory !== 'All' && (
+                        <span>
+                            {' '}
+                            in{' '}
+                            <span className='text-[#0075de] dark:text-[#62aef0] font-medium'>
+                                {selectedCategory}
+                            </span>
+                        </span>
+                    )}
+                    {searchTerm && (
+                        <span> matching &ldquo;{searchTerm}&rdquo;</span>
+                    )}
                 </span>
 
                 {(searchTerm || selectedCategory !== 'All') && (
@@ -206,7 +263,8 @@ export default function ProductList({
                                 </h3>
 
                                 <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a8a5a0] line-clamp-2 leading-relaxed mb-3 min-h-[2.5rem]'>
-                                    {product.description || 'Verified student essential recommended for your course.'}
+                                    {product.description ||
+                                        'Verified student essential recommended for your course.'}
                                 </p>
 
                                 {/* Tags */}
@@ -251,7 +309,9 @@ export default function ProductList({
                                     href={product.buyLink}
                                     target='_blank'
                                     rel='noopener noreferrer'
-                                    onClick={() => handleProductClick(product._id)}
+                                    onClick={() =>
+                                        handleProductClick(product._id)
+                                    }
                                     className='inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg transition-all font-semibold text-xs sm:text-sm shadow-sm hover:shadow active:scale-[0.98]'
                                 >
                                     <span>Buy Now</span>
@@ -273,7 +333,8 @@ export default function ProductList({
                         No products found
                     </h3>
                     <p className='text-xs sm:text-sm text-[#615d59] dark:text-[#a09e9a] max-w-sm mb-5 leading-relaxed'>
-                        We couldn&apos;t find any products matching your search or selected category.
+                        We couldn&apos;t find any products matching your search
+                        or selected category.
                     </p>
                     <button
                         onClick={() => {
@@ -289,4 +350,3 @@ export default function ProductList({
         </div>
     );
 }
-

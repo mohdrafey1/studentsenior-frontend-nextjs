@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import { useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
@@ -25,6 +26,7 @@ export default function OAuth() {
 
             const result = await signInWithPopup(auth, provider);
 
+            await analytics.prepareIdentityChange();
             const res = await fetch(api.auth.google, {
                 method: 'POST',
                 headers: {
@@ -46,6 +48,7 @@ export default function OAuth() {
                 return;
             }
 
+            analytics.identify((data.data || data)?._id || null);
             dispatch(signInSuccess(data.data || data));
             toast.success('Signed in with Google successfully');
 
@@ -56,6 +59,7 @@ export default function OAuth() {
             console.error('Could not login with Google', error);
             toast.error('Google sign-in failed. Please try again.');
         } finally {
+            analytics.cancelIdentityChange();
             setLoading(false);
         }
     };

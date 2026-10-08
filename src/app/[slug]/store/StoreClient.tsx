@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -89,6 +90,8 @@ const StoreClient = ({
     }, [searchInput]);
 
     // Fetch items from backend
+    const trackSearch = useSearchTracker('product', searchTerm, true);
+
     const fetchItems = useCallback(async () => {
         setLoading(true);
         try {
@@ -109,6 +112,7 @@ const StoreClient = ({
                 throw new Error(data.message || 'Failed to fetch products');
 
             setItems(data.data.products || []);
+            trackSearch(searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
@@ -116,7 +120,7 @@ const StoreClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm]);
+    }, [trackSearch, collegeName, page, searchTerm]);
 
     // Only fetch when filters change, not on initial mount
     useEffect(() => {

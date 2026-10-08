@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -144,6 +145,8 @@ const PyqsClient = ({
         setIsInitialMount(false);
     }, []);
 
+    const trackSearch = useSearchTracker('pyq', filterState.searchTerm, true);
+
     const fetchPyqs = useCallback(async () => {
         setLoading(true);
         try {
@@ -172,6 +175,7 @@ const PyqsClient = ({
 
             const data = await response.json();
             setPyqs(data.data.pyqs || []);
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching PYQs:', error);
@@ -180,6 +184,7 @@ const PyqsClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.searchTerm,
         filterState.courseFilter,

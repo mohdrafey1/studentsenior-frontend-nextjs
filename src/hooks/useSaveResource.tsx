@@ -1,3 +1,4 @@
+import { analytics } from '@/analytics';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { api } from '@/config/apiUrls';
@@ -28,6 +29,7 @@ export const useSaveResource = () => {
                 throw new Error(data.message || 'Something went wrong');
             }
 
+            analytics.track('save_toggle', { type: resourceType, id: resourceId, saved: true });
             toast.success(
                 data.message + ', You can view it in your collection',
             );
@@ -59,6 +61,7 @@ export const useSaveResource = () => {
                 throw new Error(data.message || 'Something went wrong');
             }
 
+            analytics.track('save_toggle', { type: resourceType, id: resourceId, saved: false });
             toast.success(data.message + ', removed from your collection');
             dispatch(fetchSavedCollection());
         } catch (err) {

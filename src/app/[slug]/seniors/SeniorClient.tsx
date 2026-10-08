@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -112,6 +113,12 @@ const SeniorClient = ({
     }, []);
 
     // Fetch seniors from backend - now uses URL params
+    const trackSearch = useSearchTracker(
+        'senior',
+        filterState.searchTerm,
+        true,
+    );
+
     const fetchSeniors = useCallback(async () => {
         setLoading(true);
         try {
@@ -135,6 +142,7 @@ const SeniorClient = ({
                 throw new Error(data.message || 'Failed to fetch seniors');
 
             setSeniors(data.data.seniors || []);
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
@@ -143,6 +151,7 @@ const SeniorClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.page,
         filterState.searchTerm,
