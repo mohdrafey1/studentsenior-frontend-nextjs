@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 
 import React, {
     useEffect,
@@ -88,6 +89,8 @@ const OpportunityClient = ({
     }, [searchInput]);
 
     // Fetch opportunities from backend
+    const trackSearch = useSearchTracker('opportunity', searchTerm, true);
+
     const fetchOpportunities = useCallback(async () => {
         setLoading(true);
         try {
@@ -109,6 +112,7 @@ const OpportunityClient = ({
                 );
 
             setOpportunities(data.data.opportunities || []);
+            trackSearch(searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || initialPagination);
         } catch (error: unknown) {
             if (error instanceof Error) toast.error(error.message);
@@ -116,7 +120,7 @@ const OpportunityClient = ({
         } finally {
             setLoading(false);
         }
-    }, [collegeName, page, searchTerm, initialPagination]);
+    }, [trackSearch, collegeName, page, searchTerm, initialPagination]);
 
     // Only fetch when filters change, not on initial mount
     useEffect(() => {

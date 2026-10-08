@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -159,6 +160,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
         }
         try {
             dispatch(updateUserStart());
+            if (formData.password) await analytics.prepareIdentityChange();
             const res = await fetch(`${api.user.update(currentUser._id)}`, {
                 method: 'PUT',
                 credentials: 'include',
@@ -174,7 +176,7 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
             }
 
             if (data.data?.requiresReauthentication) {
-                dispatch(signOut()); toast.success('Password updated. Please sign in again.'); router.replace('/sign-in'); return;
+                analytics.reset(); dispatch(signOut()); toast.success('Password updated. Please sign in again.'); router.replace('/sign-in'); return;
             }
             dispatch(updateUserSuccess(data.data));
             toast.success('🎉 Profile Updated Successfully');
@@ -184,6 +186,8 @@ export default function ProfileForm({ onSignOut }: ProfileFormProps) {
         } catch (error) {
             dispatch(updateUserFailure(error));
             toast.error('Something went wrong!');
+        } finally {
+            analytics.cancelIdentityChange();
         }
     };
 

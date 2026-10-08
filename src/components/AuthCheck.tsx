@@ -1,36 +1,47 @@
 'use client';
 
 import { useEffect } from 'react';
+import { analytics } from '@/analytics';
 import { api } from '@/config/apiUrls';
 import { signInSuccess, signOut } from '@/redux/slices/userSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
+import type { RootState } from '@/redux/store';
+import { startAuthCheck, watchAuthChanges } from '@/analytics/authCheck';
 
-export const UserInitProvider = () => {
+export const UserInitProvider = ({
+    onReady,
+}: {
+    onReady: (ready: boolean) => void;
+}) => {
     const dispatch = useDispatch();
-
+    const store = useStore<RootState>();
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch(api.auth.userDetail, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) dispatch(signOut());
-                    throw new Error('Failed to fetch user data');
-                }
-
-                const userData = await response.json();
-                dispatch(signInSuccess(userData));
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                // Keep a valid local session on network/server outages.
-            }
+        const auth = watchAuthChanges(store);
+        const check = startAuthCheck({
+            url: api.auth.userDetail,
+            authRevision: auth.revision,
+            currentUserId: () => store.getState().user.currentUser?._id || null,
+            prepareIdentityChange: () => analytics.prepareIdentityChange(),
+            cancelIdentityChange: () => analytics.cancelIdentityChange(),
+            signedOut: () => {
+                dispatch(signOut());
+            },
+            signedIn: (user) => {
+                dispatch(signInSuccess(user));
+            },
+            ready: () => onReady(true),
+        });
+        const resume = () => {
+            if (document.visibilityState !== 'hidden') check.resume();
         };
-
-        fetchUser();
-    }, [dispatch]);
-
+        window.addEventListener('online', resume);
+        document.addEventListener('visibilitychange', resume);
+        return () => {
+            check.dispose();
+            auth.unsubscribe();
+            window.removeEventListener('online', resume);
+            document.removeEventListener('visibilitychange', resume);
+        };
+    }, [dispatch, onReady, store]);
     return null;
 };

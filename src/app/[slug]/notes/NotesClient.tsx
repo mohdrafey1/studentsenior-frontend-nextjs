@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -107,6 +108,8 @@ const NotesClient = ({
         setIsInitialMount(false);
     }, []);
 
+    const trackSearch = useSearchTracker('note', filterState.searchTerm, true);
+
     const fetchNotes = useCallback(async () => {
         setLoading(true);
         try {
@@ -133,6 +136,7 @@ const NotesClient = ({
 
             const data = await response.json();
             setNotes(data.data.notes || []);
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching notes:', error);
@@ -141,6 +145,7 @@ const NotesClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.searchTerm,
         filterState.courseFilter,
@@ -420,7 +425,7 @@ const NotesClient = ({
                                 <p className='text-sm text-[#615d59] dark:text-[#a09e9a] mb-6 leading-relaxed'>
                                     {filterState.hasActiveFilters
                                         ? "We couldn't find any notes matching your filters. Try adjusting them."
-                                        : "Be the first to share your knowledge and add a note for this college!"}
+                                        : 'Be the first to share your knowledge and add a note for this college!'}
                                 </p>
                                 <button
                                     onClick={openAddModal}

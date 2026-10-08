@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -49,12 +50,14 @@ export default function Profile() {
     const handleSignOut = async () => {
         try {
             setLoading1(true);
+            await analytics.prepareIdentityChange();
             const response = await fetch(`${api.auth.signout}`, {
                 method: 'POST',
                 credentials: 'include',
             });
 
             if (response.ok) {
+                analytics.reset();
                 dispatch(signOut());
                 setLoading1(false);
                 toast.success('Successfully logged out');
@@ -67,6 +70,7 @@ export default function Profile() {
             console.error('Signout error:', error);
             toast.error('Signout error');
         } finally {
+            analytics.cancelIdentityChange();
             setLoading1(false);
         }
     };

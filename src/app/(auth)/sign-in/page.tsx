@@ -1,4 +1,5 @@
 'use client';
+import { analytics } from '@/analytics';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -93,6 +94,7 @@ const SignIn: React.FC = () => {
         try {
             dispatch(signInStart());
 
+            await analytics.prepareIdentityChange();
             const res = await fetch(`${api.auth.login}`, {
                 method: 'POST',
                 headers: {
@@ -111,6 +113,7 @@ const SignIn: React.FC = () => {
                 return;
             }
 
+            analytics.identify(data.data?._id || null);
             dispatch(signInSuccess(data.data));
             toast.success('Welcome back! Sign in successful');
 
@@ -121,6 +124,8 @@ const SignIn: React.FC = () => {
             console.error('Sign in error:', error);
             dispatch(signInFailure(error));
             toast.error('Sign in failed. Please try again.');
+        } finally {
+            analytics.cancelIdentityChange();
         }
     };
 

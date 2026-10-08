@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 import React, { useState, useEffect, useRef } from 'react';
 import { INote } from '@/utils/interface';
 import toast from 'react-hot-toast';
@@ -149,7 +150,7 @@ const LazyPDFPage = ({
     );
 };
 
-const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
+const NotesDocument: React.FC<NotesDetailClientProps> = ({ note }) => {
     const router = useRouter();
     const pathname = usePathname();
     const { slug } = useParams();
@@ -199,21 +200,38 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
             setSignedUrl(null);
             setHasAccess(false);
             try {
-                const metadata = await fetch(api.notes.getNoteBySlug(note.slug), {
-                    credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
-                });
+                const metadata = await fetch(
+                    api.notes.getNoteBySlug(note.slug),
+                    {
+                        credentials: 'include',
+                        cache: 'no-store',
+                        signal: AbortSignal.any([
+                            controller.signal,
+                            AbortSignal.timeout(15000),
+                        ]),
+                    },
+                );
                 const detail = await metadata.json();
-                if (!metadata.ok || detail.success !== true) throw new Error('Unable to check document access.');
+                if (!metadata.ok || detail.success !== true)
+                    throw new Error('Unable to check document access.');
                 const allowed = detail.data.hasAccess === true;
                 if (controller.signal.aborted) return;
                 setHasAccess(allowed);
                 if (!allowed) return;
                 const response = await fetch(
                     `${api.aws.getSignedUrl}?resourceType=notes&resourceId=${encodeURIComponent(note._id)}`,
-                    { credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) },
+                    {
+                        credentials: 'include',
+                        cache: 'no-store',
+                        signal: AbortSignal.any([
+                            controller.signal,
+                            AbortSignal.timeout(15000),
+                        ]),
+                    },
                 );
                 const data = await response.json();
-                if (!response.ok || data.success !== true) throw new Error(data.message || 'Unable to open document.');
+                if (!response.ok || data.success !== true)
+                    throw new Error(data.message || 'Unable to open document.');
                 loadingTask = pdfjsLib.getDocument(data.data.signedUrl);
                 const document = await loadingTask.promise;
                 if (!controller.signal.aborted) {
@@ -221,13 +239,17 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     setPdfDoc(document);
                 }
             } catch {
-                if (!controller.signal.aborted) setError('Failed to load PDF document. Please try again.');
+                if (!controller.signal.aborted)
+                    setError('Failed to load PDF document. Please try again.');
             } finally {
                 if (!controller.signal.aborted) setIsLoading(false);
             }
         };
         void loadDocument();
-        return () => { controller.abort(); void loadingTask?.destroy(); };
+        return () => {
+            controller.abort();
+            void loadingTask?.destroy();
+        };
     }, [note._id, note.slug, ownerId, loadAttempt]);
 
     useEffect(() => {
@@ -299,7 +321,6 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     // Security handlers (disable right-click, keyboard shortcuts, devtools)
 
-
     if (error) {
         return (
             <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] flex justify-center items-center p-4'>
@@ -313,7 +334,12 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                     <p className='text-[#475467] dark:text-[#a09e9a] text-sm mb-6'>
                         {error}
                     </p>
-                    <button className="p-3 underline" onClick={() => setLoadAttempt(value => value + 1)}>Retry</button>
+                    <button
+                        className='p-3 underline'
+                        onClick={() => setLoadAttempt((value) => value + 1)}
+                    >
+                        Retry
+                    </button>
                     <button
                         onClick={handleGoBack}
                         className='inline-flex items-center gap-2 px-5 py-2.5 bg-[#f6f5f4] dark:bg-[#282828] border border-[#e6e6e6] dark:border-[#383838] text-[#101828] dark:text-white hover:bg-[#eae8e4] dark:hover:bg-[#333] font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
@@ -352,7 +378,11 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
         try {
             const response = await fetch(
                 `${api.aws.getSignedUrl}?resourceType=notes&resourceId=${encodeURIComponent(note._id)}`,
-                { credentials: 'include', cache: 'no-store', signal: AbortSignal.timeout(15000) },
+                {
+                    credentials: 'include',
+                    cache: 'no-store',
+                    signal: AbortSignal.timeout(15000),
+                },
             );
             const data = await response.json();
             if (!response.ok) {
@@ -374,7 +404,12 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
 
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
-            <DetailPageNavbar path='notes' fullPath={`/${slug}/notes`} />
+            <DetailPageNavbar
+                contentType='note'
+                contentId={note._id}
+                path='notes'
+                fullPath={`/${slug}/notes`}
+            />
 
             {/* Document Info Section (Compact Design) */}
             <div className='max-w-7xl mx-auto px-4 py-4 sm:py-5 sm:px-6 lg:px-8'>
@@ -402,8 +437,8 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                 )}
                             </div>
                             <p className='text-[#475467] dark:text-[#a09e9a] mt-4 text-sm sm:text-base max-w-3xl'>
-                                        {note.description}
-                                    </p>
+                                {note.description}
+                            </p>
                         </div>
 
                         {/* Save Button with Loading State */}
@@ -459,7 +494,9 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                                 d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
                                             ></path>
                                         </svg>
-                                        <span>{isSaved ? 'Saved' : 'Save'}</span>
+                                        <span>
+                                            {isSaved ? 'Saved' : 'Save'}
+                                        </span>
                                     </>
                                 )}
                             </button>
@@ -479,50 +516,51 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 {/* PDF Viewer Section */}
                 <div className='pdf-viewer max-w-4xl mx-auto'>
                     {isPaidAndNotOwner ? (
-                            <>
-                                {/* Purchase CTA */}
-                                <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-8 text-center'>
-                                    <div className='w-16 h-16 bg-[#fef7e0] dark:bg-[#3d3119] border border-[#fce8b2] dark:border-[#3d3119] rounded-2xl flex items-center justify-center mx-auto mb-6'>
-                                        <Lock className='w-8 h-8 text-[#b06000] dark:text-[#fbbc04]' />
-                                    </div>
-                                    <h3 className='text-2xl font-bold text-[#101828] dark:text-white mb-2 tracking-tight'>
-                                        Unlock Full Content
-                                    </h3>
-                                    <p className='text-[#475467] dark:text-[#a09e9a] mb-8 max-w-md mx-auto'>
-                                        Purchase to open and download the complete document.
-                                    </p>
-                                    <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                                        <button
-                                            onClick={() => {
-                                                if (!currentUser) {
-                                                    router.push(
-                                                        `/sign-in?from=${pathname}`,
-                                                    );
-                                                } else {
-                                                    setIsPaymentModalOpen(true);
-                                                }
-                                            }}
-                                            className='inline-flex items-center gap-2 px-6 py-3 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
-                                        >
-                                            <ShoppingCart className='w-4 h-4' />
-                                            Purchase for {note.price} points
-                                        </button>
-                                    </div>
+                        <>
+                            {/* Purchase CTA */}
+                            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] shadow-sm p-8 text-center'>
+                                <div className='w-16 h-16 bg-[#fef7e0] dark:bg-[#3d3119] border border-[#fce8b2] dark:border-[#3d3119] rounded-2xl flex items-center justify-center mx-auto mb-6'>
+                                    <Lock className='w-8 h-8 text-[#b06000] dark:text-[#fbbc04]' />
                                 </div>
-                            </>
+                                <h3 className='text-2xl font-bold text-[#101828] dark:text-white mb-2 tracking-tight'>
+                                    Unlock Full Content
+                                </h3>
+                                <p className='text-[#475467] dark:text-[#a09e9a] mb-8 max-w-md mx-auto'>
+                                    Purchase to open and download the complete
+                                    document.
+                                </p>
+                                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+                                    <button
+                                        onClick={() => {
+                                            if (!currentUser) {
+                                                router.push(
+                                                    `/sign-in?from=${pathname}`,
+                                                );
+                                            } else {
+                                                setIsPaymentModalOpen(true);
+                                            }
+                                        }}
+                                        className='inline-flex items-center gap-2 px-6 py-3 bg-[#0075de] hover:bg-[#0062bd] text-white text-sm font-semibold rounded-xl transition-all shadow-xs active:scale-[0.98]'
+                                    >
+                                        <ShoppingCart className='w-4 h-4' />
+                                        Purchase for {note.price} points
+                                    </button>
+                                </div>
+                            </div>
+                        </>
                     ) : pdfDoc ? (
-                            <>
-                                {Array.from({ length: pdfDoc.numPages }).map(
-                                    (_, index) => (
-                                        <LazyPDFPage
-                                            key={`${note._id}:${ownerId || "guest"}:${index}`}
-                                            pdf={pdfDoc}
-                                            pageNum={index + 1}
-                                            scale={1.5}
-                                        />
-                                    ),
-                                )}
-                            </>
+                        <>
+                            {Array.from({ length: pdfDoc.numPages }).map(
+                                (_, index) => (
+                                    <LazyPDFPage
+                                        key={`${note._id}:${ownerId || 'guest'}:${index}`}
+                                        pdf={pdfDoc}
+                                        pageNum={index + 1}
+                                        scale={1.5}
+                                    />
+                                ),
+                            )}
+                        </>
                     ) : (
                         <div className='flex justify-center items-center min-h-[400px] bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f]'>
                             <div className='text-center'>
@@ -596,7 +634,7 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                 <div className='mt-12 mb-8'>
                     <div className='flex items-center gap-3 mb-6'>
                         <div className='w-10 h-10 rounded-xl bg-[#eaf3fd] dark:bg-[#183153] text-[#0075de] dark:text-[#62aef0] flex items-center justify-center'>
-                             <BookOpen className='w-5 h-5' />
+                            <BookOpen className='w-5 h-5' />
                         </div>
                         <h2 className='text-2xl font-bold text-[#101828] dark:text-white tracking-tight'>
                             Explore More Resources
@@ -708,17 +746,21 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
                                                     </h3>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className='mt-auto pt-3 flex items-center justify-between border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                                                 <div className='flex items-center gap-2'>
                                                     <User className='w-3.5 h-3.5 text-[#8c8883] dark:text-[#787672]' />
                                                     <span className='text-xs font-medium text-[#615d59] dark:text-[#a09e9a] truncate max-w-[120px]'>
-                                                        {suggestedNote.owner.username}
+                                                        {
+                                                            suggestedNote.owner
+                                                                .username
+                                                        }
                                                     </span>
                                                 </div>
                                                 {suggestedNote.isPaid && (
                                                     <span className='inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#fef7e0] dark:bg-[#3d3119] text-[#b06000] dark:text-[#fbbc04] border border-[#fce8b2] dark:border-[#3d3119] leading-none'>
-                                                        {suggestedNote.price} pts
+                                                        {suggestedNote.price}{' '}
+                                                        pts
                                                     </span>
                                                 )}
                                             </div>
@@ -748,4 +790,11 @@ const NotesDetailClient: React.FC<NotesDetailClientProps> = ({ note }) => {
     );
 };
 
-export default NotesDetailClient;
+export default function NotesDetailClient(props: NotesDetailClientProps) {
+    return (
+        <>
+            <TrackContentView type='note' id={props.note._id} />
+            <NotesDocument {...props} />
+        </>
+    );
+}

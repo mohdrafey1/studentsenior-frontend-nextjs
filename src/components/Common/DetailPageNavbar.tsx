@@ -1,4 +1,7 @@
 'use client';
+import { analytics } from '@/analytics';
+import { shareAndTrack } from '@/analytics/share';
+import type { ContentType } from '@/analytics/core';
 import React, { useEffect, useState } from 'react';
 import { api } from '@/config/apiUrls';
 import { useRouter } from 'next/navigation';
@@ -15,6 +18,8 @@ import {
 } from 'lucide-react';
 
 interface DetailPageNavbarProps {
+    contentType?: ContentType;
+    contentId?: string;
     path?: string;
     fullPath?: string;
 }
@@ -57,6 +62,8 @@ const formatPathName = (rawPath?: string) => {
 const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     path,
     fullPath,
+    contentType,
+    contentId,
 }) => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +100,10 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     }, [showReportModal, isSubmitting]);
 
     const handleBackNavigation = () => {
-        if (canGoBack || (typeof window !== 'undefined' && window.history.length > 1)) {
+        if (
+            canGoBack ||
+            (typeof window !== 'undefined' && window.history.length > 1)
+        ) {
             router.back();
         } else if (fullPath) {
             router.push(fullPath);
@@ -107,6 +117,7 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
     const copyToClipboard = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
+            analytics.track('share', { type: contentType, id: contentId });
             setIsCopied(true);
             toast.success('Link copied to clipboard!');
             setTimeout(() => setIsCopied(false), 2000);
@@ -120,7 +131,9 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
             textArea.focus();
             textArea.select();
             try {
-                document.execCommand('copy');
+                if (!document.execCommand('copy'))
+                    throw new Error('Copy failed');
+                analytics.track('share', { type: contentType, id: contentId });
                 setIsCopied(true);
                 toast.success('Link copied to clipboard!');
                 setTimeout(() => setIsCopied(false), 2000);
@@ -139,11 +152,20 @@ const DetailPageNavbar: React.FC<DetailPageNavbarProps> = ({
 
         if (navigator.share) {
             try {
-                await navigator.share({
-                    title: document.title,
-                    text: `Check out this resource on StudentSenior`,
-                    url: url,
-                });
+                await shareAndTrack(
+                    () =>
+                        navigator.share({
+                            title: document.title,
+                            text: `Check out this resource on StudentSenior`,
+                            url: url,
+                        }),
+                    () => {
+                        analytics.track('share', {
+                            type: contentType,
+                            id: contentId,
+                        });
+                    },
+                );
             } catch (error) {
                 if (error instanceof Error && error.name !== 'AbortError') {
                     await copyToClipboard(url);

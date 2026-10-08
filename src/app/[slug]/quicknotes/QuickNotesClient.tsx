@@ -1,4 +1,5 @@
 'use client';
+import { useSearchTracker } from '@/analytics/useSearchTracker';
 import React, {
     useEffect,
     useState,
@@ -83,9 +84,9 @@ const QuickNoteCard = ({
                 {/* Footer */}
                 <div className='flex items-center justify-between pt-3 border-t border-[#f0eee9] dark:border-[#2a2a2a]'>
                     <div className='flex items-center gap-1.5 text-[11px] font-semibold text-[#d97706] dark:text-[#fbbf24] bg-[#fffbeb] dark:bg-[#382606] border border-[#fef08a] dark:border-[#524419] px-2 py-0.5 rounded-md'>
-                       <span className='text-[11px] font-medium text-[#615d59] dark:text-[#a09e9a] truncate'>
-                        {note.subject?.subjectName}
-                    </span>
+                        <span className='text-[11px] font-medium text-[#615d59] dark:text-[#a09e9a] truncate'>
+                            {note.subject?.subjectName}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -140,6 +141,12 @@ const QuickNotesClient = ({
         setIsInitialMount(false);
     }, []);
 
+    const trackSearch = useSearchTracker(
+        'quicknote',
+        filterState.searchTerm,
+        true,
+    );
+
     const fetchQuickNotes = useCallback(async () => {
         setLoading(true);
         try {
@@ -166,6 +173,7 @@ const QuickNotesClient = ({
 
             const data = await response.json();
             setQuicknotes(data.data.quicknotes || []);
+            trackSearch(filterState.searchTerm, data?.data?.pagination);
             setPagination(data.data.pagination || null);
         } catch (error) {
             console.error('Error fetching quick notes:', error);
@@ -174,6 +182,7 @@ const QuickNotesClient = ({
             setLoading(false);
         }
     }, [
+        trackSearch,
         collegeName,
         filterState.searchTerm,
         filterState.courseFilter,
@@ -278,7 +287,7 @@ const QuickNotesClient = ({
                                 <p className='text-sm text-[#615d59] dark:text-[#a09e9a] leading-relaxed'>
                                     {filterState.hasActiveFilters
                                         ? "We couldn't find any quick notes matching your filters. Try adjusting them."
-                                        : "Quick notes for this college are coming soon!"}
+                                        : 'Quick notes for this college are coming soon!'}
                                 </p>
                             </div>
                         </div>

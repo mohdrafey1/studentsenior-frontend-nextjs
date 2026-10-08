@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 
 import React, { useState } from 'react';
 import { IOpportunity } from '@/utils/interface';
@@ -64,7 +65,8 @@ const OpportunityDetailClient: React.FC<OpportunityDetailClientProps> = ({
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] text-[#101828] dark:text-[#ededed]'>
             {/* Header Nav */}
-            <DetailPageNavbar
+            <TrackContentView type="opportunity" id={opportunity._id} />
+            <DetailPageNavbar contentType="opportunity" contentId={opportunity._id}
                 path='opportunities'
                 fullPath={slug ? `/${slug}/opportunities` : undefined}
             />

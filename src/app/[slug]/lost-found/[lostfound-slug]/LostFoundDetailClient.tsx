@@ -1,4 +1,5 @@
 'use client';
+import TrackContentView from '@/analytics/TrackContentView';
 
 import React, { useState } from 'react';
 import { ILostFoundItem } from '@/utils/interface';
@@ -54,7 +55,8 @@ const LostFoundDetailClient: React.FC<LostFoundDetailClientProps> = ({
     return (
         <div className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515] text-[#101828] dark:text-[#ededed]'>
             {/* Header Nav */}
-            <DetailPageNavbar
+            <TrackContentView type="lostfound" id={lostFoundItem._id} />
+            <DetailPageNavbar contentType="lostfound" contentId={lostFoundItem._id}
                 path='lost-found'
                 fullPath={slug ? `/${slug}/lost-found` : undefined}
             />

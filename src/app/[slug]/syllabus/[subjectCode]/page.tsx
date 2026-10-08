@@ -1,3 +1,4 @@
+import TrackContentView from '@/analytics/TrackContentView';
 import { fetchPublicApi } from '@/utils/serverFetch';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
@@ -98,7 +99,8 @@ export default async function SyllabusDetailPage({
 
     return (
         <>
-            <DetailPageNavbar />
+            <TrackContentView type="syllabus" id={syllabus._id} />
+            <DetailPageNavbar contentType="syllabus" contentId={syllabus._id} />
             <main className='min-h-screen bg-[#f6f5f4] dark:bg-[#191919] py-8 px-4 sm:px-6 lg:px-8'>
                 <div className='max-w-5xl mx-auto'>
                     {/* Header Section - Notion Style */}
