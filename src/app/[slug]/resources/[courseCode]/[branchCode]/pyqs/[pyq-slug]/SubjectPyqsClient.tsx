@@ -8,6 +8,7 @@ import Image from 'next/image';
 import PyqFormModal, { PyqFormData } from './pyqForm';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
+import MissingPyqs, { ExamSlot } from './MissingPyqs';
 
 interface SubjectPyqsClientProps {
     initialPyqs: IPyq[];
@@ -15,7 +16,7 @@ interface SubjectPyqsClientProps {
     collegeSlug: string;
     courseCode: string;
     branchCode: string;
-    subjectName: string;
+    subjectId?: string;
 }
 
 export default function SubjectPyqsClient({
@@ -24,10 +25,12 @@ export default function SubjectPyqsClient({
     collegeSlug,
     courseCode,
     branchCode,
-    subjectName,
+    subjectId,
 }: SubjectPyqsClientProps) {
     const [activeExamType, setActiveExamType] = useState<string>('all');
     const [addPyq, setAddPyq] = useState(false);
+    // Bumped after an upload so the missing-paper list reloads.
+    const [uploads, setUploads] = useState(0);
 
     const initialFormState: PyqFormData = {
         subject: '',
@@ -52,6 +55,12 @@ export default function SubjectPyqsClient({
     const handleAddPyq = () => {
         setAddPyq(!addPyq);
     };
+
+    // Upload from a missing-paper card: session and exam are already known.
+    const uploadMissing = (slot: { year: string; examType: ExamSlot }) => {
+        setForm({ ...initialFormState, ...slot });
+        setAddPyq(true);
+    };
     
     const handleSubmit = async (formData: PyqFormData) => {
         try {
@@ -75,6 +84,7 @@ export default function SubjectPyqsClient({
             toast.success(data.message || 'PYQ created successfully!');
             setAddPyq(false);
             setForm(initialFormState);
+            setUploads((n) => n + 1);
         } catch (error) {
             console.error('Error creating PYQ:', error);
             throw error;
@@ -108,45 +118,31 @@ export default function SubjectPyqsClient({
 
     return (
         <div className='max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6'>
-            {/* Header Section */}
-            <div className='bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6e6e6] dark:border-[#2f2f2f] p-6 shadow-sm'>
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                    <div>
-                        <h1 className='text-2xl font-bold text-[#101828] dark:text-white'>
-                            {subjectName} - PYQs
-                        </h1>
-                        <p className='text-sm text-[#475467] dark:text-[#9ea3ae] mt-1'>
-                            Browse and access previous year question papers
-                        </p>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className='flex flex-col sm:flex-row gap-2.5'>
-                        <Link
-                            prefetch={false}
-                            href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`}
-                            className='px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
-                        >
-                            <BookOpen className='w-4 h-4' />
-                            Notes
-                        </Link>
-                        <Link
-                            prefetch={false}
-                            href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/videos/${subjectCode}`}
-                            className='px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
-                        >
-                            <Video className='w-4 h-4' />
-                            Videos
-                        </Link>
-                        <button
-                            onClick={handleAddPyq}
-                            className='px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
-                        >
-                            <Plus className='w-4 h-4' />
-                            Add PYQ
-                        </button>
-                    </div>
-                </div>
+            {/* Actions (the page header above already names the subject) */}
+            <div className='grid grid-cols-3 sm:flex sm:justify-end gap-2.5'>
+                <Link
+                    prefetch={false}
+                    href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`}
+                    className='px-3 sm:px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
+                >
+                    <BookOpen className='w-4 h-4' />
+                    Notes
+                </Link>
+                <Link
+                    prefetch={false}
+                    href={`/${collegeSlug}/resources/${courseCode}/${branchCode}/videos/${subjectCode}`}
+                    className='px-3 sm:px-4 py-2 bg-[#f6f5f4] dark:bg-[#282828] text-[#555] dark:text-[#bbb] hover:bg-[#eae8e4] dark:hover:bg-[#333] border border-[#e6e6e6] dark:border-[#383838] rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
+                >
+                    <Video className='w-4 h-4' />
+                    Videos
+                </Link>
+                <button
+                    onClick={handleAddPyq}
+                    className='px-3 sm:px-4 py-2 bg-[#0075de] hover:bg-[#0062bd] text-white rounded-lg text-sm font-semibold transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2'
+                >
+                    <Plus className='w-4 h-4' />
+                    Add PYQ
+                </button>
             </div>
 
             {/* Filter Section */}
@@ -273,8 +269,13 @@ export default function SubjectPyqsClient({
                     ))}
                 </div>
             )}
-            
-            
+
+            {/* Below the papers, so it never pushes them down */}
+            <MissingPyqs
+                subjectId={subjectId}
+                onUpload={uploadMissing}
+                refreshKey={uploads}
+            />
 
             <PyqFormModal
                 isOpen={addPyq}

@@ -36,6 +36,9 @@ export const api = {
         getPyqByCollegeSlug: (slug: string) =>
             `${API_BASE_URL}/pyqs/college/${encodeURIComponent(slug)}`,
         createPyq: `${API_BASE_URL}/pyqs`,
+        slots: (subjectId: string) =>
+            `${API_BASE_URL}/pyqs/slots/${encodeURIComponent(subjectId)}`,
+        requestSlot: `${API_BASE_URL}/pyqs/slots/request`,
         editPyq: (id: string) =>
             `${API_BASE_URL}/pyqs/${encodeURIComponent(id)}`,
         deletePyq: (id: string) =>
