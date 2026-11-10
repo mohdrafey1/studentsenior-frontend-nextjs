@@ -7,6 +7,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 interface SubjectItem {
+    _id: string;
     subjectCode: string;
     subjectName: string;
 }
@@ -18,12 +19,12 @@ interface PyqPageParams {
     'pyq-slug': string;
 }
 
-// helper to fetch subject name
-async function getSubjectName(
+// helper to fetch the subject listed for this branch
+async function getSubject(
     branchCode: string,
     subjectCode: string,
     collegeSlug: string,
-) {
+): Promise<SubjectItem | undefined> {
     const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
@@ -31,9 +32,17 @@ async function getSubjectName(
         },
     );
     const resp = await response.json();
-    const matched = resp.data.find(
+    return resp.data.find(
         (item: SubjectItem) => item.subjectCode === subjectCode,
     );
+}
+
+async function getSubjectName(
+    branchCode: string,
+    subjectCode: string,
+    collegeSlug: string,
+) {
+    const matched = await getSubject(branchCode, subjectCode, collegeSlug);
     return matched?.subjectName || '';
 }
 
@@ -123,8 +132,8 @@ export default async function SubjectPyqsPage({
     } = await params;
 
     let pyqs: IPyq[] = [];
-    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
-    subjectName = cleanSubjectName(subjectName);
+    const subject = await getSubject(branchCode, subjectCode, slug);
+    const subjectName = cleanSubjectName(subject?.subjectName || '');
 
     try {
         const url = api.resources.getPyqsBySubject(subjectCode, slug);
@@ -200,7 +209,7 @@ export default async function SubjectPyqsPage({
                     collegeSlug={slug}
                     courseCode={courseCode}
                     branchCode={branchCode}
-                    subjectName={subjectName}
+                    subjectId={subject?._id}
                 />
             </main>
 
