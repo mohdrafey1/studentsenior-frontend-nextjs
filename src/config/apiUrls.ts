@@ -1,6 +1,9 @@
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v2').replace(/\/+$/, '');
 export const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
+const branchQuery = (branchCode?: string) =>
+    branchCode ? `?branch=${encodeURIComponent(branchCode)}` : '';
+
 export const api = {
     auth: {
         login: `${API_BASE_URL}/auth/signin`,
@@ -131,18 +134,27 @@ export const api = {
 
     resources: {
         getCourses: `${API_BASE_URL}/resource/courses`,
-        getBranches: (courseId: string) =>
-            `${API_BASE_URL}/resource/branches/${courseId}`,
+        // Courses and branches are per college; without one the API answers
+        // with its default college.
+        coursesOf: (collegeSlug?: string) =>
+            collegeSlug
+                ? `${API_BASE_URL}/resource/courses?college=${encodeURIComponent(collegeSlug)}`
+                : `${API_BASE_URL}/resource/courses`,
+        getBranches: (courseCode: string, collegeSlug?: string) =>
+            `${API_BASE_URL}/resource/branches/${courseCode}${
+                collegeSlug ? `?college=${encodeURIComponent(collegeSlug)}` : ''
+            }`,
         getSubjects: (branchCode: string, collegeSlug?: string) =>
             collegeSlug
                 ? `${API_BASE_URL}/resource/subjects/${branchCode}/${collegeSlug}`
                 : `${API_BASE_URL}/resource/subjects/${branchCode}`,
-        getPyqsBySubject: (subjectCode: string, slug: string) =>
-            `${API_BASE_URL}/resource/pyqs/${subjectCode}/${slug}`,
-        getNotesBySubject: (subjectCode: string, slug: string) =>
-            `${API_BASE_URL}/resource/notes/${subjectCode}/${slug}`,
-        getVideosBySubject: (subjectCode: string, slug: string) =>
-            `${API_BASE_URL}/resource/videos/${subjectCode}/${slug}`,
+        // `branchCode` picks the right subject when two share a code.
+        getPyqsBySubject: (subjectCode: string, slug: string, branchCode?: string) =>
+            `${API_BASE_URL}/resource/pyqs/${subjectCode}/${slug}${branchQuery(branchCode)}`,
+        getNotesBySubject: (subjectCode: string, slug: string, branchCode?: string) =>
+            `${API_BASE_URL}/resource/notes/${subjectCode}/${slug}${branchQuery(branchCode)}`,
+        getVideosBySubject: (subjectCode: string, slug: string, branchCode?: string) =>
+            `${API_BASE_URL}/resource/videos/${subjectCode}/${slug}${branchQuery(branchCode)}`,
     },
 
     support: {

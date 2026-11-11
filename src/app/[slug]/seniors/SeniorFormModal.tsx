@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import { ISenior, ICourse, IBranch } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
@@ -111,10 +112,15 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
         }
     }, [branches, isOpen, selectedCourse, form, setForm]);
 
+    // Courses and branches belong to the college in the URL.
+    const routeParams = useParams<{ slug?: string }>();
+    const collegeSlug =
+        typeof routeParams?.slug === 'string' ? routeParams.slug : undefined;
+
     const fetchCourses = async () => {
         setLoadingCourses(true);
         try {
-            const response = await fetch(api.resources.getCourses);
+            const response = await fetch(api.resources.coursesOf(collegeSlug));
             const data = await response.json();
 
             if (!response.ok) {
@@ -133,7 +139,7 @@ const SeniorFormModal: React.FC<SeniorFormModalProps> = ({
     const fetchBranches = async (courseCode: string) => {
         setLoadingBranches(true);
         try {
-            const response = await fetch(api.resources.getBranches(courseCode));
+            const response = await fetch(api.resources.getBranches(courseCode, collegeSlug));
             const data = await response.json();
 
             if (!response.ok) {

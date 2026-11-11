@@ -29,7 +29,7 @@ export default async function ResourcesPage({ params }: CollegePageProps) {
 
     let courses: ICourse[] = [];
     try {
-        const url = `${api.resources.getCourses}`;
+        const url = api.resources.coursesOf(slug);
         const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();

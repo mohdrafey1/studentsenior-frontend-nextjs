@@ -39,7 +39,7 @@ export default async function BranchesPage({ params }: ICollegePageProps) {
     let branches: IBranch[] = [];
 
     try {
-        const url = `${api.resources.getBranches(courseCode)}`;
+        const url = api.resources.getBranches(courseCode, slug);
         const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

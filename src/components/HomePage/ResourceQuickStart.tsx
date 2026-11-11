@@ -90,13 +90,15 @@ export default function ResourceQuickStart({ colleges }: Props) {
         }
     }, []);
 
-    // Fetch courses once
+    // Courses of the picked college (the default college until one is picked).
     useEffect(() => {
         let cancelled = false;
         async function loadCourses() {
             try {
                 setLoadingCourses(true);
-                const res = await fetch(api.resources.getCourses);
+                const res = await fetch(
+                    api.resources.coursesOf(collegeSlug || undefined),
+                );
                 if (!res.ok) throw new Error('Failed to load courses');
                 const data = await res.json();
                 if (!cancelled) setCourses(data?.data ?? []);
@@ -110,7 +112,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [collegeSlug]);
 
     // Fetch branches when course changes
     useEffect(() => {
@@ -122,7 +124,12 @@ export default function ResourceQuickStart({ colleges }: Props) {
         async function loadBranches() {
             try {
                 setLoadingBranches(true);
-                const res = await fetch(api.resources.getBranches(courseCode));
+                const res = await fetch(
+                    api.resources.getBranches(
+                        courseCode,
+                        collegeSlug || undefined,
+                    ),
+                );
                 if (!res.ok) throw new Error('Failed to load branches');
                 const data = await res.json();
                 if (!cancelled) setBranches(data?.data ?? []);
@@ -137,7 +144,7 @@ export default function ResourceQuickStart({ colleges }: Props) {
         return () => {
             cancelled = true;
         };
-    }, [courseCode]);
+    }, [courseCode, collegeSlug]);
 
     // Update semesters based on branch
     useEffect(() => {
