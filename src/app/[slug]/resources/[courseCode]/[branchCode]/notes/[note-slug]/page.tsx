@@ -124,7 +124,7 @@ export default async function SubjectNotesPage({
     subjectName = cleanSubjectName(subjectName);
 
     try {
-        const url = api.resources.getNotesBySubject(subjectCode, slug);
+        const url = api.resources.getNotesBySubject(subjectCode, slug, branchCode);
         const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
         const data = await res.json();
         notes = data?.data || [];

@@ -136,7 +136,7 @@ export default async function SubjectPyqsPage({
     const subjectName = cleanSubjectName(subject?.subjectName || '');
 
     try {
-        const url = api.resources.getPyqsBySubject(subjectCode, slug);
+        const url = api.resources.getPyqsBySubject(subjectCode, slug, branchCode);
         const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
         const data = await res.json();
         pyqs = data?.data || [];

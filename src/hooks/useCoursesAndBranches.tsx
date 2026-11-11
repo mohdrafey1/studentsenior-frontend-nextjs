@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { api } from '@/config/apiUrls';
 import toast from 'react-hot-toast';
 import { ICourse, IBranch } from '@/utils/interface';
@@ -8,11 +9,15 @@ export const useCoursesAndBranches = (courseFilter?: string) => {
     const [branches, setBranches] = useState<IBranch[]>([]);
     const [loadingCourses, setLoadingCourses] = useState(false);
     const [loadingBranches, setLoadingBranches] = useState(false);
+    // Courses and branches belong to the college in the URL.
+    const params = useParams<{ slug?: string }>();
+    const collegeSlug = typeof params?.slug === 'string' ? params.slug : undefined;
 
     // Fetch courses on mount
     useEffect(() => {
         fetchCourses();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [collegeSlug]);
 
     // Fetch branches when course filter changes
     useEffect(() => {
@@ -26,7 +31,7 @@ export const useCoursesAndBranches = (courseFilter?: string) => {
     const fetchCourses = async () => {
         setLoadingCourses(true);
         try {
-            const response = await fetch(api.resources.getCourses);
+            const response = await fetch(api.resources.coursesOf(collegeSlug));
             const data = await response.json();
 
             if (!response.ok) {
@@ -45,7 +50,7 @@ export const useCoursesAndBranches = (courseFilter?: string) => {
     const fetchBranches = async (courseCode: string) => {
         setLoadingBranches(true);
         try {
-            const response = await fetch(api.resources.getBranches(courseCode));
+            const response = await fetch(api.resources.getBranches(courseCode, collegeSlug));
             const data = await response.json();
 
             if (!response.ok) {
