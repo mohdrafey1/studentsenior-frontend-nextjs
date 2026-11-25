@@ -4,6 +4,13 @@ import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import SeniorDetailClient from './SeniorDetailClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface SeniorDetailPageProps {
     params: Promise<{ slug: string; 'senior-slug': string }>;
 }
@@ -77,7 +84,7 @@ export default async function SeniorDetailPage({
 
     try {
         const url = `${api.seniors.getSeniorBySlug(seniorSlug)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

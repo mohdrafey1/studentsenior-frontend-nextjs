@@ -49,7 +49,7 @@ export default async function PyqsPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.pyq.getPyqByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

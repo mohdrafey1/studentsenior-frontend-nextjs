@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import type { Metadata } from 'next';
@@ -15,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export const revalidate = 30; // 30-second revalidation for near real-time updates
+export const revalidate = 600; // 10 minutes
 
 export default async function LeaderboardPage() {
     let leaderboard: IUser[] = [];

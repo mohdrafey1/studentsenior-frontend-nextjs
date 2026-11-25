@@ -47,7 +47,7 @@ export default async function QuickNotesPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.quickNotes.getQuickNotesByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

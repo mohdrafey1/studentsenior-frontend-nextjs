@@ -4,6 +4,13 @@ import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import ProductDetailClient from './ProductDetailClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface ProductDetailPageProps {
     params: Promise<{ 'product-slug': string }>;
 }
@@ -15,7 +22,7 @@ export async function generateMetadata({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) throw new Error(`Failed to fetch product`);
 
         const data = await res.json();
@@ -62,7 +69,7 @@ export default async function ProductDetailPage({
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
 

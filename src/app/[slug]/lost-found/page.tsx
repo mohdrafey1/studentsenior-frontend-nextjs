@@ -10,6 +10,13 @@ import {
 import LostFoundClient from './LostFoundClient';
 import { Search, AlertCircle, CheckCircle2 } from 'lucide-react';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 3600s old.
+export const revalidate = 3600;
+export async function generateStaticParams() {
+    return [];
+}
+
 export async function generateMetadata({
     params,
 }: CollegePageProps): Promise<Metadata> {
@@ -31,7 +38,7 @@ export default async function LostFoundPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.lostFound.getLostFoundByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

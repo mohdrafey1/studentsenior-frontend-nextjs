@@ -4,6 +4,13 @@ import { notFound } from 'next/navigation';
 import { api } from '@/config/apiUrls';
 import VideoDetailClient from './VideoDetailClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface VideoDetailPageProps {
     params: Promise<{
         slug: string;
@@ -38,7 +45,7 @@ async function getVideoData(collegeSlug: string, videoSlug: string) {
         const response = await fetchPublicApi(
             `${api.videos.getVideoBySlug(videoSlug)}`,
             {
-                next: { revalidate: 60 },
+                next: { revalidate: 86400 },
             },
         );
 

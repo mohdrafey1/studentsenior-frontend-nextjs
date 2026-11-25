@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
     poweredByHeader: false,
     reactStrictMode: true,
     images: {
+        // Images already come from S3/CloudFront/Cloudinary. Vercel's optimizer is
+        // capped at 5K transformations a month on the free plan.
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: 'https',

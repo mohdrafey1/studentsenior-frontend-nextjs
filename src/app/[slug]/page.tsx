@@ -35,6 +35,13 @@ import {
 } from 'lucide-react';
 import { DEFAULT_SECTIONS } from '@/constant';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface CollegeDataResponse {
     success: boolean;
     message: string;
@@ -131,9 +138,6 @@ export async function generateMetadata({
         category: 'Education',
     };
 }
-
-// Enable static generation for college pages
-export const revalidate = 86400; // Revalidate every 24 hours
 
 export default async function CollegePage({ params }: CollegePageProps) {
     const { slug } = await params;
