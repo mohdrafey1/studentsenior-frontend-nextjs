@@ -6,10 +6,17 @@ import Link from 'next/link';
 import QuickNoteClient from './QuickNoteClient';
 import { capitalizeWords } from '@/utils/formatting';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 const getQuickNoteDetail = async (slug: string): Promise<IQuickNote | null> => {
     try {
         const res = await fetchPublicApi(api.quickNotes.getNoteDetail(slug), {
-            next: { revalidate: 60 },
+            next: { revalidate: 86400 },
         });
         if (!res.ok) return null;
         const json = await res.json();

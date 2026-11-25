@@ -25,7 +25,7 @@ export default async function SeniorsPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.seniors.getSeniorsByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 10 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

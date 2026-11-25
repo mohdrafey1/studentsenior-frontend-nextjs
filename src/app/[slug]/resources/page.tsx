@@ -5,6 +5,13 @@ import { CollegePageProps } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import CourseList from './CourseList';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface ICourse {
     _id: string;
     courseName: string;

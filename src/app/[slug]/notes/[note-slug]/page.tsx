@@ -4,6 +4,13 @@ import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import NotesDetailClient from './NotesDetailClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface NoteDetailPageProps {
     params: Promise<{ 'note-slug': string }>;
 }
@@ -48,7 +55,7 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
 
     try {
         const url = `${api.notes.getNoteBySlug(noteSlug)}`;
-        const res = await fetchPublicApi(url, { cache: 'no-store' });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

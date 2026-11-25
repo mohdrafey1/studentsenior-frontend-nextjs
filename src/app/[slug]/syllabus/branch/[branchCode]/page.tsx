@@ -72,7 +72,7 @@ export default async function BranchSyllabusPage({
 
     try {
         const url = api.syllabus.getSyllabusByBranch(slug, branchCode);
-        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
         const data = await res.json();
 

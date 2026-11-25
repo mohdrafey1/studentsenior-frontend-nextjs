@@ -5,6 +5,13 @@ import type { Metadata } from 'next';
 import { CollegePageProps, IPagination, IStoreItem } from '@/utils/interface';
 import StoreClient from './StoreClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 3600s old.
+export const revalidate = 3600;
+export async function generateStaticParams() {
+    return [];
+}
+
 export async function generateMetadata({
     params,
 }: CollegePageProps): Promise<Metadata> {
@@ -24,7 +31,7 @@ export default async function StorePage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.store.getStoreByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

@@ -37,7 +37,7 @@ async function getVideosData(collegeSlug: string) {
         const response = await fetchPublicApi(
             `${api.videos.getVideosByCollegeSlug(collegeSlug)}?page=1&limit=12`,
             {
-                next: { revalidate: 60 },
+                next: { revalidate: 600 },
             },
         );
 

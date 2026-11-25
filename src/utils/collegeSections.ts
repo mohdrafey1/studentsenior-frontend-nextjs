@@ -17,7 +17,9 @@ export const DEFAULT_SECTIONS: CollegeSections = {
 
 // Cache duration: 24 hours (in seconds)
 // Since college sections rarely change, we cache for a long time
-const SECTIONS_CACHE_DURATION = 1; // 24 hours = 86400 seconds
+// Every college page uses this, and a page can't stay cached longer than its
+// shortest fetch, so a short value here makes every college page re-render.
+const SECTIONS_CACHE_DURATION = 86400; // 24 hours
 
 export async function getCollegeSections(
     slug: string,

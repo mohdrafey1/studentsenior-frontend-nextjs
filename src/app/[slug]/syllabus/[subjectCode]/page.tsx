@@ -8,6 +8,13 @@ import { Eye, FileText } from 'lucide-react';
 import DownloadPdfButton from './DownloadPdfButton';
 import DetailPageNavbar from '@/components/Common/DetailPageNavbar';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface SyllabusDetailProps {
     params: Promise<{
         slug: string;
@@ -81,7 +88,7 @@ export default async function SyllabusDetailPage({
     try {
         // subjectCode parameter is actually the syllabus slug
         const url = api.syllabus.getSyllabusBySlug(subjectCode);
-        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

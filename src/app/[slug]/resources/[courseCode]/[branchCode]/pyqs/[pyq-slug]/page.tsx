@@ -6,6 +6,13 @@ import SubjectPyqsClient from './SubjectPyqsClient';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface SubjectItem {
     _id: string;
     subjectCode: string;
@@ -28,7 +35,7 @@ async function getSubject(
     const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
-            next: { revalidate: 300 },
+            next: { revalidate: 86400 },
         },
     );
     const resp = await response.json();
@@ -137,7 +144,7 @@ export default async function SubjectPyqsPage({
 
     try {
         const url = api.resources.getPyqsBySubject(subjectCode, slug, branchCode);
-        const res = await fetchPublicApi(url, { next: { revalidate: 3600 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         const data = await res.json();
         pyqs = data?.data || [];
     } catch (e) {
