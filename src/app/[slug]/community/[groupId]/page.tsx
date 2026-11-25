@@ -5,6 +5,13 @@ import { capitalizeWords } from '@/utils/formatting';
 import { api } from '@/config/apiUrls';
 import InstallAppCTA from '../InstallAppCTA';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 300s old.
+export const revalidate = 300;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface PageProps {
     params: Promise<{ slug: string; groupId: string }>;
 }
@@ -36,7 +43,7 @@ export default async function CommunityGroupPreview({ params }: PageProps) {
         // Web preview is capped server-side at 50 messages.
         const res = await fetchPublicApi(
             `${api.community.getMessages(groupId)}?limit=50`,
-            { next: { revalidate: 30 } }
+            { next: { revalidate: 300 } }
         );
         const data = await res.json();
         messages = data?.data?.messages || [];

@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import { fetchPublicApi } from '@/utils/serverFetch';
 import CollegeSelectHandler from '@/components/HomePage/CollegeSelectHandler';
 import DownloadAppButton from '@/components/HomePage/DownloadAppButton';

@@ -28,7 +28,7 @@ export default async function NotesPage({ params }: CollegePageProps) {
 
     try {
         const url = `${api.notes.getNotesByCollegeSlug(collegeName)}`;
-        const res = await fetchPublicApi(url, { next: { revalidate: 60 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 600 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);

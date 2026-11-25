@@ -6,6 +6,13 @@ import { CollegePageProps } from '@/utils/interface';
 import { api } from '@/config/apiUrls';
 import InstallAppCTA from './InstallAppCTA';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 3600s old.
+export const revalidate = 3600;
+export async function generateStaticParams() {
+    return [];
+}
+
 export async function generateMetadata({
     params,
 }: CollegePageProps): Promise<Metadata> {
@@ -31,7 +38,7 @@ export default async function CommunitiesPage({ params }: CollegePageProps) {
     let groups: CommunityGroup[] = [];
     try {
         const res = await fetchPublicApi(api.community.listByCollege(slug), {
-            next: { revalidate: 60 },
+            next: { revalidate: 3600 },
         });
         const data = await res.json();
         groups = data?.data?.groups || [];

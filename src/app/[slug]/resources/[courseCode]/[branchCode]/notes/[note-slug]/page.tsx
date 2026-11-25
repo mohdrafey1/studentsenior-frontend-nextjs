@@ -6,6 +6,13 @@ import { INote } from '@/utils/interface';
 import SubjectNotesClient from './SubjectNotesClient';
 import Link from 'next/link';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface SubjectItem {
     subjectCode: string;
     subjectName: string;
@@ -20,7 +27,7 @@ async function getSubjectName(
     const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
-            next: { revalidate: 3600 },
+            next: { revalidate: 86400 },
         },
     );
     const resp = await response.json();
@@ -125,7 +132,7 @@ export default async function SubjectNotesPage({
 
     try {
         const url = api.resources.getNotesBySubject(subjectCode, slug, branchCode);
-        const res = await fetchPublicApi(url, { next: { revalidate: 300 } });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         const data = await res.json();
         notes = data?.data || [];
     } catch (e) {

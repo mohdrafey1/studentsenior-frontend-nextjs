@@ -4,6 +4,13 @@ import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
 import PyqDetailClient from './PyqDetailClient';
 
+// No pages are built ahead of time: each URL is rendered on its first visit,
+// then cached and served from the CDN until it is 86400s old.
+export const revalidate = 86400;
+export async function generateStaticParams() {
+    return [];
+}
+
 interface PyqDetailPageProps {
     params: Promise<{ 'pyq-slug': string }>;
 }
@@ -48,7 +55,7 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
 
     try {
         const url = `${api.pyq.getPyqBySlug(pyqSlug)}`;
-        const res = await fetchPublicApi(url, { cache: 'no-store' });
+        const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) {
             throw new Error(`Fetch failed with status ${res.status}`);
