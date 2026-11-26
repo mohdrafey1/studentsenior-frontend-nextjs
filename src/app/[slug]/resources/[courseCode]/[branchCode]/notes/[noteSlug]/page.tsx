@@ -1,10 +1,10 @@
 import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
-import { IPyq } from '@/utils/interface';
-import SubjectPyqsClient from './SubjectPyqsClient';
-import Link from 'next/link';
 import type { Metadata } from 'next';
+import { INote } from '@/utils/interface';
+import SubjectNotesClient from './SubjectNotesClient';
+import Link from 'next/link';
 
 // No pages are built ahead of time: each URL is rendered on its first visit,
 // then cached and served from the CDN until it is 86400s old.
@@ -14,24 +14,16 @@ export async function generateStaticParams() {
 }
 
 interface SubjectItem {
-    _id: string;
     subjectCode: string;
     subjectName: string;
 }
 
-interface PyqPageParams {
-    slug: string;
-    branchCode: string;
-    courseCode: string;
-    'pyq-slug': string;
-}
-
-// helper to fetch the subject listed for this branch
-async function getSubject(
+// ✅ helper to fetch subject name
+async function getSubjectName(
     branchCode: string,
     subjectCode: string,
     collegeSlug: string,
-): Promise<SubjectItem | undefined> {
+) {
     const response = await fetchPublicApi(
         api.resources.getSubjects(branchCode, collegeSlug),
         {
@@ -39,44 +31,44 @@ async function getSubject(
         },
     );
     const resp = await response.json();
-    return resp.data.find(
+    const matched = resp.data.find(
         (item: SubjectItem) => item.subjectCode === subjectCode,
     );
-}
-
-async function getSubjectName(
-    branchCode: string,
-    subjectCode: string,
-    collegeSlug: string,
-) {
-    const matched = await getSubject(branchCode, subjectCode, collegeSlug);
     return matched?.subjectName || '';
 }
 
-// sanitize subject name
+// ✅ sanitize subject name
 function cleanSubjectName(name: string) {
     return name.replace(/Endsem.*|Midsem.*|\d{4} ?\d{2}/gi, '').trim();
 }
 
+interface SubjectNotesPageProps {
+    params: Promise<{
+        noteSlug: string;
+        slug: string;
+        courseCode: string;
+        branchCode: string;
+    }>;
+}
+
+// ✅ SEO Metadata
 export async function generateMetadata({
     params,
-}: {
-    params: Promise<PyqPageParams>;
-}): Promise<Metadata> {
+}: SubjectNotesPageProps): Promise<Metadata> {
     const {
+        noteSlug: subjectCode,
         slug,
         branchCode,
         courseCode,
-        'pyq-slug': subjectCode,
     } = await params;
 
     let subjectName = await getSubjectName(branchCode, subjectCode, slug);
     subjectName = cleanSubjectName(subjectName);
 
-    const pageTitle = `${subjectName} (${subjectCode}) PYQs – Download Free Past Papers | ${capitalizeWords(slug)}`;
-    const description = `Access free past year question papers (PYQs) of ${subjectName} for college and university students. Download and practice End-Sem, Mid-Sem 1, and Mid-Sem 2 exams to boost your exam preparation.`;
+    const pageTitle = `${subjectName} (${subjectCode}) Notes – Free Study Material | ${capitalizeWords(slug)}`;
+    const description = `Download verified, high-quality handwritten and PDF notes for ${subjectName} (${subjectCode}). Access unit-wise notes, exam-ready summaries, important questions, and revision material to score higher in university semester exams. Free student study resources.`;
 
-    const url = `https://www.studentsenior.com/${slug}/resources/${courseCode}/${branchCode}/pyqs/${subjectCode}`;
+    const url = `https://www.studentsenior.com/${slug}/resources/${courseCode}/${branchCode}/notes/${subjectCode}`;
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -94,9 +86,7 @@ export async function generateMetadata({
     return {
         title: pageTitle,
         description,
-        alternates: {
-            canonical: url,
-        },
+        alternates: { canonical: url },
         openGraph: {
             title: pageTitle,
             description,
@@ -126,27 +116,25 @@ export async function generateMetadata({
     };
 }
 
-export default async function SubjectPyqsPage({
+export default async function SubjectNotesPage({
     params,
-}: {
-    params: Promise<PyqPageParams>;
-}) {
+}: SubjectNotesPageProps) {
     const {
-        'pyq-slug': subjectCode,
+        noteSlug: subjectCode,
         slug,
         courseCode,
         branchCode,
     } = await params;
 
-    let pyqs: IPyq[] = [];
-    const subject = await getSubject(branchCode, subjectCode, slug);
-    const subjectName = cleanSubjectName(subject?.subjectName || '');
+    let notes: INote[] = [];
+    let subjectName = await getSubjectName(branchCode, subjectCode, slug);
+    subjectName = cleanSubjectName(subjectName);
 
     try {
-        const url = api.resources.getPyqsBySubject(subjectCode, slug, branchCode);
+        const url = api.resources.getNotesBySubject(subjectCode, slug, branchCode);
         const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
         const data = await res.json();
-        pyqs = data?.data || [];
+        notes = data?.data || [];
     } catch (e) {
         throw e;
     }
@@ -189,7 +177,7 @@ export default async function SubjectPyqsPage({
                         </Link>
                         <span>/</span>
                         <span className='text-[#101828] dark:text-[#ededed] uppercase'>
-                            PYQs
+                            Notes
                         </span>
                     </div>
 
@@ -202,7 +190,7 @@ export default async function SubjectPyqsPage({
                                 </span>
                             </h1>
                             <p className='text-[#615d59] dark:text-[#a09e9a] mt-2 max-w-2xl text-sm'>
-                                Previous year question papers to help you prepare for exams.
+                                High-quality handwritten and PDF notes to help you ace your exams.
                             </p>
                         </div>
                     </div>
@@ -210,17 +198,17 @@ export default async function SubjectPyqsPage({
             </section>
 
             <main className='min-h-screen bg-[#fcfcfc] dark:bg-[#151515]'>
-                <SubjectPyqsClient
-                    initialPyqs={pyqs}
+                <SubjectNotesClient
+                    initialNotes={notes}
                     subjectCode={subjectCode}
                     collegeSlug={slug}
                     courseCode={courseCode}
                     branchCode={branchCode}
-                    subjectId={subject?._id}
+                    subjectName={subjectName}
                 />
             </main>
 
-            {/* ✅ Inject JSON-LD in body */}
+            {/* ✅ Inject JSON-LD */}
             <script
                 type='application/ld+json'
                 dangerouslySetInnerHTML={{

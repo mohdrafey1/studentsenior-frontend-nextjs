@@ -42,14 +42,14 @@ async function getSolution(pyqId: string): Promise<IPyqSolution | null> {
 interface PageProps {
     params: Promise<{
         slug: string; // College slug
-        'pyq-slug': string; // PYQ slug
+        pyqSlug: string; // PYQ slug
     }>;
 }
 
 export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
-    const { 'pyq-slug': pyqSlug, slug } = await params;
+    const { pyqSlug, slug } = await params;
     const pyq = await getPyq(pyqSlug);
 
     if (!pyq) {
@@ -95,7 +95,7 @@ export async function generateMetadata({
 }
 
 export default async function SolutionPage({ params }: PageProps) {
-    const { 'pyq-slug': pyqSlug, slug } = await params;
+    const { pyqSlug, slug } = await params;
     const pyq = await getPyq(pyqSlug);
 
     if (!pyq) {
