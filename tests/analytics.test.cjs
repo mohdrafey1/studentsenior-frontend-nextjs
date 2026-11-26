@@ -285,7 +285,7 @@ test('heartbeats cap foreground seconds and final hide emits once; 30 minute hid
 test('screen duration is capped and dynamic item changes with same template emit a new view', () => {
     const { queue, advance } = fixture();
     queue.screen(
-        '/[slug]/notes/[note-slug]',
+        '/[slug]/notes/[noteSlug]',
         'college',
         '/college/notes/first-private-title',
     );
@@ -293,7 +293,7 @@ test('screen duration is capped and dynamic item changes with same template emit
     queue.activity();
     advance(200000);
     queue.screen(
-        '/[slug]/notes/[note-slug]',
+        '/[slug]/notes/[noteSlug]',
         'college',
         '/college/notes/second-private-title',
     );

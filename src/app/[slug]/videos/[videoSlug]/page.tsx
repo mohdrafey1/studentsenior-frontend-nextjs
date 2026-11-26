@@ -14,14 +14,14 @@ export async function generateStaticParams() {
 interface VideoDetailPageProps {
     params: Promise<{
         slug: string;
-        'video-slug': string;
+        videoSlug: string;
     }>;
 }
 
 export async function generateMetadata({
     params,
 }: VideoDetailPageProps): Promise<Metadata> {
-    const { slug, 'video-slug': videoSlug } = await params;
+    const { slug, videoSlug } = await params;
     const collegeName = decodeURIComponent(slug);
     const videoTitle = decodeURIComponent(videoSlug);
 
@@ -63,7 +63,7 @@ async function getVideoData(collegeSlug: string, videoSlug: string) {
 export default async function VideoDetailPage({
     params,
 }: VideoDetailPageProps) {
-    const { slug, 'video-slug': videoSlug } = await params;
+    const { slug, videoSlug } = await params;
     const collegeSlug = decodeURIComponent(slug);
     const videoSlugDecoded = decodeURIComponent(videoSlug);
 

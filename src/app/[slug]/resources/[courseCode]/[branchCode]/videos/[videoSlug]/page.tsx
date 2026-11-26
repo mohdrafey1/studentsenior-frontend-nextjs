@@ -20,7 +20,7 @@ interface IVideoItem {
 // export async function generateMetadata({
 //     params,
 // }: SubjectVideosPageProps): Promise<Metadata> {
-//     const { 'video-slug': subjectCode, slug } = await params;
+//     const { videoSlug: subjectCode, slug } = await params;
 //     return {
 //         title: `${capitalizeWords(subjectCode)} - Videos | ${capitalizeWords(
 //             slug,
@@ -46,7 +46,7 @@ export default function SubjectVideosPage() {
     const [newupload, setNewUpload] = useState(false);
 
     // Initialize params
-    const subjectCode = (params['video-slug'] as string) || '';
+    const subjectCode = (params.videoSlug as string) || '';
     const slug = (params.slug as string) || '';
     const courseCode = (params.courseCode as string) || '';
     const branchCode = (params.branchCode as string) || '';

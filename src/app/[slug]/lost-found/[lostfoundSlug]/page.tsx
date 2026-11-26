@@ -3,7 +3,7 @@ import React from 'react';
 import { api } from '@/config/apiUrls';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import OpportunityDetailClient from './OpportunityDetailClient';
+import LostFoundDetailClient from './LostFoundDetailClient';
 
 // No pages are built ahead of time: each URL is rendered on its first visit,
 // then cached and served from the CDN until it is 86400s old.
@@ -12,50 +12,49 @@ export async function generateStaticParams() {
     return [];
 }
 
-interface OpportunityPageProps {
+interface LostFoundPageProps {
     params: Promise<{
-        'opportunity-slug': string;
+        lostfoundSlug: string;
     }>;
 }
 
 export async function generateMetadata({
     params,
-}: OpportunityPageProps): Promise<Metadata> {
-    const { 'opportunity-slug': opportunitySlug } = await params;
+}: LostFoundPageProps): Promise<Metadata> {
+    const { lostfoundSlug: lostFoundSlug } = await params;
 
     try {
         const res = await fetchPublicApi(
-            `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
+            `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
             {
                 next: { revalidate: 86400 },
             },
         );
         const data = await res.json();
-        const opportunity = data?.data;
+        const lostFoundItem = data?.data;
 
-        if (!opportunity) {
+        if (!lostFoundItem) {
             return {
-                title: 'Opportunity Not Found',
-                description: 'The requested opportunity could not be found.',
+                title: 'Item Not Found',
+                description:
+                    'The requested lost and found item could not be found.',
             };
         }
 
         return {
-            title: `${opportunity.name} - Student Senior`,
-            description: opportunity.description.slice(0, 160),
+            title: `${lostFoundItem.title} - Student Senior`,
+            description: lostFoundItem.description.slice(0, 160),
         };
     } catch (error) {
         throw error;
     }
 }
 
-export default async function OpportunityPage({
-    params,
-}: OpportunityPageProps) {
-    const { 'opportunity-slug': opportunitySlug } = await params;
+export default async function LostFoundPage({ params }: LostFoundPageProps) {
+    const { lostfoundSlug: lostFoundSlug } = await params;
 
     const res = await fetchPublicApi(
-        `${api.opportunities.getOpportunityBySlug(opportunitySlug)}`,
+        `${api.lostFound.getLostFoundBySlug(lostFoundSlug)}`,
         { next: { revalidate: 86400 } },
     );
     const data = await res.json();
@@ -64,5 +63,5 @@ export default async function OpportunityPage({
         notFound();
     }
 
-    return <OpportunityDetailClient opportunity={data.data} />;
+    return <LostFoundDetailClient lostFoundItem={data.data} />;
 }
