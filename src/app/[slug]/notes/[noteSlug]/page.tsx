@@ -2,7 +2,7 @@ import { fetchPublicApi } from '@/utils/serverFetch';
 import { api } from '@/config/apiUrls';
 import { capitalizeWords } from '@/utils/formatting';
 import type { Metadata } from 'next';
-import PyqDetailClient from './PyqDetailClient';
+import NotesDetailClient from './NotesDetailClient';
 
 // No pages are built ahead of time: each URL is rendered on its first visit,
 // then cached and served from the CDN until it is 86400s old.
@@ -11,17 +11,17 @@ export async function generateStaticParams() {
     return [];
 }
 
-interface PyqDetailPageProps {
-    params: Promise<{ 'pyq-slug': string }>;
+interface NoteDetailPageProps {
+    params: Promise<{ noteSlug: string }>;
 }
 
 export async function generateMetadata({
     params,
-}: PyqDetailPageProps): Promise<Metadata> {
-    const { 'pyq-slug': pyqSlug } = await params;
+}: NoteDetailPageProps): Promise<Metadata> {
+    const { noteSlug } = await params;
 
-    const title = `${capitalizeWords(pyqSlug)} - PYQs`;
-    const description = 'PYQ PDF for exam preparation';
+    const title = `${capitalizeWords(noteSlug)} - Notes`;
+    const description = 'High-quality notes to boost your learning efficiency.';
 
     return {
         title,
@@ -48,13 +48,13 @@ export async function generateMetadata({
     };
 }
 
-export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
-    const { 'pyq-slug': pyqSlug } = await params;
+export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
+    const { noteSlug } = await params;
 
-    let pyq = null;
+    let note = null;
 
     try {
-        const url = `${api.pyq.getPyqBySlug(pyqSlug)}`;
+        const url = `${api.notes.getNoteBySlug(noteSlug)}`;
         const res = await fetchPublicApi(url, { next: { revalidate: 86400 } });
 
         if (!res.ok) {
@@ -62,20 +62,20 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
         }
 
         const data = await res.json();
-        pyq = data?.data || null;
+        note = data?.data || null;
     } catch (error) {
         throw error;
     }
 
-    if (!pyq) {
+    if (!note) {
         return (
             <main className='max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8'>
                 <div className='text-center py-12'>
-                    <h1 className='text-2xl font-fugaz font-bold text-gray-900 dark:text-white mb-4'>
-                        PYQ Not Found
+                    <h1 className='text-2xl font-bold text-gray-900 dark:text-white mb-4'>
+                        Note Not Found
                     </h1>
                     <p className='text-gray-600 dark:text-gray-300'>
-                        The PYQ you&apos;re looking for doesn&apos;t exist or
+                        The Note you&apos;re looking for doesn&apos;t exist or
                         has been removed.
                     </p>
                 </div>
@@ -85,7 +85,7 @@ export default async function PyqDetailPage({ params }: PyqDetailPageProps) {
 
     return (
         <main>
-            <PyqDetailClient pyq={pyq} />
+            <NotesDetailClient note={note} />
         </main>
     );
 }

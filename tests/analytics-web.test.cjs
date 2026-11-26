@@ -99,7 +99,7 @@ test('PYQ and Notes keep one tracker above every document state branch', () => {
         ['notes', 'note', 'Notes'],
     ]) {
         const source = fs.readFileSync(
-            `src/app/[slug]/${folder}/[${param}-slug]/${component}DetailClient.tsx`,
+            `src/app/[slug]/${folder}/[${param}Slug]/${component}DetailClient.tsx`,
             'utf8',
         );
         assert.equal((source.match(/<TrackContentView\b/g) || []).length, 1);

@@ -12,13 +12,13 @@ export async function generateStaticParams() {
 }
 
 interface ProductDetailPageProps {
-    params: Promise<{ 'product-slug': string }>;
+    params: Promise<{ productSlug: string }>;
 }
 
 export async function generateMetadata({
     params,
 }: ProductDetailPageProps): Promise<Metadata> {
-    const { 'product-slug': productSlug } = await params;
+    const { productSlug } = await params;
 
     try {
         const url = `${api.store.getStoreBySlug(productSlug)}`;
@@ -63,7 +63,7 @@ export async function generateMetadata({
 export default async function ProductDetailPage({
     params,
 }: ProductDetailPageProps) {
-    const { 'product-slug': productSlug } = await params;
+    const { productSlug } = await params;
 
     let product = null;
 

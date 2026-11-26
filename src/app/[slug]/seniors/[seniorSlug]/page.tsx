@@ -12,13 +12,13 @@ export async function generateStaticParams() {
 }
 
 interface SeniorDetailPageProps {
-    params: Promise<{ slug: string; 'senior-slug': string }>;
+    params: Promise<{ slug: string; seniorSlug: string }>;
 }
 
 export async function generateMetadata({
     params,
 }: SeniorDetailPageProps): Promise<Metadata> {
-    const { slug, 'senior-slug': seniorSlug } = await params;
+    const { slug, seniorSlug } = await params;
 
     try {
         // Fetch senior details for dynamic metadata
@@ -77,7 +77,7 @@ export async function generateMetadata({
 export default async function SeniorDetailPage({
     params,
 }: SeniorDetailPageProps) {
-    const { slug, 'senior-slug': seniorSlug } = await params;
+    const { slug, seniorSlug } = await params;
     const collegeName = slug;
 
     let senior = null;
